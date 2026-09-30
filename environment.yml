@@ -1,0 +1,22 @@
+name: pressb
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - --extra-index-url https://pypi.nvidia.com
+      - isaacsim[all,extscache]==4.5.0
+      - torch==2.5.1
+      - torchvision==0.20.1
+      - gymnasium==1.0.0
+      - opencv-python==4.10.0.84
+      - numpy==1.26.4
+      - scipy==1.14.1
+      - pillow==11.0.0
+      - matplotlib
+      - trimesh
+      - pytest
+      - setuptools==78.1.1
+# scripts/setup_env.sh also clones the official IsaacLab v2.0.2 release
+# and installs its core, assets, tasks and RL Python packages in editable mode.

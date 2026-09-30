@@ -1,0 +1,45 @@
+# Reproducible local dependencies and downloaded third-party assets.
+/.conda/
+/.cache/
+/vendor/
+/assets/isaac/
+/assets/generated/
+/assets/reference/
+# Historical camera measurements include machine-local evidence paths.
+/assets/global_camera_registration.json
+/assets/tabletop_camera_registration_v2.json
+/assets/floor_camera_registration_v1.json
+
+# Data, model weights and generated experiment evidence stay outside Git.
+/datasets/
+/outputs/
+/logs/
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+
+# Python/build/editor caches.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+/build/
+/dist/
+.DS_Store
+/.idea/
+/.vscode/
+/.agents/
+/.codex/
+
+# Local credentials/configuration; retain documented examples if added.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.sock

@@ -1,0 +1,11 @@
+# Separate Python 3.12 environment; never install into Isaac Sim Python 3.10.
+# Install CPU torch/torchvision first using https://download.pytorch.org/whl/cpu.
+torch==2.10.0
+torchvision==0.25.0
+torchcodec==0.10.0
+numpy==2.2.6
+av==15.1.0
+datasets==4.8.0
+pandas==2.3.3
+pyarrow==21.0.0
+lerobot[dataset]==0.6.1

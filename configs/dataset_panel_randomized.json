@@ -1,0 +1,92 @@
+{
+  "table_height": 0.76,
+  "lighting_intensity_scale": 1.3,
+  "robot_base_x": -0.24,
+  "robot_base_y": 0,
+  "table_edge_x": -0.14,
+  "button_face_x": 0.46,
+  "button_bottom_z": 0.98,
+  "button_pitch_z": 0.035,
+  "button_column_y": 0.045,
+  "button_travel": 0.004,
+  "press_threshold": 0.0015,
+  "tip_offset": 0.24,
+  "gripper_joint_positions_m": [
+    0.004,
+    -0.004
+  ],
+  "approach_distance": 0.065,
+  "press_depth": 0.003,
+  "physics_dt": 0.008333333333333333,
+  "joint_speed": 0.55,
+  "press_duration": 1,
+  "dwell_duration": 0.35,
+  "retract_duration": 0.8,
+  "home_q": [
+    0,
+    0.069762054,
+    0,
+    0,
+    0,
+    0
+  ],
+  "home_hold_duration": 0.6,
+  "home_posture": "folded",
+  "home_tolerance_rad": 0.025,
+  "button_light_mode": "momentary",
+  "release_threshold": 0.0008,
+  "wrist_camera_capture_stride": 12,
+  "global_camera_capture_stride": 12,
+  "global_camera_resolution": [
+    640,
+    480
+  ],
+  "global_camera_eye": [
+    -0.28,
+    0.24,
+    1.05
+  ],
+  "global_camera_target": [
+    0.43,
+    0,
+    1.0675
+  ],
+  "global_camera_support_surface": "tabletop",
+  "global_camera_stand_footprint_m": 0.18,
+  "global_camera_head_riser_m": 0.05,
+  "global_camera_coverage": "panel",
+  "sequence": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35
+  ],
+  "robot_usd": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+  "robot_urdf": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+  "render_stride": 12,
+  "camera_target": [
+    -0.04,
+    0,
+    1.02
+  ],
+  "home_max_housing_tilt_deg": 1.2,
+  "panel_offset_y_m": 0,
+  "panel_offset_x_m": 0,
+  "panel_randomization": {
+    "enabled": true,
+    "min_offset_x_m": -0.01,
+    "max_offset_x_m": 0.01,
+    "min_offset_y_m": -0.025,
+    "max_offset_y_m": 0.025,
+    "camera_margin_px": 24,
+    "max_attempts": 8
+  }
+}

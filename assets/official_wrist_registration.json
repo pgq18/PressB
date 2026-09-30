@@ -1,0 +1,363 @@
+{
+  "official_repository": "https://github.com/agilexrobotics/piper_isaac_sim",
+  "official_commit": "8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2",
+  "method": "Register shared asymmetric gripper housing/crossbar/cylinder, not global FK from differing arm zero conventions. Rotation maps old +Y to current -X and old +X to current +Y; shared upper-cylinder and crossbar z boundaries independently give -4 mm translation.",
+  "registration_current_link6_from_official_link6": [
+    [
+      2.220446049250313e-16,
+      -1.0,
+      0.0,
+      0.0
+    ],
+    [
+      1.0,
+      2.220446049250313e-16,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -0.004
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "registration_components": [
+    {
+      "component": "gripper crossbar",
+      "old_dae_geometry": "mesh-ac6b4927-ec32-4110-a96a-185ae30c9a98-mesh",
+      "old_bounds_m": [
+        [
+          -0.07249999046325684,
+          -0.0034999249037355185,
+          0.061999909579753876
+        ],
+        [
+          0.07249999046325684,
+          0.0034999249037355185,
+          0.06679999083280563
+        ]
+      ],
+      "mapped_bounds_m": [
+        [
+          -0.0034999249037355345,
+          -0.07249999046325684,
+          0.05799990957975387
+        ],
+        [
+          0.0034999249037355345,
+          0.07249999046325684,
+          0.06279999083280563
+        ]
+      ],
+      "current_bounds_m": [
+        [
+          -0.0035000001080334187,
+          -0.07249999791383743,
+          0.057999998331069946
+        ],
+        [
+          0.0035000001080334187,
+          0.07249999791383743,
+          0.06279999762773514
+        ]
+      ],
+      "surface_residual_method": "256 evenly indexed merged vertices from mapped official component to nearest triangle on corresponding robot_lab STL component (one way); mesh versions differ.",
+      "sample_count": 256,
+      "median_surface_distance_m": 8.249360509208423e-08,
+      "p95_surface_distance_m": 9.998191015199465e-05,
+      "max_surface_distance_m": 0.00010010973943646468,
+      "rms_surface_distance_m": 4.143415227323029e-05
+    },
+    {
+      "component": "asymmetric gripper transmission housing",
+      "old_dae_geometry": "mesh-a1d688e9-e258-4ffd-adb1-fbef7c28f343-mesh",
+      "old_bounds_m": [
+        [
+          -0.07199995964765549,
+          -0.030499989166855812,
+          0.04799991101026535
+        ],
+        [
+          0.07199995964765549,
+          0.039999961853027344,
+          0.06699997186660767
+        ]
+      ],
+      "mapped_bounds_m": [
+        [
+          -0.039999961853027344,
+          -0.07199995964765549,
+          0.04399991101026535
+        ],
+        [
+          0.030499989166855812,
+          0.07199995964765549,
+          0.06299997186660766
+        ]
+      ],
+      "current_bounds_m": [
+        [
+          -0.03999999910593033,
+          -0.07249999791383743,
+          0.04399999976158142
+        ],
+        [
+          0.030500000342726707,
+          0.07249999791383743,
+          0.06300000101327896
+        ]
+      ],
+      "surface_residual_method": "256 evenly indexed merged vertices from mapped official component to nearest triangle on corresponding robot_lab STL component (one way); mesh versions differ.",
+      "sample_count": 256,
+      "median_surface_distance_m": 6.0864184314726776e-05,
+      "p95_surface_distance_m": 0.00045282795979762673,
+      "max_surface_distance_m": 0.001386393973644352,
+      "rms_surface_distance_m": 0.00023198799211844367
+    },
+    {
+      "component": "upper gripper motor cylinder",
+      "old_dae_geometry": "mesh-a400a9ea-4dde-4200-9be5-5eb8dad900d2-mesh",
+      "old_bounds_m": [
+        [
+          -0.028499960899353027,
+          -0.028499960899353027,
+          0.014499959535896778
+        ],
+        [
+          0.028499960899353027,
+          0.028499960899353027,
+          0.05399996042251587
+        ]
+      ],
+      "mapped_bounds_m": [
+        [
+          -0.028499960899353027,
+          -0.028499960899353027,
+          0.010499959535896778
+        ],
+        [
+          0.028499960899353027,
+          0.028499960899353027,
+          0.049999960422515866
+        ]
+      ],
+      "current_bounds_m": [
+        [
+          -0.028474319726228714,
+          -0.02850000001490116,
+          0.010499999858438969
+        ],
+        [
+          0.028474319726228714,
+          0.0283973291516304,
+          0.05000000074505806
+        ]
+      ],
+      "surface_residual_method": "256 evenly indexed merged vertices from mapped official component to nearest triangle on corresponding robot_lab STL component (one way); mesh versions differ.",
+      "sample_count": 256,
+      "median_surface_distance_m": 6.427625461104199e-08,
+      "p95_surface_distance_m": 6.593718152290644e-05,
+      "max_surface_distance_m": 0.00010231416192918716,
+      "rms_surface_distance_m": 2.182078460551167e-05
+    }
+  ],
+  "official_link6_notes": [
+    "link6_.dae includes flange, cylindrical gripper motor and wide transmission housing; it is not a standalone camera bracket.",
+    "Two stray 1-triangle geometries in link6_.dae at x~.24 and x~.042 are excluded from registration.",
+    "Camera mount is standalone realsense_mid_stand, reused unmodified."
+  ],
+  "stand": {
+    "source_mesh_path": "/meshes/realsense_mid_stand/Scene/mesh",
+    "usd_sha256": "7561a29c320017aab66ca8a067af48722e6644e47598a2315bde8eb8e9738ec4",
+    "triangle_count": 4738,
+    "processed_vertex_count": 2361,
+    "watertight": true,
+    "winding_consistent": true,
+    "volume_m3": 3.075834031490656e-05,
+    "density_assumption_kg_m3": 1050.0,
+    "density_note": "Uniform solid ABS assumption, not a manufacturer mass specification; no mesh modification.",
+    "mass_estimate_kg": 0.03229625733065188,
+    "center_of_mass_mesh_m": [
+      -0.0030700752381914186,
+      0.0020752806930360314,
+      0.009525246142449458
+    ],
+    "inertia_about_com_mesh_kg_m2": [
+      [
+        2.2108712331272495e-05,
+        8.631643610023923e-07,
+        5.531759592246163e-06
+      ],
+      [
+        8.631643610023923e-07,
+        3.2136906058648883e-05,
+        -2.725884824187642e-06
+      ],
+      [
+        5.531759592246163e-06,
+        -2.725884824187642e-06,
+        2.1341785871301453e-05
+      ]
+    ],
+    "center_of_mass_current_link6_m": [
+      -0.04152689572374527,
+      -0.0040700752381914096,
+      0.015932305172898953
+    ],
+    "inertia_about_com_current_link6_kg_m2": [
+      [
+        2.1337451328463025e-05,
+        -5.532445199137717e-06,
+        -2.7172849271978867e-06
+      ],
+      [
+        -5.532445199137717e-06,
+        2.2108712331272495e-05,
+        -8.587589993997904e-07
+      ],
+      [
+        -2.7172849271978867e-06,
+        -8.587589993997904e-07,
+        3.214124060148732e-05
+      ]
+    ]
+  },
+  "stand_to_current_link6": [
+    [
+      2.220446049250313e-16,
+      -0.0007963267107333194,
+      -0.9999996829318347,
+      -0.032
+    ],
+    [
+      1.0,
+      1.768200498760296e-19,
+      2.2204453452175581e-16,
+      -0.0009999999999999929
+    ],
+    [
+      0.0,
+      -0.9999996829318347,
+      0.0007963267107333194,
+      0.018
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "camera_link_to_current_link6": [
+    [
+      0.3436456373569206,
+      -0.0007963267107330974,
+      -0.9390990585605576,
+      -0.07311003019346145
+    ],
+    [
+      0.0002736542868213357,
+      0.9999996829318347,
+      -0.0007478299014691683,
+      -0.011506452687020934
+    ],
+    [
+      0.9390993563190677,
+      -5.551115123125783e-17,
+      0.3436457463160469,
+      0.0322500250059327
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "camera_visual_to_current_link6": [
+    [
+      -0.000796326710733021,
+      -0.9390990585605578,
+      0.3436456373569204,
+      -0.07161841823538886
+    ],
+    [
+      0.9999996829318347,
+      -0.0007478299014691684,
+      0.0002736542868211135,
+      -0.02900527042489471
+    ],
+    [
+      1.5301079432796077e-16,
+      0.34364574631604666,
+      0.9390993563190678,
+      0.03628815223810469
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "rgb_frame_center_current_link6_m": [
+    -0.07312197509412244,
+    0.0034935425569565873,
+    0.0322500250059327
+  ],
+  "rgb_optical_forward_current_link6": [
+    0.3436456373569206,
+    0.0002736542868213357,
+    0.9390993563190677
+  ],
+  "stand_bounds_current_link6_m": [
+    [
+      -0.08695925350850278,
+      -0.0633749829828739,
+      -0.004308586156496701
+    ],
+    [
+      -0.012784636257952783,
+      0.03361860865354538,
+      0.044201855821921
+    ]
+  ],
+  "camera_bounds_current_link6_m": [
+    [
+      -0.09051230601672675,
+      -0.0739242248142244,
+      0.009911535410224506
+    ],
+    [
+      -0.06258120457603598,
+      0.0159892600198549,
+      0.03955886163728376
+    ]
+  ],
+  "registration_source_files": [
+    {
+      "repository_relative_path": "piper_description/meshes/dae/link6_.dae",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/piper_description/meshes/dae/link6_.dae",
+      "sha256": "a83f8f6b9d5e5605ec18e4110a0ec1878252be7b2a5e027dc9d31bbf25370a00"
+    },
+    {
+      "workspace_relative_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/gripper_base.STL",
+      "sha256": "2895bfa6f1eef2d0ad2cb9dfdedd5f6c760ec07388bcde2b4d1e412e1189c9cb"
+    }
+  ],
+  "camera_mesh_ray_check": {
+    "method": "Moller-Trumbore RGB optical-center forward ray intersection with complete official D435 mesh after URDF and registration transforms",
+    "positive_hit_distance_range_m": [
+      0.00056176,
+      0.00072676
+    ],
+    "interpretation": "Physical lens glass layers lie ahead of the optical origin. Camera near clip >=2mm clears these layers while retaining official calibrated origin; existing 20mm clip also clears them."
+  }
+}

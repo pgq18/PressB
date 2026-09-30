@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "robot_repository": "https://github.com/agilexrobotics/robot_lab",
+  "robot_revision": "b868140eeb1459acefef24a865587ec39a5278c3",
+  "wrist_asset_repository": "https://github.com/agilexrobotics/piper_isaac_sim",
+  "wrist_asset_revision": "8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2",
+  "wrist_asset_licenses": {
+    "repository_root_license_file": null,
+    "piper_description_package_declaration": "TODO: License declaration",
+    "realsense2_description_package_declaration": "Apache License 2.0",
+    "intel_notice_file": "vendor/piper_isaac_sim/realsense2_description/urdf/_d435.urdf.xacro",
+    "note": "The pinned upstream has no LICENSE, COPYING or NOTICE file. Its actual package.xml declarations and Intel source header are retained; no license is inferred for the Piper bracket geometry."
+  },
+  "isaac_asset_version": "4.5",
+  "catalog_inventory": "assets/isaac/asset_inventory.json",
+  "selection": {
+    "global_camera_stand": "Reuse the original NVIDIA Props/Mounts/Stand/stand.usd mesh with transform scaling to a configured tabletop footprint (currently 0.18 m square) and the required support height beside the robot on its left (+Y). The complete foot rests on the tabletop; the local source mesh remains unchanged. Retain the scaled static column collider and matching plate proxies, plus a small ball-head interface connected to the official D435 bottom screw. Camera housing uses the same source-locked, geometry-preserving compatible D435 mesh and nominal RGB optics as the wrist sensor.",
+    "table": "Reuse Simple_Room/Props/table_low.usd and its official texture set as the stand. Normalize its measured mesh bounds to the specified footprint and height minus 40 mm, then add a level 40 mm tabletop flush with the exact collision surface and robot base.",
+    "alternatives_inspected": [
+      "Props/Mounts/SeattleLabTable",
+      "Props/PackingTable",
+      "Environments/Simple_Room"
+    ],
+    "panel": "The inspected stock catalogs do not provide this 2-column floor-24-to-35 actuated panel. Author task-specific caps, spring joints, numeric legends and feedback materials.",
+    "elevator_wall": "Task-specific collision-safe cladding and panel arrangement around the robot workspace.",
+    "wrist_camera": "Reuse the unmodified /meshes/realsense_mid_stand and /meshes/d435 meshes from AgileX piper_isaac_sim's pinned piper_description_v100_realsense_camera_v2_base.usd. scripts/prepare_wrist_asset.py copies the exact mesh arrays to assets/generated/official_wrist/assembly.usda for Isaac 4.5 compatibility, omitting unsupported Chinese material names and rebinding local materials. Use its official URDF bracket/camera mounting transforms and Intel D435 nominal color extrinsics (+0.015 m camera-frame Y), with the old-to-current wrist mapping Rz(+90 degrees), translation (0,0,-0.004 m). The D435 geometry and bracket are upstream meshes, not a custom adapter. RGB intrinsics use D435 nominal 69x42-degree FOV with a centered square-pixel 640x480 crop (approximately 54.2x42 degrees, fx=fy approximately 625.22 px). RGB/depth use ideal rectified simulation cameras; depth is RTX geometric ground truth, not hardware stereo matching. Previously downloaded NVIDIA D455 geometry and optics are historical and no longer required."
+  },
+  "files": [
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/.asset_hash",
+      "sha256": "512414a49a5b7b46bd6c1d9c32a2aa75a9bfa8a85fa87fc81a4b5a2c1b2fd484",
+      "bytes": 32,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/.asset_hash",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/.asset_hash",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/config.yaml",
+      "sha256": "fd6605a3fd617fd431e4cd59d29d8346ebba13f983bebd51487f35329f961a67",
+      "bytes": 695,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/config.yaml",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/config.yaml",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_base.usd",
+      "sha256": "441ab91764629f9a1cf4ed31628623425175e6da30a0834754f769238d072fe0",
+      "bytes": 13238960,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_base.usd",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_base.usd",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_physics.usd",
+      "sha256": "81ae471b38850d9f1f28e869dee30d86c73d38d2d82ba7d78b984ce5c7f3dff6",
+      "bytes": 5546,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_physics.usd",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_physics.usd",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_sensor.usd",
+      "sha256": "04b0d38d0540afb8976f66e3d2b87d5560651e2e17f310f396b30d2fef9af983",
+      "bytes": 645,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_sensor.usd",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/configuration/piper_sensor.usd",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/base_link.STL",
+      "sha256": "fd4a3d6d0266205fe3f725f048645be66592c23564db22e08b0807d5569b2c64",
+      "bytes": 607384,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/base_link.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/base_link.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/gripper_base.STL",
+      "sha256": "2895bfa6f1eef2d0ad2cb9dfdedd5f6c760ec07388bcde2b4d1e412e1189c9cb",
+      "bytes": 649484,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/gripper_base.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/gripper_base.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link1.STL",
+      "sha256": "9ee6e1d67c0241f42a0dbaf5c676d19230375ed078ee1943bb8c4c37ab303d14",
+      "bytes": 447784,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link1.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link1.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link2.STL",
+      "sha256": "0d37675b699b643f2e15348de99aed535fac10dc5f09a79b8e4b0acfaf4e0378",
+      "bytes": 3658384,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link2.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link2.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link3.STL",
+      "sha256": "e8ae51f17c0c7f6d67b753922e2cc269f5e8372a65734f859231639a64fe8fad",
+      "bytes": 1845784,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link3.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link3.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link4.STL",
+      "sha256": "efa33022976218f246f736a6133494b5d0e5486e8b50b52900c42f285ae85558",
+      "bytes": 877984,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link4.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link4.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link5.STL",
+      "sha256": "a1c69d1c7f6f8c60e2c82331c0f444725200ed4053d3e5ec23aa82cb5db5b29f",
+      "bytes": 833684,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link5.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link5.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link6.STL",
+      "sha256": "88374973bc3bd9e7389b5853cd6e555af9731c30b658b1ee6f85be34a126cb92",
+      "bytes": 58884,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link6.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link6.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL",
+      "sha256": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d",
+      "bytes": 104384,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL",
+      "sha256": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606",
+      "bytes": 104384,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+      "sha256": "1c19fa993984bc476120d84dcfeb50356fac4f6551a34ffae344b3cc43c48623",
+      "bytes": 1592,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+      "sha256": "01471dc1766d7ecaea268a4bdc15615e6ed95b969a42b32b9302a2c77095c439",
+      "bytes": 12889,
+      "local_path": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+      "available": true
+    },
+    {
+      "source": "robot_lab",
+      "path": "LICENSE",
+      "sha256": "6c902f2125ac13341ec3bd7a8e2a06550926b58a056a7a223172e6501370b70b",
+      "bytes": 11343,
+      "local_path": "vendor/robot_lab/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/robot_lab/b868140eeb1459acefef24a865587ec39a5278c3/LICENSE",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/MI_Table.mdl",
+      "sha256": "761114022d945ee6fae32174fe47d8fa100b33443d75488bf3458469b7d3c931",
+      "bytes": 2329,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/MI_Table.mdl",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/MI_Table.mdl",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/Textures/DefaultMaterial_Base_Color.png",
+      "sha256": "49a93f3124cc628d579ac7ad39708ef1692c642668fd9ae784264dd728069bfd",
+      "bytes": 309606,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Base_Color.png",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Base_Color.png",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/Textures/DefaultMaterial_Mixed_AO.png",
+      "sha256": "1a53593fa84590c8339714c247a7b5b71bd578ce72fc0168b1e335efb0a17cd5",
+      "bytes": 1110839,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Mixed_AO.png",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Mixed_AO.png",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/Textures/DefaultMaterial_Normal_DirectX.png",
+      "sha256": "12aec50406cf9ba8f5c32cb27d35dd1af367433a7cd91de5d191fe0ddec57009",
+      "bytes": 2052839,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Normal_DirectX.png",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Normal_DirectX.png",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/Textures/DefaultMaterial_Roughness.png",
+      "sha256": "0ab8364b5adfab4bd74ac4df359eb271595b3f0593eaf7e50ffd539b6155ad7c",
+      "bytes": 87313,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Roughness.png",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/Textures/DefaultMaterial_Roughness.png",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/Textures/OmniUe4Base.mdl",
+      "sha256": "505961c8fc04f949f6cd02d99b878d2eaed050873ec6af8987d2656167878373",
+      "bytes": 8443,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/Textures/OmniUe4Base.mdl",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/Textures/OmniUe4Base.mdl",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Materials/Textures/OmniUe4Function.mdl",
+      "sha256": "4afd5f8cbee83e8f9a4520409917b2b72fcb5cbc48ade66580b8453c4a2c1726",
+      "bytes": 46370,
+      "local_path": "assets/isaac/Environments/Simple_Room/Materials/Textures/OmniUe4Function.mdl",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Materials/Textures/OmniUe4Function.mdl",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Environments/Simple_Room/Props/table_low.usd",
+      "sha256": "9843b47c308706a3e17543910285d75d841fa095571e1096ea5c1324e42702bc",
+      "bytes": 105767,
+      "local_path": "assets/isaac/Environments/Simple_Room/Props/table_low.usd",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Environments/Simple_Room/Props/table_low.usd",
+      "available": true
+    },
+    {
+      "source": "isaac_sim",
+      "path": "Props/Mounts/Stand/stand.usd",
+      "sha256": "9788fa192ae3a28117daa6f99a38375d3d1c9ae844f58236aa0bfaae33b6b8ab",
+      "bytes": 2679034,
+      "local_path": "assets/isaac/Props/Mounts/Stand/stand.usd",
+      "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Mounts/Stand/stand.usd",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "piper_description/urdf/piper_description_v100_realsense_camera_v2/configuration/piper_description_v100_realsense_camera_v2_base.usd",
+      "sha256": "7561a29c320017aab66ca8a067af48722e6644e47598a2315bde8eb8e9738ec4",
+      "bytes": 41020584,
+      "local_path": "vendor/piper_isaac_sim/piper_description/urdf/piper_description_v100_realsense_camera_v2/configuration/piper_description_v100_realsense_camera_v2_base.usd",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/piper_description/urdf/piper_description_v100_realsense_camera_v2/configuration/piper_description_v100_realsense_camera_v2_base.usd",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "piper_description/urdf/piper_description_v100_realsense_camera_v2.urdf",
+      "sha256": "d21046ed1614b8077ce00b5309beae4fa4fbc7d3b654c3f500c815deec90d287",
+      "bytes": 12070,
+      "local_path": "vendor/piper_isaac_sim/piper_description/urdf/piper_description_v100_realsense_camera_v2.urdf",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/piper_description/urdf/piper_description_v100_realsense_camera_v2.urdf",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "piper_description/meshes/dae/realsense_mid_stand.dae",
+      "sha256": "1b9253505836723353528b41c7008c4d8f539a774959da3ad9669c26ae62e45a",
+      "bytes": 713245,
+      "local_path": "vendor/piper_isaac_sim/piper_description/meshes/dae/realsense_mid_stand.dae",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/piper_description/meshes/dae/realsense_mid_stand.dae",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "realsense2_description/meshes/d435.dae",
+      "sha256": "42f3b66f47a1f8f425a2e4dc07c1d9c283183167d8441f520a15623d98f9bf78",
+      "bytes": 15782439,
+      "local_path": "vendor/piper_isaac_sim/realsense2_description/meshes/d435.dae",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/realsense2_description/meshes/d435.dae",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "realsense2_description/urdf/_d435.urdf.xacro",
+      "sha256": "db7ff24c900fd68d9841bd317d4b5077aa2fd3c1091fa2416f7a10048ba2132b",
+      "bytes": 7550,
+      "local_path": "vendor/piper_isaac_sim/realsense2_description/urdf/_d435.urdf.xacro",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/realsense2_description/urdf/_d435.urdf.xacro",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "README.md",
+      "sha256": "95680571b7a070936d01619870b4b492a8433aa60ceb6dfd5fe4e83e9aea66df",
+      "bytes": 712,
+      "local_path": "vendor/piper_isaac_sim/README.md",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/README.md",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "piper_description/package.xml",
+      "sha256": "307ddcda650974988726809436f3aeb63d19db55174ac5976d4869ddbd994177",
+      "bytes": 901,
+      "local_path": "vendor/piper_isaac_sim/piper_description/package.xml",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/piper_description/package.xml",
+      "available": true
+    },
+    {
+      "source": "piper_isaac_sim",
+      "path": "realsense2_description/package.xml",
+      "sha256": "73c0fe593f574dd3cea0e57378c437c2671d3fdb2db2d32341d599799ee2be59",
+      "bytes": 1048,
+      "local_path": "vendor/piper_isaac_sim/realsense2_description/package.xml",
+      "source_url": "https://raw.githubusercontent.com/agilexrobotics/piper_isaac_sim/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2/realsense2_description/package.xml",
+      "available": true
+    }
+  ]
+}
