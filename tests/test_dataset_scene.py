@@ -269,7 +269,12 @@ def test_nonzero_static_snapshot_offsets_are_not_applied_twice(usd_world, tmp_pa
     UsdGeom.Xform.Define(source, "/World").GetPrim().GetReferences().AddReference(str(SNAPSHOT), "/World")
     x, y = -.006, .013
     panel = UsdGeom.Xformable(source.GetPrimAtPath("/World/Panel"))
-    panel.AddTranslateOp(opSuffix="panelOffset").Set(Gf.Vec3d(x, y, 0.))
+    # Current scene snapshots may already contain the panel offset transform.
+    offset_attr = panel.GetPrim().GetAttribute("xformOp:translate:panelOffset")
+    if offset_attr:
+        offset_attr.Set(Gf.Vec3d(x, y, 0.))
+    else:
+        panel.AddTranslateOp(opSuffix="panelOffset").Set(Gf.Vec3d(x, y, 0.))
     panel.GetPrim().CreateAttribute("pressb:panelOffsetXM", Sdf.ValueTypeNames.Double).Set(x)
     panel.GetPrim().CreateAttribute("pressb:panelOffsetYM", Sdf.ValueTypeNames.Double).Set(y)
     set_back_wall_offset(source, "/World/Environment", x)

@@ -1,6 +1,6 @@
 # PiPER VLA-JEPA 仿真闭环评估
 
-> 文中的数据集、权重、图像和运行报告属于本地产物，不随 Git 仓库分发；新机器请先按 [README](../README.md) 生成场景。历史结果不代表本次安装已经完成验证。
+> 文中的数据集、权重、图像和运行报告属于本地产物，不随 Git 仓库分发；新建场景见 [README](../README.md)。跨机器复现已有评估时，应转移原冻结场景及完整资产，按下文的跨机器流程运行。历史结果不代表本次安装已经完成验证。
 
 `scripts/eval_policy.py` 在采集数据时的 Isaac Sim 场景中运行已训练策略。每次推理使用当前全局相机、腕部相机图像和当前实测末端位姿；模型返回动作后，机械臂通过物理仿真运动，再重新观察。它与 `scripts/replay_dataset.py` 的录制动作回放是两种不同的测试。
 
@@ -148,6 +148,147 @@ bash scripts/eval_policy.sh \
 ```
 
 诊断使用独立 FK 实现，比较原始模型位姿隐含的杆尖、IK 命令杆尖和物理实测杆尖到按钮的距离，同时统计整个过程与最后 5 秒的投影误差、跟踪误差和速度限制次数。`--last-seconds` 可改变末段统计窗口；读取尚在运行的目录时，只分析已有 `metadata.json` 的完整 episode，并标记 `run_complete=false`。
+
+## 5090 仿真、H200 推理的跨机器评估
+
+本流程使用 5090 上的 Isaac Sim 5.0 运行场景，H200 上的 VLA-JEPA 服务执行推理。原采集机使用 Isaac Sim 4.5，因此比较须保留软件版本和图像差异证据，不能仅凭相同场景文件就认定物理或渲染结果完全一致。
+
+此次跨机器对照已完成：同一 `step_010600`、同一冻结场景和 60 个条件，5090 为 **20 次成功、22 次误按、18 次超时**，本机基线为 **5、27、28**；两端均无异常碰撞，60 条候选记录全部通过独立审计。34/60 条的终止原因和实际按下楼层一致，原 5 个成功条件全部保留。另将四组历史无损输入经 5090 发到 H200，原始 pose9 和转换后 pose8 动作均逐值相同。初始 TCP 位置的最大差异约 2.84×10⁻⁹ m，初始全局／腕部图像平均像素 MAE 分别为 3.43／5.79（0–255）。这些结果证明当前链路可运行，但不能将两套仿真视为可直接互换的评测基线；渲染和物理各自对结果的影响尚未单独分离。5090 保留其部署时用于清除灯光残影的 16 次稳定渲染，本机历史实现为 4 次。该差异与引擎版本一起记录，未修改控制器或模型来匹配结果。
+
+本地产物：配对报告 `outputs/rtx5090_eval_comparison/results/summary.md`、详细指标 `results/comparison.json`、固定输入复测 `outputs/rtx5090_eval_comparison/golden_replay.json`、33 层中心位置双相机并排视频 `outputs/rtx5090_eval_comparison/results/compare_floor33_center.mp4`。5090 保留全部原始观测 PNG、轨迹和视频；本机证据包取回了全部轨迹／视频与每条 episode 的首个无损观测。本次四个临时推理服务已停止，SSH 主连接仍可复用。
+
+先从采集机转移原始 `scene.usda`、`config.json`、数据集的 `meta/collection_metadata.json`，以及完整资产依赖包。本次输入组织为 `outputs/rtx5090_eval_comparison/input/`：
+
+```text
+input/
+  scene.usda
+  config.json
+  dataset_metadata/meta/collection_metadata.json
+  assets/asset_bundle.json
+  assets/assets/...
+  assets/vendor/...
+  golden_requests/worker_0/{request.json,global.png,wrist.png}
+  golden_requests/worker_1/...
+  golden_requests/worker_2/...
+  golden_requests/worker_3/...
+```
+
+`asset_bundle.json` 的 `schema_version=1`，记录 `source_project_root` 及 `files`；每项包含原机器的绝对 `source_path`、项目内 POSIX `relative_path`、`sha256` 和 `bytes`。文件放在包根目录下对应的 `relative_path`。此冻结场景的完整闭包是 **10 个文件**：PiPER 主 USD 及三个配置 USD、桌子 USD、支架 USD、桌子纹理 PNG、官方腕部兼容 USD、两张文字标签 PNG。生成的腕部资产和标签也必须复制原字节；只重新下载官方源资产不足以复现此场景。引擎资源 `OmniPBR.mdl` 保留原名称，由运行中的 Isaac 提供。评估只需要上述数据集元信息，不需要传输训练集视频或动作。
+
+`--asset-bundle` 会验证全部文件大小、SHA256 和相对引用闭包，再生成本次输出目录下的 `runtime_scene.usda`。原 `scene.usda` 保持不变，仍用其 SHA256 校验训练场景；本次原 SHA 为 `d5f5556825db36635dd1636561bc0caa75bdd156d93b6e254922239450e9741a`。运行时副本只替换七条绝对资产路径，并通过逆映射检查全部 authored USD 内容一致。`scene_relocation.json` 和 `eval_manifest.json` 分别保存原始／运行时文件哈希、完整依赖、映射及报告哈希，审计会重新验证。
+
+以下 SSH 命令均在 **5090 工作站**执行。先检查并复用到 H200 的主连接；仅在它不存在时，在一个保持开启的终端建立连接：
+
+```bash
+ssh -o ConnectTimeout=120 -S /tmp/pressb-5090-h200-eval.sock -O check h200
+
+# 仅在没有主连接时执行，并保留此终端。
+ssh -o ConnectTimeout=120 -M -S /tmp/pressb-5090-h200-eval.sock \
+  -o ControlPersist=no -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -N h200
+```
+
+另一个 5090 终端复用连接登录 H200：
+
+```bash
+ssh -o ConnectTimeout=120 -S /tmp/pressb-5090-h200-eval.sock h200
+```
+
+在该 **H200 shell** 启动模型服务。以下示例占用 H200 的逻辑 GPU 0；运行前按空闲显存选择 GPU。服务仅监听 loopback。本次临时服务会在评估结束后停止，后续评估需重新启动：
+
+```bash
+cd /home/pengguanqi/Worksapce/Research/VLA-JEPA
+conda activate vlajepa-piper
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m scripts.serve_piper_policy \
+  --checkpoint /data/scratch/pengguanqi/VLA-JEPA-runs/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600 \
+  --port 19765 --device cuda:0
+```
+
+回到 **5090**，在已有主连接上添加本地 loopback 转发；已存在时无需重复添加：
+
+```bash
+ssh -o ConnectTimeout=120 -S /tmp/pressb-5090-h200-eval.sock \
+  -O forward -L 127.0.0.1:19765:127.0.0.1:19765 h200
+curl --fail http://127.0.0.1:19765/health
+```
+
+健康检查应显示 `status=ready`、`checkpoint_verified=true`、`checkpoint_step=10600`，权重 SHA256 为 `2456b1fff5ef2d94a173b502d55b244a6b0810b92c6e39fc6b1527e1d6019312`。以下在 5090 上运行一组 24–26 层、每层中心和四角各一次，共 15 条；种子、3 点均值滤波、3 个并行环境、15 秒上限均与原对应 worker 保持一致：
+
+```bash
+cd /home/pengguanqi/Workspace/Research/PressB
+bash scripts/eval_policy.sh \
+  --endpoint http://127.0.0.1:19765/predict \
+  --dataset outputs/rtx5090_eval_comparison/input/dataset_metadata \
+  --config outputs/rtx5090_eval_comparison/input/config.json \
+  --snapshot outputs/rtx5090_eval_comparison/input/scene.usda \
+  --asset-bundle outputs/rtx5090_eval_comparison/input/assets \
+  --expected-checkpoint-step 10600 \
+  --expected-checkpoint-sha256 2456b1fff5ef2d94a173b502d55b244a6b0810b92c6e39fc6b1527e1d6019312 \
+  --floors 24,25,26 --panel-layouts center_corners --episodes-per-floor 1 \
+  --seed 20260930 --smoothing-window 3 --num-envs 3 --max-seconds 15 --gpu 0 \
+  --output outputs/rtx5090_eval_comparison/formal_new/worker_0
+```
+
+完整对比的其他组分别为 `27,28,29`、`30,31,32`、`33,34,35`，输出到各自的 `worker_1..3`；可依次运行，也可按显存配置并发。四服务并行时，H200 分别使用端口 `19765..19768` 和逻辑 GPU `0..3`，为每个端口建立对应 loopback 转发，5090 的 `--gpu` 只能使用其本机 GPU 编号。不要更改每组的种子、平滑、布局、时长或环境数量；所有输出目录须为新目录。本次实际运行目录为 `outputs/rtx5090_eval_comparison/center_corners_v1/worker_0..3`，上述 `formal_new` 是后续重跑示例。
+
+完成后先在 **5090 原位置**进行独立审计。重定位审计需要可读取运行时 USD 的 `usd-core`；5090 已有隔离安装的兼容 USD，使用如下入口，不启动 Isaac：
+
+```bash
+PYTHONPATH=.cache/usd-inspect:src .conda/envs/pressb/bin/python \
+  scripts/audit_policy_eval.py \
+  --run outputs/rtx5090_eval_comparison/formal_new/worker_0 \
+  --report outputs/rtx5090_eval_comparison/formal_new/worker_0/audit.json \
+  --allow-partial
+```
+
+该审计 Python 还需 NumPy、Pillow、PyAV。`--allow-partial` 仅允许此 worker 没有覆盖全部十二层，其自身声明的 15 条调度仍须全部完成。其余 worker 同样审计；保留输入包及原始路径，使报告中的文件身份能够再次验证。
+
+### 固定输入复测与闭环对比
+
+固定输入（golden）测试从原评估复制无损 PNG、实测状态、任务和种子，再通过 5090→H200 请求同一检查点，比较返回的原始动作。这用于隔离传输、预处理和推理差异；固定输入不驱动本次仿真。示例在 5090 项目目录执行，复测四个已有输入：
+
+```bash
+PYTHONPATH=src .conda/envs/pressb/bin/python - <<'PY'
+import hashlib
+import json
+from pathlib import Path
+import numpy as np
+from PIL import Image
+from pressb.policy_eval import PolicyClient, validate_policy_reply
+
+root = Path('outputs/rtx5090_eval_comparison')
+client = PolicyClient('http://127.0.0.1:19765/predict', timeout=120)
+rows = []
+for directory in sorted((root / 'input/golden_requests').glob('worker_*')):
+    recorded = json.loads((directory / 'request.json').read_text())
+    images = {}
+    for view in ('global', 'wrist'):
+        path = directory / f'{view}.png'
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == recorded['images'][view]['sha256']
+        images[view] = np.asarray(Image.open(path).convert('RGB'))
+    reply, seconds = client.predict(recorded['task'], recorded['state'], images, recorded['seed'])
+    validate_policy_reply(reply)
+    differences = {key: float(np.max(np.abs(np.asarray(reply[key]) - np.asarray(recorded['response'][key]))))
+                   for key in ('actions_pose8', 'actions_pose9')}
+    rows.append(dict(worker=directory.name, seed=recorded['seed'], response=reply,
+                     max_absolute_differences=differences, wall_seconds=seconds))
+with (root / 'golden_retest_new.json').open('x') as stream:
+    json.dump(rows, stream, indent=2)
+print(json.dumps([{'worker': row['worker'], **row['max_absolute_differences']} for row in rows]))
+PY
+```
+
+完整闭环评估则持续使用 **5090 当前渲染图像和实测状态**，从第一帧到终止独立执行。即使 golden 输出一致，跨版本画面或物理差异仍可能让后续观察与动作分化；首帧画面和初始状态接近也不代表任务结果相同。
+
+待两端所有 worker 完成并审计后，把候选运行目录完整复制回保存原基线的机器，再运行 CPU 对比脚本。例如比较本次目录：
+
+```bash
+.conda/envs/pressb/bin/python scripts/compare_policy_eval_runs.py \
+  --baseline-root outputs/policy_eval_step10600_stratified/center_corners_v1 \
+  --candidate-root outputs/rtx5090_eval_comparison/center_corners_v1 \
+  --output outputs/rtx5090_eval_comparison/comparison_new
+```
+
+脚本按楼层、重复号和面板位置配对，核对 checkpoint、场景配置、种子、控制参数及覆盖条件，输出 `comparison.json` 和 `summary.md`：包括逐条件成功／误按／超时、实际按下楼层、终止时间、距离、首帧图像和首个动作差异，并保留运行环境及源码差异。未完成、失败或条件不匹配时返回退出码 2，不能计作模型超时。`comparison_valid=true` 表示数据可比较；是否效果一致仍须阅读配对结果，不等同于逐帧或逐动作完全相同。
 
 ## 保存的证据
 

@@ -30,7 +30,9 @@ LIGHTING_POLICY = {
 }
 DATASET_ANTI_ALIASING = 2  # FXAA: no temporal anti-aliasing history across samples.
 LIGHT_SETTLE_SUBFRAMES = 16
-LIGHT_SETTLE_CAPTURES = 4
+# Kit 107 needs additional captures to drain visible edge-light history.
+# All settling captures keep physics frozen and are recorded in the manifest.
+LIGHT_SETTLE_CAPTURES = 16
 RENDER_EXPOSURE_CONTROLS = {
     "/rtx/post/histogram/enabled": False,
     "/rtx/post/tonemap/filmIso": 100.,

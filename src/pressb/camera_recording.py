@@ -66,12 +66,26 @@ class WristCameraRecorder:
         np.save(self.output / depth_path, depth, allow_pickle=False)
         position, orientation = self.camera.get_world_pose(camera_axes="usd")
         raw = self.camera.get_current_frame()
+        rendering_frame = raw.get("rendering_frame", 0)
+        if isinstance(rendering_frame, dict):
+            # Isaac Sim 5.0 returns a rational Fabric reference time here,
+            # not a frame index. Preserve its numerator and denominator.
+            rendering_frame = {
+                key: int(rendering_frame[key])
+                for key in ("referenceTimeNumerator", "referenceTimeDenominator")
+            }
+            if rendering_frame["referenceTimeDenominator"] <= 0:
+                raise ValueError("Camera reference time denominator must be positive")
+            rendering_frame_kind = "reference_time_rational"
+        else:
+            rendering_frame = int(rendering_frame)
+            rendering_frame_kind = "frame_index"
         row = {"frame": frame, "time": float(elapsed), "floor": int(floor), "phase": str(phase),
                "rgb": rgb_path, "depth": depth_path,
                "position_world": np.asarray(position).tolist(),
                "orientation_world": np.asarray(orientation).tolist(),
                "rendering_time": float(raw.get("rendering_time", 0.)),
-               "rendering_frame": int(raw.get("rendering_frame", 0))}
+               "rendering_frame": rendering_frame, "rendering_frame_kind": rendering_frame_kind}
         self.rows.append(row)
         self.fractions.append(fraction)
         with (self.output / "timestamps.jsonl").open("a") as stream:

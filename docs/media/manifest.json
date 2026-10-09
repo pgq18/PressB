@@ -1,0 +1,454 @@
+{
+  "version": 1,
+  "created_date": "2026-10-09",
+  "license_note": "These are rendered PressB simulation recordings. This directory does not redistribute scene models or grant rights to third-party assets. Existing asset provenance and license declarations remain in THIRD_PARTY.md.",
+  "method": "Spatial downscale and H.264 recompression only. Every source frame is retained in order. No trim, speed change, added motion, interpolation, or outcome-based episode selection. Source labels and explicitly held terminal frames are preserved.",
+  "demos": [
+    {
+      "id": "before-vs-residual",
+      "video": "docs/media/before-vs-residual.mp4",
+      "poster": "docs/media/before-vs-residual.jpg",
+      "poster_timestamp_seconds": 1.0,
+      "source_video": "outputs/online_rl_residual_on_noise_gamma0995_videos_20261008/videos/before_vs_residual_on_noise.mp4",
+      "source_sha256": "35309146c91f80094756734135376fdc21995d3d5b52c6ca4aeff2497313f4d6",
+      "video_sha256": "5a691f469f0ae45d4214dbdc19c8e554d3f57fde7071c3f2203497de7053eaf7",
+      "poster_sha256": "645e6d5c10cd399e5e8dba63c849d0bb2687ef3a43758dcb740d32660c78901d",
+      "source_resolution": [
+        1280,
+        1152
+      ],
+      "width": 960,
+      "height": 864,
+      "fps": 30,
+      "frame_count": 3230,
+      "duration_seconds": 107.666667,
+      "bytes": 4398005,
+      "scope": "Fresh central-layout illustration rollouts; separate from the original 120-episode evaluation.",
+      "displayed_methods_left_to_right": [
+        "base",
+        "residual_on_noise"
+      ],
+      "labels": {
+        "base": "强化学习前（原始 VLA-JEPA）",
+        "residual_on_noise": "冻结噪声＋动作残差（γ=0.995，400k）"
+      },
+      "shown_successes": {
+        "base": 4,
+        "residual_on_noise": 12
+      },
+      "shown_episodes_per_method": 12,
+      "source_audits": {
+        "trajectory_qa.json": {
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_videos_20261008/trajectory_qa.json",
+          "sha256": "f2db96fdadddd75fe7edc23c5561c83cfa766fe6c860a28a202d5991790a348a",
+          "status": "pass"
+        },
+        "render_qa.json": {
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_videos_20261008/render_qa.json",
+          "sha256": "b6a0f8c33a97a73acc14292525821967f9f798c8243c0327b7f957c627709592",
+          "status": "pass"
+        },
+        "composition_qa.json": {
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_videos_20261008/composition_qa.json",
+          "sha256": "c330b3ac1e9cb7ce16926247e432ee4901ded9a86d0f3192433e4b225748c723",
+          "status": "pass"
+        }
+      },
+      "transcode_command_argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "outputs/online_rl_residual_on_noise_gamma0995_videos_20261008/videos/before_vs_residual_on_noise.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "scale=960:864:flags=lanczos",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "slow",
+        "-crf",
+        "27",
+        "-pix_fmt",
+        "yuv420p",
+        "-threads",
+        "2",
+        "-fps_mode",
+        "passthrough",
+        "-movflags",
+        "+faststart",
+        "-map_metadata",
+        "-1",
+        "docs/media/before-vs-residual.mp4"
+      ],
+      "poster_command_argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "docs/media/before-vs-residual.mp4",
+        "-ss",
+        "1.0",
+        "-frames:v",
+        "1",
+        "-q:v",
+        "2",
+        "-threads",
+        "1",
+        "-update",
+        "1",
+        "docs/media/before-vs-residual.jpg"
+      ],
+      "validation": {
+        "full_decode_pass": true,
+        "frame_count_preserved": true,
+        "duration_preserved": true,
+        "playback_speed": 1.0,
+        "spatial_crop": false,
+        "all_frame_timestamps_equal_to_source": true,
+        "poster_visually_inspected": true,
+        "full_labels_and_four_views_visible": true
+      },
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 960,
+            "height": 864,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "duration": "107.666667",
+            "nb_frames": "3230",
+            "nb_read_frames": "3230"
+          }
+        ],
+        "format": {
+          "duration": "107.666667",
+          "size": "4398005"
+        }
+      },
+      "independent_120_episode_evaluation": {
+        "residual_on_noise": {
+          "successes": 118,
+          "episodes": 120,
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_400k_20261007/eval"
+        }
+      }
+    },
+    {
+      "id": "pose9-vs-xyz",
+      "video": "docs/media/pose9-vs-xyz.mp4",
+      "poster": "docs/media/pose9-vs-xyz.jpg",
+      "poster_timestamp_seconds": 3.0,
+      "source_video": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_videos_20261009/videos/pose9_vs_xyz.mp4",
+      "source_sha256": "d778d75de1fb9e56450e6345a843f5d98acb70b8dca89ecc227e299b6d8cd94f",
+      "video_sha256": "9b732781c2ce13886148952ac384899a2f47bc3c154abc4883df3000532da257",
+      "poster_sha256": "362bbaab72845513d01a6fd47688576d88c7e956dbce06a8dbafbf29a46fb683",
+      "source_resolution": [
+        1280,
+        1152
+      ],
+      "width": 960,
+      "height": 864,
+      "fps": 30,
+      "frame_count": 1260,
+      "duration_seconds": 42.0,
+      "bytes": 2773738,
+      "scope": "Fresh central-layout illustration rollouts; separate from the original 120-episode evaluation.",
+      "displayed_methods_left_to_right": [
+        "residual_fullscale",
+        "residual_xyz"
+      ],
+      "labels": {
+        "residual_fullscale": "9D 残差：原 scale（γ=0.995）",
+        "residual_xyz": "XYZ 残差：scale=0.02（γ=0.995）"
+      },
+      "shown_successes": {
+        "residual_fullscale": 12,
+        "residual_xyz": 11
+      },
+      "shown_episodes_per_method": 12,
+      "source_audits": {
+        "trajectory_qa.json": {
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_videos_20261009/trajectory_qa.json",
+          "sha256": "c5a74f94a9a9ab87f48356e821e209e7cbbc74fb5ab5f0cb1afb0f5f85995e83",
+          "status": "pass"
+        },
+        "render_qa.json": {
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_videos_20261009/render_qa.json",
+          "sha256": "e8159fbdf84876d777da08b729e0bb404134cdcd7f4701f3f17354224961d462",
+          "status": "pass"
+        },
+        "composition_qa.json": {
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_videos_20261009/composition_qa.json",
+          "sha256": "df83767f106d12f84ad0303d226aaac201aa840136cc48bcc39d66299148c62f",
+          "status": "pass"
+        }
+      },
+      "transcode_command_argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "outputs/online_rl_residual_on_noise_gamma0995_xyz002_videos_20261009/videos/pose9_vs_xyz.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "scale=960:864:flags=lanczos",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "slow",
+        "-crf",
+        "27",
+        "-pix_fmt",
+        "yuv420p",
+        "-threads",
+        "2",
+        "-fps_mode",
+        "passthrough",
+        "-movflags",
+        "+faststart",
+        "-map_metadata",
+        "-1",
+        "docs/media/pose9-vs-xyz.mp4"
+      ],
+      "poster_command_argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "docs/media/pose9-vs-xyz.mp4",
+        "-ss",
+        "3.0",
+        "-frames:v",
+        "1",
+        "-q:v",
+        "2",
+        "-threads",
+        "1",
+        "-update",
+        "1",
+        "docs/media/pose9-vs-xyz.jpg"
+      ],
+      "validation": {
+        "full_decode_pass": true,
+        "frame_count_preserved": true,
+        "duration_preserved": true,
+        "playback_speed": 1.0,
+        "spatial_crop": false,
+        "all_frame_timestamps_equal_to_source": true,
+        "poster_visually_inspected": true,
+        "full_labels_and_four_views_visible": true
+      },
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 960,
+            "height": 864,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "duration": "42.000000",
+            "nb_frames": "1260",
+            "nb_read_frames": "1260"
+          }
+        ],
+        "format": {
+          "duration": "42.000000",
+          "size": "2773738"
+        }
+      },
+      "independent_120_episode_evaluation": {
+        "residual_fullscale": {
+          "successes": 118,
+          "episodes": 120,
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_400k_20261007/eval"
+        },
+        "residual_xyz": {
+          "successes": 119,
+          "episodes": 120,
+          "path": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_400k_20261008/eval"
+        }
+      }
+    },
+    {
+      "id": "xyz-smoothing-experimental",
+      "video": "docs/media/xyz-smoothing-experimental.mp4",
+      "poster": "docs/media/xyz-smoothing-experimental.jpg",
+      "poster_timestamp_seconds": 1.5,
+      "source_video": "outputs/online_rl_xyz_smoothing_20261009/videos_exploratory_xyz_a08/videos/xyz_vs_smoothed.mp4",
+      "source_sha256": "742d2830fd16cd784605381742ef7029a8ff9c2f198018631da88e98a7373737",
+      "video_sha256": "6a42da73e69b965a4811c1bbf4f239d6e436599aba54d2721baf06d8130047cb",
+      "poster_sha256": "d8e005040364fde489f4db3a960146c078f23ed38ae51ab2a2e9ee95c471c353",
+      "source_resolution": [
+        1280,
+        1152
+      ],
+      "width": 960,
+      "height": 864,
+      "fps": 30,
+      "frame_count": 1277,
+      "duration_seconds": 42.566667,
+      "bytes": 2808353,
+      "scope": "First centered repeat for every floor selected from the recorded 120-task confirmation evaluations; no outcome-based selection.",
+      "displayed_methods_left_to_right": [
+        "residual_xyz",
+        "residual_xyz_smoothed"
+      ],
+      "labels": {
+        "residual_xyz": "XYZ 残差：未加平滑后处理",
+        "residual_xyz_smoothed": "XYZ 平滑（α=0.8）"
+      },
+      "shown_successes": {
+        "residual_xyz": 12,
+        "residual_xyz_smoothed": 12
+      },
+      "shown_episodes_per_method": 12,
+      "source_audits": {
+        "trajectory_qa.json": {
+          "path": "outputs/online_rl_xyz_smoothing_20261009/videos_exploratory_xyz_a08/trajectory_qa.json",
+          "sha256": "28e8934c820753a108d020d0a679c2841c77112fbfb9d336b125231a095179af",
+          "status": "pass"
+        },
+        "render_qa.json": {
+          "path": "outputs/online_rl_xyz_smoothing_20261009/videos_exploratory_xyz_a08/render_qa.json",
+          "sha256": "d1021a3b5bf0e432dd1b8c899c27880b5726eb11a709c2f5ed1f704932f12291",
+          "status": "pass"
+        },
+        "composition_qa.json": {
+          "path": "outputs/online_rl_xyz_smoothing_20261009/videos_exploratory_xyz_a08/composition_qa.json",
+          "sha256": "5f7b36fe51103bd8af283f407db1550ad40f8c786267379c9d387cc39297eb99",
+          "status": "pass"
+        }
+      },
+      "transcode_command_argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "outputs/online_rl_xyz_smoothing_20261009/videos_exploratory_xyz_a08/videos/xyz_vs_smoothed.mp4",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "scale=960:864:flags=lanczos",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "slow",
+        "-crf",
+        "27",
+        "-pix_fmt",
+        "yuv420p",
+        "-threads",
+        "2",
+        "-fps_mode",
+        "passthrough",
+        "-movflags",
+        "+faststart",
+        "-map_metadata",
+        "-1",
+        "docs/media/xyz-smoothing-experimental.mp4"
+      ],
+      "poster_command_argv": [
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-threads",
+        "2",
+        "-i",
+        "docs/media/xyz-smoothing-experimental.mp4",
+        "-ss",
+        "1.5",
+        "-frames:v",
+        "1",
+        "-q:v",
+        "2",
+        "-threads",
+        "1",
+        "-update",
+        "1",
+        "docs/media/xyz-smoothing-experimental.jpg"
+      ],
+      "validation": {
+        "full_decode_pass": true,
+        "frame_count_preserved": true,
+        "duration_preserved": true,
+        "playback_speed": 1.0,
+        "spatial_crop": false,
+        "all_frame_timestamps_equal_to_source": true,
+        "poster_visually_inspected": true,
+        "full_labels_and_four_views_visible": true
+      },
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 960,
+            "height": 864,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "duration": "42.566667",
+            "nb_frames": "1277",
+            "nb_read_frames": "1277"
+          }
+        ],
+        "format": {
+          "duration": "42.566667",
+          "size": "2808353"
+        }
+      },
+      "full_source_120_episode_evaluation": {
+        "residual_xyz": {
+          "successes": 116,
+          "episodes": 120,
+          "path": "outputs/online_rl_xyz_smoothing_20261009/confirm_xyz/baseline"
+        },
+        "residual_xyz_smoothed": {
+          "successes": 117,
+          "episodes": 120,
+          "path": "outputs/online_rl_xyz_smoothing_20261009/confirm_xyz/xyz_ema_a08"
+        }
+      },
+      "adoption_status": "Exploratory only; not enabled by default. The smoothing candidate did not pass the required >=119/120 confirmation threshold."
+    }
+  ]
+}

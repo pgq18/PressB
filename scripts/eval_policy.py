@@ -62,7 +62,16 @@ def run(app, args, cfg, status):
         update_to_usd=True, update_velocities_to_usd=True)
     layouts = evaluation_panel_layouts(cfg, args.panel_layouts)
     schedule = evaluation_schedule(args.floors, args.episodes_per_floor, layouts)
-    envs = create_envs(world, args.snapshot, min(args.num_envs, len(schedule)), cfg=cfg)
+    snapshot = args.snapshot
+    if args.asset_bundle is not None:
+        from pressb.scene_portability import prepare_runtime_snapshot
+        relocation = prepare_runtime_snapshot(args.snapshot, args.asset_bundle, args.output)
+        manifest_path = args.output / "eval_manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["scene_relocation"] = relocation
+        write_json(manifest_path, manifest)
+        snapshot = Path(relocation["runtime_snapshot"])
+    envs = create_envs(world, snapshot, min(args.num_envs, len(schedule)), cfg=cfg)
     camera_paths = [path for env in envs for path in (env.wrist_camera_path, env.global_camera_path)]
     product, annotator, split_rgb = build_tiled_rgb(camera_paths)
     rep.orchestrator.set_capture_on_play(False)
@@ -442,6 +451,8 @@ def main():
     parser.add_argument("--dataset", type=Path, default=ROOT / "datasets/piper_elevator_lerobot_press_30hz")
     parser.add_argument("--snapshot", type=Path, default=ROOT / "outputs/edge30_source/scene.usda")
     parser.add_argument("--config", type=Path, default=ROOT / "outputs/edge30_source/config.json")
+    parser.add_argument("--asset-bundle", type=Path,
+                        help="Verified asset bundle for relocating a frozen snapshot across machines; original scene identity is retained")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--floors", default=",".join(str(floor) for floor in range(24, 36)))
     parser.add_argument("--episodes-per-floor", type=int, default=1)
@@ -465,6 +476,8 @@ def main():
         parser.error("Require distinct floors24..35, positive counts, duration on a120Hz tick")
     for name in ("dataset", "snapshot", "config", "output"):
         setattr(args, name, getattr(args, name).resolve())
+    if args.asset_bundle is not None:
+        args.asset_bundle = args.asset_bundle.resolve()
     args.output.mkdir(parents=True, exist_ok=False)
     cfg = json.loads(args.config.read_text())
     collection = json.loads((args.dataset / "meta/collection_metadata.json").read_text())
@@ -481,6 +494,14 @@ def main():
             or health.get("action_horizon") != 7 or health.get("camera_order") != ["global", "wrist"]):
         raise ValueError("Policy service is not serving the requested final checkpoint SHA256")
     write_json(args.output / "policy_service.json", health)
+    import importlib.metadata
+    runtime_versions = {name: importlib.metadata.version(name) for name in
+                        ("isaacsim", "torch", "numpy", "scipy", "Pillow")}
+    source_names = ["scripts/eval_policy.py", "src/pressb/policy_eval.py", "src/pressb/replay_control.py",
+                    "src/pressb/dataset_scene.py", "src/pressb/motion_smoothing.py", "src/pressb/policy_layouts.py",
+                    "scripts/collect_dataset.py"]
+    if args.asset_bundle is not None:
+        source_names.append("src/pressb/scene_portability.py")
     write_json(args.output / "eval_manifest.json", dict(
         started_at=datetime.now(timezone.utc).isoformat(), arguments={key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()},
         config=cfg, scene_sha256=collection["scene_sha256"], collection_fingerprint=collection["collection_fingerprint"],
@@ -492,13 +513,18 @@ def main():
         model_input="live global RGB, live wrist RGB, measured base_link gripper TCP pose, task sentence",
         policy_control="7 absolute targets per request; bounded single-seed pose IK; four120Hz joint interpolation steps per target followed by causal joint mean filter",
         controller_projection="raw XYZ/quaternion targets unchanged; bounded IK residuals and actual filtered execution residuals recorded separately",
+        runtime_versions=runtime_versions,
+        renderer_settings=dict(anti_aliasing=DATASET_ANTI_ALIASING,
+            light_settle_captures=LIGHT_SETTLE_CAPTURES, light_settle_subframes=LIGHT_SETTLE_SUBFRAMES,
+            history_controls=RENDER_HISTORY_CONTROLS, exposure_controls=RENDER_EXPOSURE_CONTROLS),
+        robot_urdf=file_identity(ROOT / cfg["robot_urdf"]),
         inference_clock="physics frozen until response; simulation-time evaluation does not measure real-time control latency",
         inference_seed_rule=("base_seed + (repeat * 12 + floor - 24) * 10000 + chunk_index" if args.panel_layouts == "fixed"
                              else "base_seed + ((repeat * num_panel_layouts + panel_layout_index) * 12 + floor - 24) * 10000 + chunk_index"),
         success="target button physical travel>=threshold AND stylus force>0.02N, no wrong press or unexpected collision; no retreat",
         video_timing="30Hz CFR with initial frame; terminal frame can occur before next regular sample, see physics_index",
         recorded_actions_used=False, target_planner_used=False,
-        sources={name: file_identity(ROOT / name) for name in ("scripts/eval_policy.py", "src/pressb/policy_eval.py", "src/pressb/replay_control.py", "src/pressb/dataset_scene.py", "src/pressb/motion_smoothing.py", "src/pressb/policy_layouts.py")}))
+        sources={name: file_identity(ROOT / name) for name in source_names}))
     status = dict(status="initializing", started_at=datetime.now(timezone.utc).isoformat(), completed_episodes=0)
     app, exit_code = None, 1
     os.environ.setdefault("OMNI_KIT_ACCEPT_EULA", "YES")

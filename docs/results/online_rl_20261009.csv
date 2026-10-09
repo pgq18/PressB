@@ -1,0 +1,9 @@
+method,label,seed,gamma,residual_mode,residual_scale,successes,episodes,success_rate,source_directory
+base,Original VLA-JEPA,20260930,0.99,,null,25,120,0.20833333333333334,outputs/online_rl_fast_20261003/base_eval
+original_residual,Independent action residual (1M),20260930,0.99,pose9,"[0.03, 0.03, 0.03, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]",81,120,0.675,outputs/online_rl_fast_20261003/action_residual_eval
+frozen_noise,Independent initial-noise policy (1M),20260930,0.99,,null,81,120,0.675,outputs/online_rl_fast_20261003/initial_noise_eval
+independently_trained_combination,Composition of independently trained policies,20260930,0.99,pose9,"[0.03, 0.03, 0.03, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]",96,120,0.8,outputs/online_rl_combined_eval_20261006/combined_eval
+residual_on_frozen_noise_gamma099,Frozen noise + retrained pose9 residual gamma0.99,20260930,0.99,pose9,"[0.03, 0.03, 0.03, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]",114,120,0.95,outputs/online_rl_residual_on_noise_400k_20261006/eval
+residual_on_frozen_noise_gamma0995_fullscale,Frozen noise + retrained pose9 residual gamma0.995,20260930,0.995,pose9,"[0.03, 0.03, 0.03, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]",118,120,0.9833333333333333,outputs/online_rl_residual_on_noise_gamma0995_400k_20261007/eval
+residual_on_frozen_noise_gamma0995_halfscale,Frozen noise + retrained half-scale pose9 residual,20260930,0.995,pose9,"[0.015, 0.015, 0.015, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]",87,120,0.725,outputs/online_rl_residual_on_noise_gamma0995_scale050_400k_20261008/eval
+residual_on_frozen_noise,Frozen noise + retrained XYZ residual,20260930,0.995,xyz,"[0.02, 0.02, 0.02]",119,120,0.9916666666666667,outputs/online_rl_residual_on_noise_gamma0995_xyz002_400k_20261008/eval

@@ -2,6 +2,8 @@
 /.conda/
 /.cache/
 /vendor/
+/src/VLA-JEPA/
+/src/ZPRL/
 /assets/isaac/
 /assets/generated/
 /assets/reference/
@@ -12,7 +14,7 @@
 
 # Data, model weights and generated experiment evidence stay outside Git.
 /datasets/
-/outputs/
+/outputs
 /logs/
 *.pt
 *.pth

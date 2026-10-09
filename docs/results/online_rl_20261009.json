@@ -1,0 +1,666 @@
+{
+  "as_of": "2026-10-09",
+  "timezone": "Asia/Shanghai",
+  "evaluation": "12 floors x center/four corners x 2 repeats =120; actual button contact success; no parameter updates",
+  "caveat": "Fixed 120 prescribed conditions and seed; separate executions are not guaranteed bitwise identical.",
+  "checkpoint_selection": "For the four retrained 400k residual variants only: Final last.pt after exactly 400000 residual training transitions; no selection on these evaluation results.",
+  "metric": "Undiscounted binary task success; discounted returns are not compared",
+  "source_comparison": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_400k_20261008/evaluation_comparison.json",
+  "source_comparison_sha256": "4c406a1c5ca1fe153d042fc5ce18c5754ac25a5a8781b1e9b411782ecd23b0d2",
+  "methods": {
+    "base": {
+      "single_gamma": 0.99,
+      "residual_scale": null,
+      "residual_mode": null,
+      "successes": 25,
+      "episodes": 120,
+      "success_rate": 0.20833333333333334,
+      "per_floor": {
+        "24": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "25": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "26": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "27": {
+          "successes": 5,
+          "episodes": 10,
+          "success_rate": 0.5
+        },
+        "28": {
+          "successes": 2,
+          "episodes": 10,
+          "success_rate": 0.2
+        },
+        "29": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "30": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "31": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "32": {
+          "successes": 1,
+          "episodes": 10,
+          "success_rate": 0.1
+        },
+        "33": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "34": {
+          "successes": 7,
+          "episodes": 10,
+          "success_rate": 0.7
+        },
+        "35": {
+          "successes": 2,
+          "episodes": 10,
+          "success_rate": 0.2
+        }
+      },
+      "label": "Original VLA-JEPA",
+      "source_directory": "outputs/online_rl_fast_20261003/base_eval",
+      "manifest_sha256": "04af862badc6bbd4f8eb462b81784e056a60731e10412c2d753c90c5fd61a596",
+      "summary_sha256": "7e2c3ca233478f4d47fb23b3c7e09e91168f652b965cb0517522d56bd5730e94",
+      "seed": 20260930
+    },
+    "original_residual": {
+      "single_gamma": 0.99,
+      "residual_scale": [
+        0.03,
+        0.03,
+        0.03,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "residual_mode": "pose9",
+      "successes": 81,
+      "episodes": 120,
+      "success_rate": 0.675,
+      "per_floor": {
+        "24": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "25": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "26": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "27": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "28": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "29": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "30": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "31": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "32": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "33": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "34": {
+          "successes": 7,
+          "episodes": 10,
+          "success_rate": 0.7
+        },
+        "35": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        }
+      },
+      "label": "Independent action residual (1M)",
+      "source_directory": "outputs/online_rl_fast_20261003/action_residual_eval",
+      "manifest_sha256": "92259e942f032f06ef8007f12b8bb0732471c177765e1a893f5d4f4cc5547113",
+      "summary_sha256": "e2ed42bd9b5f4cb2d7d6ed76c9e774de8e6ffb0df9a0d0c9933cf33d746e1c6b",
+      "seed": 20260930
+    },
+    "frozen_noise": {
+      "single_gamma": 0.99,
+      "residual_scale": null,
+      "residual_mode": null,
+      "successes": 81,
+      "episodes": 120,
+      "success_rate": 0.675,
+      "per_floor": {
+        "24": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "25": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "26": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "27": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "28": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "29": {
+          "successes": 6,
+          "episodes": 10,
+          "success_rate": 0.6
+        },
+        "30": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "31": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "32": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "33": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "34": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "35": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        }
+      },
+      "label": "Independent initial-noise policy (1M)",
+      "source_directory": "outputs/online_rl_fast_20261003/initial_noise_eval",
+      "manifest_sha256": "940eff94ab706a0a1ebb1aa0473365f1c6f108d3cf0e41b04aa2cdc30dd3d56c",
+      "summary_sha256": "808c1e088a5efcc027c76f0bce15aac059853b04e1ca625a1f5b3cb231b2ef9d",
+      "seed": 20260930
+    },
+    "independently_trained_combination": {
+      "single_gamma": 0.99,
+      "residual_scale": [
+        0.03,
+        0.03,
+        0.03,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "residual_mode": "pose9",
+      "successes": 96,
+      "episodes": 120,
+      "success_rate": 0.8,
+      "per_floor": {
+        "24": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "25": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "26": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "27": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "28": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "29": {
+          "successes": 6,
+          "episodes": 10,
+          "success_rate": 0.6
+        },
+        "30": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "31": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "32": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "33": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "34": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "35": {
+          "successes": 7,
+          "episodes": 10,
+          "success_rate": 0.7
+        }
+      },
+      "label": "Composition of independently trained policies",
+      "source_directory": "outputs/online_rl_combined_eval_20261006/combined_eval",
+      "manifest_sha256": "d0d53f2b08bd977c60743f44038c8956c455a3373cdec90a51ec976cf3d666de",
+      "summary_sha256": "4fc07dab90cad6135bbadb6b00267971a0ac343fe192dd202434274aeaa1e438",
+      "seed": 20260930
+    },
+    "residual_on_frozen_noise_gamma099": {
+      "single_gamma": 0.99,
+      "residual_scale": [
+        0.03,
+        0.03,
+        0.03,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "residual_mode": "pose9",
+      "successes": 114,
+      "episodes": 120,
+      "success_rate": 0.95,
+      "per_floor": {
+        "24": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "25": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "26": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "27": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "28": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "29": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "30": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "31": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "32": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "33": {
+          "successes": 7,
+          "episodes": 10,
+          "success_rate": 0.7
+        },
+        "34": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "35": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        }
+      },
+      "label": "Frozen noise + retrained pose9 residual gamma0.99",
+      "source_directory": "outputs/online_rl_residual_on_noise_400k_20261006/eval",
+      "manifest_sha256": "1267351abfba390279f77fafa31afb40afc61a7d000878115815c3522431f989",
+      "summary_sha256": "708f32f86a5bfd0debdb567870b882027c0fb328d898e1c629dab05f7ee89fa1",
+      "seed": 20260930
+    },
+    "residual_on_frozen_noise_gamma0995_fullscale": {
+      "single_gamma": 0.995,
+      "residual_scale": [
+        0.03,
+        0.03,
+        0.03,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "residual_mode": "pose9",
+      "successes": 118,
+      "episodes": 120,
+      "success_rate": 0.9833333333333333,
+      "per_floor": {
+        "24": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "25": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "26": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "27": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "28": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "29": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "30": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "31": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "32": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "33": {
+          "successes": 8,
+          "episodes": 10,
+          "success_rate": 0.8
+        },
+        "34": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "35": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        }
+      },
+      "label": "Frozen noise + retrained pose9 residual gamma0.995",
+      "source_directory": "outputs/online_rl_residual_on_noise_gamma0995_400k_20261007/eval",
+      "manifest_sha256": "c484486c37bcc822538a3f59045f14f7a1def29a71b516b7a74df2a4039d5959",
+      "summary_sha256": "7149ecbf8f75b560ad2f625044c29b484fd7c24a38632b38474f293d76a49892",
+      "seed": 20260930
+    },
+    "residual_on_frozen_noise_gamma0995_halfscale": {
+      "single_gamma": 0.995,
+      "residual_scale": [
+        0.015,
+        0.015,
+        0.015,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "residual_mode": "pose9",
+      "successes": 87,
+      "episodes": 120,
+      "success_rate": 0.725,
+      "per_floor": {
+        "24": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "25": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "26": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "27": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "28": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "29": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "30": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "31": {
+          "successes": 0,
+          "episodes": 10,
+          "success_rate": 0.0
+        },
+        "32": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "33": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "34": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "35": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        }
+      },
+      "label": "Frozen noise + retrained half-scale pose9 residual",
+      "source_directory": "outputs/online_rl_residual_on_noise_gamma0995_scale050_400k_20261008/eval",
+      "manifest_sha256": "3aab58493e76aad23c1c7f6907896eaefc09d309ee744f1cae9bdfcc4e8dfca8",
+      "summary_sha256": "beddb2d944ced97f8f4cdb6205a58bd6b454fc069dbcf658423e365d4373a627",
+      "seed": 20260930
+    },
+    "residual_on_frozen_noise": {
+      "single_gamma": 0.995,
+      "residual_scale": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "residual_mode": "xyz",
+      "successes": 119,
+      "episodes": 120,
+      "success_rate": 0.9916666666666667,
+      "per_floor": {
+        "24": {
+          "successes": 9,
+          "episodes": 10,
+          "success_rate": 0.9
+        },
+        "25": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "26": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "27": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "28": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "29": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "30": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "31": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "32": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "33": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "34": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        },
+        "35": {
+          "successes": 10,
+          "episodes": 10,
+          "success_rate": 1.0
+        }
+      },
+      "label": "Frozen noise + retrained XYZ residual",
+      "source_directory": "outputs/online_rl_residual_on_noise_gamma0995_xyz002_400k_20261008/eval",
+      "manifest_sha256": "76218740085a70f74bfd8d48b9b22c4c2b21180e7f31e96b60c63966363c2ccf",
+      "summary_sha256": "9ac5b5bdf8cabd7f7cb3fb960a9b5b465609789bb166742524788966eee8ce72",
+      "seed": 20260930
+    }
+  }
+}

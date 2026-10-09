@@ -45,7 +45,8 @@ def test_step_response_converges_and_impulse_delay_is_two_physics_ticks():
     np.testing.assert_allclose(values, [.2]*5 + [0.]*4, rtol=0, atol=1e-15)
     centroid_s = float(np.dot(np.arange(len(values)) / 120, values) / values.sum())
     assert centroid_s == pytest.approx(2 / 120, abs=1e-15)
-    assert centroid_s == smoothing_settings(5)["nominal_delay_s"]
+    # Dot-product rounding can differ by one float64 ULP across platforms.
+    assert centroid_s == pytest.approx(smoothing_settings(5)["nominal_delay_s"], rel=0, abs=1e-15)
 
 
 def test_linear_ramp_has_documented_delay_after_history_fills():

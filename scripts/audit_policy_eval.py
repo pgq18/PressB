@@ -81,6 +81,17 @@ def scene_identity(manifest, collection):
     layouts = panel_layout_plan(manifest)
     require(manifest['scene_sha256'] == collection['scene_sha256'] == sha(manifest['arguments']['snapshot']),
             'Evaluation did not use the training snapshot')
+    if manifest['arguments'].get('asset_bundle') is not None:
+        require(isinstance(manifest.get('scene_relocation'), dict),
+                'Relocated evaluation is missing its runtime scene evidence')
+    if 'scene_relocation' in manifest:
+        import sys
+        if str(ROOT / 'src') not in sys.path:
+            sys.path.insert(0, str(ROOT / 'src'))
+        from pressb.scene_portability import verify_runtime_snapshot
+        relocation = manifest['scene_relocation']
+        verified = verify_runtime_snapshot(Path(manifest['arguments']['snapshot']), Path(relocation['report_path']))
+        require(verified == relocation, 'Runtime scene relocation differs from its recorded evidence')
     identity = collection['identity']
     fingerprint = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     require(manifest['collection_fingerprint'] == collection['collection_fingerprint'] == fingerprint,

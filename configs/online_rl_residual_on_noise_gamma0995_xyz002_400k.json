@@ -1,0 +1,36 @@
+{
+  "method": "action_residual",
+  "mode": "train",
+  "seed": 42,
+  "max_transitions": 400000,
+  "eval_episodes": 120,
+  "learning_start": 2000,
+  "training_frequency": 1,
+  "utd": 1.0,
+  "progressive_exploration": 50000,
+  "replay_capacity": 100000,
+  "checkpoint_every": 100000,
+  "single_gamma": 0.995,
+  "learner": {
+    "hidden_dim": 256,
+    "batch_size": 256,
+    "policy_lr": 0.0001,
+    "q_lr": 0.0003,
+    "tau": 0.005,
+    "init_alpha": 0.01,
+    "bootstrap_truncated": false,
+    "residual_scale": [
+      0.02,
+      0.02,
+      0.02
+    ],
+    "lambda_s": null,
+    "lambda_t": null,
+    "residual_mode": "xyz"
+  },
+  "rolling_checkpoint_every": 10000,
+  "pipeline_updates": true,
+  "metrics_every_updates": 256,
+  "status_interval_seconds": 5.0,
+  "fused_context_release": true
+}

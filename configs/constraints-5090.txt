@@ -1,0 +1,15 @@
+# Keep Kit 107.3 / Isaac Sim 5.0 and Isaac Lab 2.2 compatible.
+# Install torch/torchvision first from the official cu128 index.
+torch==2.7.0+cu128
+torchvision==0.22.0+cu128
+numpy==1.26.0
+Pillow==11.2.1
+gymnasium==1.2.0
+starlette==0.45.3
+warp-lang==1.7.1
+click==8.1.7
+idna==3.10
+scipy==1.15.3
+wheel==0.45.1
+packaging==23.0
+av==15.1.0

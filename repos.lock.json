@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-09",
+  "layout": "Independent clones, not Git submodules; paths are ignored by PressB",
+  "repositories": {
+    "VLA-JEPA": {
+      "url": "https://github.com/pgq18/VLA-JEPA.git",
+      "path": "src/VLA-JEPA",
+      "publication_branch": "base",
+      "publication_commit": "2cd35ecbc5a5ce6c4074e3ca7e35a0bb6c656b1b",
+      "runtime_commit": "9c9dc71c8e199c7428b25d103ab666395832c001",
+      "required_for": "Frozen model inference",
+      "pin_reason": "Existing RL checkpoints bind the VLA Git commit, absolute source path, model/addon source hashes and model weights. Documentation publication must not silently change runtime identity."
+    },
+    "ZPRL": {
+      "url": "https://github.com/pgq18/ZPRL-PressB.git",
+      "path": "src/ZPRL",
+      "publication_branch": "main",
+      "publication_commit": "4bd52f695bad813406a2327cdb2e448565c8abe9",
+      "algorithm_reference_commit": "a34a1cba029702af82c0fed873be9e0e6bd274b3",
+      "required_for": "Optional method reference; PressB runs its own adapted implementation"
+    }
+  }
+}

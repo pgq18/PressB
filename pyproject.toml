@@ -6,11 +6,15 @@ build-backend = "setuptools.build_meta"
 name = "pressb"
 version = "0.1.0"
 description = "Piper elevator button pressing in NVIDIA Isaac Sim"
-requires-python = ">=3.10,<3.11"
+requires-python = ">=3.10,<3.12"
 dependencies = ["numpy<2", "scipy", "Pillow", "matplotlib"]
+
+[project.optional-dependencies]
+online-rl = ["torch>=2.6", "threadpoolctl>=3"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["pressb*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
