@@ -1,0 +1,975 @@
+{
+  "analysis_status": "complete",
+  "planned_episodes": 200,
+  "completed_episodes": 200,
+  "generated_at_utc": "2026-10-22T18:09:53.470917+00:00",
+  "region_kind": "rectangle_from_marker_long_axis_lines",
+  "source_run": "run",
+  "reruns_performed": false,
+  "method": "Read recorded 120 Hz measured object trajectories and contact events; preserve original success labels. Returning to tabletop height is supported by the trajectory, not inferred from final position alone. Held labels require final measured contact, narrow gripper, and elevated object. No claim of policy-error causality.",
+  "same_positions_verified": true,
+  "policy_seed_paired": false,
+  "colors": [
+    {
+      "color": "red",
+      "completed_pairs": 20,
+      "baseline_red_successes": 12,
+      "random_color_successes": 13,
+      "both_success": 9,
+      "baseline_only_success": 3,
+      "color_only_success": 4,
+      "both_fail": 4,
+      "pairs": [
+        {
+          "pair_index": 3,
+          "center_xy": [
+            0.293908451963226,
+            0.05485712884772042
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 11,
+          "center_xy": [
+            0.34625312799140073,
+            -0.11487387451513645
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 13,
+          "center_xy": [
+            0.26307359207763426,
+            -0.1078795243338532
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 19,
+          "center_xy": [
+            0.26723537794938546,
+            -0.07926641476720953
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 20,
+          "center_xy": [
+            0.32439175216848126,
+            -0.0488396914982979
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 25,
+          "center_xy": [
+            0.43177511856789696,
+            0.0416230253942486
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 35,
+          "center_xy": [
+            0.38177177615104085,
+            -0.11592703270147353
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 40,
+          "center_xy": [
+            0.36313517020112523,
+            -0.09478602352394143
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 43,
+          "center_xy": [
+            0.4646220549094313,
+            0.007530114678471228
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 46,
+          "center_xy": [
+            0.26236769931749254,
+            -0.05299293772205614
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 53,
+          "center_xy": [
+            0.29271601944829345,
+            -0.013766665010441478
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 55,
+          "center_xy": [
+            0.4498800953712616,
+            -0.12707112979069077
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 63,
+          "center_xy": [
+            0.28071507679085234,
+            0.025383404990960624
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 74,
+          "center_xy": [
+            0.3161860089863864,
+            0.059913871904309975
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 77,
+          "center_xy": [
+            0.414143923735968,
+            -0.08133890701566177
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 80,
+          "center_xy": [
+            0.25384198411665787,
+            -0.057343447218745035
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 83,
+          "center_xy": [
+            0.3925569086503705,
+            -0.04593649551672073
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 91,
+          "center_xy": [
+            0.4629583525525538,
+            -0.11785903893751251
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 92,
+          "center_xy": [
+            0.32142081663734723,
+            -0.044477054054930826
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 93,
+          "center_xy": [
+            0.32039291947266874,
+            -0.08535907907670062
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        }
+      ]
+    },
+    {
+      "color": "green",
+      "completed_pairs": 20,
+      "baseline_red_successes": 15,
+      "random_color_successes": 9,
+      "both_success": 9,
+      "baseline_only_success": 6,
+      "color_only_success": 0,
+      "both_fail": 5,
+      "pairs": [
+        {
+          "pair_index": 2,
+          "center_xy": [
+            0.2776482188124726,
+            -0.049698320994723794
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 5,
+          "center_xy": [
+            0.28484249828396974,
+            0.049475896069563076
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 9,
+          "center_xy": [
+            0.3680369069732885,
+            -0.024458113908921622
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 12,
+          "center_xy": [
+            0.294681769611973,
+            -0.034552479365750906
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 14,
+          "center_xy": [
+            0.4199504013021462,
+            -0.10679654544119786
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 18,
+          "center_xy": [
+            0.3647082757522777,
+            -0.005423450591022672
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 24,
+          "center_xy": [
+            0.29062628503818927,
+            -0.11600471341274028
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 31,
+          "center_xy": [
+            0.2528209240644383,
+            -0.05202861483789266
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 32,
+          "center_xy": [
+            0.4375840099436802,
+            -0.030259992093128588
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 39,
+          "center_xy": [
+            0.29228904886383156,
+            -0.07395710906813027
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 44,
+          "center_xy": [
+            0.3595889330288979,
+            0.042189328139523835
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 51,
+          "center_xy": [
+            0.32609242811311806,
+            0.028603354697187968
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 52,
+          "center_xy": [
+            0.48100343963312364,
+            -0.11538363980152365
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 60,
+          "center_xy": [
+            0.29705361695497234,
+            0.0007437403695187486
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 67,
+          "center_xy": [
+            0.3773344389073354,
+            0.042502093576293073
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 72,
+          "center_xy": [
+            0.45786381967675127,
+            -0.031196471855404535
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 75,
+          "center_xy": [
+            0.46836114445272947,
+            -0.1066100179732757
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 78,
+          "center_xy": [
+            0.4272540358789416,
+            -0.04095537345057071
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 84,
+          "center_xy": [
+            0.2509519805883683,
+            -0.11895140273592592
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 85,
+          "center_xy": [
+            0.4260066624233814,
+            -0.008163481077329334
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        }
+      ]
+    },
+    {
+      "color": "blue",
+      "completed_pairs": 20,
+      "baseline_red_successes": 12,
+      "random_color_successes": 12,
+      "both_success": 9,
+      "baseline_only_success": 3,
+      "color_only_success": 3,
+      "both_fail": 5,
+      "pairs": [
+        {
+          "pair_index": 16,
+          "center_xy": [
+            0.4671311844984141,
+            0.04119799854379144
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 28,
+          "center_xy": [
+            0.39842363804866765,
+            -0.12895163255171738
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 29,
+          "center_xy": [
+            0.3996072775561285,
+            -0.024564894974828534
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 34,
+          "center_xy": [
+            0.36650789975230635,
+            -0.01908587015051765
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 36,
+          "center_xy": [
+            0.4476589598134759,
+            -0.06864099188149879
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 37,
+          "center_xy": [
+            0.29913555247703794,
+            -0.06980628114895679
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 41,
+          "center_xy": [
+            0.35281955006935317,
+            0.04993080548811745
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 45,
+          "center_xy": [
+            0.3530994202513888,
+            -0.11546233003081838
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 47,
+          "center_xy": [
+            0.4094827579414004,
+            -0.014380060862779726
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 50,
+          "center_xy": [
+            0.3351938516684489,
+            -0.06662762833707968
+          ],
+          "baseline_red_success": false,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 56,
+          "center_xy": [
+            0.33493083566177906,
+            -0.028364846589481685
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 62,
+          "center_xy": [
+            0.3553790054693966,
+            -0.01283985113343903
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 66,
+          "center_xy": [
+            0.4076932715068128,
+            0.019714401368356414
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 70,
+          "center_xy": [
+            0.4381512780662764,
+            -0.09195467855082842
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 71,
+          "center_xy": [
+            0.32333789578243677,
+            0.023206256322936002
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 79,
+          "center_xy": [
+            0.4067110244593133,
+            -0.10058669582571522
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 86,
+          "center_xy": [
+            0.33147831609825723,
+            -0.1131772650375355
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 94,
+          "center_xy": [
+            0.30065005676061296,
+            0.05499841657725062
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 97,
+          "center_xy": [
+            0.4761923203260622,
+            -0.003555345201886946
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 99,
+          "center_xy": [
+            0.4110455525471189,
+            0.017299642552516568
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        }
+      ]
+    },
+    {
+      "color": "white",
+      "completed_pairs": 20,
+      "baseline_red_successes": 11,
+      "random_color_successes": 8,
+      "both_success": 8,
+      "baseline_only_success": 3,
+      "color_only_success": 0,
+      "both_fail": 9,
+      "pairs": [
+        {
+          "pair_index": 0,
+          "center_xy": [
+            0.4724087041947062,
+            -0.03264525780778474
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 1,
+          "center_xy": [
+            0.33499834874689555,
+            -0.004290442096439355
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 7,
+          "center_xy": [
+            0.4665835876795196,
+            -0.0666662158464003
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 8,
+          "center_xy": [
+            0.34582545324581593,
+            -0.0898819809449279
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 17,
+          "center_xy": [
+            0.39200781721283795,
+            -0.09848162526824306
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 23,
+          "center_xy": [
+            0.35545920150889465,
+            0.026578597210786783
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 38,
+          "center_xy": [
+            0.2550417232322256,
+            -0.0184532245215471
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 42,
+          "center_xy": [
+            0.4797162122488095,
+            -0.026119769672763672
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 48,
+          "center_xy": [
+            0.46565606593301756,
+            -0.05689566277728601
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 49,
+          "center_xy": [
+            0.28550863495264345,
+            0.008846333716571043
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 58,
+          "center_xy": [
+            0.327916899843837,
+            0.037099952079615264
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 61,
+          "center_xy": [
+            0.4789397075466645,
+            -0.08996990226914253
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 68,
+          "center_xy": [
+            0.3045029201070528,
+            -0.06290505517989435
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 69,
+          "center_xy": [
+            0.3013894545325312,
+            -0.03873825248867087
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 73,
+          "center_xy": [
+            0.46568050314864795,
+            -0.014794103485569088
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 76,
+          "center_xy": [
+            0.39674397384543836,
+            -0.054714908798210796
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 87,
+          "center_xy": [
+            0.3846729019443675,
+            -0.1305740452064065
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 89,
+          "center_xy": [
+            0.4551254431504539,
+            -0.08928995686747565
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 90,
+          "center_xy": [
+            0.41536024900682245,
+            -0.06699940135416871
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 96,
+          "center_xy": [
+            0.4500682251553515,
+            -0.040839494184234854
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        }
+      ]
+    },
+    {
+      "color": "yellow",
+      "completed_pairs": 20,
+      "baseline_red_successes": 15,
+      "random_color_successes": 12,
+      "both_success": 12,
+      "baseline_only_success": 3,
+      "color_only_success": 0,
+      "both_fail": 5,
+      "pairs": [
+        {
+          "pair_index": 4,
+          "center_xy": [
+            0.38013559957640664,
+            -0.11492286860100848
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 6,
+          "center_xy": [
+            0.39109815111397017,
+            -0.06412196608081261
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 10,
+          "center_xy": [
+            0.3493755802992562,
+            -0.11272102583115329
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 15,
+          "center_xy": [
+            0.3466958184649448,
+            -0.022756568871833714
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 21,
+          "center_xy": [
+            0.39103818759055164,
+            -0.06992273967685918
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 22,
+          "center_xy": [
+            0.30552889775323666,
+            0.0313936446819745
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 26,
+          "center_xy": [
+            0.47984884916911263,
+            -0.11018733860528539
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 27,
+          "center_xy": [
+            0.4256007160992965,
+            -0.017430755105430795
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 30,
+          "center_xy": [
+            0.34227822935279395,
+            -0.12992065983124798
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 33,
+          "center_xy": [
+            0.4414412503128989,
+            0.03615239208775617
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 54,
+          "center_xy": [
+            0.4095223714883202,
+            -0.12351483535631806
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 57,
+          "center_xy": [
+            0.45073040109615364,
+            0.03742888002664896
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 59,
+          "center_xy": [
+            0.34526223113715837,
+            0.056103241641276134
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 64,
+          "center_xy": [
+            0.3148915161460365,
+            -0.05403834481094273
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 65,
+          "center_xy": [
+            0.367692851249805,
+            -0.011429056771930318
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 81,
+          "center_xy": [
+            0.3951584135965002,
+            -0.015684469641946107
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 82,
+          "center_xy": [
+            0.44259366592451344,
+            0.019968298087698344
+          ],
+          "baseline_red_success": true,
+          "random_color_success": false
+        },
+        {
+          "pair_index": 88,
+          "center_xy": [
+            0.25168115056370943,
+            0.013273281063784004
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 95,
+          "center_xy": [
+            0.3355979111103634,
+            -0.049429145831761986
+          ],
+          "baseline_red_success": true,
+          "random_color_success": true
+        },
+        {
+          "pair_index": 98,
+          "center_xy": [
+            0.42292301895644896,
+            0.011126804249662219
+          ],
+          "baseline_red_success": false,
+          "random_color_success": false
+        }
+      ]
+    }
+  ],
+  "interpretation": "Each second-group color compares with the first-group red outcome at exactly the same sampled positions. Policy inference draws are not shared/seed-paired. The red subset is a same-color repeat; a difference there cannot be caused by changing color."
+}

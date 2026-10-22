@@ -1,0 +1,393 @@
+{
+  "task": "piper_pick_place",
+  "task_instruction": "Grab the stuff into the box.",
+  "dataset": "/home/pengguanqi/Datasets/piper_pap_20260606_offset",
+  "geometry_status": "Episode 461: exact cube shape, image-estimated single edge and pose; box adjusted outward using fixed-camera views",
+  "robot_usd": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+  "robot_urdf": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+  "robot_base_xy": [
+    0.0,
+    0.0
+  ],
+  "table_height": 0.76,
+  "table_depth": 1.05,
+  "table_width": 1.6,
+  "table_x_min": -0.12,
+  "box": {
+    "center_xy": [
+      0.31555699432316486,
+      0.20464367372946982
+    ],
+    "size": [
+      0.1318083594709697,
+      0.1099869916797822,
+      0.06351111075864209
+    ],
+    "wall_thickness": 0.005,
+    "yaw_deg": -1.3917636491337193,
+    "geometry_status": "Approximate multiview outer-corner fit with initial-wrist residual weight2, fixed cameras, 5mm walls; no measured dimensions"
+  },
+  "user_dimension_priors_m": {
+    "box": [
+      0.15,
+      0.1,
+      0.06
+    ],
+    "cube": [
+      0.03,
+      0.03,
+      0.03
+    ],
+    "status": "User approximate estimates, not exact measurements"
+  },
+  "physics_dt": 0.008333333333333333,
+  "fps": 30,
+  "arm_stiffness": 12000.0,
+  "arm_damping": 600.0,
+  "arm_max_effort": 100.0,
+  "gripper_stiffness": 2500.0,
+  "gripper_damping": 40.0,
+  "gripper_max_effort": 10.0,
+  "gripper_max_width_m": 0.1,
+  "gripper_travel_note": "PAP-only 100 mm travel overlay; source robot asset and elevator remain at 70 mm. Dataset width units are inferred centimetres.",
+  "finger_static_friction": 1.0,
+  "finger_dynamic_friction": 0.8,
+  "up_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 667.7304832524369,
+    "fy": 667.7304832524369,
+    "cx": 320.0,
+    "cy": 240.0,
+    "eye_base_m": [
+      0.6744541187853671,
+      0.02946939396540379,
+      0.5089158377923692
+    ],
+    "target_base_m": [
+      0.40309916631335996,
+      0.014224871817080788,
+      0.08923251156486212
+    ],
+    "base_from_camera_usd": [
+      [
+        -0.008027624793112295,
+        -0.8398818466402521,
+        0.5427099049440143,
+        0.6744541187853671
+      ],
+      [
+        0.9994835835112769,
+        0.010148126395227927,
+        0.030489044296646006,
+        0.02946939396540379
+      ],
+      [
+        -0.031114683537477428,
+        0.542674395208422,
+        0.8393666524550141,
+        0.5089158377923692
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "horizontal_fov_deg": 51.21076857877075,
+    "status": "Approximate joint/image fit with size priors; not calibrated hardware intrinsics"
+  },
+  "wrist_camera_resolution": [
+    640,
+    480
+  ],
+  "overview_camera": {
+    "eye_base_m": [
+      -0.35,
+      -0.75,
+      0.6
+    ],
+    "target_base_m": [
+      0.32,
+      0.05,
+      0.08
+    ],
+    "fx": 710.0,
+    "fy": 710.0,
+    "cx": 640.0,
+    "cy": 360.0,
+    "resolution": [
+      1280,
+      720
+    ]
+  },
+  "material_colors": {
+    "Mat": [
+      0.008,
+      0.2,
+      0.19
+    ],
+    "RedCube": [
+      0.7,
+      0.025,
+      0.035
+    ]
+  },
+  "background": true,
+  "lights": true,
+  "policy_execution": {
+    "smoothing": {
+      "mode": "none",
+      "alpha": 0.8
+    }
+  },
+  "wrist_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 655.8018073669807,
+    "fy": 655.8018073669807,
+    "cx": 320.0,
+    "cy": 240.0,
+    "link6_from_camera_usd": [
+      [
+        0.008726750266991379,
+        -0.9498773222585808,
+        -0.3125010663800135,
+        -0.07784249946439327
+      ],
+      [
+        -0.9995056331720154,
+        0.0011538921507388555,
+        -0.031419067304949894,
+        0.04666887390341376
+      ],
+      [
+        0.030204852047081343,
+        0.31262076257307747,
+        -0.9493976646911668,
+        0.006836940274791117
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "status": "Approximate multi-depth image fit using tabletop markers, cube corners, and open/closed fingertip landmarks; held-out image checks, not hardware calibration",
+    "refinement_reference": "outputs/piper_pap_reconstruction_20261022/wrist_revision/refinement_report.json"
+  },
+  "tape_markers": [
+    {
+      "xy": [
+        0.2269872354916476,
+        0.015325230304966287
+      ],
+      "yaw_deg": 90
+    },
+    {
+      "xy": [
+        0.376354094620941,
+        -0.1463872676459559
+      ],
+      "yaw_deg": 0
+    },
+    {
+      "xy": [
+        0.3581154974139061,
+        0.07673807509615128
+      ],
+      "yaw_deg": 0
+    },
+    {
+      "xy": [
+        0.49717463437046094,
+        -0.029738991777907012
+      ],
+      "yaw_deg": 90
+    }
+  ],
+  "camera_fit_reference": "outputs/piper_pap_reconstruction_20261022/camera_fit/camera_fit.json",
+  "camera_fit_point_rms_px": 6.049359710612319,
+  "camera_model": "Same official RealSense D435 housing asset on wrist and tabletop tripod",
+  "object": {
+    "shape": "cube",
+    "name": "episode461_blue_block",
+    "center_xy": [
+      0.4054964218978872,
+      -0.04323479701464409
+    ],
+    "yaw_deg": -2.304942980497333,
+    "mass": 0.025,
+    "color": [
+      0.006,
+      0.36,
+      0.85
+    ],
+    "grasp_width_m": 0.02784586683041822,
+    "geometry_status": "Exact cube constraint from user; single edge and pose estimated from frozen cameras with up:wrist residual weights 1:0.25; not measured dimensions",
+    "edge": 0.02784586683041822,
+    "material": {
+      "roughness": 0.18,
+      "metallic": 0.0,
+      "specular": 0.5
+    }
+  },
+  "episode_source": {
+    "episode_index": 461,
+    "dataset": "/home/pengguanqi/Datasets/piper_pap_20260606_offset",
+    "initial_frame": 0,
+    "trajectory": "outputs/piper_pap_episode_replay_20261022/episode_audit/episode_000461.npz"
+  },
+  "geometry_fit_reference": "outputs/piper_pap_geometry_revision_20261022/cube_fit_refined/fit_report.json",
+  "box_fit_reference": "outputs/piper_pap_geometry_revision_20261022/box_fit/fit_report.json",
+  "object_shape_note": "Dataset coloured blocks are cubes; their edges are estimated, not assumed identical across all episodes. Irregular toys require other geometry.",
+  "materials": {
+    "Mat": {
+      "color": [
+        0.006,
+        0.095,
+        0.105
+      ],
+      "roughness": 0.56,
+      "metallic": 0.0,
+      "specular": 0.2
+    },
+    "Cardboard": {
+      "color": [
+        0.39,
+        0.125,
+        0.08
+      ],
+      "roughness": 0.86,
+      "metallic": 0.0,
+      "specular": 0.15
+    },
+    "CardboardCut": {
+      "color": [
+        0.33,
+        0.19,
+        0.13
+      ],
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "specular": 0.2
+    },
+    "CardboardDark": {
+      "color": [
+        0.12,
+        0.063,
+        0.044
+      ],
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "specular": 0.2
+    },
+    "RedCube": {
+      "roughness": 0.18,
+      "metallic": 0.0,
+      "specular": 0.5
+    },
+    "CardboardOuter": {
+      "color": [
+        0.34,
+        0.32,
+        0.27
+      ],
+      "roughness": 0.88,
+      "metallic": 0.0,
+      "specular": 0.18
+    }
+  },
+  "lighting": {
+    "ambient": {
+      "intensity": 180,
+      "color": [
+        0.92,
+        0.96,
+        1.0
+      ]
+    },
+    "area_lights": [
+      {
+        "name": "BroadKey",
+        "position_base_m": [
+          0.69,
+          0.3,
+          1.1
+        ],
+        "target_base_m": [
+          0.33,
+          0.02,
+          0.0
+        ],
+        "width": 0.5,
+        "height": 0.35,
+        "intensity": 45000,
+        "color": [
+          0.92,
+          0.97,
+          1.0
+        ]
+      },
+      {
+        "name": "SoftFill",
+        "position_base_m": [
+          -0.2,
+          0.0,
+          1.1
+        ],
+        "target_base_m": [
+          0.35,
+          0.0,
+          0.0
+        ],
+        "width": 1.0,
+        "height": 0.8,
+        "intensity": 500,
+        "color": [
+          0.94,
+          0.98,
+          1.0
+        ]
+      },
+      {
+        "name": "SideFill",
+        "position_base_m": [
+          0.3,
+          -0.65,
+          0.5
+        ],
+        "target_base_m": [
+          0.32,
+          0.2,
+          0.04
+        ],
+        "width": 0.7,
+        "height": 0.6,
+        "intensity": 1500.0,
+        "color": [
+          0.88,
+          0.95,
+          1.0
+        ]
+      }
+    ]
+  },
+  "rendering": {
+    "warmup_frames": 48,
+    "subframes_per_frame": 2,
+    "direct_samples_per_pixel": 4,
+    "reflection_samples_per_pixel": 4
+  },
+  "appearance_revision": {
+    "reference": "outputs/piper_pap_appearance_revision_20261022/reference_analysis/README.md",
+    "selected_candidate": "g",
+    "status": "Image-guided PBR and area-light approximation; not measured reflectance or photometric calibration"
+  }
+}

@@ -5,12 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pressb"
 version = "0.1.0"
-description = "Piper elevator button pressing in NVIDIA Isaac Sim"
+description = "PiPER manipulation tasks, frozen VLA inference and online residual RL in NVIDIA Isaac Sim"
 requires-python = ">=3.10,<3.12"
 dependencies = ["numpy<2", "scipy", "Pillow", "matplotlib"]
 
 [project.optional-dependencies]
-online-rl = ["torch>=2.6", "threadpoolctl>=3"]
+online-rl = ["torch>=2.6", "threadpoolctl>=3", "websockets>=12,<16", "msgpack>=1,<2"]
+inference-server = ["websockets>=14,<16", "msgpack>=1,<2"]
+pap = ["av", "pyarrow", "websockets>=12,<16", "msgpack>=1,<2"]
+table-buttons = ["pin==2.7.0", "hpp-fcl==2.4.4"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

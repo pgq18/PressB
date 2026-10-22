@@ -1,0 +1,8 @@
+{
+  "started_at": "2026-10-22T17:28:57.562823+00:00",
+  "finished_at": "2026-10-22T18:09:17.863258+00:00",
+  "wall_seconds": 2420.300435,
+  "wall_minutes": 40.338340583333334,
+  "includes_simulator_initialization": true,
+  "includes_final_app_shutdown": false
+}

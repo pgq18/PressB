@@ -68,7 +68,7 @@ HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
   /home/pengguanqi/Worksapce/Research/PressB-online-rl-20261002/scripts/serve_rl_inference.py \
   --vla-repo /home/pengguanqi/Worksapce/Research/VLA-JEPA \
   --checkpoint /data/scratch/pengguanqi/VLA-JEPA-runs/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600 \
-  --device cuda:0 --port 19871
+  --device cuda:0 --port 19871 --transport http
 ```
 
 4. 5090：已有 SSH 主连接时添加转发；已存在的端口转发不重复添加：

@@ -1,0 +1,3459 @@
+{
+  "version": 2,
+  "seed": 20261023,
+  "episodes_per_group": 100,
+  "duration_s": 20.0,
+  "stop_on_success": true,
+  "episodes": [
+    {
+      "episode_id": "red_000",
+      "group": "position_red",
+      "pair_index": 0,
+      "color": "red",
+      "center_xy": [
+        0.4724087041947062,
+        -0.03264525780778474
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "red_001",
+      "group": "position_red",
+      "pair_index": 1,
+      "color": "red",
+      "center_xy": [
+        0.33499834874689555,
+        -0.004290442096439355
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "red_002",
+      "group": "position_red",
+      "pair_index": 2,
+      "color": "red",
+      "center_xy": [
+        0.2776482188124726,
+        -0.049698320994723794
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_003",
+      "group": "position_red",
+      "pair_index": 3,
+      "color": "red",
+      "center_xy": [
+        0.293908451963226,
+        0.05485712884772042
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_004",
+      "group": "position_red",
+      "pair_index": 4,
+      "color": "red",
+      "center_xy": [
+        0.38013559957640664,
+        -0.11492286860100848
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_005",
+      "group": "position_red",
+      "pair_index": 5,
+      "color": "red",
+      "center_xy": [
+        0.28484249828396974,
+        0.049475896069563076
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_006",
+      "group": "position_red",
+      "pair_index": 6,
+      "color": "red",
+      "center_xy": [
+        0.39109815111397017,
+        -0.06412196608081261
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_007",
+      "group": "position_red",
+      "pair_index": 7,
+      "color": "red",
+      "center_xy": [
+        0.4665835876795196,
+        -0.0666662158464003
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_008",
+      "group": "position_red",
+      "pair_index": 8,
+      "color": "red",
+      "center_xy": [
+        0.34582545324581593,
+        -0.0898819809449279
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_009",
+      "group": "position_red",
+      "pair_index": 9,
+      "color": "red",
+      "center_xy": [
+        0.3680369069732885,
+        -0.024458113908921622
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_010",
+      "group": "position_red",
+      "pair_index": 10,
+      "color": "red",
+      "center_xy": [
+        0.3493755802992562,
+        -0.11272102583115329
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_011",
+      "group": "position_red",
+      "pair_index": 11,
+      "color": "red",
+      "center_xy": [
+        0.34625312799140073,
+        -0.11487387451513645
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_012",
+      "group": "position_red",
+      "pair_index": 12,
+      "color": "red",
+      "center_xy": [
+        0.294681769611973,
+        -0.034552479365750906
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_013",
+      "group": "position_red",
+      "pair_index": 13,
+      "color": "red",
+      "center_xy": [
+        0.26307359207763426,
+        -0.1078795243338532
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_014",
+      "group": "position_red",
+      "pair_index": 14,
+      "color": "red",
+      "center_xy": [
+        0.4199504013021462,
+        -0.10679654544119786
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_015",
+      "group": "position_red",
+      "pair_index": 15,
+      "color": "red",
+      "center_xy": [
+        0.3466958184649448,
+        -0.022756568871833714
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_016",
+      "group": "position_red",
+      "pair_index": 16,
+      "color": "red",
+      "center_xy": [
+        0.4671311844984141,
+        0.04119799854379144
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_017",
+      "group": "position_red",
+      "pair_index": 17,
+      "color": "red",
+      "center_xy": [
+        0.39200781721283795,
+        -0.09848162526824306
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_018",
+      "group": "position_red",
+      "pair_index": 18,
+      "color": "red",
+      "center_xy": [
+        0.3647082757522777,
+        -0.005423450591022672
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_019",
+      "group": "position_red",
+      "pair_index": 19,
+      "color": "red",
+      "center_xy": [
+        0.26723537794938546,
+        -0.07926641476720953
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_020",
+      "group": "position_red",
+      "pair_index": 20,
+      "color": "red",
+      "center_xy": [
+        0.32439175216848126,
+        -0.0488396914982979
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_021",
+      "group": "position_red",
+      "pair_index": 21,
+      "color": "red",
+      "center_xy": [
+        0.39103818759055164,
+        -0.06992273967685918
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_022",
+      "group": "position_red",
+      "pair_index": 22,
+      "color": "red",
+      "center_xy": [
+        0.30552889775323666,
+        0.0313936446819745
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_023",
+      "group": "position_red",
+      "pair_index": 23,
+      "color": "red",
+      "center_xy": [
+        0.35545920150889465,
+        0.026578597210786783
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_024",
+      "group": "position_red",
+      "pair_index": 24,
+      "color": "red",
+      "center_xy": [
+        0.29062628503818927,
+        -0.11600471341274028
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_025",
+      "group": "position_red",
+      "pair_index": 25,
+      "color": "red",
+      "center_xy": [
+        0.43177511856789696,
+        0.0416230253942486
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_026",
+      "group": "position_red",
+      "pair_index": 26,
+      "color": "red",
+      "center_xy": [
+        0.47984884916911263,
+        -0.11018733860528539
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_027",
+      "group": "position_red",
+      "pair_index": 27,
+      "color": "red",
+      "center_xy": [
+        0.4256007160992965,
+        -0.017430755105430795
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_028",
+      "group": "position_red",
+      "pair_index": 28,
+      "color": "red",
+      "center_xy": [
+        0.39842363804866765,
+        -0.12895163255171738
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_029",
+      "group": "position_red",
+      "pair_index": 29,
+      "color": "red",
+      "center_xy": [
+        0.3996072775561285,
+        -0.024564894974828534
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_030",
+      "group": "position_red",
+      "pair_index": 30,
+      "color": "red",
+      "center_xy": [
+        0.34227822935279395,
+        -0.12992065983124798
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_031",
+      "group": "position_red",
+      "pair_index": 31,
+      "color": "red",
+      "center_xy": [
+        0.2528209240644383,
+        -0.05202861483789266
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_032",
+      "group": "position_red",
+      "pair_index": 32,
+      "color": "red",
+      "center_xy": [
+        0.4375840099436802,
+        -0.030259992093128588
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_033",
+      "group": "position_red",
+      "pair_index": 33,
+      "color": "red",
+      "center_xy": [
+        0.4414412503128989,
+        0.03615239208775617
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_034",
+      "group": "position_red",
+      "pair_index": 34,
+      "color": "red",
+      "center_xy": [
+        0.36650789975230635,
+        -0.01908587015051765
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_035",
+      "group": "position_red",
+      "pair_index": 35,
+      "color": "red",
+      "center_xy": [
+        0.38177177615104085,
+        -0.11592703270147353
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_036",
+      "group": "position_red",
+      "pair_index": 36,
+      "color": "red",
+      "center_xy": [
+        0.4476589598134759,
+        -0.06864099188149879
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_037",
+      "group": "position_red",
+      "pair_index": 37,
+      "color": "red",
+      "center_xy": [
+        0.29913555247703794,
+        -0.06980628114895679
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_038",
+      "group": "position_red",
+      "pair_index": 38,
+      "color": "red",
+      "center_xy": [
+        0.2550417232322256,
+        -0.0184532245215471
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_039",
+      "group": "position_red",
+      "pair_index": 39,
+      "color": "red",
+      "center_xy": [
+        0.29228904886383156,
+        -0.07395710906813027
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_040",
+      "group": "position_red",
+      "pair_index": 40,
+      "color": "red",
+      "center_xy": [
+        0.36313517020112523,
+        -0.09478602352394143
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_041",
+      "group": "position_red",
+      "pair_index": 41,
+      "color": "red",
+      "center_xy": [
+        0.35281955006935317,
+        0.04993080548811745
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_042",
+      "group": "position_red",
+      "pair_index": 42,
+      "color": "red",
+      "center_xy": [
+        0.4797162122488095,
+        -0.026119769672763672
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_043",
+      "group": "position_red",
+      "pair_index": 43,
+      "color": "red",
+      "center_xy": [
+        0.4646220549094313,
+        0.007530114678471228
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_044",
+      "group": "position_red",
+      "pair_index": 44,
+      "color": "red",
+      "center_xy": [
+        0.3595889330288979,
+        0.042189328139523835
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_045",
+      "group": "position_red",
+      "pair_index": 45,
+      "color": "red",
+      "center_xy": [
+        0.3530994202513888,
+        -0.11546233003081838
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_046",
+      "group": "position_red",
+      "pair_index": 46,
+      "color": "red",
+      "center_xy": [
+        0.26236769931749254,
+        -0.05299293772205614
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_047",
+      "group": "position_red",
+      "pair_index": 47,
+      "color": "red",
+      "center_xy": [
+        0.4094827579414004,
+        -0.014380060862779726
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_048",
+      "group": "position_red",
+      "pair_index": 48,
+      "color": "red",
+      "center_xy": [
+        0.46565606593301756,
+        -0.05689566277728601
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_049",
+      "group": "position_red",
+      "pair_index": 49,
+      "color": "red",
+      "center_xy": [
+        0.28550863495264345,
+        0.008846333716571043
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_050",
+      "group": "position_red",
+      "pair_index": 50,
+      "color": "red",
+      "center_xy": [
+        0.3351938516684489,
+        -0.06662762833707968
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_051",
+      "group": "position_red",
+      "pair_index": 51,
+      "color": "red",
+      "center_xy": [
+        0.32609242811311806,
+        0.028603354697187968
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_052",
+      "group": "position_red",
+      "pair_index": 52,
+      "color": "red",
+      "center_xy": [
+        0.48100343963312364,
+        -0.11538363980152365
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_053",
+      "group": "position_red",
+      "pair_index": 53,
+      "color": "red",
+      "center_xy": [
+        0.29271601944829345,
+        -0.013766665010441478
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_054",
+      "group": "position_red",
+      "pair_index": 54,
+      "color": "red",
+      "center_xy": [
+        0.4095223714883202,
+        -0.12351483535631806
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_055",
+      "group": "position_red",
+      "pair_index": 55,
+      "color": "red",
+      "center_xy": [
+        0.4498800953712616,
+        -0.12707112979069077
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_056",
+      "group": "position_red",
+      "pair_index": 56,
+      "color": "red",
+      "center_xy": [
+        0.33493083566177906,
+        -0.028364846589481685
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_057",
+      "group": "position_red",
+      "pair_index": 57,
+      "color": "red",
+      "center_xy": [
+        0.45073040109615364,
+        0.03742888002664896
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_058",
+      "group": "position_red",
+      "pair_index": 58,
+      "color": "red",
+      "center_xy": [
+        0.327916899843837,
+        0.037099952079615264
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_059",
+      "group": "position_red",
+      "pair_index": 59,
+      "color": "red",
+      "center_xy": [
+        0.34526223113715837,
+        0.056103241641276134
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_060",
+      "group": "position_red",
+      "pair_index": 60,
+      "color": "red",
+      "center_xy": [
+        0.29705361695497234,
+        0.0007437403695187486
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_061",
+      "group": "position_red",
+      "pair_index": 61,
+      "color": "red",
+      "center_xy": [
+        0.4789397075466645,
+        -0.08996990226914253
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_062",
+      "group": "position_red",
+      "pair_index": 62,
+      "color": "red",
+      "center_xy": [
+        0.3553790054693966,
+        -0.01283985113343903
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_063",
+      "group": "position_red",
+      "pair_index": 63,
+      "color": "red",
+      "center_xy": [
+        0.28071507679085234,
+        0.025383404990960624
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_064",
+      "group": "position_red",
+      "pair_index": 64,
+      "color": "red",
+      "center_xy": [
+        0.3148915161460365,
+        -0.05403834481094273
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_065",
+      "group": "position_red",
+      "pair_index": 65,
+      "color": "red",
+      "center_xy": [
+        0.367692851249805,
+        -0.011429056771930318
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_066",
+      "group": "position_red",
+      "pair_index": 66,
+      "color": "red",
+      "center_xy": [
+        0.4076932715068128,
+        0.019714401368356414
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_067",
+      "group": "position_red",
+      "pair_index": 67,
+      "color": "red",
+      "center_xy": [
+        0.3773344389073354,
+        0.042502093576293073
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_068",
+      "group": "position_red",
+      "pair_index": 68,
+      "color": "red",
+      "center_xy": [
+        0.3045029201070528,
+        -0.06290505517989435
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_069",
+      "group": "position_red",
+      "pair_index": 69,
+      "color": "red",
+      "center_xy": [
+        0.3013894545325312,
+        -0.03873825248867087
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_070",
+      "group": "position_red",
+      "pair_index": 70,
+      "color": "red",
+      "center_xy": [
+        0.4381512780662764,
+        -0.09195467855082842
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_071",
+      "group": "position_red",
+      "pair_index": 71,
+      "color": "red",
+      "center_xy": [
+        0.32333789578243677,
+        0.023206256322936002
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_072",
+      "group": "position_red",
+      "pair_index": 72,
+      "color": "red",
+      "center_xy": [
+        0.45786381967675127,
+        -0.031196471855404535
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_073",
+      "group": "position_red",
+      "pair_index": 73,
+      "color": "red",
+      "center_xy": [
+        0.46568050314864795,
+        -0.014794103485569088
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_074",
+      "group": "position_red",
+      "pair_index": 74,
+      "color": "red",
+      "center_xy": [
+        0.3161860089863864,
+        0.059913871904309975
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_075",
+      "group": "position_red",
+      "pair_index": 75,
+      "color": "red",
+      "center_xy": [
+        0.46836114445272947,
+        -0.1066100179732757
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_076",
+      "group": "position_red",
+      "pair_index": 76,
+      "color": "red",
+      "center_xy": [
+        0.39674397384543836,
+        -0.054714908798210796
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_077",
+      "group": "position_red",
+      "pair_index": 77,
+      "color": "red",
+      "center_xy": [
+        0.414143923735968,
+        -0.08133890701566177
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_078",
+      "group": "position_red",
+      "pair_index": 78,
+      "color": "red",
+      "center_xy": [
+        0.4272540358789416,
+        -0.04095537345057071
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_079",
+      "group": "position_red",
+      "pair_index": 79,
+      "color": "red",
+      "center_xy": [
+        0.4067110244593133,
+        -0.10058669582571522
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_080",
+      "group": "position_red",
+      "pair_index": 80,
+      "color": "red",
+      "center_xy": [
+        0.25384198411665787,
+        -0.057343447218745035
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_081",
+      "group": "position_red",
+      "pair_index": 81,
+      "color": "red",
+      "center_xy": [
+        0.3951584135965002,
+        -0.015684469641946107
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_082",
+      "group": "position_red",
+      "pair_index": 82,
+      "color": "red",
+      "center_xy": [
+        0.44259366592451344,
+        0.019968298087698344
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_083",
+      "group": "position_red",
+      "pair_index": 83,
+      "color": "red",
+      "center_xy": [
+        0.3925569086503705,
+        -0.04593649551672073
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_084",
+      "group": "position_red",
+      "pair_index": 84,
+      "color": "red",
+      "center_xy": [
+        0.2509519805883683,
+        -0.11895140273592592
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_085",
+      "group": "position_red",
+      "pair_index": 85,
+      "color": "red",
+      "center_xy": [
+        0.4260066624233814,
+        -0.008163481077329334
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_086",
+      "group": "position_red",
+      "pair_index": 86,
+      "color": "red",
+      "center_xy": [
+        0.33147831609825723,
+        -0.1131772650375355
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_087",
+      "group": "position_red",
+      "pair_index": 87,
+      "color": "red",
+      "center_xy": [
+        0.3846729019443675,
+        -0.1305740452064065
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_088",
+      "group": "position_red",
+      "pair_index": 88,
+      "color": "red",
+      "center_xy": [
+        0.25168115056370943,
+        0.013273281063784004
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_089",
+      "group": "position_red",
+      "pair_index": 89,
+      "color": "red",
+      "center_xy": [
+        0.4551254431504539,
+        -0.08928995686747565
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_090",
+      "group": "position_red",
+      "pair_index": 90,
+      "color": "red",
+      "center_xy": [
+        0.41536024900682245,
+        -0.06699940135416871
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_091",
+      "group": "position_red",
+      "pair_index": 91,
+      "color": "red",
+      "center_xy": [
+        0.4629583525525538,
+        -0.11785903893751251
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_092",
+      "group": "position_red",
+      "pair_index": 92,
+      "color": "red",
+      "center_xy": [
+        0.32142081663734723,
+        -0.044477054054930826
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_093",
+      "group": "position_red",
+      "pair_index": 93,
+      "color": "red",
+      "center_xy": [
+        0.32039291947266874,
+        -0.08535907907670062
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_094",
+      "group": "position_red",
+      "pair_index": 94,
+      "color": "red",
+      "center_xy": [
+        0.30065005676061296,
+        0.05499841657725062
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_095",
+      "group": "position_red",
+      "pair_index": 95,
+      "color": "red",
+      "center_xy": [
+        0.3355979111103634,
+        -0.049429145831761986
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_096",
+      "group": "position_red",
+      "pair_index": 96,
+      "color": "red",
+      "center_xy": [
+        0.4500682251553515,
+        -0.040839494184234854
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_097",
+      "group": "position_red",
+      "pair_index": 97,
+      "color": "red",
+      "center_xy": [
+        0.4761923203260622,
+        -0.003555345201886946
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_098",
+      "group": "position_red",
+      "pair_index": 98,
+      "color": "red",
+      "center_xy": [
+        0.42292301895644896,
+        0.011126804249662219
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "red_099",
+      "group": "position_red",
+      "pair_index": 99,
+      "color": "red",
+      "center_xy": [
+        0.4110455525471189,
+        0.017299642552516568
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_000",
+      "group": "position_color",
+      "pair_index": 0,
+      "color": "white",
+      "center_xy": [
+        0.4724087041947062,
+        -0.03264525780778474
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "color_001",
+      "group": "position_color",
+      "pair_index": 1,
+      "color": "white",
+      "center_xy": [
+        0.33499834874689555,
+        -0.004290442096439355
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_002",
+      "group": "position_color",
+      "pair_index": 2,
+      "color": "green",
+      "center_xy": [
+        0.2776482188124726,
+        -0.049698320994723794
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "color_003",
+      "group": "position_color",
+      "pair_index": 3,
+      "color": "red",
+      "center_xy": [
+        0.293908451963226,
+        0.05485712884772042
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "color_004",
+      "group": "position_color",
+      "pair_index": 4,
+      "color": "yellow",
+      "center_xy": [
+        0.38013559957640664,
+        -0.11492286860100848
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "color_005",
+      "group": "position_color",
+      "pair_index": 5,
+      "color": "green",
+      "center_xy": [
+        0.28484249828396974,
+        0.049475896069563076
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_006",
+      "group": "position_color",
+      "pair_index": 6,
+      "color": "yellow",
+      "center_xy": [
+        0.39109815111397017,
+        -0.06412196608081261
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_007",
+      "group": "position_color",
+      "pair_index": 7,
+      "color": "white",
+      "center_xy": [
+        0.4665835876795196,
+        -0.0666662158464003
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_008",
+      "group": "position_color",
+      "pair_index": 8,
+      "color": "white",
+      "center_xy": [
+        0.34582545324581593,
+        -0.0898819809449279
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_009",
+      "group": "position_color",
+      "pair_index": 9,
+      "color": "green",
+      "center_xy": [
+        0.3680369069732885,
+        -0.024458113908921622
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_010",
+      "group": "position_color",
+      "pair_index": 10,
+      "color": "yellow",
+      "center_xy": [
+        0.3493755802992562,
+        -0.11272102583115329
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_011",
+      "group": "position_color",
+      "pair_index": 11,
+      "color": "red",
+      "center_xy": [
+        0.34625312799140073,
+        -0.11487387451513645
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_012",
+      "group": "position_color",
+      "pair_index": 12,
+      "color": "green",
+      "center_xy": [
+        0.294681769611973,
+        -0.034552479365750906
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_013",
+      "group": "position_color",
+      "pair_index": 13,
+      "color": "red",
+      "center_xy": [
+        0.26307359207763426,
+        -0.1078795243338532
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_014",
+      "group": "position_color",
+      "pair_index": 14,
+      "color": "green",
+      "center_xy": [
+        0.4199504013021462,
+        -0.10679654544119786
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_015",
+      "group": "position_color",
+      "pair_index": 15,
+      "color": "yellow",
+      "center_xy": [
+        0.3466958184649448,
+        -0.022756568871833714
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_016",
+      "group": "position_color",
+      "pair_index": 16,
+      "color": "blue",
+      "center_xy": [
+        0.4671311844984141,
+        0.04119799854379144
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": true
+    },
+    {
+      "episode_id": "color_017",
+      "group": "position_color",
+      "pair_index": 17,
+      "color": "white",
+      "center_xy": [
+        0.39200781721283795,
+        -0.09848162526824306
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_018",
+      "group": "position_color",
+      "pair_index": 18,
+      "color": "green",
+      "center_xy": [
+        0.3647082757522777,
+        -0.005423450591022672
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_019",
+      "group": "position_color",
+      "pair_index": 19,
+      "color": "red",
+      "center_xy": [
+        0.26723537794938546,
+        -0.07926641476720953
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_020",
+      "group": "position_color",
+      "pair_index": 20,
+      "color": "red",
+      "center_xy": [
+        0.32439175216848126,
+        -0.0488396914982979
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_021",
+      "group": "position_color",
+      "pair_index": 21,
+      "color": "yellow",
+      "center_xy": [
+        0.39103818759055164,
+        -0.06992273967685918
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_022",
+      "group": "position_color",
+      "pair_index": 22,
+      "color": "yellow",
+      "center_xy": [
+        0.30552889775323666,
+        0.0313936446819745
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_023",
+      "group": "position_color",
+      "pair_index": 23,
+      "color": "white",
+      "center_xy": [
+        0.35545920150889465,
+        0.026578597210786783
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_024",
+      "group": "position_color",
+      "pair_index": 24,
+      "color": "green",
+      "center_xy": [
+        0.29062628503818927,
+        -0.11600471341274028
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_025",
+      "group": "position_color",
+      "pair_index": 25,
+      "color": "red",
+      "center_xy": [
+        0.43177511856789696,
+        0.0416230253942486
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_026",
+      "group": "position_color",
+      "pair_index": 26,
+      "color": "yellow",
+      "center_xy": [
+        0.47984884916911263,
+        -0.11018733860528539
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_027",
+      "group": "position_color",
+      "pair_index": 27,
+      "color": "yellow",
+      "center_xy": [
+        0.4256007160992965,
+        -0.017430755105430795
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_028",
+      "group": "position_color",
+      "pair_index": 28,
+      "color": "blue",
+      "center_xy": [
+        0.39842363804866765,
+        -0.12895163255171738
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_029",
+      "group": "position_color",
+      "pair_index": 29,
+      "color": "blue",
+      "center_xy": [
+        0.3996072775561285,
+        -0.024564894974828534
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_030",
+      "group": "position_color",
+      "pair_index": 30,
+      "color": "yellow",
+      "center_xy": [
+        0.34227822935279395,
+        -0.12992065983124798
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_031",
+      "group": "position_color",
+      "pair_index": 31,
+      "color": "green",
+      "center_xy": [
+        0.2528209240644383,
+        -0.05202861483789266
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_032",
+      "group": "position_color",
+      "pair_index": 32,
+      "color": "green",
+      "center_xy": [
+        0.4375840099436802,
+        -0.030259992093128588
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_033",
+      "group": "position_color",
+      "pair_index": 33,
+      "color": "yellow",
+      "center_xy": [
+        0.4414412503128989,
+        0.03615239208775617
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_034",
+      "group": "position_color",
+      "pair_index": 34,
+      "color": "blue",
+      "center_xy": [
+        0.36650789975230635,
+        -0.01908587015051765
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_035",
+      "group": "position_color",
+      "pair_index": 35,
+      "color": "red",
+      "center_xy": [
+        0.38177177615104085,
+        -0.11592703270147353
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_036",
+      "group": "position_color",
+      "pair_index": 36,
+      "color": "blue",
+      "center_xy": [
+        0.4476589598134759,
+        -0.06864099188149879
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_037",
+      "group": "position_color",
+      "pair_index": 37,
+      "color": "blue",
+      "center_xy": [
+        0.29913555247703794,
+        -0.06980628114895679
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_038",
+      "group": "position_color",
+      "pair_index": 38,
+      "color": "white",
+      "center_xy": [
+        0.2550417232322256,
+        -0.0184532245215471
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_039",
+      "group": "position_color",
+      "pair_index": 39,
+      "color": "green",
+      "center_xy": [
+        0.29228904886383156,
+        -0.07395710906813027
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_040",
+      "group": "position_color",
+      "pair_index": 40,
+      "color": "red",
+      "center_xy": [
+        0.36313517020112523,
+        -0.09478602352394143
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_041",
+      "group": "position_color",
+      "pair_index": 41,
+      "color": "blue",
+      "center_xy": [
+        0.35281955006935317,
+        0.04993080548811745
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_042",
+      "group": "position_color",
+      "pair_index": 42,
+      "color": "white",
+      "center_xy": [
+        0.4797162122488095,
+        -0.026119769672763672
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_043",
+      "group": "position_color",
+      "pair_index": 43,
+      "color": "red",
+      "center_xy": [
+        0.4646220549094313,
+        0.007530114678471228
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_044",
+      "group": "position_color",
+      "pair_index": 44,
+      "color": "green",
+      "center_xy": [
+        0.3595889330288979,
+        0.042189328139523835
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_045",
+      "group": "position_color",
+      "pair_index": 45,
+      "color": "blue",
+      "center_xy": [
+        0.3530994202513888,
+        -0.11546233003081838
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_046",
+      "group": "position_color",
+      "pair_index": 46,
+      "color": "red",
+      "center_xy": [
+        0.26236769931749254,
+        -0.05299293772205614
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_047",
+      "group": "position_color",
+      "pair_index": 47,
+      "color": "blue",
+      "center_xy": [
+        0.4094827579414004,
+        -0.014380060862779726
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_048",
+      "group": "position_color",
+      "pair_index": 48,
+      "color": "white",
+      "center_xy": [
+        0.46565606593301756,
+        -0.05689566277728601
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_049",
+      "group": "position_color",
+      "pair_index": 49,
+      "color": "white",
+      "center_xy": [
+        0.28550863495264345,
+        0.008846333716571043
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_050",
+      "group": "position_color",
+      "pair_index": 50,
+      "color": "blue",
+      "center_xy": [
+        0.3351938516684489,
+        -0.06662762833707968
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_051",
+      "group": "position_color",
+      "pair_index": 51,
+      "color": "green",
+      "center_xy": [
+        0.32609242811311806,
+        0.028603354697187968
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_052",
+      "group": "position_color",
+      "pair_index": 52,
+      "color": "green",
+      "center_xy": [
+        0.48100343963312364,
+        -0.11538363980152365
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_053",
+      "group": "position_color",
+      "pair_index": 53,
+      "color": "red",
+      "center_xy": [
+        0.29271601944829345,
+        -0.013766665010441478
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_054",
+      "group": "position_color",
+      "pair_index": 54,
+      "color": "yellow",
+      "center_xy": [
+        0.4095223714883202,
+        -0.12351483535631806
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_055",
+      "group": "position_color",
+      "pair_index": 55,
+      "color": "red",
+      "center_xy": [
+        0.4498800953712616,
+        -0.12707112979069077
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_056",
+      "group": "position_color",
+      "pair_index": 56,
+      "color": "blue",
+      "center_xy": [
+        0.33493083566177906,
+        -0.028364846589481685
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_057",
+      "group": "position_color",
+      "pair_index": 57,
+      "color": "yellow",
+      "center_xy": [
+        0.45073040109615364,
+        0.03742888002664896
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_058",
+      "group": "position_color",
+      "pair_index": 58,
+      "color": "white",
+      "center_xy": [
+        0.327916899843837,
+        0.037099952079615264
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_059",
+      "group": "position_color",
+      "pair_index": 59,
+      "color": "yellow",
+      "center_xy": [
+        0.34526223113715837,
+        0.056103241641276134
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_060",
+      "group": "position_color",
+      "pair_index": 60,
+      "color": "green",
+      "center_xy": [
+        0.29705361695497234,
+        0.0007437403695187486
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_061",
+      "group": "position_color",
+      "pair_index": 61,
+      "color": "white",
+      "center_xy": [
+        0.4789397075466645,
+        -0.08996990226914253
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_062",
+      "group": "position_color",
+      "pair_index": 62,
+      "color": "blue",
+      "center_xy": [
+        0.3553790054693966,
+        -0.01283985113343903
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_063",
+      "group": "position_color",
+      "pair_index": 63,
+      "color": "red",
+      "center_xy": [
+        0.28071507679085234,
+        0.025383404990960624
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_064",
+      "group": "position_color",
+      "pair_index": 64,
+      "color": "yellow",
+      "center_xy": [
+        0.3148915161460365,
+        -0.05403834481094273
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_065",
+      "group": "position_color",
+      "pair_index": 65,
+      "color": "yellow",
+      "center_xy": [
+        0.367692851249805,
+        -0.011429056771930318
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_066",
+      "group": "position_color",
+      "pair_index": 66,
+      "color": "blue",
+      "center_xy": [
+        0.4076932715068128,
+        0.019714401368356414
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_067",
+      "group": "position_color",
+      "pair_index": 67,
+      "color": "green",
+      "center_xy": [
+        0.3773344389073354,
+        0.042502093576293073
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_068",
+      "group": "position_color",
+      "pair_index": 68,
+      "color": "white",
+      "center_xy": [
+        0.3045029201070528,
+        -0.06290505517989435
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_069",
+      "group": "position_color",
+      "pair_index": 69,
+      "color": "white",
+      "center_xy": [
+        0.3013894545325312,
+        -0.03873825248867087
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_070",
+      "group": "position_color",
+      "pair_index": 70,
+      "color": "blue",
+      "center_xy": [
+        0.4381512780662764,
+        -0.09195467855082842
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_071",
+      "group": "position_color",
+      "pair_index": 71,
+      "color": "blue",
+      "center_xy": [
+        0.32333789578243677,
+        0.023206256322936002
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_072",
+      "group": "position_color",
+      "pair_index": 72,
+      "color": "green",
+      "center_xy": [
+        0.45786381967675127,
+        -0.031196471855404535
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_073",
+      "group": "position_color",
+      "pair_index": 73,
+      "color": "white",
+      "center_xy": [
+        0.46568050314864795,
+        -0.014794103485569088
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_074",
+      "group": "position_color",
+      "pair_index": 74,
+      "color": "red",
+      "center_xy": [
+        0.3161860089863864,
+        0.059913871904309975
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_075",
+      "group": "position_color",
+      "pair_index": 75,
+      "color": "green",
+      "center_xy": [
+        0.46836114445272947,
+        -0.1066100179732757
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_076",
+      "group": "position_color",
+      "pair_index": 76,
+      "color": "white",
+      "center_xy": [
+        0.39674397384543836,
+        -0.054714908798210796
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_077",
+      "group": "position_color",
+      "pair_index": 77,
+      "color": "red",
+      "center_xy": [
+        0.414143923735968,
+        -0.08133890701566177
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_078",
+      "group": "position_color",
+      "pair_index": 78,
+      "color": "green",
+      "center_xy": [
+        0.4272540358789416,
+        -0.04095537345057071
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_079",
+      "group": "position_color",
+      "pair_index": 79,
+      "color": "blue",
+      "center_xy": [
+        0.4067110244593133,
+        -0.10058669582571522
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_080",
+      "group": "position_color",
+      "pair_index": 80,
+      "color": "red",
+      "center_xy": [
+        0.25384198411665787,
+        -0.057343447218745035
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_081",
+      "group": "position_color",
+      "pair_index": 81,
+      "color": "yellow",
+      "center_xy": [
+        0.3951584135965002,
+        -0.015684469641946107
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_082",
+      "group": "position_color",
+      "pair_index": 82,
+      "color": "yellow",
+      "center_xy": [
+        0.44259366592451344,
+        0.019968298087698344
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_083",
+      "group": "position_color",
+      "pair_index": 83,
+      "color": "red",
+      "center_xy": [
+        0.3925569086503705,
+        -0.04593649551672073
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_084",
+      "group": "position_color",
+      "pair_index": 84,
+      "color": "green",
+      "center_xy": [
+        0.2509519805883683,
+        -0.11895140273592592
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_085",
+      "group": "position_color",
+      "pair_index": 85,
+      "color": "green",
+      "center_xy": [
+        0.4260066624233814,
+        -0.008163481077329334
+      ],
+      "color_rgb": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_086",
+      "group": "position_color",
+      "pair_index": 86,
+      "color": "blue",
+      "center_xy": [
+        0.33147831609825723,
+        -0.1131772650375355
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_087",
+      "group": "position_color",
+      "pair_index": 87,
+      "color": "white",
+      "center_xy": [
+        0.3846729019443675,
+        -0.1305740452064065
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_088",
+      "group": "position_color",
+      "pair_index": 88,
+      "color": "yellow",
+      "center_xy": [
+        0.25168115056370943,
+        0.013273281063784004
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_089",
+      "group": "position_color",
+      "pair_index": 89,
+      "color": "white",
+      "center_xy": [
+        0.4551254431504539,
+        -0.08928995686747565
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_090",
+      "group": "position_color",
+      "pair_index": 90,
+      "color": "white",
+      "center_xy": [
+        0.41536024900682245,
+        -0.06699940135416871
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_091",
+      "group": "position_color",
+      "pair_index": 91,
+      "color": "red",
+      "center_xy": [
+        0.4629583525525538,
+        -0.11785903893751251
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_092",
+      "group": "position_color",
+      "pair_index": 92,
+      "color": "red",
+      "center_xy": [
+        0.32142081663734723,
+        -0.044477054054930826
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_093",
+      "group": "position_color",
+      "pair_index": 93,
+      "color": "red",
+      "center_xy": [
+        0.32039291947266874,
+        -0.08535907907670062
+      ],
+      "color_rgb": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_094",
+      "group": "position_color",
+      "pair_index": 94,
+      "color": "blue",
+      "center_xy": [
+        0.30065005676061296,
+        0.05499841657725062
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_095",
+      "group": "position_color",
+      "pair_index": 95,
+      "color": "yellow",
+      "center_xy": [
+        0.3355979111103634,
+        -0.049429145831761986
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_096",
+      "group": "position_color",
+      "pair_index": 96,
+      "color": "white",
+      "center_xy": [
+        0.4500682251553515,
+        -0.040839494184234854
+      ],
+      "color_rgb": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_097",
+      "group": "position_color",
+      "pair_index": 97,
+      "color": "blue",
+      "center_xy": [
+        0.4761923203260622,
+        -0.003555345201886946
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_098",
+      "group": "position_color",
+      "pair_index": 98,
+      "color": "yellow",
+      "center_xy": [
+        0.42292301895644896,
+        0.011126804249662219
+      ],
+      "color_rgb": [
+        0.8,
+        0.64,
+        0.015
+      ],
+      "record_video": false
+    },
+    {
+      "episode_id": "color_099",
+      "group": "position_color",
+      "pair_index": 99,
+      "color": "blue",
+      "center_xy": [
+        0.4110455525471189,
+        0.017299642552516568
+      ],
+      "color_rgb": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "record_video": false
+    }
+  ],
+  "region": {
+    "region_kind": "rectangle_from_marker_long_axis_lines",
+    "marker_centres_xy": [
+      [
+        0.2269872354916476,
+        0.015325230304966287
+      ],
+      [
+        0.376354094620941,
+        -0.1463872676459559
+      ],
+      [
+        0.3581154974139061,
+        0.07673807509615128
+      ],
+      [
+        0.49717463437046094,
+        -0.029738991777907012
+      ]
+    ],
+    "marker_polygon_xy": [
+      [
+        0.49717463437046094,
+        0.07673807509615128
+      ],
+      [
+        0.2269872354916476,
+        0.0767380750961513
+      ],
+      [
+        0.2269872354916476,
+        -0.1463872676459559
+      ],
+      [
+        0.49717463437046094,
+        -0.1463872676459559
+      ]
+    ],
+    "edge_lines": [
+      {
+        "marker_index": 0,
+        "point_xy": [
+          0.2269872354916476,
+          0.015325230304966287
+        ],
+        "yaw_deg": 90.0,
+        "long_axis_xy": [
+          6.123233995736766e-17,
+          1.0
+        ],
+        "outward_normal_xy": [
+          -1.0,
+          -0.0
+        ],
+        "offset": 0.2269872354916476
+      },
+      {
+        "marker_index": 1,
+        "point_xy": [
+          0.376354094620941,
+          -0.1463872676459559
+        ],
+        "yaw_deg": 0.0,
+        "long_axis_xy": [
+          1.0,
+          0.0
+        ],
+        "outward_normal_xy": [
+          0.0,
+          -1.0
+        ],
+        "offset": -0.1463872676459559
+      },
+      {
+        "marker_index": 2,
+        "point_xy": [
+          0.3581154974139061,
+          0.07673807509615128
+        ],
+        "yaw_deg": 0.0,
+        "long_axis_xy": [
+          1.0,
+          0.0
+        ],
+        "outward_normal_xy": [
+          5.136356419804401e-17,
+          1.0
+        ],
+        "offset": -0.07673807509615131
+      },
+      {
+        "marker_index": 3,
+        "point_xy": [
+          0.49717463437046094,
+          -0.029738991777907012
+        ],
+        "yaw_deg": 90.0,
+        "long_axis_xy": [
+          6.123233995736766e-17,
+          1.0
+        ],
+        "outward_normal_xy": [
+          1.0,
+          -0.0
+        ],
+        "offset": -0.49717463437046094
+      }
+    ],
+    "tape_metadata": {
+      "long_axis_size_m": 0.035,
+      "short_axis_size_m": 0.012,
+      "boundary_convention": "Line through tape centre along its long axis; tape width is not subtracted"
+    },
+    "marker_polygon_area_m2": 0.06028565597943365,
+    "valid_center_polygon_xy": [
+      [
+        0.48217463437046093,
+        0.061738075096151285
+      ],
+      [
+        0.24198723549164758,
+        0.0617380750961513
+      ],
+      [
+        0.24198723549164758,
+        -0.13138726764595587
+      ],
+      [
+        0.48217463437046093,
+        -0.13138726764595587
+      ]
+    ],
+    "valid_center_area_m2": 0.04638627373080603,
+    "valid_center_bounds_xy_m": [
+      [
+        0.24198723549164758,
+        -0.13138726764595587
+      ],
+      [
+        0.48217463437046093,
+        0.0617380750961513
+      ]
+    ],
+    "marker_halfplanes": [
+      [
+        5.136356419804401e-17,
+        1.0,
+        -0.07673807509615131
+      ],
+      [
+        1.0,
+        -0.0,
+        -0.49717463437046094
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.2269872354916476
+      ],
+      [
+        0.0,
+        -1.0,
+        -0.1463872676459559
+      ]
+    ],
+    "valid_center_halfplanes": [
+      [
+        5.136356419804401e-17,
+        1.0,
+        -0.06173807509615131
+      ],
+      [
+        1.0,
+        -0.0,
+        -0.48217463437046093
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.24198723549164758
+      ],
+      [
+        0.0,
+        -1.0,
+        -0.13138726764595587
+      ]
+    ],
+    "edge_m": 0.03,
+    "yaw_deg": 0.0,
+    "interpretation": "Rectangle bounded by the four green tape long-axis centre lines; entire cube footprint stays inside"
+  },
+  "protocol": {
+    "position_distribution": "uniform area in valid_center_polygon_xy",
+    "placement_boundary": "Four rectangle edges are marker long-axis lines through their centres, not a hull of marker centres",
+    "paired_positions": true,
+    "reachability_filter": false,
+    "color_distribution": "balanced random permutation; 20 per color for 100 episodes",
+    "colors_linear_rgb": {
+      "red": [
+        0.7,
+        0.025,
+        0.035
+      ],
+      "green": [
+        0.025,
+        0.55,
+        0.045
+      ],
+      "blue": [
+        0.006,
+        0.36,
+        0.85
+      ],
+      "white": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "yellow": [
+        0.8,
+        0.64,
+        0.015
+      ]
+    },
+    "material_note": "Approximate linear RGB colors; only diffuse color changes",
+    "cube_edge_m": 0.03,
+    "cube_mass_kg": 0.025,
+    "cube_yaw_deg": 0.0,
+    "initial_dataset_episode": 0,
+    "control_hz": 30,
+    "physics_hz": 120,
+    "execute_steps": 32,
+    "smoothing": {
+      "mode": "joint_ema",
+      "alpha": 0.8
+    },
+    "model_path": "/home/pengguanqi/Models/piper_pap_20260606",
+    "normalization_path": "/home/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+    "arm_limit_mode": "error",
+    "gripper_limit_mode": "clip",
+    "gripper_width_limits_m": [
+      0.0,
+      0.1
+    ],
+    "success": "Existing physical PAP outcome: lift, full containment, release, floor rest, stable 0.5 s, bilateral contact history",
+    "timeout_rule": "No physical success by 20 simulated seconds is failure",
+    "invalid_action_rule": "Invalid model actions count as failures",
+    "infrastructure_error_rule": "Infrastructure errors invalidate completion; report separately without claiming 100 episodes",
+    "diffusion_noise": "Native model sampling; no per-request generator seed override"
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve frozen PiPER features and explicit-noise flow decoding on H200."""
+"""Serve frozen PiPER inference through Wall-X WebSocket or legacy HTTP."""
 from __future__ import annotations
 
 import argparse
@@ -24,6 +24,10 @@ def main():
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=19871)
+    parser.add_argument("--transport", choices=("websocket", "http"), default="websocket",
+                        help="Wall-X WebSocket/MessagePack by default; http retains the legacy JSON API")
+    parser.add_argument("--wall-x-repo", type=Path, default=ROOT / "ref/wall-x",
+                        help="Wall-X checkout providing packages/openpi_client/websocket_policy_server.py")
     parser.add_argument("--cache-size", type=int, default=256)
     parser.add_argument("--cache-ttl", type=float, default=600.0)
     parser.add_argument("--batch-size", type=int, default=1,
@@ -46,12 +50,29 @@ def main():
     torch.set_num_threads(args.torch_threads)
     from pressb.online_rl.inference import FrozenPiperBackend, InferenceApplication
     from pressb.online_rl.rpc import RPCServer
+    if args.transport == "websocket":
+        from pressb.online_rl.inference_transport import (
+            IdentityDataProcessor, InferencePolicyAdapter, load_wallx_server,
+        )
+        websocket_server = load_wallx_server(args.wall_x_repo)
     backend = FrozenPiperBackend.load(args.vla_repo, args.checkpoint, device=args.device,
                                       image_preprocess_device=args.image_preprocess_device,
                                       base_vlm=args.base_vlm, base_encoder=args.base_encoder)
     application = InferenceApplication(backend, cache_size=args.cache_size, cache_ttl=args.cache_ttl,
                                        batch_size=args.batch_size)
     token = os.environ.get(args.token_env) if args.token_env else None
+    if args.transport == "websocket":
+        adapter = InferencePolicyAdapter(application)
+        server = websocket_server(policy=adapter, data_processor=IdentityDataProcessor(),
+            host=args.host, port=args.port, metadata=adapter.metadata,
+            rpc_handler=adapter.rpc_handler, api_key=token)
+        print(json.dumps(dict(event="ready", address=f"ws://{args.host}:{args.port}",
+                              transport="websocket", **application.health()), allow_nan=False), flush=True)
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        return
     with RPCServer((args.host, args.port), application.handlers, token=token) as server:
         print(json.dumps(dict(event="ready", address=f"http://{args.host}:{args.port}",
                               **application.health()), allow_nan=False), flush=True)

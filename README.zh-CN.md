@@ -1,22 +1,30 @@
-# PressB — PiPER 电梯按键与 VLA 在线残差强化学习
+# PressB — PiPER 仿真、VLA 评估与在线残差强化学习
 
 [English](README.md) | **简体中文**
 
-**进展更新：2026-10-09。** 已完成 Isaac 并行仿真、冻结 VLA-JEPA 推理与 SAC 训练的三节点框架，两种方法各 1M 在线训练，以及固定噪声策略后从头训练动作残差的多轮 400k 实验。最新 XYZ-only 残差的单次固定条件评估为 **119/120（99.17%）**；额外动作平滑仍为实验选项，未默认启用。
+PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学习改善冻结的视觉语言动作模型。项目连接物理仿真、模型推理与策略训练，记录相机观测，并依据真实接触和物体运动判定任务结果。
 
-[当前结果](#当前结果) · [演示视频](#演示视频) · [三节点框架](#在线强化学习独立三节点) · [运行说明](docs/online_rl_fast.md) · [工作交接](docs/HANDOVER.md)
+**更新于 2026-10-23：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；复刻的桌面抓取任务已接入用户提供的 Wall-X 权重，两组随机评估分别为红色方块 **65/100**、五色方块 **54/100**；桌面彩色按键已支持随机布局和物理 IK 演示。
 
-当前 RTX 5090 环境使用 **Isaac Sim 5.0 / Isaac Lab 2.2 / Python 3.11**。项目包含轨迹规划、真实接触反馈、双相机采集、LeRobot 导出、动作回放、VLA 闭环评估和在线残差强化学习；保留原 Isaac Sim 4.5 / Isaac Lab 2.0.2 环境的历史脚本与说明。
+[任务](#任务概览) · [结果](#当前结果) · [视频](#演示视频) · [运行](#运行三个任务) · [三节点 RL](#在线强化学习独立三节点) · [工作交接](docs/HANDOVER.md)
 
-- 黑色 PiPER 放在桌沿，夹爪保持 8 mm 总开度夹持按压杆；初始姿态为大臂、小臂在桌面上方折叠。
-- 墙上面板为 2 列 × 6 行：左列从下到上 24–29，右列 30–35。按钮受接触力推动，边缘橙灯在按下时亮、回弹后灭。
-- 腕部与桌面各一台 D435；腕部复用 AgileX 官方支架网格，双路 RGB 默认 640×480。
-- 采集支持面板左右 ±25 mm、前后 ±10 mm 变化；10×10 分层覆盖，每层 100 条，共 1,200 条 episode。
-- 训练数据只保留折叠初始姿态到首次成功亮灯的前缀。撤回、归位用于下一次采集，保留在原始诊断记录中。
+## 任务概览
 
-仓库包含代码、配置、资产来源清单、结果摘要和精选演示。**完整数据集、模型权重、下载素材、Conda 环境和原始运行录像不存入 Git**；仅 [docs/media](docs/media/README.md) 中的压缩演示随仓库发布。详细场景与历史验证记录见 [scene_details.md](docs/scene_details.md)。
+| 任务 | 场景与观测 | 已有能力 |
+|---|---|---|
+| [电梯按键](docs/scene_details.md) | 12 个接触驱动按钮、按压杆、腕部与桌面 RGB 相机 | 1,200 条专家轨迹、LeRobot 导出、VLA-JEPA 评估、三节点 SAC 残差／噪声训练 |
+| [桌面抓取入盒（PAP）](docs/piper_pick_place.md) | 对齐数据集的绿色工作台、纸盒、自由方块及双相机 | 真机轨迹回放、原生 Wall-X 闭环推理、可选关节平滑、配对的位置／颜色随机评估 |
+| [桌面彩色按键](docs/table_buttons.md) | PAP 工作台上的红／黄／蓝弹簧按键 | 颜色指令解析、相机可见且能执行按压的区域内独立随机摆放、脚本 IK 验证 |
+
+三个任务使用独立配置。PAP 依据 `piper_pap_20260606_offset` 中的关节、相机图像及实拍照片复刻，包含光滑方块、较粗糙纸盒／桌面和柔和光照，已有红、蓝正方体回放配置；数据集内其他物体还需各自的几何模型。PAP 保留对齐数据集的相机；桌面按键的腕部相机**内参和光心位姿**与电梯任务一致，固定相机沿用 PAP。目前桌面按键尚未接入学习策略或在线 RL 服务；PAP 已评估现成模型，尚未开展在线 RL 训练。
+
+后续可用于 **real2sim2real**：利用 AI agent 复刻真机场景，在仿真中增强策略鲁棒性，再迁移到真机做适配和验证。目前实验验证的是仿真中的算法可行性；real2sim2real 迁移，以及直接在真机上验证 RL 策略，均尚未开展。
+
+当前 RTX 5090 环境使用 **Isaac Sim 5.0 / Isaac Lab 2.2 / Python 3.11**，保留原 Isaac Sim 4.5 / Isaac Lab 2.0.2 历史脚本。源码、配置、[结果摘要](docs/results/)和[精选演示](docs/media/README.md)随 Git 发布；完整数据集、权重、下载素材、Conda 环境和原始录像作为本地依赖保留。
 
 ## 当前结果
+
+### 电梯：冻结 VLA-JEPA 的残差强化学习
 
 原始 VLA-JEPA 以 1,200 条带面板位置变化的专家 episode 微调，使用固定的 **step 10600** checkpoint。在线阶段始终冻结 VLA；先分别学习动作输出残差和 flow 初始噪声，再固定已训练的噪声策略，从随机初始化重新训练动作残差。噪声方法直接选择 flow 的初始噪声，不反向更新 VLA。
 
@@ -39,16 +47,35 @@
 
 可下载的 [结果与逐按键统计](docs/results/online_rl_20261009.json)、[结果表 CSV](docs/results/online_rl_20261009.csv) 保留原日志来源与 SHA-256；[平滑汇总](docs/results/smoothing_20261009.csv) 包含所有候选。复现、冻结检查和各实验配置见 [固定噪声后的残差训练](docs/residual_on_frozen_noise.md)。
 
+### PAP：Wall-X 随机评估
+
+用户提供的 `piper_pap_20260606` 权重在独立 Conda 环境运行，通过原生 Wall-X WebSocket 预测 32 步动作 chunk，每步为**六个绝对关节角度＋夹爪开度**，通信单位分别为度和厘米。仿真以 30 Hz 执行动作、120 Hz 运行物理。可选 `joint_ema` 平滑只过滤六个机械臂关节，保留夹爪命令；**默认关闭**，下面的评估显式使用 **α=0.8**。
+
+四条绿色标签分别表示矩形的**四条边**，围成 **27.02 × 22.31 cm** 的区域。保证整个 3 cm 方块位于区域内后，中心采样范围为 **24.02 × 19.31 cm**。两组共用 100 个按面积均匀采样的位置，第二组五色各 20 次并打乱顺序。每次最多 20 秒仿真时间；成功需实际夹起、在盒内释放并稳定落下，同时有双指接触记录。
+
+| 评估，2026-10-23 | 成功次数 | 成功率 | Wilson 95% 区间 |
+|---|---:|---:|---:|
+| 位置随机，固定红色 | 65/100 | **65%** | 55.3–73.6% |
+| 位置随机，五色随机 | 54/100 | **54%** | 44.3–63.4% |
+
+第二组逐颜色成功次数：**红 13/20、绿 9/20、蓝 12/20、白 8/20、黄 12/20**。全部 200 次物理及接触记录已复核，结果与报告一致。两组未配对模型扩散随机噪声，11 个百分点的差异不能全部归因于颜色。此前的 **88%／85%** 使用了错误且较小的标签中心凸包，不能代表上述矩形范围。
+
+已发布[评估报告](docs/results/pap_rectangle_20261023/README.md)、[逐次 CSV](docs/results/pap_rectangle_20261023/episodes.csv)、[成功率图](docs/results/pap_rectangle_20261023/success_rates.png)和[失败位置图](docs/results/pap_rectangle_20261023/failure_locations.png)。采样、运行和物理成功条件见 [PAP 说明](docs/piper_pick_place.md#randomized-policy-evaluation)。
+
 ## 演示视频
 
-点击预览图播放或下载 MP4。三段都覆盖全部 12 个按键的中心布局，保持 **1× 仿真时间**，上下分别为全局与腕部视角；任务结束后显示明确标记的终止停帧。演示样本与上表包含面板偏移的 120 次评估不同。
+点击预览图播放或下载 MP4。三段电梯视频覆盖全部 12 个按键的中心布局，保持 **1× 仿真时间**，上下分别为全局与腕部视角；任务结束后显示标记的终止停帧。演示样本与上表包含面板偏移的 120 次评估不同。
 
 | 原始 VLA → 固定噪声＋9D 残差 | 9D 残差 → XYZ-only 残差 | XYZ 平滑实验（未采用） |
 |---|---|---|
 | [![强化学习前后](docs/media/before-vs-residual.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/before-vs-residual.mp4) | [![9D 与 XYZ 残差](docs/media/pose9-vs-xyz.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/pose9-vs-xyz.mp4) | [![XYZ 平滑实验](docs/media/xyz-smoothing-experimental.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/xyz-smoothing-experimental.mp4) |
 | 左 4/12，右 12/12；右侧 γ=0.995、400k | 左 12/12，右 11/12；XYZ 演示有一次 24→25 | 左、右均 12/12；完整同期评估为 116/120 与 117/120 |
 
-原视频来源、压缩参数、实际帧数和审核记录见 [媒体说明](docs/media/README.md)。视频平滑度依据实测轨迹回放，未通过播放加速或插帧制造差异。
+**PAP — Wall-X＋关节 EMA（α=0.8）：** 上方红色方块、下方蓝色方块，左侧固定相机、右侧腕部相机，保持 **1× 仿真时间**。这两次成功演示独立于随机评估。
+
+[![Wall-X 抓取入盒与可选关节平滑](docs/media/pap-wallx-smoothed.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/pap-wallx-smoothed.mp4)
+
+原视频来源、压缩参数、实际帧数和审核记录见[媒体说明](docs/media/README.md)。视频保持录制时的仿真时间，未通过播放加速或插帧制造差异。
 
 ## 仓库分工与复现范围
 
@@ -56,13 +83,17 @@
 |---|---|---|
 | [PressB](https://github.com/pgq18/PressB) | Isaac 场景、三节点服务、SAC 适配、实验、评估与视频审计 | 本仓库；RL 实现在 `src/pressb/online_rl/` |
 | [VLA-JEPA](https://github.com/pgq18/VLA-JEPA/tree/base) | 视觉／状态／语言编码与 flow-matching 模型、PiPER 微调和推理 | 独立仓库 `src/VLA-JEPA/` |
+| [Wall-X](https://github.com/pgq18/wall-x/tree/base) | PAP 原生模型推理，兼容旧接口的 PressB 通信扩展 | 独立仓库 `ref/wall-x/`，使用单独 Conda 环境 |
 | [ZPRL-PressB](https://github.com/pgq18/ZPRL-PressB) | 残差 SAC、初始噪声方法及采样调度的参考实现 | 可选独立仓库 `src/ZPRL/`，运行 PressB 不需要导入它 |
 
-两个子目录是独立 Git 仓库，不打包进 PressB，也不是隐式 submodule。版本和用途记录在 [仓库版本清单](repos.lock.json)。已训练 RL checkpoint 严格绑定推理来源；复现现有权重时，VLA-JEPA 的运行 checkout 保持 `9c9dc71c8e199c7428b25d103ab666395832c001`，不能因只更新文档就改为最新 HEAD：
+这些都是独立克隆，被 PressB 忽略，不是 Git submodule；版本和用途记录在[仓库版本清单](repos.lock.json)。已训练 RL checkpoint 绑定推理来源，现有 VLA-JEPA RL 权重要求运行版本 `9c9dc71c8e199c7428b25d103ab666395832c001`：
 
 ```bash
 git clone --branch base https://github.com/pgq18/VLA-JEPA.git src/VLA-JEPA
 git -C src/VLA-JEPA checkout --detach 9c9dc71c8e199c7428b25d103ab666395832c001
+
+# PAP 策略推理；按 repos.lock.json 选择记录的 Wall-X commit。
+git clone --branch base https://github.com/pgq18/wall-x.git ref/wall-x
 
 # 可选：阅读原始 RL 方法。实际训练代码已在 PressB 内。
 git clone https://github.com/pgq18/ZPRL-PressB.git src/ZPRL
@@ -97,9 +128,11 @@ PYTHONPATH=.cache/usd-inspect .conda/envs/pressb/bin/python scripts/prepare_wris
 bash scripts/setup_dataset_env.sh
 ```
 
-两个 Python 环境分开使用：仿真使用 `.conda/envs/pressb/bin/python`，LeRobot 转换与官方读取使用 `.conda/envs/lerobot/bin/python`。不要将 `requirements-dataset.txt` 安装到 Isaac 环境。安装脚本设置 `OMNI_KIT_ACCEPT_EULA=YES`；使用 NVIDIA 软件和素材需遵守其许可，来源见 [THIRD_PARTY.md](THIRD_PARTY.md)。
+环境独立使用：仿真为 `.conda/envs/pressb`，LeRobot 导出为 `.conda/envs/lerobot`，原生 Wall-X 推理为 `.conda/envs/wallx-inference`。不要将完整数据集／训练依赖装入 Isaac；PAP 所需的少量数据及客户端依赖按下面命令安装。安装脚本设置 `OMNI_KIT_ACCEPT_EULA=YES`；NVIDIA 软件和素材仍受各自许可约束，来源见 [THIRD_PARTY.md](THIRD_PARTY.md)。
 
-## 先生成场景并验证
+## 运行三个任务
+
+### 电梯：生成场景并验证
 
 ```bash
 # 12 个按钮依次按压；每次按完回到折叠初始位姿
@@ -115,7 +148,51 @@ bash scripts/run.sh --headless --gpu 0 --video --output outputs/edge_feedback
 
 生成的 `outputs/edge_feedback/scene.usda` 和同目录 `wrist_camera/intrinsics.json`、`global_camera/intrinsics.json` 是后续采集的输入，干净克隆中尚不存在。`--gpu` 是 Isaac/Vulkan 设备编号，请选择有可用显存的设备。演示默认 10 Hz 图像、120 Hz 物理；批量采集通过 `--fps` 独立指定采样频率。
 
-## 采集 12 × 100 条位置分层数据
+### PAP：部署 Wall-X 并运行闭环推理
+
+先在本地准备真机数据集和已训练权重，并从数据集提取初始关节状态。policy 模式的后续动作来自模型；`--mode replay` 则重放录制轨迹。CUDA 12.8 要求、模型／配置路径覆盖及与 checkpoint 一致的归一化文件说明见 [Wall-X 部署文档](https://github.com/pgq18/wall-x/blob/base/inference/README_rtx5090.md)。
+
+```bash
+.conda/envs/pressb/bin/python -m pip install -e '.[pap]'
+.conda/envs/pressb/bin/python scripts/analyze_pap_dataset.py \
+  --dataset /path/to/piper_pap_20260606_offset --episodes 0 461 \
+  --output outputs/pap_dataset_audit
+
+# 安装一次，在独立终端用 GPU 0 保持推理服务运行。
+bash ref/wall-x/inference/install_rtx5090.sh
+WALLX_MODEL=/path/to/piper_pap_20260606 \
+  WALLX_CONFIG=/path/to/config_qact.yml \
+  CUDA_VISIBLE_DEVICES=0 bash ref/wall-x/inference/launch_server_piper_local.sh
+
+# Isaac 使用 GPU 1；省略 --policy-smoothing 即采用默认的未平滑目标。
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 env -u PYTHONPATH \
+  .conda/envs/pressb/bin/python scripts/run_pap_scene.py \
+  --mode policy --config configs/piper_pick_place.json \
+  --trajectory outputs/pap_dataset_audit/episode_000000.npz \
+  --policy-endpoint ws://127.0.0.1:8094 --policy-execute-steps 32 \
+  --policy-smoothing joint_ema --policy-smoothing-alpha 0.8 \
+  --headless --gpu 1 --duration 12 --output outputs/pap_wallx_demo
+```
+
+两组各 100 次的计划生成、执行和汇总见[随机评估命令](docs/piper_pick_place.md#randomized-policy-evaluation)。仿真器保存进度、逐次报告、实测轨迹及原始推理响应；中断后可按同一计划继续。
+
+### 桌面按键：随机布局与脚本按压
+
+```bash
+.conda/envs/pressb/bin/python -m pip install -e '.[table-buttons]'
+env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
+  --headless --gpu 1 --mode demo --target all --seed 73 \
+  --output outputs/table_buttons_demo
+```
+
+单色任务可将 `--target all` 换成 `--instruction '按下蓝色按键'`；交互查看可用 `--mode snapshot --hold`。可执行区域采样与接触成功条件见[任务说明](docs/table_buttons.md)。此入口使用脚本 IK 和指令解析器，不调用 VLA。
+
+## 电梯数据采集与导出
+
+电梯数据集包含 **12 层 × 100 条 episode**，面板偏移按 10×10 分层覆盖，左右 ±25 mm、前后 ±10 mm。导出保留折叠初始位姿到首次成功亮灯的前缀。双路 RGB 为 640×480，状态与动作按 30 Hz 同步；详见[采集记录](docs/dataset_panel_stratified.md)和[首次亮灯导出语义](docs/dataset_press_only.md)。
+
+<details>
+<summary>采集、LeRobot v3 导出及验证命令</summary>
 
 ```bash
 # --gpus 0 表示一张卡；也可指定 0,1 等多个设备
@@ -138,7 +215,7 @@ bash scripts/run.sh --headless --gpu 0 --video --output outputs/edge_feedback
 
 采样频率须整除 120 Hz 物理频率，例如 10、20、30、60 Hz；更改频率须使用独立数据目录。下面的首次亮灯导出示例针对 30 Hz 数据。采集元信息与代码指纹阻止混用不同来源，不能通过改写元数据绕过续采检查。
 
-## 导出首次亮灯前缀为 LeRobot v3
+### 导出首次亮灯前缀为 LeRobot v3
 
 ```bash
 PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
@@ -161,6 +238,8 @@ PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
 
 导出器对分片与最终数据执行数值、视频解码和首次亮灯终点检查；官方读取检查是额外验证。输出路径已存在时，遵循脚本的恢复/一致性检查或换用新目录，不要覆盖已验证的批次。
 
+</details>
+
 数据约定：
 
 | 字段 | 含义 |
@@ -174,7 +253,7 @@ PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
 
 夹爪 TCP 位于 `link6` 局部 Z=0.1358 m；按压杆尖端为 Z=0.24 m，两者不是同一个点。VLA-JEPA 训练适配将旋转转换为旋转矩阵前两行展开的 6D，XYZ 保持原值，固定夹爪开度不参与学习。训练及推理服务代码位于 [pgq18/VLA-JEPA](https://github.com/pgq18/VLA-JEPA/tree/base)。
 
-## 回放与策略评估
+## 电梯回放与策略评估
 
 - [录制动作回放](docs/replay.md)：从 LeRobot action 经 IK 执行并检查实际接触。
 - [策略闭环评估](docs/policy_eval.md)：输入当前双相机、实测 TCP 与任务文本，执行模型返回的绝对目标。
@@ -186,7 +265,9 @@ PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
 
 ## 在线强化学习：独立三节点
 
-[在线 RL 运行说明](docs/online_rl.md) 提供仿真、冻结 VLA-JEPA 推理和 SAC 训练三个 HTTP 节点，可部署在三台不同机器。[高吞吐版本](docs/online_rl_fast.md) 增加独立 episode 重置、批量推理、采样与梯度更新重叠；支持本机 GPU 1 上共置仿真与推理、GPU 0 训练，也保留 H200 推理的跨节点配置。
+[在线 RL 运行说明](docs/online_rl.md)为电梯任务提供仿真、冻结 VLA-JEPA 推理和 SAC 训练三个节点，可部署在三台机器。[高吞吐版本](docs/online_rl_fast.md)增加独立 episode 重置、批量推理、采样与梯度更新重叠；支持本机 GPU 1 共置仿真与推理、GPU 0 训练，也保留 H200 推理的跨节点配置。
+
+推理默认使用 **WebSocket/MessagePack**，在 Wall-X 已有的 WebSocket 通信上加入兼容旧接口的扩展。PressB 提供 VLA-JEPA 所需的 `encode`、指定初始噪声的 `decode`、`release` 和 `health` 操作。仿真仍为 **HTTP**；旧 HTTP 推理可通过服务端 `--transport http` 和客户端 `http://` 地址选择。PAP 则使用普通 Wall-X 观测／动作预测；通信扩展本身不会让原生 Wall-X 模型具备拆分推理或 RL 能力。详见 [PressB 协议](docs/online_rl_protocol.md)和 [Wall-X 接口说明](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md)。
 
 ```mermaid
 flowchart LR
@@ -230,13 +311,14 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 |---|---|
 | `src/pressb/` | 场景、机器人运动学、规划、相机、数据语义与策略控制 |
 | `src/pressb/online_rl/` | 三节点协议、批量仿真／推理、SAC、冻结策略组合与平滑评估 |
+| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | 独立任务几何、物理结果、PAP 推理／评估及桌面按键采样 |
 | `scripts/` | 安装、资产准备、采集、转换、回放、评估和审计入口 |
 | `configs/` | 固定场景、随机位置和 1,200 条分层采集配置 |
 | `tests/` | CPU 单元测试与可选 USD 场景集成测试 |
 | `assets/*.json` | 固定资产来源、校验和与安装配准元数据 |
 | `docs/` | 当前流程说明及注明范围的历史实验记录 |
 | `docs/results/`, `docs/media/` | 随仓库发布的小型结果摘要和精选压缩视频 |
-| `src/VLA-JEPA/`, `src/ZPRL/` | 单独克隆与发布的依赖／参考仓库（本仓库忽略） |
+| `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | 独立克隆的依赖／参考仓库，版本见 `repos.lock.json`（本仓库忽略） |
 | `vendor/`, `assets/generated/`, `assets/isaac/` | 本地下载或生成的依赖与素材（忽略） |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | 本地数据、结果、环境与缓存（忽略） |
 

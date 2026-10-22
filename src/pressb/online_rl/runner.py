@@ -65,7 +65,8 @@ class OnlineRunner:
         config.validate()
         self.config = config
         self.sim = RPCClient(simulation, timeout=timeout, token=token)
-        self.inference = RPCClient(inference, timeout=timeout, token=token)
+        from .inference_transport import InferenceClient
+        self.inference = InferenceClient(inference, timeout=timeout, token=token)
         self.output = Path(output).resolve()
         self.output.mkdir(parents=True, exist_ok=False)
         self.device, self.checkpoint, self.resume = device, checkpoint, resume
@@ -236,7 +237,8 @@ class OnlineRunner:
         ids = sorted(active)
         cfg = self.config
         if cfg.method == "base":
-            return [{"env_id": eid, "actions_pose8": active[eid][1]["base_actions_pose8"]} for eid in ids], None
+            return [{"env_id": eid, "actions_pose8": np.asarray(active[eid][1]["base_actions_pose8"]).tolist()}
+                    for eid in ids], None
         vectors = np.stack([active[eid][2] for eid in ids])
         base = np.asarray([active[eid][1]["base_actions_pose9"] for eid in ids]) if cfg.method == "action_residual" else None
         progress = min(self.status["transitions"] / cfg.progressive_exploration, 1.) if cfg.progressive_exploration else 1.
@@ -409,3 +411,4 @@ class OnlineRunner:
                     self.sim.call("/close_run", dict(run_id=self.run_id, request_id=self._request_id()))
                 except Exception as error:
                     self._append("events.jsonl", {"event": "close_run_failed", "error": str(error)})
+            self.inference.close()

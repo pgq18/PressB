@@ -126,6 +126,8 @@ def main():
                  "src/pressb/online_rl/action_postprocessing.py", "scripts/eval_smoothed_residual.py",
                  "scripts/run_xyz_smoothing_study.py")}))
         status("startup")
+        # Archived inference source predates the WebSocket transport; preserve
+        # its HTTP endpoint and the checkpoint's original source identity.
         infer = read(OLD / "local_inference_process.json")["argv"]
         launch("inference", infer, gpu=1)
         launch("simulation", [PYTHON, "-u", ROOT / "scripts/serve_rl_recording_simulation.py",
@@ -157,6 +159,7 @@ def main():
             proc = launch(name, [PYTHON, "-u", ROOT / "scripts/eval_smoothed_residual.py",
                    "--config", TRAIN / "train_config.json", "--noise-checkpoint", OLD / "initial_noise_train/last.pt",
                    "--checkpoint", TRAIN / "train/last.pt", "--output", run / name,
+                   "--inference", "http://127.0.0.1:19891",
                    "--mode", "eval", "--seed", args.seed, "--eval-episodes", "120", "--device", "cuda:0",
                    "--smoothing-mode", case["mode"], "--smoothing-alpha", case["alpha"]], gpu=0)
             deadline = time.monotonic() + 1200

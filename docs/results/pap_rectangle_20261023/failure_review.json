@@ -1,0 +1,45 @@
+{
+  "analysis_status": "complete",
+  "completed_episodes": 200,
+  "method": "Supplementary trajectory and visual review by the assistant of the one automatically ambiguous final-state category. Simulation and analysis code unchanged; original success/failure outcomes unchanged.",
+  "reviewed_stage_counts": {
+    "position_red": {
+      "no_valid_lift_4cm": 11,
+      "lifted_then_returned_to_table": 24,
+      "entered_box_without_successful_stable_release": 0,
+      "held_elevated_at_timeout": 0
+    },
+    "position_color": {
+      "no_valid_lift_4cm": 19,
+      "lifted_then_returned_to_table": 27,
+      "entered_box_without_successful_stable_release": 0,
+      "held_elevated_at_timeout": 0
+    }
+  },
+  "ambiguous_case": {
+    "episode_id": "red_092",
+    "original_automatic_stage": "lifted_without_completed_placement_other",
+    "reviewed_stage": "lifted_then_returned_to_table_with_finger_contact_at_timeout",
+    "first_lift_4cm_s": 4.183333333333334,
+    "return_to_tabletop_height_s": 4.375,
+    "continuous_table_height_interval_s": [
+      4.391666666666667,
+      20.0
+    ],
+    "final_bottom_clearance_m": -4.789261897175656e-06,
+    "final_linear_speed_m_s": 0.027260689064860344,
+    "final_angular_speed_rad_s": 2.0078086853027344,
+    "final_finger_contact": true,
+    "note": "The object returned to tabletop height after a brief lift and remained at that height throughout later regrasp attempts. The final frame shows the cube touching the tabletop between the fingers. It is not held elevated above the table; small continued motion exceeded the script final-rest speed threshold, explaining the automatic other category.",
+    "image_evidence": "run/episodes/red_092/final_up.jpg",
+    "image_visually_reviewed": true,
+    "trajectory_evidence": "run/episodes/red_092/physics.npz"
+  },
+  "paired_discordance_totals": {
+    "both_success": 47,
+    "baseline_only_success": 18,
+    "color_only_success": 7,
+    "both_fail": 28
+  },
+  "claim_limit": "Per-color rows compare identical position subsets, but inference noise is unpaired and each color has only 20 trials; numerical differences alone do not establish color as the cause."
+}

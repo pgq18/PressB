@@ -1,22 +1,30 @@
-# PressB — PiPER Elevator Button Pressing and Online Residual RL for VLA
+# PressB — PiPER Simulation, VLA Evaluation and Online Residual RL
 
 **English** | [简体中文](README.zh-CN.md)
 
-**Progress update: 2026-10-09.** The three-node framework for parallel Isaac simulation, frozen VLA-JEPA inference, and SAC training is complete, along with 1M online training for each of two methods and several 400k runs that train action residuals from scratch over a fixed noise policy. The latest XYZ-only residual achieved **119/120 (99.17%)** in a single evaluation under fixed conditions. Additional action smoothing remains experimental and is disabled by default.
+PressB builds Isaac environments for evaluating robot policies and improving frozen vision-language-action models through online residual reinforcement learning. It connects physical simulation, model inference and policy training, with recorded camera observations and contact-based task outcomes.
 
-[Current results](#current-results) · [Demo videos](#demo-videos) · [Three-node framework](#online-reinforcement-learning-three-independent-nodes) · [Running the system](docs/online_rl_fast.md) · [Project handover](docs/HANDOVER.md)
+**Updated 2026-10-23:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation. The reconstructed pick-and-place task now runs the supplied Wall-X checkpoint and completed two randomized evaluations: **65/100** for red cubes and **54/100** for five colors. Tabletop buttons support randomized layouts and physical IK demonstrations.
 
-The current RTX 5090 environment uses **Isaac Sim 5.0 / Isaac Lab 2.2 / Python 3.11**. The project includes trajectory planning, physical contact feedback, dual-camera recording, LeRobot export, action replay, closed-loop VLA evaluation, and online residual reinforcement learning. Historical scripts and documentation for Isaac Sim 4.5 / Isaac Lab 2.0.2 are retained.
+[Tasks](#tasks) · [Results](#current-results) · [Videos](#demo-videos) · [Run](#run-the-tasks) · [Three-node RL](#online-reinforcement-learning-three-independent-nodes) · [Handover](docs/HANDOVER.md)
 
-- A black PiPER sits at the edge of a table, holding a pressing rod with a fixed total gripper opening of 8 mm. Its initial pose folds the upper arm and forearm above the tabletop.
-- The wall-mounted panel has 2 columns × 6 rows: floors 24–29 run from bottom to top on the left, and 30–35 on the right. Contact force depresses each button; its orange edge light turns on when pressed and off when released.
-- One D435 is mounted at the wrist and another on the table. The wrist mount reuses AgileX's official bracket mesh; both RGB streams default to 640×480.
-- Data collection supports panel offsets of ±25 mm left/right and ±10 mm forward/backward, with stratified 10×10 coverage and 100 episodes per floor, totaling 1,200 episodes.
-- Training data retains only the prefix from the folded initial pose to the first successful button light. Retraction and return motions prepare the next collection run and remain in the raw diagnostic records.
+## Tasks
 
-The repository includes code, configuration, asset source manifests, result summaries, and selected demos. **Full datasets, model weights, downloaded assets, Conda environments, and raw run recordings are not stored in Git**; only the compressed demos in [docs/media](docs/media/README.md) are distributed with the repository. See [scene_details.md](docs/scene_details.md) for scene details and historical validation records.
+| Task | Scene and observations | Available workflow |
+|---|---|---|
+| [Elevator buttons](docs/scene_details.md) | 12 contact-actuated buttons, pressing rod, wrist and table RGB cameras | 1,200 expert episodes, LeRobot export, VLA-JEPA evaluation, three-node SAC residual/noise training |
+| [Pick-and-place (PAP)](docs/piper_pick_place.md) | Dataset-fitted green workbench, cardboard box, movable cubes and two cameras | Real-trajectory replay, native Wall-X closed-loop inference, optional joint smoothing, paired position/color evaluation |
+| [Tabletop color buttons](docs/table_buttons.md) | Red/yellow/blue spring-loaded buttons on the PAP workbench | Color-instruction parser, independent seeded button positions within camera-visible/executable space, scripted IK validation |
+
+The tasks have separate configurations. PAP reconstructs `piper_pap_20260606_offset` from recorded joints, camera images and scene photos, including a smooth cube, rougher cardboard/tabletop and soft lighting. Red and blue cube replay presets are available; other dataset objects need their own geometry. PAP retains its dataset-fitted cameras. The tabletop button task uses the elevator wrist-camera intrinsics **and optical pose**, while retaining the PAP fixed camera. Tabletop buttons have not yet been connected to learned-policy inference or the online RL service; PAP has been evaluated with the supplied model but has not undergone online RL training.
+
+The framework can support a future **real2sim2real** workflow: use an AI agent to reconstruct a real workspace, improve policy robustness in simulation, then adapt and validate on the real robot. The current experiments establish simulation feasibility; real2sim2real transfer and direct real-robot validation of the RL policies remain future work.
+
+The current RTX 5090 environment uses **Isaac Sim 5.0 / Isaac Lab 2.2 / Python 3.11**. Historical Isaac Sim 4.5 / Isaac Lab 2.0.2 scripts remain available. Source, configurations, [result summaries](docs/results/) and [selected demos](docs/media/README.md) are included in Git; full datasets, weights, downloaded assets, Conda environments and raw recordings are local dependencies.
 
 ## Current results
+
+### Elevator: frozen VLA-JEPA with residual RL
 
 The base VLA-JEPA was fine-tuned on 1,200 expert episodes with varied panel positions, using the fixed **step 10600** checkpoint. VLA remains frozen throughout the online stage. Action-output residuals and flow initial noise are first learned independently; the trained noise policy is then held fixed while a new action residual is trained from random initialization. The noise method directly selects the flow's initial noise without backpropagating into VLA.
 
@@ -39,16 +47,35 @@ The latest XYZ actor outputs only **7×3=21 residual dimensions**, with position
 
 Downloadable [results and per-button statistics](docs/results/online_rl_20261009.json) and the [CSV results table](docs/results/online_rl_20261009.csv) retain source log references and SHA-256 hashes. The [smoothing summary](docs/results/smoothing_20261009.csv) includes every candidate. See [residual training over frozen noise](docs/residual_on_frozen_noise.md) for reproduction instructions, freeze checks, and experiment configurations.
 
+### PAP: Wall-X randomized evaluation
+
+The supplied `piper_pap_20260606` checkpoint runs in a separate Conda environment, predicting 32-step chunks of **six absolute joint angles plus gripper width** over native Wall-X WebSocket (degrees and centimetres on the wire). Simulation applies targets at 30 Hz with 120 Hz physics. Optional `joint_ema` smoothing filters the six arm joints and preserves the gripper command; it is **off by default**, and the following evaluation explicitly selects **α=0.8**.
+
+The four green tape markers define the **four edges** of a **27.02 × 22.31 cm** rectangle. Keeping the entire 3 cm cube inside yields a **24.02 × 19.31 cm** centre-sampling region. Two groups share 100 uniformly sampled positions; the second uses 20 cubes of each color in shuffled order. Each episode allows 20 simulated seconds. Success requires a physical lift, release inside the box and stable placement, with contact evidence from both fingers.
+
+| Evaluation, 2026-10-23 | Success | Rate | Wilson 95% interval |
+|---|---:|---:|---:|
+| Random position, fixed red | 65/100 | **65%** | 55.3–73.6% |
+| Random position and five colors | 54/100 | **54%** | 44.3–63.4% |
+
+Second-group successes: **red 13/20, green 9/20, blue 12/20, white 8/20, yellow 12/20**. All 200 saved physics/contact traces passed outcome verification. Model diffusion draws are not paired between groups, so this result does not establish that color caused the 11-point difference. The earlier **88% / 85%** results used an incorrect, smaller marker-centre hull and do not describe this rectangle.
+
+See the published [evaluation report](docs/results/pap_rectangle_20261023/README.md), [episode CSV](docs/results/pap_rectangle_20261023/episodes.csv), [success-rate plot](docs/results/pap_rectangle_20261023/success_rates.png) and [failure-location plot](docs/results/pap_rectangle_20261023/failure_locations.png). The [PAP guide](docs/piper_pick_place.md#randomized-policy-evaluation) documents sampling, evaluation and physical success criteria.
+
 ## Demo videos
 
-Click a preview to play or download the MP4. All three videos cover all 12 buttons in the center layout at **1× simulation time**, with the global view above the wrist view. A clearly labeled terminal freeze-frame appears when each task ends. These demo samples differ from the 120-trial evaluation above, which includes panel offsets.
+Click a preview to play or download the MP4. The three elevator videos cover all 12 buttons in the center layout at **1× simulation time**, with the global view above the wrist view. A labeled terminal freeze-frame appears when each task ends. These samples differ from the 120-trial evaluation, which includes panel offsets.
 
 | Base VLA → fixed noise + 9D residual | 9D residual → XYZ-only residual | XYZ smoothing experiment (not adopted) |
 |---|---|---|
 | [![Before and after reinforcement learning](docs/media/before-vs-residual.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/before-vs-residual.mp4) | [![9D and XYZ residuals](docs/media/pose9-vs-xyz.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/pose9-vs-xyz.mp4) | [![XYZ smoothing experiment](docs/media/xyz-smoothing-experimental.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/xyz-smoothing-experimental.mp4) |
 | Left: 4/12; right: 12/12. Right uses γ=0.995 and 400k training. | Left: 12/12; right: 11/12. The XYZ demo includes one 24→25 wrong press. | Both sides: 12/12. The full concurrent evaluations scored 116/120 and 117/120. |
 
-See the [media notes](docs/media/README.md) for original video sources, compression settings, actual frame counts, and audit records. Video smoothness reflects replayed measured trajectories; playback acceleration and frame interpolation are not used to create differences.
+**PAP — Wall-X with joint EMA (α=0.8):** red cube above, blue cube below; fixed camera on the left, wrist camera on the right, at **1× simulation time**. These two successful demonstrations are separate from the randomized evaluation.
+
+[![Wall-X pick-and-place with optional joint smoothing](docs/media/pap-wallx-smoothed.jpg)](https://github.com/pgq18/PressB/raw/refs/heads/main/docs/media/pap-wallx-smoothed.mp4)
+
+See the [media notes](docs/media/README.md) for original video sources, compression settings, actual frame counts and audit records. Videos preserve recorded simulation timing; playback acceleration and frame interpolation are not used to create differences.
 
 ## Repository roles and reproduction scope
 
@@ -56,13 +83,17 @@ See the [media notes](docs/media/README.md) for original video sources, compress
 |---|---|---|
 | [PressB](https://github.com/pgq18/PressB) | Isaac scene, three-node services, SAC integration, experiments, evaluation, and video audits | This repository; RL code is in `src/pressb/online_rl/` |
 | [VLA-JEPA](https://github.com/pgq18/VLA-JEPA/tree/base) | Vision/state/language encoders, flow-matching model, and PiPER fine-tuning and inference | Separate repository at `src/VLA-JEPA/` |
+| [Wall-X](https://github.com/pgq18/wall-x/tree/base) | Native PAP model inference and backward-compatible transport extension for PressB | Separate repository at `ref/wall-x/`; its own Conda environment |
 | [ZPRL-PressB](https://github.com/pgq18/ZPRL-PressB) | Reference implementation for residual SAC, initial-noise methods, and sampling schedules | Optional separate repository at `src/ZPRL/`; PressB does not need to import it |
 
-These two subdirectories are independent Git repositories, excluded from the PressB package and not implicit submodules. Their versions and roles are recorded in the [repository lock file](repos.lock.json). Trained RL checkpoints are strictly tied to their inference source. To reproduce existing weights, keep the VLA-JEPA runtime checkout at `9c9dc71c8e199c7428b25d103ab666395832c001`; a documentation-only update must not move it to the latest HEAD:
+These are independent clones, ignored by PressB and not Git submodules. Their versions and roles are recorded in the [repository lock file](repos.lock.json). Trained RL checkpoints are tied to their inference source. Existing VLA-JEPA RL weights require runtime commit `9c9dc71c8e199c7428b25d103ab666395832c001`:
 
 ```bash
 git clone --branch base https://github.com/pgq18/VLA-JEPA.git src/VLA-JEPA
 git -C src/VLA-JEPA checkout --detach 9c9dc71c8e199c7428b25d103ab666395832c001
+
+# PAP policy inference; select the Wall-X commit recorded in repos.lock.json.
+git clone --branch base https://github.com/pgq18/wall-x.git ref/wall-x
 
 # Optional: inspect the original RL methods. The training code is already in PressB.
 git clone https://github.com/pgq18/ZPRL-PressB.git src/ZPRL
@@ -97,9 +128,11 @@ PYTHONPATH=.cache/usd-inspect .conda/envs/pressb/bin/python scripts/prepare_wris
 bash scripts/setup_dataset_env.sh
 ```
 
-Keep the two Python environments separate: simulation uses `.conda/envs/pressb/bin/python`, while LeRobot conversion and the official reader use `.conda/envs/lerobot/bin/python`. Do not install `requirements-dataset.txt` into the Isaac environment. The setup script sets `OMNI_KIT_ACCEPT_EULA=YES`; NVIDIA software and assets remain subject to their licenses. Sources are listed in [THIRD_PARTY.md](THIRD_PARTY.md).
+Keep environments separate: simulation uses `.conda/envs/pressb`, LeRobot export uses `.conda/envs/lerobot`, and native Wall-X inference uses `.conda/envs/wallx-inference`. Do not install the full dataset/training requirements into Isaac. PAP's small data/client dependency set is installed separately below. The setup script sets `OMNI_KIT_ACCEPT_EULA=YES`; NVIDIA software and assets remain subject to their licenses. Sources are listed in [THIRD_PARTY.md](THIRD_PARTY.md).
 
-## Generate and validate the scene first
+## Run the tasks
+
+### Elevator: generate and validate the scene
 
 ```bash
 # Press all 12 buttons in sequence, returning to the folded initial pose after each
@@ -115,7 +148,51 @@ bash scripts/run.sh --headless --gpu 0 --video --output outputs/edge_feedback
 
 The generated `outputs/edge_feedback/scene.usda`, along with `wrist_camera/intrinsics.json` and `global_camera/intrinsics.json` in the same output directory, supplies the inputs for subsequent collection; these files do not exist in a clean clone. `--gpu` selects an Isaac/Vulkan device index; choose a device with available VRAM. The demo defaults to 10 Hz images and 120 Hz physics; batch collection sets the sampling rate independently through `--fps`.
 
-## Collect 12 × 100 position-stratified episodes
+### PAP: deploy Wall-X and run closed-loop inference
+
+Provide the real dataset and trained model locally. Prepare the initial joint state from the dataset before launching the simulator; policy mode uses subsequent model predictions, while `--mode replay` follows the recorded trajectory. See the [Wall-X deployment guide](https://github.com/pgq18/wall-x/blob/base/inference/README_rtx5090.md) for CUDA 12.8 requirements, model/config overrides and the checkpoint-matched normalization file.
+
+```bash
+.conda/envs/pressb/bin/python -m pip install -e '.[pap]'
+.conda/envs/pressb/bin/python scripts/analyze_pap_dataset.py \
+  --dataset /path/to/piper_pap_20260606_offset --episodes 0 461 \
+  --output outputs/pap_dataset_audit
+
+# Install once; run the inference service in its own terminal on GPU 0.
+bash ref/wall-x/inference/install_rtx5090.sh
+WALLX_MODEL=/path/to/piper_pap_20260606 \
+  WALLX_CONFIG=/path/to/config_qact.yml \
+  CUDA_VISIBLE_DEVICES=0 bash ref/wall-x/inference/launch_server_piper_local.sh
+
+# Run Isaac on GPU 1. Omit --policy-smoothing to keep the default unfiltered targets.
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 env -u PYTHONPATH \
+  .conda/envs/pressb/bin/python scripts/run_pap_scene.py \
+  --mode policy --config configs/piper_pick_place.json \
+  --trajectory outputs/pap_dataset_audit/episode_000000.npz \
+  --policy-endpoint ws://127.0.0.1:8094 --policy-execute-steps 32 \
+  --policy-smoothing joint_ema --policy-smoothing-alpha 0.8 \
+  --headless --gpu 1 --duration 12 --output outputs/pap_wallx_demo
+```
+
+Use the [randomized evaluation commands](docs/piper_pick_place.md#randomized-policy-evaluation) to prepare, run and summarize paired 100-episode groups. The simulator saves progress, per-episode reports, measured trajectories and raw policy responses; interrupted evaluations can resume the same plan.
+
+### Tabletop buttons: random layout and scripted pressing
+
+```bash
+.conda/envs/pressb/bin/python -m pip install -e '.[table-buttons]'
+env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
+  --headless --gpu 1 --mode demo --target all --seed 73 \
+  --output outputs/table_buttons_demo
+```
+
+Use `--instruction 'Press the blue button.'` instead of `--target all` for one color, or `--mode snapshot --hold` for interactive inspection. The [task guide](docs/table_buttons.md) explains reachable-space sampling and contact-based success. This entry point uses scripted IK and an instruction parser; it does not call a VLA.
+
+## Elevator data collection and export
+
+The elevator dataset contains **12 floors × 100 episodes**, with 10×10 stratified panel offsets (±25 mm left/right and ±10 mm forward/backward). Export keeps each episode from the folded initial pose through the first successful button light. Both RGB cameras record at 640×480; state/action timestamps are synchronized at 30 Hz. See [collection records](docs/dataset_panel_stratified.md) and [first-light export semantics](docs/dataset_press_only.md).
+
+<details>
+<summary>Collection, LeRobot v3 export and validation commands</summary>
 
 ```bash
 # --gpus 0 selects one GPU; multiple devices such as 0,1 are also supported
@@ -138,7 +215,7 @@ The 10×10 grid for each floor requires `--episodes-per-task 100`, and the colle
 
 The sampling rate must divide the 120 Hz physics rate evenly, for example 10, 20, 30, or 60 Hz. Use a separate data directory when changing the rate. The first-light export example below targets 30 Hz data. Collection metadata and code fingerprints prevent mixing different sources; do not rewrite metadata to bypass resume checks.
 
-## Export first-light prefixes to LeRobot v3
+### Export first-light prefixes to LeRobot v3
 
 ```bash
 PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
@@ -161,6 +238,8 @@ PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
 
 The exporter checks numerical values, video decoding, and first-light endpoints for both shards and the final dataset. The official reader check provides additional validation. If an output path already exists, follow the script's recovery/consistency checks or use a new directory; do not overwrite validated batches.
 
+</details>
+
 Data conventions:
 
 | Field | Meaning |
@@ -174,7 +253,7 @@ Data conventions:
 
 The gripper TCP is at local Z=0.1358 m in `link6`; the pressing-rod tip is at Z=0.24 m, a different point. The VLA-JEPA training adapter converts rotation to a 6D representation by flattening the first two rows of the rotation matrix, leaves XYZ unchanged, and excludes the fixed gripper opening from learning. Training and inference service code is in [pgq18/VLA-JEPA](https://github.com/pgq18/VLA-JEPA/tree/base).
 
-## Replay and policy evaluation
+## Elevator replay and policy evaluation
 
 - [Recorded action replay](docs/replay.md): execute LeRobot actions through IK and check actual contact.
 - [Closed-loop policy evaluation](docs/policy_eval.md): provide current dual-camera images, measured TCP state, and task text, then execute the model's absolute targets.
@@ -186,7 +265,9 @@ A previous fixed 60-trial evaluation of step 10600 on the old collection machine
 
 ## Online reinforcement learning: three independent nodes
 
-The [online RL run guide](docs/online_rl.md) provides three HTTP nodes for simulation, frozen VLA-JEPA inference, and SAC training, deployable across three machines. The [high-throughput version](docs/online_rl_fast.md) adds independent episode resets, batched inference, and overlapping sampling and gradient updates. It supports colocating simulation and inference on local GPU 1 with training on GPU 0, and retains a cross-node configuration for H200 inference.
+The [online RL run guide](docs/online_rl.md) provides three elevator-task nodes for simulation, frozen VLA-JEPA inference and SAC training, deployable across three machines. The [high-throughput version](docs/online_rl_fast.md) adds independent episode resets, batched inference and overlapping sampling and gradient updates. It supports colocating simulation and inference on local GPU 1 with training on GPU 0, and retains a cross-node configuration for H200 inference.
+
+Inference defaults to **WebSocket/MessagePack**, using a backward-compatible extension to Wall-X's existing WebSocket transport. PressB supplies the VLA-JEPA-specific `encode`, explicit-noise `decode`, `release` and `health` operations needed by RL. Simulation remains **HTTP**; legacy HTTP inference is selectable with `--transport http` and an `http://` client URL. The PAP client instead uses ordinary Wall-X observation/action prediction; the native Wall-X model does not acquire split inference or RL support from the transport extension alone. See the [PressB protocol](docs/online_rl_protocol.md) and [Wall-X interface notes](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md).
 
 ```mermaid
 flowchart LR
@@ -230,13 +311,14 @@ A clone without a scene snapshot skips USD integration tests that require one; e
 |---|---|
 | `src/pressb/` | Scene, robot kinematics, planning, cameras, data semantics, and policy control |
 | `src/pressb/online_rl/` | Three-node protocol, batched simulation/inference, SAC, frozen-policy composition, and smoothing evaluation |
+| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | Independent task geometry, physical outcomes, PAP inference/evaluation and tabletop button sampling |
 | `scripts/` | Entry points for setup, asset preparation, collection, conversion, replay, evaluation, and audits |
 | `configs/` | Configurations for fixed scenes, randomized positions, and 1,200-episode stratified collection |
 | `tests/` | CPU unit tests and optional USD scene integration tests |
 | `assets/*.json` | Pinned asset sources, checksums, and installation alignment metadata |
 | `docs/` | Current workflow guides and historical experiment records with their scope identified |
 | `docs/results/`, `docs/media/` | Small result summaries and selected compressed videos distributed with the repository |
-| `src/VLA-JEPA/`, `src/ZPRL/` | Separately cloned and published dependency/reference repositories (ignored here) |
+| `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | Separately cloned dependency/reference repositories; versions in `repos.lock.json` (ignored here) |
 | `vendor/`, `assets/generated/`, `assets/isaac/` | Locally downloaded or generated dependencies and assets (ignored) |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | Local data, results, environments, and caches (ignored) |
 

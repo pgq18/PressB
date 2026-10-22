@@ -353,9 +353,17 @@ class InferenceApplication:
             raise ValueError("images must contain exactly global and wrist")
         decoded = {}
         for key, value in images.items():
-            if not isinstance(value, str) or len(value) > 12_000_000:
-                raise ValueError("Expected a bounded base64 PNG image")
-            with Image.open(BytesIO(base64.b64decode(value, validate=True))) as picture:
+            # WebSocket uses native RGB arrays or PNG bytes. The legacy HTTP
+            # Base64 path retains the same validation and preprocessing.
+            if isinstance(value, np.ndarray):
+                if value.dtype != np.uint8 or value.shape not in ((480, 640, 3), (224, 224, 3)):
+                    raise ValueError("Expected uint8 RGB image of size 640x480 or 224x224")
+                decoded[key] = Image.fromarray(value.copy())
+                continue
+            if not isinstance(value, (str, bytes)) or len(value) > 12_000_000:
+                raise ValueError("Expected a bounded base64 PNG image, PNG bytes, or RGB array")
+            png = base64.b64decode(value, validate=True) if isinstance(value, str) else value
+            with Image.open(BytesIO(png)) as picture:
                 if picture.format != "PNG" or picture.size not in ((640, 480), (224, 224)) or picture.mode != "RGB":
                     raise ValueError("Expected a lossless RGB PNG of size 640x480 or 224x224")
                 decoded[key] = picture.copy()

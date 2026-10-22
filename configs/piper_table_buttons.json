@@ -1,0 +1,349 @@
+{
+  "task": "piper_table_buttons",
+  "task_instruction": "Press the red button.",
+  "robot_usd": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+  "robot_urdf": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+  "robot_base_xy": [
+    0.0,
+    0.0
+  ],
+  "table_height": 0.76,
+  "table_depth": 1.05,
+  "table_width": 1.6,
+  "table_x_min": -0.12,
+  "physics_dt": 0.008333333333333333,
+  "fps": 30,
+  "arm_stiffness": 12000.0,
+  "arm_damping": 600.0,
+  "arm_max_effort": 100.0,
+  "gripper_stiffness": 2500.0,
+  "gripper_damping": 40.0,
+  "gripper_max_effort": 10.0,
+  "gripper_max_width_m": 0.1,
+  "gripper_travel_note": "PAP-only 100 mm travel overlay; source robot asset and elevator remain at 70 mm. Dataset width units are inferred centimetres.",
+  "finger_static_friction": 1.0,
+  "finger_dynamic_friction": 0.8,
+  "up_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 667.7304832524369,
+    "fy": 667.7304832524369,
+    "cx": 320.0,
+    "cy": 240.0,
+    "eye_base_m": [
+      0.6744541187853671,
+      0.02946939396540379,
+      0.5089158377923692
+    ],
+    "target_base_m": [
+      0.40309916631335996,
+      0.014224871817080788,
+      0.08923251156486212
+    ],
+    "base_from_camera_usd": [
+      [
+        -0.008027624793112295,
+        -0.8398818466402521,
+        0.5427099049440143,
+        0.6744541187853671
+      ],
+      [
+        0.9994835835112769,
+        0.010148126395227927,
+        0.030489044296646006,
+        0.02946939396540379
+      ],
+      [
+        -0.031114683537477428,
+        0.542674395208422,
+        0.8393666524550141,
+        0.5089158377923692
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "horizontal_fov_deg": 51.21076857877075,
+    "status": "Approximate joint/image fit with size priors; not calibrated hardware intrinsics"
+  },
+  "wrist_camera_resolution": [
+    640,
+    480
+  ],
+  "overview_camera": {
+    "eye_base_m": [
+      -0.35,
+      -0.75,
+      0.6
+    ],
+    "target_base_m": [
+      0.32,
+      0.05,
+      0.08
+    ],
+    "fx": 710.0,
+    "fy": 710.0,
+    "cx": 640.0,
+    "cy": 360.0,
+    "resolution": [
+      1280,
+      720
+    ]
+  },
+  "material_colors": {
+    "Mat": [
+      0.008,
+      0.2,
+      0.19
+    ],
+    "RedCube": [
+      0.7,
+      0.025,
+      0.035
+    ]
+  },
+  "background": true,
+  "lights": true,
+  "wrist_camera_note": "Use the elevator task's attach_wrist_camera defaults for intrinsics and optical pose relative to link6; no PAP image-fit override.",
+  "tape_markers": [],
+  "camera_fit_reference": "outputs/piper_pap_reconstruction_20261022/camera_fit/camera_fit.json",
+  "camera_fit_point_rms_px": 6.049359710612319,
+  "camera_model": "Same official RealSense D435 housing asset on wrist and tabletop tripod",
+  "materials": {
+    "Mat": {
+      "color": [
+        0.006,
+        0.095,
+        0.105
+      ],
+      "roughness": 0.56,
+      "metallic": 0.0,
+      "specular": 0.2
+    },
+    "Cardboard": {
+      "color": [
+        0.39,
+        0.125,
+        0.08
+      ],
+      "roughness": 0.86,
+      "metallic": 0.0,
+      "specular": 0.15
+    },
+    "CardboardCut": {
+      "color": [
+        0.33,
+        0.19,
+        0.13
+      ],
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "specular": 0.2
+    },
+    "CardboardDark": {
+      "color": [
+        0.12,
+        0.063,
+        0.044
+      ],
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "specular": 0.2
+    },
+    "RedCube": {
+      "roughness": 0.18,
+      "metallic": 0.0,
+      "specular": 0.5
+    },
+    "CardboardOuter": {
+      "color": [
+        0.34,
+        0.32,
+        0.27
+      ],
+      "roughness": 0.88,
+      "metallic": 0.0,
+      "specular": 0.18
+    }
+  },
+  "lighting": {
+    "ambient": {
+      "intensity": 180,
+      "color": [
+        0.92,
+        0.96,
+        1.0
+      ]
+    },
+    "area_lights": [
+      {
+        "name": "BroadKey",
+        "position_base_m": [
+          0.69,
+          0.3,
+          1.1
+        ],
+        "target_base_m": [
+          0.33,
+          0.02,
+          0.0
+        ],
+        "width": 0.5,
+        "height": 0.35,
+        "intensity": 45000,
+        "color": [
+          0.92,
+          0.97,
+          1.0
+        ]
+      },
+      {
+        "name": "SoftFill",
+        "position_base_m": [
+          -0.2,
+          0.0,
+          1.1
+        ],
+        "target_base_m": [
+          0.35,
+          0.0,
+          0.0
+        ],
+        "width": 1.0,
+        "height": 0.8,
+        "intensity": 500,
+        "color": [
+          0.94,
+          0.98,
+          1.0
+        ]
+      },
+      {
+        "name": "SideFill",
+        "position_base_m": [
+          0.3,
+          -0.65,
+          0.5
+        ],
+        "target_base_m": [
+          0.32,
+          0.2,
+          0.04
+        ],
+        "width": 0.7,
+        "height": 0.6,
+        "intensity": 1500.0,
+        "color": [
+          0.88,
+          0.95,
+          1.0
+        ]
+      }
+    ]
+  },
+  "rendering": {
+    "warmup_frames": 48,
+    "subframes_per_frame": 2,
+    "direct_samples_per_pixel": 4,
+    "reflection_samples_per_pixel": 4
+  },
+  "appearance_revision": {
+    "reference": "outputs/piper_pap_appearance_revision_20261022/reference_analysis/README.md",
+    "selected_candidate": "g",
+    "status": "Image-guided PBR and area-light approximation; not measured reflectance or photometric calibration"
+  },
+  "root_path": "/World/TableButtons",
+  "task_props": false,
+  "task_color": "red",
+  "task_instructions": {
+    "red": "Press the red button.",
+    "yellow": "Press the yellow button.",
+    "blue": "Press the blue button."
+  },
+  "initial_joint_positions_rad": [
+    -0.08815658258218342,
+    0.575714308128114,
+    -0.4470835276087459,
+    0.0,
+    0.7244512557977941,
+    0.051731558796085333
+  ],
+  "initial_gripper_width_m": 0.00019999999552965166,
+  "initial_pose_source": {
+    "dataset": "/home/pengguanqi/Datasets/piper_pap_20260606_offset",
+    "episode_index": 461,
+    "frame_index": 0,
+    "note": "Observed robot joints and gripper width, embedded here; no dataset dependency to start this scene."
+  },
+  "buttons": {
+    "red": {
+      "center_xy": [
+        0.33,
+        0.12
+      ],
+      "color": [
+        0.72,
+        0.008,
+        0.012
+      ]
+    },
+    "yellow": {
+      "center_xy": [
+        0.38,
+        0.0
+      ],
+      "color": [
+        0.82,
+        0.59,
+        0.012
+      ]
+    },
+    "blue": {
+      "center_xy": [
+        0.33,
+        -0.12
+      ],
+      "color": [
+        0.008,
+        0.09,
+        0.78
+      ]
+    }
+  },
+  "button_geometry": {
+    "cap_radius_m": 0.016,
+    "cap_height_m": 0.008,
+    "base_radius_m": 0.022,
+    "base_height_m": 0.017,
+    "travel_m": 0.004,
+    "mass_kg": 0.015,
+    "stiffness_n_m": 300.0,
+    "damping_n_s_m": 3.0,
+    "max_spring_force_n": 5.0
+  },
+  "success": {
+    "press_depth_m": 0.003,
+    "release_depth_m": 0.001,
+    "min_contact_force_n": 0.1,
+    "hold_seconds": 0.025
+  },
+  "position_sampling": {
+    "domain": "camera_reachable",
+    "min_separation": 0.1,
+    "pixel_margin": 16
+  },
+  "press_workspace": {
+    "pitch_candidates_deg": [160, 150, 140, 130, 170],
+    "hover_z_candidates_m": [0.12, 0.08],
+    "press_offset_m": 0.006,
+    "radial_bounds_m": [0.06, 0.7],
+    "radial_step_m": 0.01,
+    "vertical_samples": 9
+  },
+  "scene_note": "Independent task retaining the PAP workbench, robot, fixed cameras and lighting, with the elevator task's wrist-camera intrinsics and optical pose; no box, loose object or tabletop tape markers. Button dimensions are configurable task design values, not a real-scene reconstruction."
+}

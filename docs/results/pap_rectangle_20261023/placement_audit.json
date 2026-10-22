@@ -1,0 +1,135 @@
+{
+  "audit_scope": "Independent pre-run placement and configuration audit. This does not certify completed rollout validity or physical success.",
+  "pass": true,
+  "checks": {
+    "200_total_episodes": true,
+    "100_per_group": true,
+    "pair_indices_are_0_to_99": true,
+    "paired_positions_exact": true,
+    "100_unique_positions": true,
+    "all_400_cube_footprint_corners_inside_rectangle": true,
+    "new_bounds_match_independently_computed_rectangle": true,
+    "all_red_group_is_red": true,
+    "color_group_20_each": true,
+    "color_assignment_unchanged_vs_old": true,
+    "effective_config_exactly_unchanged": true,
+    "run_config_matches_effective_config": true,
+    "run_plan_matches_new_plan": true,
+    "joint_ema_alpha_08": true,
+    "20_s_limit_unchanged": true,
+    "execution_identity_other_than_plan_unchanged": true,
+    "protocol_only_boundary_description_added": true,
+    "seed_unchanged": true,
+    "stop_on_success_unchanged": true
+  },
+  "rectangle_outer_bounds_xy_m": [
+    [
+      0.2269872354916476,
+      -0.1463872676459559
+    ],
+    [
+      0.49717463437046094,
+      0.07673807509615128
+    ]
+  ],
+  "cube_center_bounds_xy_m": [
+    [
+      0.24198723549164758,
+      -0.13138726764595587
+    ],
+    [
+      0.48217463437046093,
+      0.061738075096151285
+    ]
+  ],
+  "cube_edge_m": 0.03,
+  "cube_yaw_deg": 0.0,
+  "sampled_center_bounds_xy_m": [
+    [
+      0.2509519805883683,
+      -0.1305740452064065
+    ],
+    [
+      0.48100343963312364,
+      0.059913871904309975
+    ]
+  ],
+  "sample_mean_xy_m": [
+    0.3709537555235608,
+    -0.040013535839871495
+  ],
+  "sample_normalized_mean_xy": [
+    0.5369412410223202,
+    0.4731317522014791
+  ],
+  "sample_normalized_population_std_xy": [
+    0.2795178093759686,
+    0.28490063027681684
+  ],
+  "sample_quadrant_counts_x_low_to_high_rows_y_low_to_high_columns": [
+    [
+      24,
+      23
+    ],
+    [
+      28,
+      25
+    ]
+  ],
+  "sample_5_by_5_counts_x_low_to_high_rows_y_low_to_high_columns": [
+    [
+      2,
+      2,
+      4,
+      2,
+      2
+    ],
+    [
+      2,
+      5,
+      7,
+      3,
+      7
+    ],
+    [
+      8,
+      1,
+      3,
+      3,
+      5
+    ],
+    [
+      5,
+      5,
+      5,
+      5,
+      1
+    ],
+    [
+      5,
+      6,
+      5,
+      4,
+      3
+    ]
+  ],
+  "unique_positions_outside_previous_incorrect_valid_center_hull": 63,
+  "minimum_cube_footprint_to_rectangle_edge_gap_m": 0.0008132224395493992,
+  "position_indices_with_footprint_violation": [],
+  "colors": {
+    "white": 20,
+    "green": 20,
+    "red": 20,
+    "yellow": 20,
+    "blue": 20
+  },
+  "protocol_differences_vs_old": {
+    "placement_boundary": {
+      "old": null,
+      "new": "Four rectangle edges are marker long-axis lines through their centres, not a hull of marker centres"
+    }
+  },
+  "execution_identity_differences_other_than_plan": [],
+  "physical_configuration_status": "Entire effective configuration JSON equals old evaluation, including cameras, box/table/robot geometry, friction, visual materials, lights, EMA, and rendering. Actual run/config.json also equals effective config.",
+  "distribution_note": "Plan has one 100-position sample reused exactly across groups. Quadrant/bin counts describe finite-sample coverage and are not proof of ideal uniformity. Placement sampler uses area-weighted triangles without reachability rejection."
+}

@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-23",
+  "scope": "Two single model-controlled PAP demonstrations; not a randomized success-rate estimate or controlled A/B comparison.",
+  "runs": [
+    {
+      "name": "red_ema08",
+      "selection": "CLI override",
+      "smoothing": {
+        "mode": "joint_ema",
+        "alpha": 0.8,
+        "control_hz": 30,
+        "formula": "sent[t][:6] = alpha * raw[t][:6] + (1-alpha) * sent[t-1][:6]",
+        "initial_state": "settled measured joint angles and full gripper width",
+        "reset_rule": "once per episode; retain state across policy chunks",
+        "gripper_filtered": false,
+        "gripper_rule": "sent[t][6] = raw[t][6]",
+        "initialized": true,
+        "applied_actions": 360
+      },
+      "physical_success": true,
+      "first_success_time_s": 7.433333333333334,
+      "executed_actions": 360,
+      "inference_requests": 12,
+      "validation": {
+        "ema_recurrence_max_error_rad": 5.960464510845753e-09,
+        "ema_recurrence_dtype_aware_max_error_rad": 0.0,
+        "rounding_note": "Initial measured state is float32; its weighted product rounds before being added to float64 targets.",
+        "four_tick_hold_max_error": 0.0,
+        "raw_four_tick_hold_max_error": 0.0,
+        "gripper_targets_unchanged": true,
+        "sequential_executed_chunk_indices": true
+      },
+      "report": "/home/pengguanqi/Workspace/Research/PressB/outputs/wallx_pap_smoothing_20261023/red_ema08/report.json",
+      "metadata_note": "Run preceded effective-config serialization fix: config.json retains source mode none; actual mode joint_ema is in report.policy.smoothing and verified against all logged commands."
+    },
+    {
+      "name": "blue_ema08",
+      "selection": "task configuration",
+      "smoothing": {
+        "mode": "joint_ema",
+        "alpha": 0.8,
+        "control_hz": 30,
+        "formula": "sent[t][:6] = alpha * raw[t][:6] + (1-alpha) * sent[t-1][:6]",
+        "initial_state": "settled measured joint angles and full gripper width",
+        "reset_rule": "once per episode; retain state across policy chunks",
+        "gripper_filtered": false,
+        "gripper_rule": "sent[t][6] = raw[t][6]",
+        "initialized": true,
+        "applied_actions": 360
+      },
+      "physical_success": true,
+      "first_success_time_s": 7.141666666666667,
+      "executed_actions": 360,
+      "inference_requests": 12,
+      "validation": {
+        "ema_recurrence_max_error_rad": 5.960464455334602e-09,
+        "ema_recurrence_dtype_aware_max_error_rad": 0.0,
+        "rounding_note": "Initial measured state is float32; its weighted product rounds before being added to float64 targets.",
+        "four_tick_hold_max_error": 0.0,
+        "raw_four_tick_hold_max_error": 0.0,
+        "gripper_targets_unchanged": true,
+        "sequential_executed_chunk_indices": true
+      },
+      "report": "/home/pengguanqi/Workspace/Research/PressB/outputs/wallx_pap_smoothing_20261023/blue_ema08/report.json"
+    }
+  ]
+}

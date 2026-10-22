@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-09",
+  "updated_at": "2026-10-23",
   "layout": "Independent clones, not Git submodules; paths are ignored by PressB",
   "repositories": {
     "VLA-JEPA": {
@@ -19,6 +19,14 @@
       "publication_commit": "4bd52f695bad813406a2327cdb2e448565c8abe9",
       "algorithm_reference_commit": "a34a1cba029702af82c0fed873be9e0e6bd274b3",
       "required_for": "Optional method reference; PressB runs its own adapted implementation"
+    },
+    "Wall-X": {
+      "url": "https://github.com/pgq18/wall-x.git",
+      "path": "ref/wall-x",
+      "publication_branch": "base",
+      "publication_commit": "d7a8748f8bcc988d3ea38c9e68af5578e47bd1ea",
+      "required_for": "Native Wall-X PAP inference and the Wall-X-compatible WebSocket transport for frozen VLA-JEPA inference",
+      "pin_reason": "Includes backward-compatible PressB RPC/auth extensions and RTX 5090 PiPER deployment. Model weights, normalization statistics and training configuration are separate local inputs."
     }
   }
 }

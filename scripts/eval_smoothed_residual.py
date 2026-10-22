@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--noise-checkpoint", type=Path, required=True)
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--simulation", default="http://127.0.0.1:19880")
-    parser.add_argument("--inference", default="http://127.0.0.1:19891")
+    parser.add_argument("--inference", default="ws://127.0.0.1:19891")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, help="Optional status RPC server; omitted by default")
     parser.add_argument("--device", default="cuda:0")

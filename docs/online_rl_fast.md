@@ -2,22 +2,31 @@
 
 **2026-10-09 状态：** 两种独立 RL 已完成各 1M 训练，固定条件评估均为 81/120，基础模型为 25/120。实际训练总耗时分别为动作残差 19.81 h、初始噪声 15.16 h；下文早期短窗口外推保留为性能诊断，不能代替最终耗时。后续固定噪声并从头训练 400k 的 XYZ 残差得到 119/120，约 7.43 h；完整比较见 [中文 README](../README.zh-CN.md#当前结果)，配置与复现见 [组合残差训练](residual_on_frozen_noise.md)。
 
-三个节点仍通过 HTTP 通信，冻结 VLA-JEPA 不参与梯度更新。新增入口是 `serve_rl_fast_simulation.py`、`serve_rl_inference.py --batch-size 64`、`run_fast_online_rl.py`。一个 transition 仍表示一个环境实际执行的一段动作，最多 7 个 30 Hz 控制动作 / 28 个 120 Hz 物理 tick；不把 tick 或单张图像计作额外 transition。
+当前推理连接默认使用 Wall-X 的 WebSocket＋MessagePack，仿真和训练状态接口仍使用 HTTP；冻结 VLA-JEPA 不参与梯度更新。推理入口直接加载 `ref/wall-x/packages/openpi_client/websocket_policy_server.py`，由 PressB adapter 提供 encoder/flow 的分步调用。入口是 `serve_rl_fast_simulation.py`、`serve_rl_inference.py --batch-size 64`、`run_fast_online_rl.py`。一个 transition 仍表示一个环境实际执行的一段动作，最多 7 个 30 Hz 控制动作 / 28 个 120 Hz 物理 tick；不把 tick 或单张图像计作额外 transition。本文历史耗时和成功率来自此前的 HTTP 实验，新传输没有重跑或改写这些结果。
 
 ## 调度和实现
 
 - 环境结束后，通过 `/reset_envs` 恢复该环境的初始关节、按钮和控制历史，并改变其目标与面板偏移。第一次全局 reset 缓存经过 90 tick 稳定的状态；后续重置不推进物理时间。其他环境继续各自的 episode，不等整组结束。物理 step 仍使用共享 World 的同步批处理。
 - 每个 transition 的真实 terminal observation 在 reset 前保存，SAC replay 不会把下一条 episode 的初始状态当成上一条的末状态。reward 和 discount 依照实际执行的物理 tick 计算。
 - 全部环境的 FK、受限 IK、关节读取和按钮读取批量计算。仿真使用 PhysX tensor views；当前 NumPy 控制路径不宣称已经实现 Isaac Lab 的完整 GPU 原生任务。
-- 仅在 action chunk 边界和准确的终止 tick 渲染；两个相机仍使用 tiled rendering。相机按 320×240（4:3）渲染，再按原模型入口使用的 BILINEAR 缩放为 224×224，PNG 无损传输；灯光变更后另作无物理推进的捕获。
-- 推理节点一次批量执行视觉编码与 flow 解码，缓存每条观察的完整 action tokens；支持本机 5090 或远端 H200。actor 使用的 2048 维特征可用 little-endian float32 字节传输，减少 JSON 体积，数值不量化。context 释放合并进下次 `/encode`。
-- HTTP 工作在线程中等待；actor 读取、replay 写入和 SAC 梯度更新仍在训练主线程执行。等待采样或远端推理时，训练端消耗已采集 transition 对应的更新额度。默认 warmup 后 UTD=1，不靠少训练来提高吞吐。
+- 仅在 action chunk 边界和准确的终止 tick 渲染；两个相机仍使用 tiled rendering。相机按 320×240（4:3）渲染，再按原模型入口使用的 BILINEAR 缩放为 224×224。仿真到训练端仍使用无损 PNG；训练端去掉 base64 包装，向 WebSocket 推理服务发送原 PNG 二进制内容，不重新编码图像。灯光变更后另作无物理推进的捕获。
+- 推理节点一次批量执行视觉编码与 flow 解码，缓存每条观察的完整 action tokens；支持本机 5090 或远端 H200。WebSocket 路径用 MessagePack 原生数组传回 2048 维特征及动作，也支持外部客户端直接发送 uint8 RGB 数组，不量化特征；旧 HTTP 路径保留 little-endian float32 base64。context 释放合并进下次 `/encode`。
+- 网络 RPC 在线程中等待；actor 读取、replay 写入和 SAC 梯度更新仍在训练主线程执行。等待采样或远端推理时，训练端消耗已采集 transition 对应的更新额度。一次仅有一个在途 RPC，环境仍在 chunk 边界批量同步，episode 结束后按环境单独重置。默认 warmup 后 UTD=1，不靠少训练来提高吞吐。
 
 这些选择参考了本地 ZPRL 的独立 worker autoreset、批量编码、终止观测处理，以及 Isaac Lab 的 [DirectRLEnv 与控制 decimation](https://isaac-sim.github.io/IsaacLab/v2.2.0/source/tutorials/03_envs/create_direct_rl_env.html)、[tiled camera](https://isaac-sim.github.io/IsaacLab/v2.2.0/source/overview/core-concepts/sensors/camera.html) 和 [相机规模实测方法](https://isaac-sim.github.io/IsaacLab/v2.2.0/source/how-to/estimate_how_many_cameras_can_run.html)。ZPRL 的 vector step 本身仍有批次屏障；网络与 learner 更新重叠是本项目的实现。
 
 ## 启动
 
-本机已有环境与冻结资产的命令示例，输出目录必须新建。fast 仿真使用 `threadpoolctl>=3` 限制已加载 BLAS 的线程数；它已列入 `online-rl` 可选依赖，本机无需重新安装环境。
+本机已有环境与冻结资产的命令示例，输出目录必须新建。fast 仿真使用 `threadpoolctl>=3` 限制已加载 BLAS 的线程数。训练客户端支持 `websockets>=12,<16`，模型服务需要 `websockets>=14,<16`，两者都使用 `msgpack>=1,<2`。本机 `pressb` 环境的 `isaacsim-kernel==5.0.0` 要求 `websockets==12.0`，必须保留这个版本；只在独立推理环境安装较新的服务端依赖。已有 Torch/Isaac 配置的本机环境可执行：
+
+```bash
+env -u PYTHONPATH .conda/envs/pressb/bin/python -m pip install 'msgpack>=1,<2'
+env -u PYTHONPATH .conda/envs/vlajepa-inference/bin/python -m pip install -e '.[inference-server]'
+```
+
+新建独立 learner 环境可安装 `.[online-rl]`；如果与 Isaac 共用环境，同时遵守 Isaac 的 `websockets==12.0` 约束。WebSocket 客户端支持上述版本范围，与独立服务端使用相同的消息协议。
+
+默认参考仓库路径为 `ref/wall-x`，可用 `serve_rl_inference.py --wall-x-repo <路径>` 指定其他含兼容 serving 扩展的 Wall-X checkout。模型仍从 `--vla-repo` 与 `--checkpoint` 指定的 VLA-JEPA 加载。
 
 ```bash
 env -u PYTHONPATH OMNI_KIT_ACCEPT_EULA=YES OMP_NUM_THREADS=1 \
@@ -37,7 +46,7 @@ CUDA_VISIBLE_DEVICES=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
   --checkpoint .cache/vlajepa/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600 \
   --base-vlm .cache/vlajepa/Qwen3-VL-2B-Instruct \
   --base-encoder .cache/vlajepa/vjepa2-vitl-fpc64-256 \
-  --device cuda:0 --port 19891 --batch-size 64 --torch-threads 4 \
+  --device cuda:0 --port 19891 --transport websocket --batch-size 64 --torch-threads 4 \
   --image-preprocess-device cuda --cache-size 512 --cache-ttl 3600
 ```
 
@@ -47,11 +56,15 @@ CUDA_VISIBLE_DEVICES=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
 CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
   .conda/envs/pressb/bin/python scripts/run_fast_online_rl.py \
   --config configs/online_rl_fast_action_residual.json --device cuda:0 \
-  --simulation http://127.0.0.1:19880 --inference http://127.0.0.1:19891 \
+  --simulation http://127.0.0.1:19880 --inference ws://127.0.0.1:19891 \
   --port 19882 --output outputs/online_rl/fast_residual_new
 ```
 
 噪声方法使用 `configs/online_rl_fast_initial_noise.json`，与 residual 顺序复用服务。两个配置各默认 1,000,000 transition；每 10,000 条覆盖 `last.pt`，每 100,000 条保留归档，replay 容量 100,000。停止时停止补充新 episode，排空正在执行的 episode，完成已挣得的梯度更新，再保存 checkpoint；因此最终计数可略超预算。
+
+推理健康检查通过 `InferenceClient("ws://127.0.0.1:19891").call("/health")`，示例及能力握手见[协议文档](online_rl_protocol.md#websocket-inference-transport)。普通 Wall-X 服务器的单次 `infer` 能力不等于支持本项目的初始噪声 RL；后者还需要 adapter 提供 `/encode`、`/decode` 和 context 缓存。兼容观测别名 `face_view`、`left_wrist_view`、`prompt`、`state` 不改变本模型的八维 TCP state、九维 pose action 和电梯任务约束。
+
+复用历史 HTTP 服务时，客户端显式设置 `--inference http://...`；使用当前入口新开 HTTP 服务时加 `--transport http`。已固定旧 source snapshot 的 400k 实验、视频和 smoothing 专用 recipe 仍使用其归档 HTTP 服务及显式 HTTP URL，以保留原 checkpoint 的严格身份校验。
 
 ```bash
 curl --fail http://127.0.0.1:19882/status

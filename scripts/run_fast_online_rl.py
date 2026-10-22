@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path)
     parser.add_argument("--simulation", default="http://127.0.0.1:19880")
-    parser.add_argument("--inference", default="http://127.0.0.1:19881")
+    parser.add_argument("--inference", default="ws://127.0.0.1:19881")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=19882)
     parser.add_argument("--device", default="cuda:0")

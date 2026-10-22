@@ -1,7 +1,7 @@
 """Indexed-reset rollout collection with main-thread SAC / RPC overlap.
 
 The simulator still advances every active environment together for a chunk.
-Episode boundaries are independent.  Only blocking HTTP runs in a worker;
+Episode boundaries are independent.  Only blocking RPC runs in a worker;
 all policy reads, replay writes and gradient updates stay on the calling thread.
 """
 from __future__ import annotations
@@ -56,6 +56,11 @@ class _ProfiledClient:
 
     def call(self, path, payload=None):
         return self.owner._call(self.client, self.service, path, payload)
+
+    def close(self):
+        close = getattr(self.client, "close", None)
+        if close is not None:
+            close()
 
 
 class FastOnlineRunner(OnlineRunner):
@@ -550,6 +555,7 @@ class FastOnlineRunner(OnlineRunner):
                 except Exception as error:
                     self._append("events.jsonl", dict(event="close_run_failed", error=str(error)))
             self.executor.shutdown(wait=True, cancel_futures=True)
+            self.inference.close()
             self._publish(force=True)
         write_json(self.output / "summary.json", {**self.health(), "experiment_kind": self.config.mode,
             "claim": "Measured run; training success is not a fixed-condition evaluation result"})

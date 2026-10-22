@@ -1,8 +1,34 @@
 # PressB online RL wire contract (v1)
 
-Three independent processes: simulation owns Isaac and physical state; inference owns a frozen VLA-JEPA; learner owns SAC, replay and rollout scheduling. Communication is JSON over HTTP, with lossless RGB PNGs in base64. Model inference and network waits do not advance simulation time. This is continuous online collection, not a guarantee of real-time wall-clock control.
+Three independent processes: simulation owns Isaac and physical state; inference owns a frozen VLA-JEPA; learner owns SAC, replay and rollout scheduling. The learner connects to both services; simulation and inference do not call each other. Simulation and learner status use JSON over HTTP. Frozen inference defaults to the actual Wall-X WebSocket server in `ref/wall-x/packages/openpi_client/websocket_policy_server.py`, with MessagePack and native NumPy arrays. An explicit `--transport http` retains the historical inference API. Model inference and network waits do not advance simulation time. This is continuous online collection, not a guarantee of real-time wall-clock control.
 
-All successful responses include `protocol_version: 1`. GET `/health` reports `service` (`simulation`, `inference`, `learner`) and `ready`. POST handlers take a JSON object. HTTP errors are fatal to the current rollout unless explicitly handled; clients never automatically retry state-mutating requests. Optional bearer authentication uses `PRESSB_RL_TOKEN`; default bind is loopback. SSH forwarding or a private network connects separate hosts.
+All successful RPC responses include `protocol_version: 1`. HTTP GET `/health` reports `service` (`simulation`, `inference`, `learner`) and `ready`; POST handlers take a JSON object. Over WebSocket, inference health is an RPC operation after the metadata handshake, rather than an HTTP GET on `/health`. Clients never automatically retry state-mutating requests. Optional authentication uses `PRESSB_RL_TOKEN`: `Bearer` on HTTP, `Api-Key` on the WebSocket upgrade. Default bind is loopback. SSH forwarding or a private network connects separate hosts.
+
+## WebSocket inference transport
+
+`InferenceClient(endpoint, timeout, token)` selects WebSocket for `ws://` / `wss://` and the legacy JSON client for `http://` / `https://`. The learner still calls `client.call("/encode", payload)`, `"/decode"`, `"/release"`, and `"/health"`; only the inference transport changes. The simulation client remains `RPCClient`.
+
+The Wall-X server sends metadata immediately after connection. The client requires `pressb_rl: {version: 1, operations: ["health", "encode", "decode", "release"]}` before sending RL operations. Metadata also advertises `state_dim: 8`, `action_dim: 9`, `pred_horizon: 7`, and `rtc_config: {enabled: false}`. A legacy Wall-X model server that only implements `policy.infer()` is not sufficient for residual/noise RL: its backend must also provide encoder features, cached conditioning and explicit-noise flow decoding. This adapter supplies those operations for the existing frozen VLA-JEPA without changing its model or weights.
+
+Split requests are MessagePack dictionaries with the envelope `{"__pressb_rpc__": {"version": 1, "method": "encode", "payload": {...}}}`. Methods are `health`, `encode`, `decode`, and `release`. NumPy arrays retain shape and dtype with the Wall-X `openpi_client.msgpack_numpy` wire format; the PressB client implements that format without importing the reference checkout. The client removes base64 from the simulator's PNG observations and sends the same lossless PNG bytes, without decoding or re-encoding the image. Returned features and actions use native arrays instead of JSON lists or base64 feature strings. The server additionally accepts native uint8 RGB arrays. The simulation HTTP observation and action formats below remain unchanged. The adapter adds no image resize, quantization or normalization.
+
+The server also preserves the ordinary Wall-X observation-to-`policy.infer` path. For this VLA-JEPA adapter, its input aliases are `face_view` (global RGB), `left_wrist_view` (wrist RGB), `prompt` (task text), and `state`. These names do not change the checkpoint's task or numerical contract: state is the current eight-component TCP pose/gripper vector, and learned actions are seven poses with nine XYZ/rotation6D components. They are not Wall-X's seven joint/gripper values. The existing elevator policy still requires its trained task strings and fixed gripper. Accepting the common transport does not adapt the new pick-and-place task or load a Wall-X model.
+
+The server's HTTP `/healthz` is a liveness check only; it does not replace checkpoint/capability verification through inference RPC. Use the client to inspect the model service:
+
+```python
+from pressb.online_rl.inference_transport import InferenceClient
+
+client = InferenceClient("ws://127.0.0.1:19891")
+try:
+    print(client.call("/health"))
+finally:
+    client.close()
+```
+
+The learner's `online-rl` extra supports `websockets>=12,<16` and `msgpack>=1,<2`; the separate model service needs the `inference-server` extra with `websockets>=14,<16`. Keep the Isaac/learner environment's `websockets==12.0` pin required by `isaacsim-kernel==5.0.0`; install the newer server dependency only in the inference environment. See [the launch instructions](online_rl_fast.md#启动). The server is loaded from the reference Wall-X checkout, not a second copied server implementation inside `pressb`; `sync_rl_inference.py` transfers the required reference serving files alongside the addon for a separate inference host.
+
+Validation on 2026-10-22: 209 targeted tests passed, including 21 real-socket WebSocket contracts and complete CPU rollout/learner loops. The actual step-10600 checkpoint was also served on two RTX 5090s through HTTP and WebSocket with identical preprocessing and batch size 2. For two saved observations, pooled features, state, base actions and explicit-noise decoded actions were exactly equal; the original Wall-X client also returned an exactly matching single-observation action. The client used the Isaac environment's WebSockets 12.0 against the isolated server's 15.0.1. Reports are in `outputs/wallx_interface_validation_20261022/gpu_report.json` and `pytest.log`. These checks validate the interface and sampled numerical equivalence; they do not measure new training throughput or task success rates.
 
 ## Shared observation
 
@@ -28,6 +54,8 @@ Reward is sparse: success=1 at the physical event, all other ticks=0. For k exec
 
 ## Frozen inference
 
+The route names and JSON representations below document the legacy `--transport http` API. The default WebSocket adapter exposes the same operations and numerical results through the MessagePack envelope above, accepts binary PNG/native RGB inputs, and returns native feature/action arrays. Inference-side context storage and batch scheduling are shared between both transports.
+
 GET `/health`: verified checkpoint step/SHA, model/source identities, feature_dim=2048, feature_schema=mean_embodied_action_tokens, pose/action contracts and bounded cache information. All parameters are frozen; no optimizer or training path. Capabilities additionally include:
 
 - `encoder_batch_mode`: `serial` or `batched`; `microbatch_size` sets the maximum samples per encoder/flow forward.
@@ -50,7 +78,7 @@ POST `/decode`: `{items:[{context_id, initial_noise:float[7,9]},...]}` -> `{item
 
 ## Learner and methods
 
-Learner is an HTTP client of the two services and exposes `/health`, `/status`, `/stop` on its own port. Only this process imports/updates SAC networks. Each transition is one executed chunk, retaining actual duration discount, terminal final observation, executed RL action, and (for residual) current/next base action. Terminal samples never use a reset observation for bootstrap. Whole-vector reset preserves active-episode clocks. Replay stores features, not RGB or model weights. Checkpoints store optimizer/temperature/RNG/config/base identity; fresh-simulator resume boundaries are explicit.
+Learner is an HTTP client of simulation and a WebSocket client of inference by default; HTTP inference remains supported when explicitly selected by its URL. It exposes `/health`, `/status`, `/stop` over HTTP on its own port. Only this process imports/updates SAC networks. Each transition is one executed chunk, retaining actual duration discount, terminal final observation, executed RL action, and (for residual) current/next base action. Terminal samples never use a reset observation for bootstrap. Whole-vector reset preserves active-episode clocks. Replay stores features, not RGB or model weights. Checkpoints store optimizer/temperature/RNG/config/base identity; fresh-simulator resume boundaries are explicit.
 
 `action_residual`: actor emits tanh-Gaussian u[7,9]; action9=base9+scale9*u, then rotation rows project to SO(3), quaternion conversion, fixed gripper. Default scale is 0.03 m for XYZ and 0.1 for six dimensionless rotation components; configurable and saved. ZPRL residual actor conditions on observation+base action; critic evaluates combined action. Preserve residual SAC target without entropy and bounded [0,1] critics for this nonnegative finite success objective. CAPS is optional and explicit, disabled by default to isolate the requested residual method.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy only the frozen-inference addon to an SSH host; do not alter VLA-JEPA."""
+"""Copy the inference addon and Wall-X serving files; do not alter VLA-JEPA."""
 import argparse
 from pathlib import Path
 import shlex
@@ -8,7 +8,12 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ["src/pressb/__init__.py", "src/pressb/online_rl/__init__.py",
          "src/pressb/online_rl/protocol.py", "src/pressb/online_rl/rpc.py",
-         "src/pressb/online_rl/inference.py", "scripts/serve_rl_inference.py"]
+         "src/pressb/online_rl/inference.py", "src/pressb/online_rl/inference_transport.py",
+         "scripts/serve_rl_inference.py",
+         "ref/wall-x/packages/openpi_client/__init__.py",
+         "ref/wall-x/packages/openpi_client/base_policy.py",
+         "ref/wall-x/packages/openpi_client/msgpack_numpy.py",
+         "ref/wall-x/packages/openpi_client/websocket_policy_server.py"]
 
 
 def main():

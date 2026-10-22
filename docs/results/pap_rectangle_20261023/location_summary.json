@@ -1,0 +1,2834 @@
+{
+  "generated_at_utc": "2026-10-22T17:49:18.404133+00:00",
+  "group": "position_red",
+  "preview": false,
+  "complete": true,
+  "planned": 100,
+  "overall": {
+    "total": 100,
+    "failures": 35,
+    "successes": 65,
+    "failure_rate": 0.35,
+    "failure_episode_ids": [
+      "red_000",
+      "red_007",
+      "red_010",
+      "red_011",
+      "red_013",
+      "red_014",
+      "red_016",
+      "red_017",
+      "red_021",
+      "red_026",
+      "red_028",
+      "red_029",
+      "red_031",
+      "red_035",
+      "red_042",
+      "red_045",
+      "red_048",
+      "red_050",
+      "red_052",
+      "red_055",
+      "red_057",
+      "red_061",
+      "red_070",
+      "red_073",
+      "red_075",
+      "red_080",
+      "red_083",
+      "red_084",
+      "red_086",
+      "red_087",
+      "red_089",
+      "red_091",
+      "red_092",
+      "red_097",
+      "red_098"
+    ]
+  },
+  "pending_episode_ids": [],
+  "infrastructure_error_episode_ids": [],
+  "region_kind": "rectangle_from_marker_long_axis_lines",
+  "marker_polygon_xy_m": [
+    [
+      0.49717463437046094,
+      0.07673807509615128
+    ],
+    [
+      0.2269872354916476,
+      0.0767380750961513
+    ],
+    [
+      0.2269872354916476,
+      -0.1463872676459559
+    ],
+    [
+      0.49717463437046094,
+      -0.1463872676459559
+    ]
+  ],
+  "valid_center_polygon_xy_m": [
+    [
+      0.48217463437046093,
+      0.061738075096151285
+    ],
+    [
+      0.24198723549164758,
+      0.0617380750961513
+    ],
+    [
+      0.24198723549164758,
+      -0.13138726764595587
+    ],
+    [
+      0.48217463437046093,
+      -0.13138726764595587
+    ]
+  ],
+  "x_grid_edges_m": [
+    0.24198723549164758,
+    0.32204970178458536,
+    0.40211216807752315,
+    0.48217463437046093
+  ],
+  "y_grid_edges_m": [
+    -0.13138726764595587,
+    -0.06701215339858681,
+    -0.0026370391512177405,
+    0.0617380750961513
+  ],
+  "grid_3x3": [
+    {
+      "x_bin": 0,
+      "y_bin": 0,
+      "x_range_m": [
+        0.24198723549164758,
+        0.32204970178458536
+      ],
+      "y_range_m": [
+        -0.13138726764595587,
+        -0.06701215339858681
+      ],
+      "total": 7,
+      "failures": 2,
+      "successes": 5,
+      "failure_rate": 0.2857142857142857,
+      "failure_episode_ids": [
+        "red_013",
+        "red_084"
+      ]
+    },
+    {
+      "x_bin": 0,
+      "y_bin": 1,
+      "x_range_m": [
+        0.24198723549164758,
+        0.32204970178458536
+      ],
+      "y_range_m": [
+        -0.06701215339858681,
+        -0.0026370391512177405
+      ],
+      "total": 11,
+      "failures": 3,
+      "successes": 8,
+      "failure_rate": 0.2727272727272727,
+      "failure_episode_ids": [
+        "red_031",
+        "red_080",
+        "red_092"
+      ]
+    },
+    {
+      "x_bin": 0,
+      "y_bin": 2,
+      "x_range_m": [
+        0.24198723549164758,
+        0.32204970178458536
+      ],
+      "y_range_m": [
+        -0.0026370391512177405,
+        0.0617380750961513
+      ],
+      "total": 9,
+      "failures": 0,
+      "successes": 9,
+      "failure_rate": 0.0,
+      "failure_episode_ids": []
+    },
+    {
+      "x_bin": 1,
+      "y_bin": 0,
+      "x_range_m": [
+        0.32204970178458536,
+        0.40211216807752315
+      ],
+      "y_range_m": [
+        -0.13138726764595587,
+        -0.06701215339858681
+      ],
+      "total": 13,
+      "failures": 9,
+      "successes": 4,
+      "failure_rate": 0.6923076923076923,
+      "failure_episode_ids": [
+        "red_010",
+        "red_011",
+        "red_017",
+        "red_021",
+        "red_028",
+        "red_035",
+        "red_045",
+        "red_086",
+        "red_087"
+      ]
+    },
+    {
+      "x_bin": 1,
+      "y_bin": 1,
+      "x_range_m": [
+        0.32204970178458536,
+        0.40211216807752315
+      ],
+      "y_range_m": [
+        -0.06701215339858681,
+        -0.0026370391512177405
+      ],
+      "total": 16,
+      "failures": 3,
+      "successes": 13,
+      "failure_rate": 0.1875,
+      "failure_episode_ids": [
+        "red_029",
+        "red_050",
+        "red_083"
+      ]
+    },
+    {
+      "x_bin": 1,
+      "y_bin": 2,
+      "x_range_m": [
+        0.32204970178458536,
+        0.40211216807752315
+      ],
+      "y_range_m": [
+        -0.0026370391512177405,
+        0.0617380750961513
+      ],
+      "total": 8,
+      "failures": 0,
+      "successes": 8,
+      "failure_rate": 0.0,
+      "failure_episode_ids": []
+    },
+    {
+      "x_bin": 2,
+      "y_bin": 0,
+      "x_range_m": [
+        0.40211216807752315,
+        0.48217463437046093
+      ],
+      "y_range_m": [
+        -0.13138726764595587,
+        -0.06701215339858681
+      ],
+      "total": 13,
+      "failures": 9,
+      "successes": 4,
+      "failure_rate": 0.6923076923076923,
+      "failure_episode_ids": [
+        "red_014",
+        "red_026",
+        "red_052",
+        "red_055",
+        "red_061",
+        "red_070",
+        "red_075",
+        "red_089",
+        "red_091"
+      ]
+    },
+    {
+      "x_bin": 2,
+      "y_bin": 1,
+      "x_range_m": [
+        0.40211216807752315,
+        0.48217463437046093
+      ],
+      "y_range_m": [
+        -0.06701215339858681,
+        -0.0026370391512177405
+      ],
+      "total": 14,
+      "failures": 6,
+      "successes": 8,
+      "failure_rate": 0.42857142857142855,
+      "failure_episode_ids": [
+        "red_000",
+        "red_007",
+        "red_042",
+        "red_048",
+        "red_073",
+        "red_097"
+      ]
+    },
+    {
+      "x_bin": 2,
+      "y_bin": 2,
+      "x_range_m": [
+        0.40211216807752315,
+        0.48217463437046093
+      ],
+      "y_range_m": [
+        -0.0026370391512177405,
+        0.0617380750961513
+      ],
+      "total": 9,
+      "failures": 3,
+      "successes": 6,
+      "failure_rate": 0.3333333333333333,
+      "failure_episode_ids": [
+        "red_016",
+        "red_057",
+        "red_098"
+      ]
+    }
+  ],
+  "partitions": {
+    "y_negative": {
+      "total": 74,
+      "failures": 32,
+      "successes": 42,
+      "failure_rate": 0.43243243243243246,
+      "failure_episode_ids": [
+        "red_000",
+        "red_007",
+        "red_010",
+        "red_011",
+        "red_013",
+        "red_014",
+        "red_017",
+        "red_021",
+        "red_026",
+        "red_028",
+        "red_029",
+        "red_031",
+        "red_035",
+        "red_042",
+        "red_045",
+        "red_048",
+        "red_050",
+        "red_052",
+        "red_055",
+        "red_061",
+        "red_070",
+        "red_073",
+        "red_075",
+        "red_080",
+        "red_083",
+        "red_084",
+        "red_086",
+        "red_087",
+        "red_089",
+        "red_091",
+        "red_092",
+        "red_097"
+      ]
+    },
+    "y_nonnegative": {
+      "total": 26,
+      "failures": 3,
+      "successes": 23,
+      "failure_rate": 0.11538461538461539,
+      "failure_episode_ids": [
+        "red_016",
+        "red_057",
+        "red_098"
+      ]
+    },
+    "x_third_1": {
+      "total": 27,
+      "failures": 5,
+      "successes": 22,
+      "failure_rate": 0.18518518518518517,
+      "failure_episode_ids": [
+        "red_013",
+        "red_031",
+        "red_080",
+        "red_084",
+        "red_092"
+      ]
+    },
+    "x_third_2": {
+      "total": 37,
+      "failures": 12,
+      "successes": 25,
+      "failure_rate": 0.32432432432432434,
+      "failure_episode_ids": [
+        "red_010",
+        "red_011",
+        "red_017",
+        "red_021",
+        "red_028",
+        "red_029",
+        "red_035",
+        "red_045",
+        "red_050",
+        "red_083",
+        "red_086",
+        "red_087"
+      ]
+    },
+    "x_third_3": {
+      "total": 36,
+      "failures": 18,
+      "successes": 18,
+      "failure_rate": 0.5,
+      "failure_episode_ids": [
+        "red_000",
+        "red_007",
+        "red_014",
+        "red_016",
+        "red_026",
+        "red_042",
+        "red_048",
+        "red_052",
+        "red_055",
+        "red_057",
+        "red_061",
+        "red_070",
+        "red_073",
+        "red_075",
+        "red_089",
+        "red_091",
+        "red_097",
+        "red_098"
+      ]
+    },
+    "y_third_1": {
+      "total": 33,
+      "failures": 20,
+      "successes": 13,
+      "failure_rate": 0.6060606060606061,
+      "failure_episode_ids": [
+        "red_010",
+        "red_011",
+        "red_013",
+        "red_014",
+        "red_017",
+        "red_021",
+        "red_026",
+        "red_028",
+        "red_035",
+        "red_045",
+        "red_052",
+        "red_055",
+        "red_061",
+        "red_070",
+        "red_075",
+        "red_084",
+        "red_086",
+        "red_087",
+        "red_089",
+        "red_091"
+      ]
+    },
+    "y_third_2": {
+      "total": 41,
+      "failures": 12,
+      "successes": 29,
+      "failure_rate": 0.2926829268292683,
+      "failure_episode_ids": [
+        "red_000",
+        "red_007",
+        "red_029",
+        "red_031",
+        "red_042",
+        "red_048",
+        "red_050",
+        "red_073",
+        "red_080",
+        "red_083",
+        "red_092",
+        "red_097"
+      ]
+    },
+    "y_third_3": {
+      "total": 26,
+      "failures": 3,
+      "successes": 23,
+      "failure_rate": 0.11538461538461539,
+      "failure_episode_ids": [
+        "red_016",
+        "red_057",
+        "red_098"
+      ]
+    },
+    "boundary_lt_1cm": {
+      "total": 17,
+      "failures": 10,
+      "successes": 7,
+      "failure_rate": 0.5882352941176471,
+      "failure_episode_ids": [
+        "red_000",
+        "red_026",
+        "red_028",
+        "red_042",
+        "red_052",
+        "red_055",
+        "red_061",
+        "red_084",
+        "red_087",
+        "red_097"
+      ]
+    },
+    "boundary_ge_1cm": {
+      "total": 83,
+      "failures": 25,
+      "successes": 58,
+      "failure_rate": 0.30120481927710846,
+      "failure_episode_ids": [
+        "red_007",
+        "red_010",
+        "red_011",
+        "red_013",
+        "red_014",
+        "red_016",
+        "red_017",
+        "red_021",
+        "red_029",
+        "red_031",
+        "red_035",
+        "red_045",
+        "red_048",
+        "red_050",
+        "red_057",
+        "red_070",
+        "red_073",
+        "red_075",
+        "red_080",
+        "red_083",
+        "red_086",
+        "red_089",
+        "red_091",
+        "red_092",
+        "red_098"
+      ]
+    },
+    "boundary_lt_2cm": {
+      "total": 38,
+      "failures": 23,
+      "successes": 15,
+      "failure_rate": 0.6052631578947368,
+      "failure_episode_ids": [
+        "red_000",
+        "red_007",
+        "red_010",
+        "red_011",
+        "red_016",
+        "red_026",
+        "red_028",
+        "red_031",
+        "red_035",
+        "red_042",
+        "red_045",
+        "red_048",
+        "red_052",
+        "red_055",
+        "red_061",
+        "red_073",
+        "red_075",
+        "red_080",
+        "red_084",
+        "red_086",
+        "red_087",
+        "red_091",
+        "red_097"
+      ]
+    },
+    "boundary_ge_2cm": {
+      "total": 62,
+      "failures": 12,
+      "successes": 50,
+      "failure_rate": 0.1935483870967742,
+      "failure_episode_ids": [
+        "red_013",
+        "red_014",
+        "red_017",
+        "red_021",
+        "red_029",
+        "red_050",
+        "red_057",
+        "red_070",
+        "red_083",
+        "red_089",
+        "red_092",
+        "red_098"
+      ]
+    }
+  },
+  "distances": {
+    "success": {
+      "count": 65,
+      "robot_xy_distance_m": {
+        "mean": 0.35802249744866965,
+        "median": 0.3563351235113275,
+        "min": 0.2520309138563577,
+        "max": 0.46468307106600465
+      },
+      "box_xy_distance_m": {
+        "mean": 0.23666159977253856,
+        "median": 0.23503567884657686,
+        "min": 0.14473116870873595,
+        "max": 0.3413465968648245
+      },
+      "center_boundary_distance_m": {
+        "mean": 0.042683475325649936,
+        "median": 0.041505286701027974,
+        "min": 0.0014666078147078931,
+        "max": 0.09010292168563298
+      }
+    },
+    "failure": {
+      "count": 35,
+      "robot_xy_distance_m": {
+        "mean": 0.41276652295062904,
+        "median": 0.42306936279533075,
+        "min": 0.2581189578600267,
+        "max": 0.49464906072158243
+      },
+      "box_xy_distance_m": {
+        "mean": 0.30151839477461523,
+        "median": 0.31689944278744514,
+        "min": 0.21501776003784626,
+        "max": 0.36026380288833626
+      },
+      "center_boundary_distance_m": {
+        "mean": 0.023816609157621904,
+        "median": 0.015924937615137497,
+        "min": 0.0008132224395493715,
+        "max": 0.08545077212923514
+      }
+    }
+  },
+  "source_counts": {
+    "run/episodes/red_000/report.json": 1,
+    "run/episodes/red_001/report.json": 1,
+    "run/episodes/red_002/report.json": 1,
+    "run/episodes/red_003/report.json": 1,
+    "run/episodes/red_004/report.json": 1,
+    "run/episodes/red_005/report.json": 1,
+    "run/episodes/red_006/report.json": 1,
+    "run/episodes/red_007/report.json": 1,
+    "run/episodes/red_008/report.json": 1,
+    "run/episodes/red_009/report.json": 1,
+    "run/episodes/red_010/report.json": 1,
+    "run/episodes/red_011/report.json": 1,
+    "run/episodes/red_012/report.json": 1,
+    "run/episodes/red_013/report.json": 1,
+    "run/episodes/red_014/report.json": 1,
+    "run/episodes/red_015/report.json": 1,
+    "run/episodes/red_016/report.json": 1,
+    "run/episodes/red_017/report.json": 1,
+    "run/episodes/red_018/report.json": 1,
+    "run/episodes/red_019/report.json": 1,
+    "run/episodes/red_020/report.json": 1,
+    "run/episodes/red_021/report.json": 1,
+    "run/episodes/red_022/report.json": 1,
+    "run/episodes/red_023/report.json": 1,
+    "run/episodes/red_024/report.json": 1,
+    "run/episodes/red_025/report.json": 1,
+    "run/episodes/red_026/report.json": 1,
+    "run/episodes/red_027/report.json": 1,
+    "run/episodes/red_028/report.json": 1,
+    "run/episodes/red_029/report.json": 1,
+    "run/episodes/red_030/report.json": 1,
+    "run/episodes/red_031/report.json": 1,
+    "run/episodes/red_032/report.json": 1,
+    "run/episodes/red_033/report.json": 1,
+    "run/episodes/red_034/report.json": 1,
+    "run/episodes/red_035/report.json": 1,
+    "run/episodes/red_036/report.json": 1,
+    "run/episodes/red_037/report.json": 1,
+    "run/episodes/red_038/report.json": 1,
+    "run/episodes/red_039/report.json": 1,
+    "run/episodes/red_040/report.json": 1,
+    "run/episodes/red_041/report.json": 1,
+    "run/episodes/red_042/report.json": 1,
+    "run/episodes/red_043/report.json": 1,
+    "run/episodes/red_044/report.json": 1,
+    "run/episodes/red_045/report.json": 1,
+    "run/episodes/red_046/report.json": 1,
+    "run/episodes/red_047/report.json": 1,
+    "run/episodes/red_048/report.json": 1,
+    "run/episodes/red_049/report.json": 1,
+    "run/episodes/red_050/report.json": 1,
+    "run/episodes/red_051/report.json": 1,
+    "run/episodes/red_052/report.json": 1,
+    "run/episodes/red_053/report.json": 1,
+    "run/episodes/red_054/report.json": 1,
+    "run/episodes/red_055/report.json": 1,
+    "run/episodes/red_056/report.json": 1,
+    "run/episodes/red_057/report.json": 1,
+    "run/episodes/red_058/report.json": 1,
+    "run/episodes/red_059/report.json": 1,
+    "run/episodes/red_060/report.json": 1,
+    "run/episodes/red_061/report.json": 1,
+    "run/episodes/red_062/report.json": 1,
+    "run/episodes/red_063/report.json": 1,
+    "run/episodes/red_064/report.json": 1,
+    "run/episodes/red_065/report.json": 1,
+    "run/episodes/red_066/report.json": 1,
+    "run/episodes/red_067/report.json": 1,
+    "run/episodes/red_068/report.json": 1,
+    "run/episodes/red_069/report.json": 1,
+    "run/episodes/red_070/report.json": 1,
+    "run/episodes/red_071/report.json": 1,
+    "run/episodes/red_072/report.json": 1,
+    "run/episodes/red_073/report.json": 1,
+    "run/episodes/red_074/report.json": 1,
+    "run/episodes/red_075/report.json": 1,
+    "run/episodes/red_076/report.json": 1,
+    "run/episodes/red_077/report.json": 1,
+    "run/episodes/red_078/report.json": 1,
+    "run/episodes/red_079/report.json": 1,
+    "run/episodes/red_080/report.json": 1,
+    "run/episodes/red_081/report.json": 1,
+    "run/episodes/red_082/report.json": 1,
+    "run/episodes/red_083/report.json": 1,
+    "run/episodes/red_084/report.json": 1,
+    "run/episodes/red_085/report.json": 1,
+    "run/episodes/red_086/report.json": 1,
+    "run/episodes/red_087/report.json": 1,
+    "run/episodes/red_088/report.json": 1,
+    "run/episodes/red_089/report.json": 1,
+    "run/episodes/red_090/report.json": 1,
+    "run/episodes/red_091/report.json": 1,
+    "run/episodes/red_092/report.json": 1,
+    "run/episodes/red_093/report.json": 1,
+    "run/episodes/red_094/report.json": 1,
+    "run/episodes/red_095/report.json": 1,
+    "run/episodes/red_096/report.json": 1,
+    "run/episodes/red_097/report.json": 1,
+    "run/episodes/red_098/report.json": 1,
+    "run/episodes/red_099/report.json": 1
+  },
+  "background": "run/episodes/red_000/initial_up.jpg",
+  "camera_source": "run/episodes/red_000/report.json:cameras.up",
+  "episodes": [
+    {
+      "episode_id": "red_000",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_000/report.json",
+      "actual_initial_xy_m": [
+        0.47240883111953735,
+        -0.03264524042606354
+      ],
+      "center_xy_m": [
+        0.4724087041947062,
+        -0.03264525780778474
+      ],
+      "pair_index": 0,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4735353172217022,
+      "box_xy_distance_m": 0.28444418770598573,
+      "center_boundary_distance_m": 0.009765930175754722
+    },
+    {
+      "episode_id": "red_001",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.383333333333333,
+      "source": "run/episodes/red_001/report.json",
+      "actual_initial_xy_m": [
+        0.3349984586238861,
+        -0.004290420096367598
+      ],
+      "center_xy_m": [
+        0.33499834874689555,
+        -0.004290442096439355
+      ],
+      "pair_index": 1,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.33502582222349603,
+      "box_xy_distance_m": 0.20983667700805678,
+      "center_boundary_distance_m": 0.06602851719259065
+    },
+    {
+      "episode_id": "red_002",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.575,
+      "source": "run/episodes/red_002/report.json",
+      "actual_initial_xy_m": [
+        0.27764832973480225,
+        -0.049698300659656525
+      ],
+      "center_xy_m": [
+        0.2776482188124726,
+        -0.049698320994723794
+      ],
+      "pair_index": 2,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.2820610865033198,
+      "box_xy_distance_m": 0.2571515614205012,
+      "center_boundary_distance_m": 0.03566098332082501
+    },
+    {
+      "episode_id": "red_003",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.841666666666667,
+      "source": "run/episodes/red_003/report.json",
+      "actual_initial_xy_m": [
+        0.29390856623649597,
+        0.05485714599490166
+      ],
+      "center_xy_m": [
+        0.293908451963226,
+        0.05485712884772042
+      ],
+      "pair_index": 3,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.29898408439386087,
+      "box_xy_distance_m": 0.15134288359193634,
+      "center_boundary_distance_m": 0.006880946248430879
+    },
+    {
+      "episode_id": "red_004",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 8.641666666666666,
+      "source": "run/episodes/red_004/report.json",
+      "actual_initial_xy_m": [
+        0.380135715007782,
+        -0.11492283642292023
+      ],
+      "center_xy_m": [
+        0.38013559957640664,
+        -0.11492286860100848
+      ],
+      "pair_index": 4,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3971276114711728,
+      "box_xy_distance_m": 0.3260263351840023,
+      "center_boundary_distance_m": 0.016464399044947398
+    },
+    {
+      "episode_id": "red_005",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.283333333333333,
+      "source": "run/episodes/red_005/report.json",
+      "actual_initial_xy_m": [
+        0.2848426103591919,
+        0.04947591572999954
+      ],
+      "center_xy_m": [
+        0.28484249828396974,
+        0.049475896069563076
+      ],
+      "pair_index": 5,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.2891074421742538,
+      "box_xy_distance_m": 0.15817844192827285,
+      "center_boundary_distance_m": 0.012262179026588223
+    },
+    {
+      "episode_id": "red_006",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.783333333333333,
+      "source": "run/episodes/red_006/report.json",
+      "actual_initial_xy_m": [
+        0.3910982608795166,
+        -0.06412187963724136
+      ],
+      "center_xy_m": [
+        0.39109815111397017,
+        -0.06412196608081261
+      ],
+      "pair_index": 6,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.39631980815855616,
+      "box_xy_distance_m": 0.27917993393495083,
+      "center_boundary_distance_m": 0.06726530156514327
+    },
+    {
+      "episode_id": "red_007",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_007/report.json",
+      "actual_initial_xy_m": [
+        0.4665836989879608,
+        -0.0666661262512207
+      ],
+      "center_xy_m": [
+        0.4665835876795196,
+        -0.0666662158464003
+      ],
+      "pair_index": 7,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4713222131696858,
+      "box_xy_distance_m": 0.310512621454421,
+      "center_boundary_distance_m": 0.015591046690941357
+    },
+    {
+      "episode_id": "red_008",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.7749999999999995,
+      "source": "run/episodes/red_008/report.json",
+      "actual_initial_xy_m": [
+        0.34582558274269104,
+        -0.08988188952207565
+      ],
+      "center_xy_m": [
+        0.34582545324581593,
+        -0.0898819809449279
+      ],
+      "pair_index": 8,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3573150075371288,
+      "box_xy_distance_m": 0.29607691714643136,
+      "center_boundary_distance_m": 0.041505286701027974
+    },
+    {
+      "episode_id": "red_009",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.733333333333333,
+      "source": "run/episodes/red_009/report.json",
+      "actual_initial_xy_m": [
+        0.36803701519966125,
+        -0.024458089843392372
+      ],
+      "center_xy_m": [
+        0.3680369069732885,
+        -0.024458113908921622
+      ],
+      "pair_index": 9,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3688487010014361,
+      "box_xy_distance_m": 0.23503567884657686,
+      "center_boundary_distance_m": 0.08619618900507292
+    },
+    {
+      "episode_id": "red_010",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_010/report.json",
+      "actual_initial_xy_m": [
+        0.3493756949901581,
+        -0.11272093653678894
+      ],
+      "center_xy_m": [
+        0.3493755802992562,
+        -0.11272102583115329
+      ],
+      "pair_index": 10,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3671094193477873,
+      "box_xy_distance_m": 0.31916147838457387,
+      "center_boundary_distance_m": 0.018666241814802587
+    },
+    {
+      "episode_id": "red_011",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_011/report.json",
+      "actual_initial_xy_m": [
+        0.34625324606895447,
+        -0.11487378180027008
+      ],
+      "center_xy_m": [
+        0.34625312799140073,
+        -0.11487387451513645
+      ],
+      "pair_index": 11,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3648112329547278,
+      "box_xy_distance_m": 0.3209886544076324,
+      "center_boundary_distance_m": 0.016513393130819426
+    },
+    {
+      "episode_id": "red_012",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.491666666666666,
+      "source": "run/episodes/red_012/report.json",
+      "actual_initial_xy_m": [
+        0.2946818768978119,
+        -0.03455246239900589
+      ],
+      "center_xy_m": [
+        0.294681769611973,
+        -0.034552479365750906
+      ],
+      "pair_index": 12,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.29670055472136314,
+      "box_xy_distance_m": 0.24010534076170614,
+      "center_boundary_distance_m": 0.05269453412032543
+    },
+    {
+      "episode_id": "red_013",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_013/report.json",
+      "actual_initial_xy_m": [
+        0.26307371258735657,
+        -0.10787943750619888
+      ],
+      "center_xy_m": [
+        0.26307359207763426,
+        -0.1078795243338532
+      ],
+      "pair_index": 13,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.2843337943669868,
+      "box_xy_distance_m": 0.31689944278744514,
+      "center_boundary_distance_m": 0.021086356585986676
+    },
+    {
+      "episode_id": "red_014",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_014/report.json",
+      "actual_initial_xy_m": [
+        0.4199505150318146,
+        -0.10679645836353302
+      ],
+      "center_xy_m": [
+        0.4199504013021462,
+        -0.10679654544119786
+      ],
+      "pair_index": 14,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4333172529129293,
+      "box_xy_distance_m": 0.3284706890085518,
+      "center_boundary_distance_m": 0.02459072220475801
+    },
+    {
+      "episode_id": "red_015",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.45,
+      "source": "run/episodes/red_015/report.json",
+      "actual_initial_xy_m": [
+        0.3466959297657013,
+        -0.0227565448731184
+      ],
+      "center_xy_m": [
+        0.3466958184649448,
+        -0.022756568871833714
+      ],
+      "pair_index": 15,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3474418684728374,
+      "box_xy_distance_m": 0.2295223228883509,
+      "center_boundary_distance_m": 0.084494643967985
+    },
+    {
+      "episode_id": "red_016",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_016/report.json",
+      "actual_initial_xy_m": [
+        0.4671313166618347,
+        0.041198018938302994
+      ],
+      "center_xy_m": [
+        0.4671311844984141,
+        0.04119799854379144
+      ],
+      "pair_index": 16,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.46894436622578767,
+      "box_xy_distance_m": 0.22291079799817887,
+      "center_boundary_distance_m": 0.01504344987204681
+    },
+    {
+      "episode_id": "red_017",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_017/report.json",
+      "actual_initial_xy_m": [
+        0.3920079469680786,
+        -0.09848159551620483
+      ],
+      "center_xy_m": [
+        0.39200781721283795,
+        -0.09848162526824306
+      ],
+      "pair_index": 17,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.40418901428842474,
+      "box_xy_distance_m": 0.3126174582664266,
+      "center_boundary_distance_m": 0.03290564237771282
+    },
+    {
+      "episode_id": "red_018",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.675,
+      "source": "run/episodes/red_018/report.json",
+      "actual_initial_xy_m": [
+        0.36470839381217957,
+        -0.005423428025096655
+      ],
+      "center_xy_m": [
+        0.3647082757522777,
+        -0.005423450591022672
+      ],
+      "pair_index": 18,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3647485986518834,
+      "box_xy_distance_m": 0.21574068968649632,
+      "center_boundary_distance_m": 0.06716152568717397
+    },
+    {
+      "episode_id": "red_019",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.783333333333333,
+      "source": "run/episodes/red_019/report.json",
+      "actual_initial_xy_m": [
+        0.26723548769950867,
+        -0.07926632463932037
+      ],
+      "center_xy_m": [
+        0.26723537794938546,
+        -0.07926641476720953
+      ],
+      "pair_index": 19,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.27874345147069945,
+      "box_xy_distance_m": 0.28799291130020366,
+      "center_boundary_distance_m": 0.025248142457737877
+    },
+    {
+      "episode_id": "red_020",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.941666666666666,
+      "source": "run/episodes/red_020/report.json",
+      "actual_initial_xy_m": [
+        0.3243918716907501,
+        -0.04883967339992523
+      ],
+      "center_xy_m": [
+        0.32439175216848126,
+        -0.0488396914982979
+      ],
+      "pair_index": 20,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3280477470439117,
+      "box_xy_distance_m": 0.25363727918699025,
+      "center_boundary_distance_m": 0.08240451667683368
+    },
+    {
+      "episode_id": "red_021",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_021/report.json",
+      "actual_initial_xy_m": [
+        0.39103829860687256,
+        -0.06992264837026596
+      ],
+      "center_xy_m": [
+        0.39103818759055164,
+        -0.06992273967685918
+      ],
+      "pair_index": 21,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3972405488844527,
+      "box_xy_distance_m": 0.2847527452157112,
+      "center_boundary_distance_m": 0.0614645279690967
+    },
+    {
+      "episode_id": "red_022",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.583333333333333,
+      "source": "run/episodes/red_022/report.json",
+      "actual_initial_xy_m": [
+        0.30552902817726135,
+        0.031393662095069885
+      ],
+      "center_xy_m": [
+        0.30552889775323666,
+        0.0313936446819745
+      ],
+      "pair_index": 22,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.30713753969309227,
+      "box_xy_distance_m": 0.17354001061937785,
+      "center_boundary_distance_m": 0.030344430414176796
+    },
+    {
+      "episode_id": "red_023",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.458333333333333,
+      "source": "run/episodes/red_023/report.json",
+      "actual_initial_xy_m": [
+        0.3554593324661255,
+        0.026578621938824654
+      ],
+      "center_xy_m": [
+        0.35545920150889465,
+        0.026578597210786783
+      ],
+      "pair_index": 23,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.35645149146417415,
+      "box_xy_distance_m": 0.182481115773379,
+      "center_boundary_distance_m": 0.03515947788536451
+    },
+    {
+      "episode_id": "red_024",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.816666666666666,
+      "source": "run/episodes/red_024/report.json",
+      "actual_initial_xy_m": [
+        0.2906264066696167,
+        -0.11600462347269058
+      ],
+      "center_xy_m": [
+        0.29062628503818927,
+        -0.11600471341274028
+      ],
+      "pair_index": 24,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.31292288361363224,
+      "box_xy_distance_m": 0.3216161196867356,
+      "center_boundary_distance_m": 0.015382554233215592
+    },
+    {
+      "episode_id": "red_025",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.375,
+      "source": "run/episodes/red_025/report.json",
+      "actual_initial_xy_m": [
+        0.4317752420902252,
+        0.04162304475903511
+      ],
+      "center_xy_m": [
+        0.43177511856789696,
+        0.0416230253942486
+      ],
+      "pair_index": 25,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.4337767043736809,
+      "box_xy_distance_m": 0.20020585452628467,
+      "center_boundary_distance_m": 0.0201150497019027
+    },
+    {
+      "episode_id": "red_026",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_026/report.json",
+      "actual_initial_xy_m": [
+        0.4798489809036255,
+        -0.11018723994493484
+      ],
+      "center_xy_m": [
+        0.47984884916911263,
+        -0.11018733860528539
+      ],
+      "pair_index": 26,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.49233745301148646,
+      "box_xy_distance_m": 0.35512023301474777,
+      "center_boundary_distance_m": 0.002325785201348296
+    },
+    {
+      "episode_id": "red_027",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.591666666666667,
+      "source": "run/episodes/red_027/report.json",
+      "actual_initial_xy_m": [
+        0.4256008267402649,
+        -0.017430730164051056
+      ],
+      "center_xy_m": [
+        0.4256007160992965,
+        -0.017430755105430795
+      ],
+      "pair_index": 27,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4259575105192764,
+      "box_xy_distance_m": 0.24784404904029875,
+      "center_boundary_distance_m": 0.056573918271164425
+    },
+    {
+      "episode_id": "red_028",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_028/report.json",
+      "actual_initial_xy_m": [
+        0.3984237611293793,
+        -0.12895159423351288
+      ],
+      "center_xy_m": [
+        0.39842363804866765,
+        -0.12895163255171738
+      ],
+      "pair_index": 28,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.41877191750843185,
+      "box_xy_distance_m": 0.34373348544354604,
+      "center_boundary_distance_m": 0.0024356350942384974
+    },
+    {
+      "episode_id": "red_029",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_029/report.json",
+      "actual_initial_xy_m": [
+        0.399607390165329,
+        -0.024564871564507484
+      ],
+      "center_xy_m": [
+        0.3996072775561285,
+        -0.024564894974828534
+      ],
+      "pair_index": 29,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.40036159948344835,
+      "box_xy_distance_m": 0.2441331974128354,
+      "center_boundary_distance_m": 0.08256735681433242
+    },
+    {
+      "episode_id": "red_030",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 15.341666666666667,
+      "source": "run/episodes/red_030/report.json",
+      "actual_initial_xy_m": [
+        0.3422783613204956,
+        -0.1299205869436264
+      ],
+      "center_xy_m": [
+        0.34227822935279395,
+        -0.12992065983124798
+      ],
+      "pair_index": 30,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3661062197503215,
+      "box_xy_distance_m": 0.33562973302798416,
+      "center_boundary_distance_m": 0.0014666078147078931
+    },
+    {
+      "episode_id": "red_031",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_031/report.json",
+      "actual_initial_xy_m": [
+        0.25282105803489685,
+        -0.0520285964012146
+      ],
+      "center_xy_m": [
+        0.2528209240644383,
+        -0.05202861483789266
+      ],
+      "pair_index": 31,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.2581189578600267,
+      "box_xy_distance_m": 0.2642280799421501,
+      "center_boundary_distance_m": 0.010833688572790712
+    },
+    {
+      "episode_id": "red_032",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.85,
+      "source": "run/episodes/red_032/report.json",
+      "actual_initial_xy_m": [
+        0.43758413195610046,
+        -0.03025996871292591
+      ],
+      "center_xy_m": [
+        0.4375840099436802,
+        -0.030259992093128588
+      ],
+      "pair_index": 32,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.43862903788949836,
+      "box_xy_distance_m": 0.26470799904450276,
+      "center_boundary_distance_m": 0.044590624426780745
+    },
+    {
+      "episode_id": "red_033",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.716666666666667,
+      "source": "run/episodes/red_033/report.json",
+      "actual_initial_xy_m": [
+        0.4414413571357727,
+        0.03615241125226021
+      ],
+      "center_xy_m": [
+        0.4414412503128989,
+        0.03615239208775617
+      ],
+      "pair_index": 33,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.4429191494296474,
+      "box_xy_distance_m": 0.21032393562159338,
+      "center_boundary_distance_m": 0.02558568300839513
+    },
+    {
+      "episode_id": "red_034",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.783333333333333,
+      "source": "run/episodes/red_034/report.json",
+      "actual_initial_xy_m": [
+        0.36650800704956055,
+        -0.019085846841335297
+      ],
+      "center_xy_m": [
+        0.36650789975230635,
+        -0.01908587015051765
+      ],
+      "pair_index": 34,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.36700451089904745,
+      "box_xy_distance_m": 0.22945784704123012,
+      "center_boundary_distance_m": 0.08082394524666894
+    },
+    {
+      "episode_id": "red_035",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_035/report.json",
+      "actual_initial_xy_m": [
+        0.38177189230918884,
+        -0.11592694371938705
+      ],
+      "center_xy_m": [
+        0.38177177615104085,
+        -0.11592703270147353
+      ],
+      "pair_index": 35,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.39898466884892825,
+      "box_xy_distance_m": 0.32733770811525403,
+      "center_boundary_distance_m": 0.015460234944482343
+    },
+    {
+      "episode_id": "red_036",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.608333333333333,
+      "source": "run/episodes/red_036/report.json",
+      "actual_initial_xy_m": [
+        0.44765907526016235,
+        -0.06864089518785477
+      ],
+      "center_xy_m": [
+        0.4476589598134759,
+        -0.06864099188149879
+      ],
+      "pair_index": 36,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4528908588918077,
+      "box_xy_distance_m": 0.3035381981637604,
+      "center_boundary_distance_m": 0.03451567455698501
+    },
+    {
+      "episode_id": "red_037",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.283333333333333,
+      "source": "run/episodes/red_037/report.json",
+      "actual_initial_xy_m": [
+        0.299135684967041,
+        -0.06980618089437485
+      ],
+      "center_xy_m": [
+        0.29913555247703794,
+        -0.06980628114895679
+      ],
+      "pair_index": 37,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3071725828318503,
+      "box_xy_distance_m": 0.274940796327275,
+      "center_boundary_distance_m": 0.05714831698539036
+    },
+    {
+      "episode_id": "red_038",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.35,
+      "source": "run/episodes/red_038/report.json",
+      "actual_initial_xy_m": [
+        0.25504183769226074,
+        -0.01845320127904415
+      ],
+      "center_xy_m": [
+        0.2550417232322256,
+        -0.0184532245215471
+      ],
+      "pair_index": 38,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.25570843178218783,
+      "box_xy_distance_m": 0.23115865556892837,
+      "center_boundary_distance_m": 0.013054487740578047
+    },
+    {
+      "episode_id": "red_039",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.683333333333334,
+      "source": "run/episodes/red_039/report.json",
+      "actual_initial_xy_m": [
+        0.2922891676425934,
+        -0.07395701855421066
+      ],
+      "center_xy_m": [
+        0.29228904886383156,
+        -0.07395710906813027
+      ],
+      "pair_index": 39,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3015004843568889,
+      "box_xy_distance_m": 0.27957073069499616,
+      "center_boundary_distance_m": 0.05030181337218398
+    },
+    {
+      "episode_id": "red_040",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.991666666666666,
+      "source": "run/episodes/red_040/report.json",
+      "actual_initial_xy_m": [
+        0.36313527822494507,
+        -0.09478593617677689
+      ],
+      "center_xy_m": [
+        0.36313517020112523,
+        -0.09478602352394143
+      ],
+      "pair_index": 40,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.37530193457066185,
+      "box_xy_distance_m": 0.3031861250406153,
+      "center_boundary_distance_m": 0.036601244122014445
+    },
+    {
+      "episode_id": "red_041",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.425,
+      "source": "run/episodes/red_041/report.json",
+      "actual_initial_xy_m": [
+        0.35281968116760254,
+        0.04993082582950592
+      ],
+      "center_xy_m": [
+        0.35281955006935317,
+        0.04993080548811745
+      ],
+      "pair_index": 41,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.3563351235113275,
+      "box_xy_distance_m": 0.15913695252895804,
+      "center_boundary_distance_m": 0.011807269608033848
+    },
+    {
+      "episode_id": "red_042",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_042/report.json",
+      "actual_initial_xy_m": [
+        0.47971633076667786,
+        -0.02611974999308586
+      ],
+      "center_xy_m": [
+        0.4797162122488095,
+        -0.026119769672763672
+      ],
+      "pair_index": 42,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4804267755465999,
+      "box_xy_distance_m": 0.2831960727849437,
+      "center_boundary_distance_m": 0.002458422121651427
+    },
+    {
+      "episode_id": "red_043",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 8.491666666666667,
+      "source": "run/episodes/red_043/report.json",
+      "actual_initial_xy_m": [
+        0.4646221697330475,
+        0.007530136499553919
+      ],
+      "center_xy_m": [
+        0.4646220549094313,
+        0.007530114678471228
+      ],
+      "pair_index": 43,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.46468307106600465,
+      "box_xy_distance_m": 0.24713184224081444,
+      "center_boundary_distance_m": 0.017552579461029616
+    },
+    {
+      "episode_id": "red_044",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.425,
+      "source": "run/episodes/red_044/report.json",
+      "actual_initial_xy_m": [
+        0.3595890402793884,
+        0.0421893484890461
+      ],
+      "center_xy_m": [
+        0.3595889330288979,
+        0.042189328139523835
+      ],
+      "pair_index": 44,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.36205543797286854,
+      "box_xy_distance_m": 0.16831585197848428,
+      "center_boundary_distance_m": 0.019548746956627464
+    },
+    {
+      "episode_id": "red_045",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_045/report.json",
+      "actual_initial_xy_m": [
+        0.353099524974823,
+        -0.11546223610639572
+      ],
+      "center_xy_m": [
+        0.3530994202513888,
+        -0.11546233003081838
+      ],
+      "pair_index": 45,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.37149798147232577,
+      "box_xy_distance_m": 0.32229999594780917,
+      "center_boundary_distance_m": 0.015924937615137497
+    },
+    {
+      "episode_id": "red_046",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.6,
+      "source": "run/episodes/red_046/report.json",
+      "actual_initial_xy_m": [
+        0.2623678147792816,
+        -0.052992917597293854
+      ],
+      "center_xy_m": [
+        0.26236769931749254,
+        -0.05299293772205614
+      ],
+      "pair_index": 46,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.267665950568181,
+      "box_xy_distance_m": 0.2630698094868071,
+      "center_boundary_distance_m": 0.020380463825844963
+    },
+    {
+      "episode_id": "red_047",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.816666666666666,
+      "source": "run/episodes/red_047/report.json",
+      "actual_initial_xy_m": [
+        0.40948286652565,
+        -0.014380039647221565
+      ],
+      "center_xy_m": [
+        0.4094827579414004,
+        -0.014380060862779726
+      ],
+      "pair_index": 47,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.40973517691517863,
+      "box_xy_distance_m": 0.23831375408483,
+      "center_boundary_distance_m": 0.07269187642906055
+    },
+    {
+      "episode_id": "red_048",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_048/report.json",
+      "actual_initial_xy_m": [
+        0.46565619111061096,
+        -0.05689564347267151
+      ],
+      "center_xy_m": [
+        0.46565606593301756,
+        -0.05689566277728601
+      ],
+      "pair_index": 48,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4691190554465694,
+      "box_xy_distance_m": 0.30155025425048765,
+      "center_boundary_distance_m": 0.01651856843744337
+    },
+    {
+      "episode_id": "red_049",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.283333333333333,
+      "source": "run/episodes/red_049/report.json",
+      "actual_initial_xy_m": [
+        0.28550875186920166,
+        0.00884635653346777
+      ],
+      "center_xy_m": [
+        0.28550863495264345,
+        0.008846333716571043
+      ],
+      "pair_index": 49,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.28564565155581617,
+      "box_xy_distance_m": 0.198089631876549,
+      "center_boundary_distance_m": 0.04352139946099587
+    },
+    {
+      "episode_id": "red_050",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_050/report.json",
+      "actual_initial_xy_m": [
+        0.3351939618587494,
+        -0.06662753969430923
+      ],
+      "center_xy_m": [
+        0.3351938516684489,
+        -0.06662762833707968
+      ],
+      "pair_index": 50,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.34175160431833257,
+      "box_xy_distance_m": 0.2719811123796654,
+      "center_boundary_distance_m": 0.0647596393088762
+    },
+    {
+      "episode_id": "red_051",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.35,
+      "source": "run/episodes/red_051/report.json",
+      "actual_initial_xy_m": [
+        0.32609254121780396,
+        0.02860337682068348
+      ],
+      "center_xy_m": [
+        0.32609242811311806,
+        0.028603354697187968
+      ],
+      "pair_index": 51,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.32734450289052086,
+      "box_xy_distance_m": 0.17635529277606063,
+      "center_boundary_distance_m": 0.03313472039896333
+    },
+    {
+      "episode_id": "red_052",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_052/report.json",
+      "actual_initial_xy_m": [
+        0.4810035526752472,
+        -0.11538355052471161
+      ],
+      "center_xy_m": [
+        0.48100343963312364,
+        -0.11538363980152365
+      ],
+      "pair_index": 52,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.49464906072158243,
+      "box_xy_distance_m": 0.36026380288833626,
+      "center_boundary_distance_m": 0.0011711947373372888
+    },
+    {
+      "episode_id": "red_053",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.325,
+      "source": "run/episodes/red_053/report.json",
+      "actual_initial_xy_m": [
+        0.2927161455154419,
+        -0.013766642659902573
+      ],
+      "center_xy_m": [
+        0.29271601944829345,
+        -0.013766665010441478
+      ],
+      "pair_index": 53,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.29303956918335006,
+      "box_xy_distance_m": 0.21960142577341638,
+      "center_boundary_distance_m": 0.05072878395664587
+    },
+    {
+      "episode_id": "red_054",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.941666666666666,
+      "source": "run/episodes/red_054/report.json",
+      "actual_initial_xy_m": [
+        0.40952250361442566,
+        -0.12351474910974503
+      ],
+      "center_xy_m": [
+        0.4095223714883202,
+        -0.12351483535631806
+      ],
+      "pair_index": 54,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.42774348306258986,
+      "box_xy_distance_m": 0.3413465968648245,
+      "center_boundary_distance_m": 0.007872432289637812
+    },
+    {
+      "episode_id": "red_055",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_055/report.json",
+      "actual_initial_xy_m": [
+        0.4498802423477173,
+        -0.1270710825920105
+      ],
+      "center_xy_m": [
+        0.4498800953712616,
+        -0.12707112979069077
+      ],
+      "pair_index": 55,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4674817346565939,
+      "box_xy_distance_m": 0.35787903871223853,
+      "center_boundary_distance_m": 0.004316137855265106
+    },
+    {
+      "episode_id": "red_056",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.991666666666666,
+      "source": "run/episodes/red_056/report.json",
+      "actual_initial_xy_m": [
+        0.334930956363678,
+        -0.028364824131131172
+      ],
+      "center_xy_m": [
+        0.33493083566177906,
+        -0.028364846589481685
+      ],
+      "pair_index": 56,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.33612978029199153,
+      "box_xy_distance_m": 0.23381256653448082,
+      "center_boundary_distance_m": 0.09010292168563298
+    },
+    {
+      "episode_id": "red_057",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_057/report.json",
+      "actual_initial_xy_m": [
+        0.4507305324077606,
+        0.03742889687418938
+      ],
+      "center_xy_m": [
+        0.45073040109615364,
+        0.03742888002664896
+      ],
+      "pair_index": 57,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.4522817877522251,
+      "box_xy_distance_m": 0.21501776003784626,
+      "center_boundary_distance_m": 0.02430919506950234
+    },
+    {
+      "episode_id": "red_058",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.216666666666667,
+      "source": "run/episodes/red_058/report.json",
+      "actual_initial_xy_m": [
+        0.3279170095920563,
+        0.03709997236728668
+      ],
+      "center_xy_m": [
+        0.327916899843837,
+        0.037099952079615264
+      ],
+      "pair_index": 58,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.3300089387387905,
+      "box_xy_distance_m": 0.16799900573742654,
+      "center_boundary_distance_m": 0.024638123016536034
+    },
+    {
+      "episode_id": "red_059",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.608333333333333,
+      "source": "run/episodes/red_059/report.json",
+      "actual_initial_xy_m": [
+        0.345262348651886,
+        0.056103259325027466
+      ],
+      "center_xy_m": [
+        0.34526223113715837,
+        0.056103241641276134
+      ],
+      "pair_index": 59,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.34979076884970534,
+      "box_xy_distance_m": 0.15148155352755896,
+      "center_boundary_distance_m": 0.005634833454875164
+    },
+    {
+      "episode_id": "red_060",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.908333333333333,
+      "source": "run/episodes/red_060/report.json",
+      "actual_initial_xy_m": [
+        0.297053724527359,
+        0.0007437628228217363
+      ],
+      "center_xy_m": [
+        0.29705361695497234,
+        0.0007437403695187486
+      ],
+      "pair_index": 60,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.2970545480139442,
+      "box_xy_distance_m": 0.20473777814126592,
+      "center_boundary_distance_m": 0.055066381463324765
+    },
+    {
+      "episode_id": "red_061",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_061/report.json",
+      "actual_initial_xy_m": [
+        0.47893983125686646,
+        -0.08996980637311935
+      ],
+      "center_xy_m": [
+        0.4789397075466645,
+        -0.08996990226914253
+      ],
+      "pair_index": 61,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4873169674649176,
+      "box_xy_distance_m": 0.33688435722509064,
+      "center_boundary_distance_m": 0.003234926823796447
+    },
+    {
+      "episode_id": "red_062",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.583333333333333,
+      "source": "run/episodes/red_062/report.json",
+      "actual_initial_xy_m": [
+        0.3553791344165802,
+        -0.012839828617870808
+      ],
+      "center_xy_m": [
+        0.3553790054693966,
+        -0.01283985113343903
+      ],
+      "pair_index": 62,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3556108818716692,
+      "box_xy_distance_m": 0.22109924504286776,
+      "center_boundary_distance_m": 0.07457792622959034
+    },
+    {
+      "episode_id": "red_063",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.3,
+      "source": "run/episodes/red_063/report.json",
+      "actual_initial_xy_m": [
+        0.2807151973247528,
+        0.025383425876498222
+      ],
+      "center_xy_m": [
+        0.28071507679085234,
+        0.025383404990960624
+      ],
+      "pair_index": 63,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.28186037604925823,
+      "box_xy_distance_m": 0.1826149040071237,
+      "center_boundary_distance_m": 0.036354670105190674
+    },
+    {
+      "episode_id": "red_064",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.6,
+      "source": "run/episodes/red_064/report.json",
+      "actual_initial_xy_m": [
+        0.31489163637161255,
+        -0.05403832718729973
+      ],
+      "center_xy_m": [
+        0.3148915161460365,
+        -0.05403834481094273
+      ],
+      "pair_index": 64,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3194946159963512,
+      "box_xy_distance_m": 0.25868287453433514,
+      "center_boundary_distance_m": 0.07290428065438892
+    },
+    {
+      "episode_id": "red_065",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.7749999999999995,
+      "source": "run/episodes/red_065/report.json",
+      "actual_initial_xy_m": [
+        0.3676929771900177,
+        -0.011429034173488617
+      ],
+      "center_xy_m": [
+        0.367692851249805,
+        -0.011429056771930318
+      ],
+      "pair_index": 65,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3678704339830904,
+      "box_xy_distance_m": 0.22227364316042014,
+      "center_boundary_distance_m": 0.07316713186808162
+    },
+    {
+      "episode_id": "red_066",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.741666666666666,
+      "source": "run/episodes/red_066/report.json",
+      "actual_initial_xy_m": [
+        0.40769338607788086,
+        0.01971442624926567
+      ],
+      "center_xy_m": [
+        0.4076932715068128,
+        0.019714401368356414
+      ],
+      "pair_index": 66,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.40816964763838137,
+      "box_xy_distance_m": 0.2066105741468061,
+      "center_boundary_distance_m": 0.042023673727794884
+    },
+    {
+      "episode_id": "red_067",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.925,
+      "source": "run/episodes/red_067/report.json",
+      "actual_initial_xy_m": [
+        0.3773345649242401,
+        0.042502112686634064
+      ],
+      "center_xy_m": [
+        0.3773344389073354,
+        0.042502093576293073
+      ],
+      "pair_index": 67,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.37972056402554977,
+      "box_xy_distance_m": 0.17351179981176873,
+      "center_boundary_distance_m": 0.019235981519858225
+    },
+    {
+      "episode_id": "red_068",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.233333333333333,
+      "source": "run/episodes/red_068/report.json",
+      "actual_initial_xy_m": [
+        0.30450305342674255,
+        -0.0629049688577652
+      ],
+      "center_xy_m": [
+        0.3045029201070528,
+        -0.06290505517989435
+      ],
+      "pair_index": 68,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.31093258806517493,
+      "box_xy_distance_m": 0.26777698724459453,
+      "center_boundary_distance_m": 0.06251568461540524
+    },
+    {
+      "episode_id": "red_069",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.366666666666666,
+      "source": "run/episodes/red_069/report.json",
+      "actual_initial_xy_m": [
+        0.30138957500457764,
+        -0.03873823210597038
+      ],
+      "center_xy_m": [
+        0.3013894545325312,
+        -0.03873825248867087
+      ],
+      "pair_index": 69,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3038688129922067,
+      "box_xy_distance_m": 0.2437939318222906,
+      "center_boundary_distance_m": 0.05940221904088361
+    },
+    {
+      "episode_id": "red_070",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_070/report.json",
+      "actual_initial_xy_m": [
+        0.43815138936042786,
+        -0.09195458889007568
+      ],
+      "center_xy_m": [
+        0.4381512780662764,
+        -0.09195467855082842
+      ],
+      "pair_index": 70,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4476965550219229,
+      "box_xy_distance_m": 0.320936038770772,
+      "center_boundary_distance_m": 0.03943258909512745
+    },
+    {
+      "episode_id": "red_071",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.35,
+      "source": "run/episodes/red_071/report.json",
+      "actual_initial_xy_m": [
+        0.32333800196647644,
+        0.023206276819109917
+      ],
+      "center_xy_m": [
+        0.32333789578243677,
+        0.023206256322936002
+      ],
+      "pair_index": 71,
+      "x_bin": 1,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.32416959324023553,
+      "box_xy_distance_m": 0.1816041818424666,
+      "center_boundary_distance_m": 0.03853181877321529
+    },
+    {
+      "episode_id": "red_072",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 8.083333333333334,
+      "source": "run/episodes/red_072/report.json",
+      "actual_initial_xy_m": [
+        0.4578639268875122,
+        -0.03119644708931446
+      ],
+      "center_xy_m": [
+        0.45786381967675127,
+        -0.031196471855404535
+      ],
+      "pair_index": 72,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.45892537217418006,
+      "box_xy_distance_m": 0.27544837413154366,
+      "center_boundary_distance_m": 0.02431081469370966
+    },
+    {
+      "episode_id": "red_073",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_073/report.json",
+      "actual_initial_xy_m": [
+        0.46568062901496887,
+        -0.014794081449508667
+      ],
+      "center_xy_m": [
+        0.46568050314864795,
+        -0.014794103485569088
+      ],
+      "pair_index": 73,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4659154392276775,
+      "box_xy_distance_m": 0.2658759221350289,
+      "center_boundary_distance_m": 0.01649413122181298
+    },
+    {
+      "episode_id": "red_074",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.658333333333333,
+      "source": "run/episodes/red_074/report.json",
+      "actual_initial_xy_m": [
+        0.3161861300468445,
+        0.059913892298936844
+      ],
+      "center_xy_m": [
+        0.3161860089863864,
+        0.059913871904309975
+      ],
+      "pair_index": 74,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.3218124676349648,
+      "box_xy_distance_m": 0.14473116870873595,
+      "center_boundary_distance_m": 0.001824203191841324
+    },
+    {
+      "episode_id": "red_075",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_075/report.json",
+      "actual_initial_xy_m": [
+        0.4683612585067749,
+        -0.10660991817712784
+      ],
+      "center_xy_m": [
+        0.46836114445272947,
+        -0.1066100179732757
+      ],
+      "pair_index": 75,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4803413968890592,
+      "box_xy_distance_m": 0.3467390501449271,
+      "center_boundary_distance_m": 0.013813489917731459
+    },
+    {
+      "episode_id": "red_076",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.216666666666667,
+      "source": "run/episodes/red_076/report.json",
+      "actual_initial_xy_m": [
+        0.39674413204193115,
+        -0.054714884608983994
+      ],
+      "center_xy_m": [
+        0.39674397384543836,
+        -0.054714908798210796
+      ],
+      "pair_index": 76,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4004990662004924,
+      "box_xy_distance_m": 0.27176865156731705,
+      "center_boundary_distance_m": 0.07667235884774508
+    },
+    {
+      "episode_id": "red_077",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.341666666666667,
+      "source": "run/episodes/red_077/report.json",
+      "actual_initial_xy_m": [
+        0.41414403915405273,
+        -0.08133881539106369
+      ],
+      "center_xy_m": [
+        0.414143923735968,
+        -0.08133890701566177
+      ],
+      "pair_index": 77,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.42205592918702817,
+      "box_xy_distance_m": 0.30249862667571026,
+      "center_boundary_distance_m": 0.05004836063029411
+    },
+    {
+      "episode_id": "red_078",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.75,
+      "source": "run/episodes/red_078/report.json",
+      "actual_initial_xy_m": [
+        0.4272541403770447,
+        -0.040955353528261185
+      ],
+      "center_xy_m": [
+        0.4272540358789416,
+        -0.04095537345057071
+      ],
+      "pair_index": 78,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4292124809337674,
+      "box_xy_distance_m": 0.2698057098507307,
+      "center_boundary_distance_m": 0.05492059849151931
+    },
+    {
+      "episode_id": "red_079",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.7,
+      "source": "run/episodes/red_079/report.json",
+      "actual_initial_xy_m": [
+        0.4067111313343048,
+        -0.10058660805225372
+      ],
+      "center_xy_m": [
+        0.4067110244593133,
+        -0.10058669582571522
+      ],
+      "pair_index": 79,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.41896484434123954,
+      "box_xy_distance_m": 0.3185508369300835,
+      "center_boundary_distance_m": 0.030800571820240652
+    },
+    {
+      "episode_id": "red_080",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_080/report.json",
+      "actual_initial_xy_m": [
+        0.2538421154022217,
+        -0.05734342709183693
+      ],
+      "center_xy_m": [
+        0.25384198411665787,
+        -0.057343447218745035
+      ],
+      "pair_index": 80,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.26023839808762,
+      "box_xy_distance_m": 0.2691579351004236,
+      "center_boundary_distance_m": 0.011854748625010292
+    },
+    {
+      "episode_id": "red_081",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.791666666666667,
+      "source": "run/episodes/red_081/report.json",
+      "actual_initial_xy_m": [
+        0.3951585292816162,
+        -0.015684448182582855
+      ],
+      "center_xy_m": [
+        0.3951584135965002,
+        -0.015684469641946107
+      ],
+      "pair_index": 81,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.395469561943839,
+      "box_xy_distance_m": 0.23426667862038028,
+      "center_boundary_distance_m": 0.0774225447380974
+    },
+    {
+      "episode_id": "red_082",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 8.7,
+      "source": "run/episodes/red_082/report.json",
+      "actual_initial_xy_m": [
+        0.4425937831401825,
+        0.019968317821621895
+      ],
+      "center_xy_m": [
+        0.44259366592451344,
+        0.019968298087698344
+      ],
+      "pair_index": 82,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.4430438872674117,
+      "box_xy_distance_m": 0.22415019585085863,
+      "center_boundary_distance_m": 0.039580968445947495
+    },
+    {
+      "episode_id": "red_083",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_083/report.json",
+      "actual_initial_xy_m": [
+        0.3925570547580719,
+        -0.045936472713947296
+      ],
+      "center_xy_m": [
+        0.3925569086503705,
+        -0.04593649551672073
+      ],
+      "pair_index": 83,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3952354844260483,
+      "box_xy_distance_m": 0.2621438689457499,
+      "center_boundary_distance_m": 0.08545077212923514
+    },
+    {
+      "episode_id": "red_084",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_084/report.json",
+      "actual_initial_xy_m": [
+        0.2509520947933197,
+        -0.11895131319761276
+      ],
+      "center_xy_m": [
+        0.2509519805883683,
+        -0.11895140273592592
+      ],
+      "pair_index": 84,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.2777162810748935,
+      "box_xy_distance_m": 0.32998118327007464,
+      "center_boundary_distance_m": 0.008964745096720739
+    },
+    {
+      "episode_id": "red_085",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.208333333333333,
+      "source": "run/episodes/red_085/report.json",
+      "actual_initial_xy_m": [
+        0.4260067939758301,
+        -0.008163458667695522
+      ],
+      "center_xy_m": [
+        0.4260066624233814,
+        -0.008163481077329334
+      ],
+      "pair_index": 85,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.4260848728274788,
+      "box_xy_distance_m": 0.23976241223430536,
+      "center_boundary_distance_m": 0.05616797194707951
+    },
+    {
+      "episode_id": "red_086",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_086/report.json",
+      "actual_initial_xy_m": [
+        0.33147844672203064,
+        -0.11317717283964157
+      ],
+      "center_xy_m": [
+        0.33147831609825723,
+        -0.1131772650375355
+      ],
+      "pair_index": 86,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.3502669943981486,
+      "box_xy_distance_m": 0.31821948024249963,
+      "center_boundary_distance_m": 0.018210002608420373
+    },
+    {
+      "episode_id": "red_087",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_087/report.json",
+      "actual_initial_xy_m": [
+        0.38467302918434143,
+        -0.13057400286197662
+      ],
+      "center_xy_m": [
+        0.3846729019443675,
+        -0.1305740452064065
+      ],
+      "pair_index": 87,
+      "x_bin": 1,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4062300121505865,
+      "box_xy_distance_m": 0.34226879462620424,
+      "center_boundary_distance_m": 0.0008132224395493715
+    },
+    {
+      "episode_id": "red_088",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 6.316666666666666,
+      "source": "run/episodes/red_088/report.json",
+      "actual_initial_xy_m": [
+        0.25168126821517944,
+        0.013273303396999836
+      ],
+      "center_xy_m": [
+        0.25168115056370943,
+        0.013273281063784004
+      ],
+      "pair_index": 88,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.2520309138563577,
+      "box_xy_distance_m": 0.20174922702454434,
+      "center_boundary_distance_m": 0.009693915072061854
+    },
+    {
+      "episode_id": "red_089",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_089/report.json",
+      "actual_initial_xy_m": [
+        0.4551255702972412,
+        -0.08928986638784409
+      ],
+      "center_xy_m": [
+        0.4551254431504539,
+        -0.08928995686747565
+      ],
+      "pair_index": 89,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.4638015366515,
+      "box_xy_distance_m": 0.32538643349709157,
+      "center_boundary_distance_m": 0.02704919122000704
+    },
+    {
+      "episode_id": "red_090",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.916666666666667,
+      "source": "run/episodes/red_090/report.json",
+      "actual_initial_xy_m": [
+        0.41536036133766174,
+        -0.06699930876493454
+      ],
+      "center_xy_m": [
+        0.41536024900682245,
+        -0.06699940135416871
+      ],
+      "pair_index": 90,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.42072919584553026,
+      "box_xy_distance_m": 0.2893970454001669,
+      "center_boundary_distance_m": 0.06438786629178717
+    },
+    {
+      "episode_id": "red_091",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_091/report.json",
+      "actual_initial_xy_m": [
+        0.4629584848880768,
+        -0.11785894632339478
+      ],
+      "center_xy_m": [
+        0.4629583525525538,
+        -0.11785903893751251
+      ],
+      "pair_index": 91,
+      "x_bin": 2,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.47772501426809205,
+      "box_xy_distance_m": 0.35459153978265023,
+      "center_boundary_distance_m": 0.013528228708443363
+    },
+    {
+      "episode_id": "red_092",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_092/report.json",
+      "actual_initial_xy_m": [
+        0.32142093777656555,
+        -0.044477034360170364
+      ],
+      "center_xy_m": [
+        0.32142081663734723,
+        -0.044477054054930826
+      ],
+      "pair_index": 92,
+      "x_bin": 0,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.32448351222400257,
+      "box_xy_distance_m": 0.2491897297722395,
+      "center_boundary_distance_m": 0.07943358114569965
+    },
+    {
+      "episode_id": "red_093",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.833333333333333,
+      "source": "run/episodes/red_093/report.json",
+      "actual_initial_xy_m": [
+        0.32039302587509155,
+        -0.08535898476839066
+      ],
+      "center_xy_m": [
+        0.32039291947266874,
+        -0.08535907907670062
+      ],
+      "pair_index": 93,
+      "x_bin": 0,
+      "y_bin": 0,
+      "robot_xy_distance_m": 0.33156868855343147,
+      "box_xy_distance_m": 0.2900430706071228,
+      "center_boundary_distance_m": 0.04602818856925525
+    },
+    {
+      "episode_id": "red_094",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 8.083333333333334,
+      "source": "run/episodes/red_094/report.json",
+      "actual_initial_xy_m": [
+        0.3006501793861389,
+        0.05499843508005142
+      ],
+      "center_xy_m": [
+        0.30065005676061296,
+        0.05499841657725062
+      ],
+      "pair_index": 94,
+      "x_bin": 0,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.3056391376381052,
+      "box_xy_distance_m": 0.15038590284879644,
+      "center_boundary_distance_m": 0.006739658518900682
+    },
+    {
+      "episode_id": "red_095",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.425,
+      "source": "run/episodes/red_095/report.json",
+      "actual_initial_xy_m": [
+        0.33559802174568176,
+        -0.04942912608385086
+      ],
+      "center_xy_m": [
+        0.3355979111103634,
+        -0.049429145831761986
+      ],
+      "pair_index": 95,
+      "x_bin": 1,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.3392185112863049,
+      "box_xy_distance_m": 0.2548619939996265,
+      "center_boundary_distance_m": 0.08195812181419389
+    },
+    {
+      "episode_id": "red_096",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.366666666666666,
+      "source": "run/episodes/red_096/report.json",
+      "actual_initial_xy_m": [
+        0.4500683546066284,
+        -0.04083947464823723
+      ],
+      "center_xy_m": [
+        0.4500682251553515,
+        -0.040839494184234854
+      ],
+      "pair_index": 96,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.45191732825784886,
+      "box_xy_distance_m": 0.27992009029174364,
+      "center_boundary_distance_m": 0.03210640921510943
+    },
+    {
+      "episode_id": "red_097",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_097/report.json",
+      "actual_initial_xy_m": [
+        0.476192444562912,
+        -0.003555322764441371
+      ],
+      "center_xy_m": [
+        0.4761923203260622,
+        -0.003555345201886946
+      ],
+      "pair_index": 97,
+      "x_bin": 2,
+      "y_bin": 1,
+      "robot_xy_distance_m": 0.47620559259318196,
+      "box_xy_distance_m": 0.2629649015439828,
+      "center_boundary_distance_m": 0.005982314044398751
+    },
+    {
+      "episode_id": "red_098",
+      "success": false,
+      "failure_reason": "timeout",
+      "first_success_time_s": null,
+      "source": "run/episodes/red_098/report.json",
+      "actual_initial_xy_m": [
+        0.42292314767837524,
+        0.011126826517283916
+      ],
+      "center_xy_m": [
+        0.42292301895644896,
+        0.011126804249662219
+      ],
+      "pair_index": 98,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.42306936279533075,
+      "box_xy_distance_m": 0.22130576589601061,
+      "center_boundary_distance_m": 0.05061127084648908
+    },
+    {
+      "episode_id": "red_099",
+      "success": true,
+      "failure_reason": null,
+      "first_success_time_s": 7.45,
+      "source": "run/episodes/red_099/report.json",
+      "actual_initial_xy_m": [
+        0.4110456705093384,
+        0.01729966700077057
+      ],
+      "center_xy_m": [
+        0.4110455525471189,
+        0.017299642552516568
+      ],
+      "pair_index": 99,
+      "x_bin": 2,
+      "y_bin": 2,
+      "robot_xy_distance_m": 0.41140943584367523,
+      "box_xy_distance_m": 0.2102756542477533,
+      "center_boundary_distance_m": 0.044438432543634734
+    }
+  ],
+  "interpretation": "Descriptive location association only, not failure mechanism or causation.",
+  "visual_contract": {
+    "format": "Chinese local analysis figure, PNG and PDF",
+    "question": "Where did failures occur relative to the actual sampled positions?",
+    "evidence": "Completed fixed-red episodes from the new rectangle run only",
+    "panels": [
+      "Recorded simulation fixed-camera frame with true rectangle and tabletop-projected outcome points",
+      "3x3 equal-width valid-center bins, each labeled failures / completed attempts"
+    ],
+    "statistics": "No smoothing, optimized thresholds, significance claims, or old-run values",
+    "grid_convention": "Rows increase in X downward; columns increase in Y rightward; final bin includes upper edge",
+    "colors": "Success blue circle; failure vermilion X; fixed 0–100% sequential failure-rate scale"
+  }
+}

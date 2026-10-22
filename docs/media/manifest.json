@@ -449,6 +449,39 @@
         }
       },
       "adoption_status": "Exploratory only; not enabled by default. The smoothing candidate did not pass the required >=119/120 confirmation threshold."
+    },
+    {
+      "id": "pap-wallx-smoothed",
+      "video": "docs/media/pap-wallx-smoothed.mp4",
+      "poster": "docs/media/pap-wallx-smoothed.jpg",
+      "poster_timestamp_seconds": 2.0,
+      "source_video": "outputs/wallx_pap_smoothing_20261023/execution_smoothed_red_blue.mp4",
+      "source_sha256": "10d1715aa3f5e1a9b2579cafdd1d66d09e86d8ec639a9cba1ae88b7b09fcdcf7",
+      "video_sha256": "10d1715aa3f5e1a9b2579cafdd1d66d09e86d8ec639a9cba1ae88b7b09fcdcf7",
+      "poster_sha256": "20cfbf997e366d3ff2323409382b3f0595e14999b1caa477a2db9ef2bbe71456",
+      "source_resolution": [
+        1280,
+        1064
+      ],
+      "width": 1280,
+      "height": 1064,
+      "fps": 30,
+      "frame_count": 361,
+      "duration_seconds": 12.033333333333333,
+      "bytes": 3592252,
+      "scope": "Two fixed-layout model-controlled PAP demonstrations, separate from the 200-episode randomized evaluation; not an A/B smoothing comparison.",
+      "publication_method": "Byte-for-byte copy of the existing source composition; no trim, resampling, speed change or recompression.",
+      "layout": "Top red cube, bottom blue cube; left fixed third-person camera, right wrist camera.",
+      "shown_successes": 2,
+      "shown_episodes": 2,
+      "smoothing": {
+        "mode": "joint_ema",
+        "alpha": 0.8,
+        "gripper_filtered": false
+      },
+      "validation_summary": "docs/results/pap_smoothing_demos_20261023.json",
+      "full_decode_verified": true
     }
-  ]
+  ],
+  "updated_date": "2026-10-23"
 }

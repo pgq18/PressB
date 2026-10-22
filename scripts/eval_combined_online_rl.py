@@ -152,7 +152,7 @@ def main():
     parser.add_argument("--noise-checkpoint", type=Path, default=old / "initial_noise_train/last.pt")
     parser.add_argument("--residual-checkpoint", type=Path, default=old / "action_residual_train/last.pt")
     parser.add_argument("--simulation", default="http://127.0.0.1:19880")
-    parser.add_argument("--inference", default="http://127.0.0.1:19891")
+    parser.add_argument("--inference", default="ws://127.0.0.1:19891")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--episodes", type=int, default=120)
     parser.add_argument("--seed", type=int, default=20260930)
