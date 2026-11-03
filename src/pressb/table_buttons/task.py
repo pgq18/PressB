@@ -11,6 +11,8 @@ from collections.abc import Mapping
 
 import numpy as np
 
+from .spacing import resolve_spacing
+
 
 COLORS = ("red", "yellow", "blue")
 _CHINESE_COLORS = {"红": "red", "黄": "yellow", "蓝": "blue"}
@@ -84,6 +86,7 @@ def button_in_camera(center_xy, up_camera, *, button_radius=.022,
 def sample_button_positions(up_camera, seed=None, *,
                             bounds_xy=((.30, .39), (-.14, .14)),
                             button_radius=.022, min_separation=.10,
+                            max_separation=None, spacing_profile=None, spacing_profiles=None,
                             button_top_z=.025, margin_px=12., max_attempts=3000):
     """Sample three separated, visible positions with a reproducible seed.
 
@@ -91,12 +94,14 @@ def sample_button_positions(up_camera, seed=None, *,
     pitched 160 degrees about Y, with z=.12 m approach height. Visibility is
     checked against the inherited camera, including the housing perimeter.
     Custom bounds/approach orientations need their own reachability check.
+    Optional near/medium/far profiles bound all three pairwise centre distances;
+    omitting a profile preserves the original minimum-only constraint.
     """
     bounds = np.asarray(bounds_xy, dtype=float)
     if bounds.shape != (2, 2) or not np.isfinite(bounds).all() or np.any(bounds[:, 0] >= bounds[:, 1]):
         raise ValueError("bounds_xy must contain increasing finite x/y intervals")
-    if not np.isfinite(min_separation) or min_separation < 2 * button_radius:
-        raise ValueError("Minimum separation must leave button housings disjoint")
+    spacing = resolve_spacing(dict(min_separation=min_separation, max_separation=max_separation,
+        spacing_profile=spacing_profile, spacing_profiles={} if spacing_profiles is None else spacing_profiles), button_radius)
     if not isinstance(max_attempts, int) or max_attempts <= 0:
         raise ValueError("max_attempts must be a positive integer")
     rng = np.random.default_rng(seed)
@@ -109,7 +114,7 @@ def sample_button_positions(up_camera, seed=None, *,
         if not button_in_camera(point, up_camera, button_radius=button_radius,
                                 button_top_z=button_top_z, margin_px=margin_px):
             continue
-        if any(np.linalg.norm(point-np.asarray(other)) < min_separation for other in positions.values()):
+        if any(not spacing.accepts(float(np.linalg.norm(point-np.asarray(other)))) for other in positions.values()):
             continue
         positions[COLORS[len(positions)]] = point.tolist()
         if len(positions) == len(COLORS):

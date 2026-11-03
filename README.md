@@ -4,7 +4,7 @@
 
 PressB builds Isaac environments for evaluating robot policies and improving frozen vision-language-action models through online residual reinforcement learning. It connects physical simulation, model inference and policy training, with recorded camera observations and contact-based task outcomes.
 
-**Updated 2026-10-23:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation. The reconstructed pick-and-place task now runs the supplied Wall-X checkpoint and completed two randomized evaluations: **65/100** for red cubes and **54/100** for five colors. Tabletop buttons support randomized layouts and physical IK demonstrations.
+**Updated 2026-11-03:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation; PAP Wall-X evaluations achieved **65/100** for red cubes and **54/100** for five colors. Tabletop buttons now support single-/multi-task VLA-JEPA evaluation and have completed a new [9,000-episode collection with color-specific approaches](docs/results/table_buttons_target_relative_20261030/README.md), separate from the earlier shared-motion datasets.
 
 [Tasks](#tasks) · [Results](#current-results) · [Videos](#demo-videos) · [Run](#run-the-tasks) · [Three-node RL](#online-reinforcement-learning-three-independent-nodes) · [Handover](docs/HANDOVER.md)
 
@@ -14,9 +14,9 @@ PressB builds Isaac environments for evaluating robot policies and improving fro
 |---|---|---|
 | [Elevator buttons](docs/scene_details.md) | 12 contact-actuated buttons, pressing rod, wrist and table RGB cameras | 1,200 expert episodes, LeRobot export, VLA-JEPA evaluation, three-node SAC residual/noise training |
 | [Pick-and-place (PAP)](docs/piper_pick_place.md) | Dataset-fitted green workbench, cardboard box, movable cubes and two cameras | Real-trajectory replay, native Wall-X closed-loop inference, optional joint smoothing, paired position/color evaluation |
-| [Tabletop color buttons](docs/table_buttons.md) | Red/yellow/blue spring-loaded buttons on the PAP workbench | Color-instruction parser, independent seeded button positions within camera-visible/executable space, scripted IK validation |
+| [Tabletop color buttons](docs/table_buttons.md) | Red/yellow/blue spring-loaded buttons on the PAP workbench | Near/medium/far randomized layouts, color-specific IK demonstrations, LeRobot collection/merge, VLA-JEPA training and closed-loop evaluation |
 
-The tasks have separate configurations. PAP reconstructs `piper_pap_20260606_offset` from recorded joints, camera images and scene photos, including a smooth cube, rougher cardboard/tabletop and soft lighting. Red and blue cube replay presets are available; other dataset objects need their own geometry. PAP retains its dataset-fitted cameras. The tabletop button task uses the elevator wrist-camera intrinsics **and optical pose**, while retaining the PAP fixed camera. Tabletop buttons have not yet been connected to learned-policy inference or the online RL service; PAP has been evaluated with the supplied model but has not undergone online RL training.
+The tasks have separate configurations. PAP reconstructs `piper_pap_20260606_offset` from recorded joints, camera images and scene photos, including a smooth cube, rougher cardboard/tabletop and soft lighting. Red and blue cube replay presets are available; other dataset objects need their own geometry. PAP retains its dataset-fitted cameras. The tabletop button task uses the elevator wrist-camera intrinsics **and optical pose**, while retaining the PAP fixed camera. Tabletop buttons have learned-policy inference and audited closed-loop evaluation. Online RL remains implemented for the elevator task; PAP and tabletop buttons have not undergone online RL training. Tabletop training and its dedicated HTTP inference server live in the separate VLA-JEPA workspace; this repository includes the simulation client and evaluation tools. See the [server dependency and deployment scope](docs/table_buttons_policy_eval.md) before reproducing those model experiments.
 
 The framework can support a future **real2sim2real** workflow: use an AI agent to reconstruct a real workspace, improve policy robustness in simulation, then adapt and validate on the real robot. The current experiments establish simulation feasibility; real2sim2real transfer and direct real-robot validation of the RL policies remain future work.
 
@@ -62,6 +62,12 @@ Second-group successes: **red 13/20, green 9/20, blue 12/20, white 8/20, yellow 
 
 See the published [evaluation report](docs/results/pap_rectangle_20261023/README.md), [episode CSV](docs/results/pap_rectangle_20261023/episodes.csv), [success-rate plot](docs/results/pap_rectangle_20261023/success_rates.png) and [failure-location plot](docs/results/pap_rectangle_20261023/failure_locations.png). The [PAP guide](docs/piper_pick_place.md#randomized-policy-evaluation) documents sampling, evaluation and physical success criteria.
 
+### Tabletop buttons: datasets and policy experiments
+
+The original shared-motion collections contain nine 100-episode datasets and nine expanded 1,000-episode datasets. Merging colors within each spacing profile produces three multi-task datasets, with 300 or 3,000 episodes each. VLA-JEPA experiments cover single-/multi-task policies and six-joint prediction with a fixed gripper. The [policy evaluation guide](docs/table_buttons_policy_eval.md) records the initial 1,800-rollout evaluation and distinguishes physical task success from the stricter collector metric; training schedules are in the [red-task joint6 guide](docs/table_buttons_joint6_1000_training.md) and [multi-task joint6 guide](docs/table_buttons_multitask_joint6_3000_training.md).
+
+A separate **`target_relative_v2` collection completed on 2026-11-01**: near/medium/far × red/yellow/blue, **1,000 fresh episodes per group, 9,000 total**, with **1,286,591 observation/action rows**. Red approaches directly; yellow rises while advancing and then approaches directly; blue reaches above the target before descending. All nine exports and physical/video audits passed, and all 3,000 profile/layout indices match across colors. These are scripted generator demonstrations, not a learned-policy success rate. Model training on this new collection has not been performed. See the [committed result report](docs/results/table_buttons_target_relative_20261030/README.md) and [motion/collection guide](docs/table_buttons_color_templates.md).
+
 ## Demo videos
 
 Click a preview to play or download the MP4. The three elevator videos cover all 12 buttons in the center layout at **1× simulation time**, with the global view above the wrist view. A labeled terminal freeze-frame appears when each task ends. These samples differ from the 120-trial evaluation, which includes panel offsets.
@@ -105,14 +111,14 @@ A clean clone includes source code, selected media, and statistical summaries. I
 
 **RTX 5090 workstation:** Use the validated Python 3.11 / Isaac Sim 5.0 / Isaac Lab 2.2 configuration, installed through `scripts/setup_env_5090.sh`. See the [RTX 5090 run guide](docs/rtx5090_setup.md) for steps and measured results. The legacy `scripts/setup_env.sh` targets the original Python 3.10 configuration.
 
-Requirements: Linux x86_64, Conda, an Isaac Sim-compatible NVIDIA RTX GPU and driver, Vulkan, and system installations of `git`, `ffmpeg`, `ffprobe` (FFmpeg must include `libx264`), and DejaVu fonts. Headless runs still require GPU rendering. VRAM requirements increase with the number of parallel environments; start by validating one environment on one GPU.
+Requirements: Linux x86_64, Conda, an Isaac Sim-compatible NVIDIA RTX GPU and driver, Vulkan, and system installations of `git`, `ffmpeg`, `ffprobe` (FFmpeg must include `libx264`), and DejaVu / Noto Sans CJK fonts. Headless runs still require GPU rendering. VRAM requirements increase with the number of parallel environments; start by validating one environment on one GPU.
 
 ```bash
 git clone https://github.com/pgq18/PressB.git
 cd PressB
 
 # Ubuntu / Debian system dependencies; install as needed on your machine
-sudo apt-get install ffmpeg fonts-dejavu-core
+sudo apt-get install ffmpeg fonts-dejavu-core fonts-noto-cjk
 
 # Current 5090 Isaac environment: Python 3.11, default path .conda/envs/pressb
 # Set CONDA_BIN=/path/to/conda to select Conda explicitly
@@ -186,6 +192,16 @@ env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
 ```
 
 Use `--instruction 'Press the blue button.'` instead of `--target all` for one color, or `--mode snapshot --hold` for interactive inspection. The [task guide](docs/table_buttons.md) explains reachable-space sampling and contact-based success. This entry point uses scripted IK and an instruction parser; it does not call a VLA.
+
+For random layouts, add `--seed 73` and one of `--spacing near`, `--spacing medium` or `--spacing far` to constrain every pair of button centres to 6–10, 10–18 or 18–30 cm respectively. Each spacing option requires a seed. Omitting the profile preserves the original minimum-only spacing; the bands are adjustable in `configs/piper_table_buttons.json`.
+
+The [dataset collection guide](docs/table_buttons.md#collect-separate-lerobot-datasets) describes collecting nine separate LeRobot v3 datasets (three spacing profiles × three target colors), with contact-verified successful demonstrations, two 640×480 RGB streams at 30 Hz, and PAP-compatible 7D joint/gripper state and action. Instructions stay identical for the same color across spacing profiles.
+
+The 2026-10-23 collection is complete: **900 successful demonstrations, 100 per group**, exported and audited under `/home/pengguanqi/Datasets/piper_table_buttons_20261023`. See the [collection results](docs/table_buttons.md#completed-collection--2026-10-23) for counts, semantics and validation records.
+
+The shared-motion expansion contains **1,000 episodes per group, 9,000 total**, with a complete audit. The [red-button joint6 training runs](docs/table_buttons_joint6_1000_training.md) and [3,000-episode multi-task runs](docs/table_buttons_multitask_joint6_3000_training.md) have completed on H200. They predict six arm joints, retain a fixed gripper during execution, and keep best/final model weights. The earlier 300-episode multi-task merges remain available; merging preserves the original single-task datasets.
+
+For the latest **separate collection with three color-specific paths**, use [the color-template configuration and collection supervisor](docs/table_buttons_color_templates.md#collect). Its nine datasets are stored at `/home/pengguanqi/Datasets/piper_table_buttons_target_relative_1000_20261030`; the [portable result summary](docs/results/table_buttons_target_relative_20261030/README.md) is included in Git. These fresh data do not replace the shared-motion datasets used by the existing models.
 
 ## Elevator data collection and export
 
@@ -311,7 +327,7 @@ A clone without a scene snapshot skips USD integration tests that require one; e
 |---|---|
 | `src/pressb/` | Scene, robot kinematics, planning, cameras, data semantics, and policy control |
 | `src/pressb/online_rl/` | Three-node protocol, batched simulation/inference, SAC, frozen-policy composition, and smoothing evaluation |
-| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | Independent task geometry, physical outcomes, PAP inference/evaluation and tabletop button sampling |
+| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | Independent task geometry, physical outcomes, policy execution/evaluation, tabletop sampling and motion templates |
 | `scripts/` | Entry points for setup, asset preparation, collection, conversion, replay, evaluation, and audits |
 | `configs/` | Configurations for fixed scenes, randomized positions, and 1,200-episode stratified collection |
 | `tests/` | CPU unit tests and optional USD scene integration tests |

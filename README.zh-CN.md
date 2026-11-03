@@ -4,7 +4,7 @@
 
 PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学习改善冻结的视觉语言动作模型。项目连接物理仿真、模型推理与策略训练，记录相机观测，并依据真实接触和物体运动判定任务结果。
 
-**更新于 2026-10-23：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；复刻的桌面抓取任务已接入用户提供的 Wall-X 权重，两组随机评估分别为红色方块 **65/100**、五色方块 **54/100**；桌面彩色按键已支持随机布局和物理 IK 演示。
+**更新于 2026-11-03：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
 
 [任务](#任务概览) · [结果](#当前结果) · [视频](#演示视频) · [运行](#运行三个任务) · [三节点 RL](#在线强化学习独立三节点) · [工作交接](docs/HANDOVER.md)
 
@@ -14,9 +14,9 @@ PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学
 |---|---|---|
 | [电梯按键](docs/scene_details.md) | 12 个接触驱动按钮、按压杆、腕部与桌面 RGB 相机 | 1,200 条专家轨迹、LeRobot 导出、VLA-JEPA 评估、三节点 SAC 残差／噪声训练 |
 | [桌面抓取入盒（PAP）](docs/piper_pick_place.md) | 对齐数据集的绿色工作台、纸盒、自由方块及双相机 | 真机轨迹回放、原生 Wall-X 闭环推理、可选关节平滑、配对的位置／颜色随机评估 |
-| [桌面彩色按键](docs/table_buttons.md) | PAP 工作台上的红／黄／蓝弹簧按键 | 颜色指令解析、相机可见且能执行按压的区域内独立随机摆放、脚本 IK 验证 |
+| [桌面彩色按键](docs/table_buttons.md) | PAP 工作台上的红／黄／蓝弹簧按键 | 近／中／远随机布局、三色不同路径的 IK 示范、LeRobot 采集／合并、VLA-JEPA 训练与闭环评估 |
 
-三个任务使用独立配置。PAP 依据 `piper_pap_20260606_offset` 中的关节、相机图像及实拍照片复刻，包含光滑方块、较粗糙纸盒／桌面和柔和光照，已有红、蓝正方体回放配置；数据集内其他物体还需各自的几何模型。PAP 保留对齐数据集的相机；桌面按键的腕部相机**内参和光心位姿**与电梯任务一致，固定相机沿用 PAP。目前桌面按键尚未接入学习策略或在线 RL 服务；PAP 已评估现成模型，尚未开展在线 RL 训练。
+三个任务使用独立配置。PAP 依据 `piper_pap_20260606_offset` 中的关节、相机图像及实拍照片复刻，包含光滑方块、较粗糙纸盒／桌面和柔和光照，已有红、蓝正方体回放配置；数据集内其他物体还需各自的几何模型。PAP 保留对齐数据集的相机；桌面按键的腕部相机**内参和光心位姿**与电梯任务一致，固定相机沿用 PAP。桌面按键已接入学习策略推理与带物理审核的闭环评估。在线 RL 目前用于电梯任务；PAP 和桌面按键尚未开展在线 RL 训练。桌面按键训练及专用 HTTP 推理服务位于独立 VLA-JEPA 工作区，本仓库包含仿真客户端与评估工具；复现这些模型实验前请查阅[服务依赖与部署范围](docs/table_buttons_policy_eval.md)。
 
 后续可用于 **real2sim2real**：利用 AI agent 复刻真机场景，在仿真中增强策略鲁棒性，再迁移到真机做适配和验证。目前实验验证的是仿真中的算法可行性；real2sim2real 迁移，以及直接在真机上验证 RL 策略，均尚未开展。
 
@@ -62,6 +62,12 @@ PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学
 
 已发布[评估报告](docs/results/pap_rectangle_20261023/README.md)、[逐次 CSV](docs/results/pap_rectangle_20261023/episodes.csv)、[成功率图](docs/results/pap_rectangle_20261023/success_rates.png)和[失败位置图](docs/results/pap_rectangle_20261023/failure_locations.png)。采样、运行和物理成功条件见 [PAP 说明](docs/piper_pick_place.md#randomized-policy-evaluation)。
 
+### 桌面按键：数据集与模型实验
+
+原共享路径采集包括九份各 100 条的数据集，以及扩充后的九份各 1,000 条数据集。按间距合并三种颜色后，分别得到三份各 300 条或 3,000 条的多任务数据集。VLA-JEPA 实验覆盖单／多任务模型，以及只预测六个手臂关节、固定夹爪的设置。[策略评估说明](docs/table_buttons_policy_eval.md)记录了最初的 1,800 次闭环评估，并区分物理任务成功与更严格的采集器指标；训练设置见[红色任务 joint6 说明](docs/table_buttons_joint6_1000_training.md)和[多任务 joint6 说明](docs/table_buttons_multitask_joint6_3000_training.md)。
+
+独立的 **`target_relative_v2` 采集于 2026-11-01 完成**：近／中／远 × 红／黄／蓝，**每组 1,000 条全新 episode，共 9,000 条**，包含 **1,286,591 行观测／动作**。红色直线接近，黄色向目标移动时抬升再直线接近，蓝色先到目标上方再下压。九份数据均通过导出和物理／视频审核，3,000 个场景／布局索引的三色布局全部匹配。这些是脚本生成器的成功示范，不代表学习模型的成功率；尚未使用这批新数据训练模型。详见[随仓库保存的结果报告](docs/results/table_buttons_target_relative_20261030/README.md)及[运动模板与采集说明](docs/table_buttons_color_templates.md)。
+
 ## 演示视频
 
 点击预览图播放或下载 MP4。三段电梯视频覆盖全部 12 个按键的中心布局，保持 **1× 仿真时间**，上下分别为全局与腕部视角；任务结束后显示标记的终止停帧。演示样本与上表包含面板偏移的 120 次评估不同。
@@ -105,14 +111,14 @@ git clone https://github.com/pgq18/ZPRL-PressB.git src/ZPRL
 
 **RTX 5090 工作站**：使用已验收的 Python 3.11 / Isaac Sim 5.0 / Isaac Lab 2.2 配置，安装入口为 scripts/setup_env_5090.sh；步骤和实测结果见 [RTX 5090 运行说明](docs/rtx5090_setup.md)。下面的 setup_env.sh 属于原 Python 3.10 配置。
 
-需要 Linux x86_64、Conda、支持 Isaac Sim 的 NVIDIA RTX GPU/驱动与 Vulkan，以及系统 `git`、`ffmpeg`、`ffprobe`（FFmpeg 需包含 `libx264`）和 DejaVu 字体。无窗口运行仍需要 GPU 渲染。显存需求随并行环境数增加；先从一张卡、一个环境验证。
+需要 Linux x86_64、Conda、支持 Isaac Sim 的 NVIDIA RTX GPU/驱动与 Vulkan，以及系统 `git`、`ffmpeg`、`ffprobe`（FFmpeg 需包含 `libx264`）和 DejaVu／Noto Sans CJK 字体。无窗口运行仍需要 GPU 渲染。显存需求随并行环境数增加；先从一张卡、一个环境验证。
 
 ```bash
 git clone https://github.com/pgq18/PressB.git
 cd PressB
 
 # Ubuntu / Debian 系统依赖，按机器已有安装情况执行
-sudo apt-get install ffmpeg fonts-dejavu-core
+sudo apt-get install ffmpeg fonts-dejavu-core fonts-noto-cjk
 
 # 当前 5090 Isaac 环境：Python 3.11，默认 .conda/envs/pressb
 # 可用 CONDA_BIN=/path/to/conda 显式指定 Conda
@@ -186,6 +192,16 @@ env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
 ```
 
 单色任务可将 `--target all` 换成 `--instruction '按下蓝色按键'`；交互查看可用 `--mode snapshot --hold`。可执行区域采样与接触成功条件见[任务说明](docs/table_buttons.md)。此入口使用脚本 IK 和指令解析器，不调用 VLA。
+
+随机布局可使用 `--seed 73 --spacing near`，也可将档位换成 `medium` 或 `far`，分别约束任意两个按键的中心距离为 6–10、10–18、18–30 cm。`--spacing` 需与 `--seed` 一起使用；不选档位时保留原有最小间距采样方式。各档范围可在 `configs/piper_table_buttons.json` 中调整。
+
+[数据采集说明](docs/table_buttons.md#collect-separate-lerobot-datasets)提供三档间距 × 三种目标颜色共九份独立 LeRobot v3 数据集的采集入口。仅接收经过物理接触验证的成功示范，保存两路 640×480、30 Hz RGB，以及与 PAP 兼容的 7D 关节／夹爪状态与动作；同一颜色在三档间距下使用完全相同的语言指令。
+
+2026-10-23 已完成 **900 条成功示范，九组各 100 条**，均已导出并审核，保存于 `/home/pengguanqi/Datasets/piper_table_buttons_20261023`。数量、数据语义及验证记录见[采集结果](docs/table_buttons.md#completed-collection--2026-10-23)。
+
+共享路径扩充版**九组各 1,000 条，共 9,000 条**已通过全量核查。[红色按键 joint6 训练](docs/table_buttons_joint6_1000_training.md)及[每组 3,000 条的多任务训练](docs/table_buttons_multitask_joint6_3000_training.md)均已在 H200 完成。这些模型只预测六个手臂关节，执行时固定夹爪，并仅保留最佳／最终权重。早期每组 300 条的多任务合并数据也继续保留；合并不修改原单任务数据集。
+
+最新的**三色不同路径独立采集**使用[颜色模板配置和采集 supervisor](docs/table_buttons_color_templates.md#collect)。九份数据保存在 `/home/pengguanqi/Datasets/piper_table_buttons_target_relative_1000_20261030`，[精简结果摘要](docs/results/table_buttons_target_relative_20261030/README.md)随 Git 发布。这批全新数据不覆盖已有模型使用的共享路径数据。
 
 ## 电梯数据采集与导出
 
@@ -311,7 +327,7 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 |---|---|
 | `src/pressb/` | 场景、机器人运动学、规划、相机、数据语义与策略控制 |
 | `src/pressb/online_rl/` | 三节点协议、批量仿真／推理、SAC、冻结策略组合与平滑评估 |
-| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | 独立任务几何、物理结果、PAP 推理／评估及桌面按键采样 |
+| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | 独立任务几何、物理结果、策略执行／评估、桌面按键采样与运动模板 |
 | `scripts/` | 安装、资产准备、采集、转换、回放、评估和审计入口 |
 | `configs/` | 固定场景、随机位置和 1,200 条分层采集配置 |
 | `tests/` | CPU 单元测试与可选 USD 场景集成测试 |

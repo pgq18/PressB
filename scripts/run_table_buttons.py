@@ -19,6 +19,10 @@ import traceback
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from pressb.table_buttons.execution import (
+    contact_limited_command, in_press_window, press_phase_times,
+)
+
 
 def write(path, value):
     Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n")
@@ -303,6 +307,7 @@ def run(app, args, cfg):
             path_times, path_commands, plan_report = plan_press(kin, initial_state,
                 np.asarray(scene['buttons'][color]['neutral_top_world'])-base, fps=fps,
                 approach=cfg.get('press_approaches', {}).get(color))
+            phase_times = press_phase_times(plan_report)
             checker = TableButtonOutcome(color, **cfg['success'])
             total_steps = round(path_times[-1]/dt)
             maximum_depth = {name:0. for name in COLORS}
@@ -315,13 +320,8 @@ def run(app, args, cfg):
                 # Limit further commanded descent from measured travel.
                 # Only the robot command is held; the cap
                 # remains a free spring-driven PhysX body.
-                if held_command is not None and 3.1 <= seconds < 4.45:
-                    command = held_command.copy()
-                elif held_command is not None and 4.45 <= seconds < 5.55:
-                    u = (seconds-4.45)/1.1
-                    blend = u*u*u*(10+u*(-15+6*u))
-                    hover_command = np.array([np.interp(5.55,path_times,path_commands[:,j]) for j in range(7)])
-                    command = held_command+(hover_command-held_command)*blend
+                command = contact_limited_command(
+                    seconds, command, held_command, path_times, path_commands, phase_times)
                 q_target = full_command(command)
                 tick[0] += 1
                 for name in COLORS:
@@ -329,7 +329,7 @@ def run(app, args, cfg):
                 controller.apply_action(ArticulationAction(joint_positions=q_target))
                 world.step(render=False)
                 travels = {name:float(scene['buttons'][name]['cap_rest_world'][2]-caps[name].get_world_pose()[0][2]) for name in COLORS}
-                if held_command is None and 3.1 <= seconds < 4.45 and travels[color] >= cfg['success']['press_depth_m']+.0002:
+                if held_command is None and in_press_window(seconds, phase_times) and travels[color] >= cfg['success']['press_depth_m']+.0002:
                     held_command = command.copy()
                 measured_seconds = (step+1)*dt
                 result = checker.update(measured_seconds, travels, contact_forces)
@@ -390,11 +390,20 @@ def main():
     parser.add_argument('--target',choices=('red','yellow','blue','all'),default=None)
     parser.add_argument('--instruction',help='Single-color English or Chinese press instruction')
     parser.add_argument('--seed',type=int,help='Sample a reproducible visible layout instead of configured positions')
+    parser.add_argument('--spacing',choices=('near','medium','far'),
+                        help='Pairwise centre-distance band for random layouts (requires --seed)')
     parser.add_argument('--gpu',type=int,default=1)
     parser.add_argument('--headless',action='store_true')
     parser.add_argument('--hold',action='store_true')
     args=parser.parse_args()
+    if args.spacing is not None and args.seed is None:
+        parser.error('--spacing selects a random layout; also supply --seed for reproducibility')
     cfg=json.loads(args.config.read_text())
+    if (cfg.get('motion_templates', {}).get('mode', 'shared') != 'shared'
+            and cfg.get('position_sampling', {}).get('domain') != 'camera_reachable'):
+        parser.error('Color motion templates require camera_reachable path screening')
+    if args.spacing is not None:
+        cfg.setdefault('position_sampling', {})['spacing_profile'] = args.spacing
     from pressb.table_buttons.task import parse_instruction,button_in_camera
     if args.instruction:
         color=parse_instruction(args.instruction)
@@ -417,7 +426,10 @@ def main():
                 cfg['buttons'][color]['center_xy'] = np.asarray(xy).tolist()
             approaches = layout['approaches']
         else:
-            approaches = {color: placement.candidate(spec['center_xy']) for color, spec in cfg['buttons'].items()}
+            template_mode = cfg.get('motion_templates', {}).get('mode', 'shared')
+            approaches = {color: placement.candidate(spec['center_xy'], **(
+                {'color': color} if template_mode != 'shared' else {}))
+                for color, spec in cfg['buttons'].items()}
             if any(value is None for value in approaches.values()):
                 parser.error('Configured buttons must admit visible, collision-screened press paths')
             clear, diagnostic = placement.validate_layout(
@@ -459,7 +471,9 @@ def main():
         from pressb.table_buttons.task import sample_button_positions
         sampling=cfg['position_sampling']
         sampled=sample_button_positions(cfg['up_camera'],args.seed,bounds_xy=sampling['bounds_xy'],
-            min_separation=sampling['min_separation'],margin_px=sampling['pixel_margin'],
+            min_separation=sampling.get('min_separation', .10),max_separation=sampling.get('max_separation'),
+            spacing_profile=sampling.get('spacing_profile'),spacing_profiles=sampling.get('spacing_profiles'),
+            margin_px=sampling['pixel_margin'], max_attempts=sampling.get('max_attempts', 3000),
             button_radius=geometry['base_radius_m'],button_top_z=top)
         for color,xy in sampled.items():
             cfg['buttons'][color]['center_xy']=xy

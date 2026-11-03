@@ -1,0 +1,160 @@
+{
+  "schema": "pressb.table_buttons.collection_summary.v1",
+  "task": "Physical scripted demonstrations; not policy evaluation.",
+  "motion_template": "target_relative_v2",
+  "success": true,
+  "completed_at_utc": "2026-10-31T21:22:49.778082+00:00",
+  "completed_at_asia_shanghai": "2026-11-01T05:22:49.778082+08:00",
+  "totals": {
+    "accepted": 9000,
+    "reused": 0,
+    "new": 9000,
+    "requested": 9000,
+    "remaining": 0,
+    "frames": 1286591,
+    "fully_decoded_raw_videos": 18000
+  },
+  "dataset_root_local": "/home/pengguanqi/Datasets/piper_table_buttons_target_relative_1000_20261030",
+  "config": "configs/piper_table_buttons_color_templates.json",
+  "config_sha256": "91c03bf8154f2307942b1a7e2081961ba1bd65ba0dd5ccd6f6174e37ad9203c1",
+  "groups": {
+    "near_red": {
+      "episodes": 1000,
+      "frames": 143006,
+      "instruction": "Press the red button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "near_yellow": {
+      "episodes": 1000,
+      "frames": 142924,
+      "instruction": "Press the yellow button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "near_blue": {
+      "episodes": 1000,
+      "frames": 142963,
+      "instruction": "Press the blue button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "medium_red": {
+      "episodes": 1000,
+      "frames": 143004,
+      "instruction": "Press the red button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "medium_yellow": {
+      "episodes": 1000,
+      "frames": 142924,
+      "instruction": "Press the yellow button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "medium_blue": {
+      "episodes": 1000,
+      "frames": 142957,
+      "instruction": "Press the blue button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "far_red": {
+      "episodes": 1000,
+      "frames": 143006,
+      "instruction": "Press the red button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "far_yellow": {
+      "episodes": 1000,
+      "frames": 142900,
+      "instruction": "Press the yellow button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    },
+    "far_blue": {
+      "episodes": 1000,
+      "frames": 142907,
+      "instruction": "Press the blue button.",
+      "physical_audit_passed": true,
+      "lerobot_export_audit_passed": true,
+      "fully_decoded_raw_videos": 2000,
+      "seed_min": 0,
+      "seed_max": 999
+    }
+  },
+  "attempts": {
+    "near": {
+      "accepted": 3000,
+      "physical_rejections": 0,
+      "planning_rejections": 0,
+      "retry_attempts": 0
+    },
+    "medium": {
+      "accepted": 3000,
+      "physical_rejections": 0,
+      "planning_rejections": 0,
+      "retry_attempts": 0
+    },
+    "far": {
+      "accepted": 3000,
+      "physical_rejections": 0,
+      "planning_rejections": 0,
+      "retry_attempts": 0
+    }
+  },
+  "pairing": {
+    "checked_episode_indices": 3000,
+    "mismatch_count": 0
+  },
+  "validation": {
+    "full_video_decode": true,
+    "audit_errors": 0,
+    "action_semantics": "observed t=k/30; action is the following four physics ticks; terminal repeats previous",
+    "physical_validation": "target displacement and finger force for required dwell; no wrong press/contact"
+  },
+  "source_records": {
+    "completion_summary.json": {
+      "local_path": "outputs/table_buttons_target_relative_1000_20261030/run/completion_summary.json",
+      "sha256": "cd54b575f28caf805dad5af2ddd0c42ea9b077430a981af002de86135a9517a9"
+    },
+    "audit.json": {
+      "local_path": "outputs/table_buttons_target_relative_1000_20261030/run/audit.json",
+      "sha256": "e815388818d18793647537c7db9f53d0bdbd78780d42b010d90bd3ca8eac4f78"
+    },
+    "pairing_report.json": {
+      "local_path": "outputs/table_buttons_target_relative_1000_20261030/run/pairing_report.json",
+      "sha256": "c4d79eccba2f8bdd6b697f67ceb7ed30e676ffad88385a8b02c0cfebcafd0b13"
+    },
+    "dataset_plan.json": {
+      "local_path": "outputs/table_buttons_target_relative_1000_20261030/run/dataset_plan.json",
+      "sha256": "cc43e81f406078f55a381b945b1eb40249033d5a044fc1fdc1335df733262609"
+    }
+  }
+}

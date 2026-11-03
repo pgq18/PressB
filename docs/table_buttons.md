@@ -12,6 +12,15 @@ initial joint positions and gripper width, so launching this scene does not
 require the source dataset. It does require the existing Piper and camera assets
 and the Isaac Sim 5.0 environment. Button dimensions are task design choices.
 
+The default uses a shared motion pattern for all colors. An optional
+[color-specific configuration](table_buttons_color_templates.md) uses direct,
+forward-lifting and above-target approaches for red, yellow and blue. Its
+[completed nine-group collection](results/table_buttons_target_relative_20261030/README.md)
+contains 1,000 fresh episodes per spacing/color combination. Existing
+shared-motion datasets are retained separately. Learned-policy execution and
+its external inference dependency are documented in the
+[evaluation guide](table_buttons_policy_eval.md).
+
 ## Wrist camera
 
 The default configuration uses the same `attach_wrist_camera` setup as the
@@ -38,6 +47,10 @@ not learned-policy performance.
 
 ## Run
 
+For color-dependent routes that remain distinct at near spacing, see
+[color-specific motion templates](table_buttons_color_templates.md). This is an
+optional generator configuration; the shared route remains the default.
+
 Run from the PressB root and choose a new output directory each time.
 
 ```bash
@@ -60,6 +73,11 @@ env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
 env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
   --headless --gpu 1 --mode demo --target all --seed 73 \
   --output outputs/table_buttons_expanded_seed73
+
+# Choose near / medium / far pairwise spacing for a reproducible random layout.
+env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_table_buttons.py \
+  --headless --gpu 1 --mode snapshot --seed 73 --spacing near \
+  --output outputs/table_buttons_near_seed73
 
 # Map the region on a 1 cm diagnostic grid; this CPU check does not start Isaac.
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
@@ -108,8 +126,9 @@ state, not the commanded end-effector position.
 
 Seeded placement now proposes positions over the full fixed-camera/table
 intersection and retains positions that admit the task's scripted press motion.
-The minimum button-centre separation remains 0.10 m, with a 16-pixel image
-margin around the full housing. The three stages are:
+Without a spacing profile, the minimum button-centre separation remains
+0.10 m with no additional upper distance limit. All profiles retain a 16-pixel
+image margin around the full housing. The three stages are:
 
 1. [`camera_center_domain`](../src/pressb/table_buttons/camera_domain.py)
    intersects the tabletop with the configured camera frustum, accounting for
@@ -131,6 +150,52 @@ margin around the full housing. The three stages are:
    button geometry. After placing all three colors, it checks each selected
    path against the entire layout. Intended finger contact with the target cap
    is allowed; housing collisions and contacts with other caps are rejected.
+
+### Near, medium and far spacing
+
+Use `--spacing near`, `--spacing medium` or `--spacing far` together with
+`--seed`. Each profile constrains **all three pairwise centre distances** in
+the table plane, including the most distant pair:
+
+| Profile | Centre-to-centre distance for every pair | Housing edge gap (44 mm diameter) |
+|---|---|---|
+| `near` (近) | 6–10 cm | 1.6–5.6 cm |
+| `medium` (中) | 10–18 cm | 5.6–13.6 cm |
+| `far` (远) | 18–30 cm | 13.6–25.6 cm |
+
+The three button positions remain random; the sampler does not impose a rigid
+triangle or a fixed color order on the table. The entire camera-visible,
+reachable region remains available, subject to the selected distance band and
+the same IK and collision checks. All three complete press paths must still
+pass the layout check. Infeasible custom limits raise an error after the bounded
+proposal budget; the sampler does not silently relax the band.
+
+The equivalent JSON setting is `position_sampling.spacing_profile`, with
+`null` preserving the original minimum-only sampling. Each profile's limits
+can be adjusted in `position_sampling.spacing_profiles` using
+`min_separation` and `max_separation` **in metres**. Both limits must be present
+for a customized profile, and the lower bound must keep the housings disjoint.
+A CLI `--spacing` overrides the JSON profile. Keep `--seed` to randomize;
+without it, configured positions are replayed and checked against the configured
+distance limits. The CLI rejects `--spacing` without `--seed` to avoid silently
+changing a fixed-layout replay.
+
+The saved `config.json` records the selected profile and actual positions.
+For the default reachable-domain sampler, `sampling_domain.sampling` also
+records the resolved limits and all three `pairwise_distances_m`. Reusing the
+same seed, profile, configuration and implementation reproduces the layout.
+
+The initial spacing validation sampled seeds 73, 0, 1, 2 and 3 for each profile
+using the actual Piper URDF: all 15 layouts passed. For seed 73, the three
+commanded press paths in each profile also passed table, robot and complete
+button-layout collision checks at 120 Hz (937 samples per path, nine paths).
+These are kinematic/geometric checks, not new physical rollout success rates.
+The [local validation records](../outputs/table_buttons_spacing_20261023/sampling_validation.json)
+include distances and proposal counts. The related automated suite passed
+115 tests; one USD scene-construction test requires the Isaac runtime and was
+skipped by the CPU test environment.
+
+### Workspace and motion checks
 
 The `press_workspace` configuration controls candidate pitches, hover heights,
 press offset and IK profile resolution. Defaults try pitches
@@ -177,6 +242,201 @@ To replay an existing layout, use that run's saved `config.json` and omit
 `--seed`. Legacy configurations containing `position_sampling.bounds_xy` and
 without `domain: camera_reachable` retain the original rectangle sampler when
 an explicit seed is supplied.
+
+## Collect separate LeRobot datasets
+
+`scripts/collect_table_buttons.py` collects successful physical demonstrations
+for the Cartesian product of spacing profiles and target colors. The default is
+100 episodes in each of nine groups: `near_red`, `near_yellow`, `near_blue`,
+`medium_red`, `medium_yellow`, `medium_blue`, `far_red`, `far_yellow`, `far_blue`.
+Every scene contains all three colors. A color's instruction is identical in
+all spacing groups: `Press the red button.`, `Press the yellow button.` or
+`Press the blue button.`
+
+```bash
+# Collect 900 successful episodes; recycle Isaac after each 50 to release caches.
+# Exit 75 requests a restart; other errors stop this loop for diagnosis.
+while true; do
+  collection_exit=0
+  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/collect_table_buttons.py \
+    --output outputs/table_buttons_collection --gpu 1 --episodes-per-group 100 \
+    --max-new-episodes 50 --resume || collection_exit=$?
+  if [ "$collection_exit" -eq 0 ]; then break; fi
+  if [ "$collection_exit" -ne 75 ]; then exit "$collection_exit"; fi
+done
+
+# Install the separate CPU export environment once; leave Isaac's packages intact.
+bash scripts/setup_dataset_env.sh
+
+# Export one group. Repeat for the other eight group names.
+env -u PYTHONPATH .conda/envs/lerobot/bin/python scripts/export_table_buttons.py \
+  --raw outputs/table_buttons_collection/near_red \
+  --output /path/to/datasets/near_red --episodes 100
+
+# Audit all raw captures and their corresponding nine exported datasets.
+env -u PYTHONPATH .conda/envs/lerobot/bin/python scripts/audit_table_buttons_dataset.py \
+  --raw-root outputs/table_buttons_collection --expected-per-group 100 \
+  --lerobot-root /path/to/datasets
+```
+
+Use `--profiles near` or `--targets red` to collect a subset. Independent
+collectors must use separate output roots. `--resume` continues an identical
+saved collection plan; accepted episodes are retained. The exporter can wait
+for a group's full quota with `--watch`. Exported directories become visible
+only after validation completes. Neither script uploads data to the Hub.
+Long collections should use the restart loop above: Isaac retains CPU stage
+caches across episodes even when GPU memory stays stable. `--max-new-episodes`
+limits newly accepted episodes per process without changing the dataset plan.
+Exit 75 with `restart_required` means the saved dataset should be resumed; it
+does not mean the requested quota is complete.
+
+The controller uses bounded IK and quintic motion with commands held at 30 Hz,
+while physics runs at 120 Hz. Each trajectory starts with the initial observation
+at t=0 and ends at the first 30 Hz boundary after a physically measured target
+press. Retraction is excluded. Failed attempts, wrong-color contacts above
+0.02 N and unexpected robot contacts are excluded from the successful quota and
+retained separately. Infrastructure errors abort the worker for diagnosis.
+Layout seeds, all button positions, the chosen approach, contact forces and
+complete physical samples remain in the raw records.
+
+The exported **LeRobot v3.0** interface matches PAP's joint-space convention:
+
+| Feature | Content |
+|---|---|
+| `observation.images.up`, `observation.images.wrist` | 640 × 480 RGB video at 30 Hz |
+| `observation.state` | Six measured joint angles in degrees, full gripper opening in cm |
+| `action` | Six commanded joint targets in degrees, full gripper opening in cm |
+| Task | One fixed color instruction per dataset |
+
+An action applies during the following 1/30-second interval; the terminal action
+repeats the preceding target. Raw joint values remain in radians and metres.
+The official LeRobot writer and reader validate all numeric rows, fully decode
+the videos, and compare first/middle/last camera frames in every episode against
+the source captures. The independent audit also reconstructs the physical
+success condition and checks action/state alignment at every physics tick.
+These are scripted demonstrations for imitation learning, not learned-policy
+evaluation results.
+
+### Completed collection — 2026-10-23
+
+The nine groups were collected and exported to
+`/home/pengguanqi/Datasets/piper_table_buttons_20261023`: **100 successful episodes
+per group, 900 total, 104,410 observation/action frames** (the same count for
+each RGB stream). Each group contains 100 distinct button layouts. Instructions
+are identical across profiles for each color. Observed durations are
+3.8333–3.9 seconds, ending at measured success as specified above.
+
+All 900 physical traces passed independent checks, and all nine datasets passed
+official LeRobot writer/reader validation. The formal collection accepted 891
+new episodes plus nine previously audited pilot episodes; no completed physical
+attempt failed. Pre-capture process interruptions were resumed at the same seed
+and did not contribute incomplete or duplicate episodes. Long-running CPU cache
+growth was handled by rotating each worker after 50 new accepted episodes.
+
+The [collection summary](../outputs/table_buttons_dataset_20261023/collection_summary.json)
+lists all dataset directories and counts. The
+[independent audit](../outputs/table_buttons_dataset_20261023/raw/audit.json)
+contains per-episode physical, timing and video checks. Raw captures, layouts,
+process logs and source snapshots remain under
+`outputs/table_buttons_dataset_20261023`. Data and full recordings are not
+committed to Git.
+
+## Expanded multi-task datasets — 2026-10-27
+
+The expanded single-task datasets are merged by spacing profile under
+`/home/pengguanqi/Datasets/piper_table_buttons_multitask_3000_20261027`:
+
+| Dataset | Red episodes | Yellow episodes | Blue episodes | Total episodes | Frames |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `near_multitask` | 1,000 | 1,000 | 1,000 | 3,000 | 348,008 |
+| `medium_multitask` | 1,000 | 1,000 | 1,000 | 3,000 | 348,016 |
+| `far_multitask` | 1,000 | 1,000 | 1,000 | 3,000 | 348,036 |
+
+Each dataset uses the three instructions `Press the red button.`,
+`Press the yellow button.`, and `Press the blue button.`; instructions are identical
+across spacing profiles. Episode IDs are red 0–999, yellow 1000–1999, and blue
+2000–2999. The original nine 1,000-episode datasets and the older 100/300-episode
+versions remain unchanged. This merge preserves the original joint7 data,
+30 Hz timing and both RGB video streams, with no video re-encoding.
+
+Each profile contains 1,000 layouts shared across the three tasks. The manifest
+records source episode IDs, actual layout positions and `layout_group_id`; keep
+all tasks of a layout together when making a training/validation split.
+Numeric statistics are recomputed after remapping global frame, episode and task
+indices. Each dataset's `meta/audit.json` records full numeric comparisons,
+video-copy checks and official-reader samples; the root `merge_summary.json`
+reports all three groups. Run logs and the final-path reader audit are under
+`outputs/table_buttons_multitask_3000_20261027`.
+
+```bash
+.conda/envs/lerobot/bin/python scripts/merge_table_buttons_datasets.py \
+  --source /home/pengguanqi/Datasets/piper_table_buttons_1000_20261025 \
+  --destination /home/pengguanqi/Datasets/piper_table_buttons_multitask_3000_20261027 \
+  --expected-episodes-per-color 1000
+```
+
+The destination must be new; the merger refuses to overwrite a published dataset.
+
+## Multi-task datasets — 2026-10-23
+
+The nine source datasets are also available as three independent multi-task
+datasets under `/home/pengguanqi/Datasets/piper_table_buttons_multitask_20261023`
+on both the workstation and H200:
+
+| Dataset | Red episodes | Yellow episodes | Blue episodes | Total frames |
+| --- | ---: | ---: | ---: | ---: |
+| `near_multitask` | 100 | 100 | 100 | 34,802 |
+| `medium_multitask` | 100 | 100 | 100 | 34,804 |
+| `far_multitask` | 100 | 100 | 100 | 34,804 |
+
+These are regroupings of the same 900 demonstrations, not additional collection.
+Each keeps `Press the red button.`, `Press the yellow button.`, and
+`Press the blue button.` as separate tasks. Episode IDs are red 0–99,
+yellow 100–199, and blue 200–299. The manifest preserves source group, original
+episode ID, layout seed, and button positions. Global frame/task/episode indices
+and statistics are updated; the original joint7 samples, 30 Hz timing and RGB
+video bytes are retained. Original dataset files remain unchanged.
+
+The merger uses the official LeRobot 0.6.1 aggregator without concatenating or
+re-encoding video. It audits every numeric row, video-copy content, source-file
+immutability, and official-reader image/language alignment across color boundaries.
+Use a fresh destination to reproduce:
+
+```bash
+.conda/envs/lerobot/bin/python scripts/merge_table_buttons_datasets.py \
+  --source /home/pengguanqi/Datasets/piper_table_buttons_20261023 \
+  --destination /home/pengguanqi/Datasets/piper_table_buttons_multitask_20261023
+```
+
+Three independent VLA-JEPA models are queued on H200 after all nine single-task
+runs and their checkpoint verification. Each starts from the same official
+pretrained weights with newly initialized joint7 interfaces, uses batch 64,
+and trains for three epochs (1,470 updates). For each color, 90 episodes train
+and 10 validate: 270/30 per model. All colors of the same layout stay on the
+same side of the split, matching the original seed-42 held-out episode IDs.
+The model reads the instruction belonging to each episode. Validation reports
+150 fixed anchors, 50 per color, and selects the best model by the equal-weight
+mean of the three per-color action-error scores. This is offline prediction
+validation, not a measured Isaac task success rate.
+
+Remote configs, logs, and status are under
+`/home/pengguanqi/Worksapce/Research/VLA-JEPA/runs/table_buttons_multitask_joint7_20261023`.
+The remote repository's `scripts/train_table_buttons_multitask_suite.py` checks
+the old suite's completion before using GPUs 0/1/2 for near/medium/far. Read
+`suite_status.json` before starting another controller.
+
+H200's remaining persistent quota is reserved for the original nine models.
+The new best weights stay temporarily under
+`/tmp/pengguanqi-table-buttons-multitask-20261023` and, after strict model reload
+and inference checks, are automatically copied to the workstation's
+`/home/pengguanqi/Models/VLA-JEPA/table_buttons_multitask_joint7_20261023`.
+The local archive preserves model bytes, processor, configuration, split,
+normalization, and logs. H200 retains its temporary best copy; its run directory
+records the durable workstation location. Local queue/transfer evidence is in
+`outputs/table_buttons_multitask_h200_training_20261023`, including
+`local_archive_status.json`. Completed archival is recorded in
+`durable_archive_completion.json` under the model root.
 
 ## Outputs and scope
 

@@ -335,6 +335,12 @@
   "position_sampling": {
     "domain": "camera_reachable",
     "min_separation": 0.1,
+    "spacing_profile": null,
+    "spacing_profiles": {
+      "near": {"min_separation": 0.06, "max_separation": 0.1},
+      "medium": {"min_separation": 0.1, "max_separation": 0.18},
+      "far": {"min_separation": 0.18, "max_separation": 0.3}
+    },
     "pixel_margin": 16
   },
   "press_workspace": {

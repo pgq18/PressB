@@ -1,7 +1,7 @@
 """Sample visible tabletop button centres with exact IK and path clearance.
 
 The camera polygon supplies proposals, not robot feasibility. Every accepted
-point is solved at its own XY and screened along the shared press trajectory.
+point is solved at its own XY and screened along the configured press trajectory.
 ``grid`` is a diagnostic view of these same checks, never a sampling lookup.
 """
 from __future__ import annotations
@@ -14,6 +14,8 @@ import numpy as np
 from .camera_domain import camera_center_domain
 from .collision import RobotClearance
 from .motion import screening_path
+from .motion_templates import ColorMotionTemplates
+from .spacing import resolve_spacing
 from .task import COLORS, button_in_camera
 from .workspace import PressWorkspace
 
@@ -51,18 +53,19 @@ class ReachablePlacement:
         self.top = float(geometry.get("base_height_m", .017)) + float(geometry.get("cap_height_m", .008))
         sampling = self.cfg.get("position_sampling", {})
         self.margin = float(sampling.get("pixel_margin", 16.))
-        self.min_separation = float(sampling.get("min_separation", .10))
+        self.spacing = resolve_spacing(sampling, self.radius)
+        self.min_separation = self.spacing.min_separation
+        self.max_separation = self.spacing.max_separation
         self.max_attempts = sampling.get("max_attempts", 3000)
         if self.initial_q.shape != (6,) or not np.isfinite(self.initial_q).all():
             raise ValueError("Expected six finite initial arm joints")
         if not np.isfinite(self.gripper_width) or self.gripper_width < 0:
             raise ValueError("Initial gripper width must be finite and nonnegative")
-        if not np.isfinite(self.min_separation) or self.min_separation < 2*self.radius:
-            raise ValueError("Minimum separation must leave button housings disjoint")
         if type(self.max_attempts) is not int or self.max_attempts <= 0:
             raise ValueError("position_sampling.max_attempts must be a positive integer")
         self.workspace = PressWorkspace(kin, self.cfg)
         self.clearance = RobotClearance(kin, self.cfg)
+        self.motion_templates = ColorMotionTemplates(kin, self.cfg)
         self.last_diagnostic = {"reason": "not_checked"}
 
     def _visible(self, xy):
@@ -70,13 +73,20 @@ class ReachablePlacement:
             xy, self.cfg["up_camera"], button_radius=self.radius,
             button_top_z=self.top, margin_px=self.margin))
 
-    def candidate(self, xy):
+    def candidate(self, xy, color=None):
         """Return the first clear, exact-XY IK approach, or ``None``.
 
         All orientation/height candidates remain eligible after a collision in
         the preferred approach. ``last_diagnostic`` reports the latest rejection
-        or the accepted path's collision-check metadata.
+        or the accepted path's collision-check metadata. Color-specific transit
+        templates require ``color`` so the complete commanded route is checked.
         """
+        if color is None:
+            if self.motion_templates.enabled:
+                raise ValueError("A button color is required for color-specific motion templates")
+            color = COLORS[0]
+        if color not in COLORS:
+            raise ValueError(f"Unknown button color: {color}")
         xy = np.asarray(xy, dtype=float)
         if xy.shape != (2,) or not np.isfinite(xy).all():
             raise ValueError("Expected two finite button XY coordinates")
@@ -85,6 +95,11 @@ class ReachablePlacement:
             return None
         rejected = []
         for approach in self.workspace.solutions(xy):
+            try:
+                approach = self.motion_templates.attach(approach, color)
+            except ValueError as error:
+                rejected.append({"reason": "motion_template", "error": str(error)})
+                continue
             path = screening_path(self.initial_q, approach)
             ok, diagnostic = self.clearance.check_path(path, self.gripper_width)
             if not ok:
@@ -93,7 +108,7 @@ class ReachablePlacement:
             # A single candidate still has its own housing and cap. Only the
             # intended finger/cap contact is exempt from the obstacle check.
             button_ok, button_diagnostic = self.clearance.check_button_path(
-                path, {COLORS[0]: xy.tolist()}, COLORS[0], self.gripper_width)
+                path, {color: xy.tolist()}, color, self.gripper_width)
             if not button_ok:
                 rejected.append(deepcopy(button_diagnostic))
                 continue
@@ -124,17 +139,33 @@ class ReachablePlacement:
             if not np.allclose(np.asarray(approaches[color]["press"])[:2], points[index], rtol=0., atol=1e-8):
                 raise ValueError(f"Selected approach belongs to a different {color} button position")
             for other in range(index+1, len(COLORS)):
-                if np.linalg.norm(points[index]-points[other]) < self.min_separation:
-                    return False, {"reason": "button_separation", "pair": [color, COLORS[other]]}
+                distance = float(np.linalg.norm(points[index]-points[other]))
+                if not self.spacing.accepts(distance):
+                    return False, {"reason": "button_separation", "pair": [color, COLORS[other]],
+                                   "distance_m": distance, "min_separation_m": self.min_separation,
+                                   "max_separation_m": self.max_separation}
         checks = {}
         for color in COLORS:
+            self.motion_templates.validate(approaches[color], color)
             path = screening_path(self.initial_q, approaches[color])
+            if self.motion_templates.enabled:
+                arm_ok, arm_diagnostic = self.clearance.check_path(path, self.gripper_width)
+                if not arm_ok:
+                    return False, {"reason": "arm_table_path_collision", "target_color": color,
+                                   "check": deepcopy(arm_diagnostic)}
             ok, diagnostic = self.clearance.check_button_path(path, positions, color, self.gripper_width)
             checks[color] = deepcopy(diagnostic)
             if not ok:
                 return False, {"reason": "button_path_collision", "target_color": color,
                                "checks": checks}
-        return True, {"reason": "clear", "checks": checks}
+        result = {"reason": "clear", "checks": checks}
+        if self.motion_templates.enabled:
+            diversity = self.motion_templates.diversity(self.initial_q, approaches)
+            result["motion_diversity"] = diversity
+            if not diversity["accepted"]:
+                result["reason"] = "motion_diversity"
+                return False, result
+        return True, result
 
     def sample(self, seed=None):
         """Uniformly propose centres over the entire camera-domain bounds.
@@ -154,15 +185,15 @@ class ReachablePlacement:
                 restarts += int(attempt > 0)
                 positions, approaches = {}, {}
             point = rng.uniform(self._bounds[:, 0], self._bounds[:, 1])
-            if any(np.linalg.norm(point-np.asarray(other)) < self.min_separation
+            if any(not self.spacing.accepts(float(np.linalg.norm(point-np.asarray(other))))
                    for other in positions.values()):
                 rejected["separation"] += 1
                 continue
-            approach = self.candidate(point)
+            color = COLORS[len(positions)]
+            approach = self.candidate(point, color=color)
             if approach is None:
                 rejected[self.last_diagnostic["reason"]] += 1
                 continue
-            color = COLORS[len(positions)]
             positions[color], approaches[color] = point.tolist(), approach
             if len(positions) == len(COLORS):
                 ok, diagnostic = self.validate_layout(positions, approaches)
@@ -176,7 +207,13 @@ class ReachablePlacement:
                     proposal="uniform over complete camera-domain bounds",
                     exact_candidate_ik=True, discrete_path_collision_check=True,
                     complete_button_layout_check=True,
-                    min_separation_m=self.min_separation, attempts=attempt+1,
+                    color_motion_templates=self.motion_templates.enabled,
+                    spacing_profile=self.spacing.profile,
+                    min_separation_m=self.min_separation, max_separation_m=self.max_separation,
+                    pairwise_distances_m={f"{color}_{other}": float(np.linalg.norm(
+                        np.asarray(positions[color])-positions[other]))
+                        for index, color in enumerate(COLORS) for other in COLORS[index+1:]},
+                    attempts=attempt+1,
                     layout_restarts=restarts, rejected_by_reason=dict(rejected))
                 domain["layout_clearance"] = diagnostic
                 return {"positions": positions, "approaches": approaches, "domain": domain}
@@ -190,6 +227,8 @@ class ReachablePlacement:
         ``approaches`` and ``reasons`` are aligned with the flat ``points_xy``
         array. The reachable mask describes single-button approaches; it is not
         an assertion that arbitrary simultaneous layouts are mutually clear.
+        In color-template mode a point must be feasible for all three colors;
+        ``color_approaches`` retains each route and ``approaches`` holds red.
         """
         step_m = float(step_m)
         if not np.isfinite(step_m) or step_m <= 0:
@@ -203,12 +242,24 @@ class ReachablePlacement:
         visible = np.array([self._visible(point) for point in points], dtype=bool)
         reachable = np.zeros(len(points), dtype=bool)
         approaches, reasons = [None]*len(points), ["outside_camera_domain"]*len(points)
+        color_approaches = [None]*len(points)
         for index in np.flatnonzero(visible):
-            approach = self.candidate(points[index])
+            if self.motion_templates.enabled:
+                selected = {}
+                for color in COLORS:
+                    item = self.candidate(points[index], color=color)
+                    if item is None:
+                        break
+                    selected[color] = item
+                color_approaches[index] = selected
+                approach = selected[COLORS[0]] if len(selected) == len(COLORS) else None
+            else:
+                approach = self.candidate(points[index])
             approaches[index] = approach
             reasons[index] = self.last_diagnostic["reason"]
             reachable[index] = approach is not None
         return {"points_xy": points, "visible_mask": visible, "reachable_mask": reachable,
                 "approaches": approaches, "reasons": reasons,
+                "color_approaches": color_approaches,
                 "bounds_xy_m": deepcopy(self.domain["bounds_xy_m"]), "resolution_m": step_m,
                 "domain": deepcopy(self.domain)}

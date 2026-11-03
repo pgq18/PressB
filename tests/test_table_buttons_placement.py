@@ -237,3 +237,164 @@ def test_overlapping_separation_configuration_is_rejected(harness):
     cfg["position_sampling"]["min_separation"] = .04
     with pytest.raises(ValueError, match="disjoint"):
         placement.ReachablePlacement(None, cfg)
+
+
+@pytest.mark.parametrize("profile,minimum,maximum", [
+    ("near", .06, .10), ("medium", .10, .18), ("far", .18, .30),
+])
+def test_profile_sampling_keeps_all_pairs_in_range_and_checks_complete_paths(harness, profile, minimum, maximum):
+    cfg, _, workspace, clearance = harness
+    cfg["position_sampling"].update(spacing_profile=profile, max_attempts=10000)
+    original = deepcopy(cfg)
+    sampler = placement.ReachablePlacement(None, cfg)
+    first, same, different = sampler.sample(12), sampler.sample(12), sampler.sample(13)
+    assert first["positions"] == same["positions"]
+    assert first["positions"] != different["positions"]
+    assert cfg == original
+    for sampled in (first, same, different):
+        points = np.asarray([sampled["positions"][color] for color in COLORS])
+        distances = [np.linalg.norm(points[i] - points[j]) for i in range(3) for j in range(i+1, 3)]
+        assert all(minimum <= distance <= maximum for distance in distances)
+        assert all(sampler._visible(point) for point in points)
+        metadata = sampled["domain"]["sampling"]
+        assert metadata["spacing_profile"] == profile
+        assert metadata["min_separation_m"] == minimum
+        assert metadata["max_separation_m"] == maximum
+        np.testing.assert_allclose(sorted(metadata["pairwise_distances_m"].values()), sorted(distances))
+        assert metadata["exact_candidate_ik"] and metadata["complete_button_layout_check"]
+    complete_checks = [row for row in clearance.button_calls if len(row[1]) == 3]
+    assert [row[2] for row in complete_checks] == list(COLORS)*3
+    assert workspace.calls and clearance.calls
+
+
+def test_profile_upper_bound_is_checked_when_validating_a_provided_layout(harness):
+    cfg = harness[0]
+    cfg["position_sampling"]["spacing_profile"] = "near"
+    sampler = placement.ReachablePlacement(None, cfg)
+    # All pairs exceed the profile's minimum; red-blue violates its maximum.
+    positions = {"red": [-.3, -.2], "yellow": [-.22, -.2], "blue": [-.14, -.2]}
+    approaches = {color: approach(xy) for color, xy in positions.items()}
+    clear, diagnostic = sampler.validate_layout(positions, approaches)
+    assert not clear and diagnostic["reason"] == "button_separation"
+
+
+def test_profile_sampling_still_restarts_after_complete_layout_collision(harness):
+    cfg, _, _, clearance = harness
+    cfg["position_sampling"].update(spacing_profile="near", max_attempts=10000)
+    rejected_once = []
+
+    def accept(path, positions, target):
+        if len(positions) == 3 and not rejected_once:
+            rejected_once.append(deepcopy(positions))
+            return False
+        return True
+
+    clearance.accept_buttons = accept
+    sampled = placement.ReachablePlacement(None, cfg).sample(12)
+    assert sampled["positions"] != rejected_once[0]
+    assert sampled["domain"]["sampling"]["rejected_by_reason"]["button_path_collision"] == 1
+
+
+def test_impossible_profile_remains_bounded_instead_of_relaxing_distance(harness):
+    cfg, domain, workspace, _ = harness
+    cfg["position_sampling"].update(spacing_profile="far", max_attempts=20)
+    domain.update(polygon_xy_m=[[0., 0.], [.05, 0.], [.05, .05], [0., .05]],
+                  bounds_xy_m=[[0., .05], [0., .05]], area_m2=.0025)
+    with pytest.raises(ValueError, match="after 20 proposals"):
+        placement.ReachablePlacement(None, cfg).sample(0)
+    assert 0 < len(workspace.calls) <= 20
+
+
+class TemplateKinematics:
+    """Cartesian coordinates as the first three joints for path-check tests."""
+    def solve(self, xyz, initial, orientation):
+        return np.r_[xyz, 0., 0., 0.]
+
+    def fk(self, q):
+        pose = np.eye(4)
+        pose[:3, 3] = np.asarray(q)[:3]
+        return pose
+
+
+def test_color_candidate_checks_detour_instead_of_just_final_press(harness):
+    cfg, _, _, clearance = harness
+    cfg['motion_templates'] = {'mode': 'color_detours_v1'}
+    sampler = placement.ReachablePlacement(TemplateKinematics(), cfg)
+    with pytest.raises(ValueError, match='color is required'):
+        sampler.candidate([-.2, 0.])
+    clearance.accept = lambda path: np.max(path[:, 2]) < .3
+    assert sampler.candidate([-.2, 0.], color='yellow') is None
+    accepted = sampler.candidate([-.2, 0.], color='red')
+    assert accepted['motion_template']['color'] == 'red'
+    assert np.max(clearance.calls[-1][0][:, 2]) == pytest.approx(.24)
+    assert clearance.button_calls[-1][2] == 'red'
+
+
+def test_sampler_screens_all_color_routes_and_saves_separation(harness):
+    cfg = harness[0]
+    cfg['motion_templates'] = {'mode': 'color_detours_v1'}
+    sampler = placement.ReachablePlacement(TemplateKinematics(), cfg)
+    sampled = sampler.sample(12)
+    for color in COLORS:
+        assert sampled['approaches'][color]['motion_template']['color'] == color
+    diversity = sampled['domain']['layout_clearance']['motion_diversity']
+    assert diversity['accepted']
+    assert min(diversity['pairwise_mean_tip_distance_m'].values()) >= .10
+    assert sampled['domain']['sampling']['color_motion_templates']
+
+
+def test_layout_rejects_insufficient_motion_diversity_without_relaxing_threshold(harness):
+    cfg = harness[0]
+    cfg['motion_templates'] = {'mode': 'color_detours_v1', 'min_transit_separation_m': 1.}
+    sampler = placement.ReachablePlacement(TemplateKinematics(), cfg)
+    positions = {'red': [-.3, -.2], 'yellow': [-.1, -.2], 'blue': [.1, -.2]}
+    approaches = {color: sampler.motion_templates.attach(approach(xy), color)
+                  for color, xy in positions.items()}
+    ok, diagnostic = sampler.validate_layout(positions, approaches)
+    assert not ok and diagnostic['reason'] == 'motion_diversity'
+    assert not diagnostic['motion_diversity']['accepted']
+
+
+def test_layout_rechecks_every_color_arm_path(harness):
+    cfg, _, _, clearance = harness
+    cfg['motion_templates'] = {'mode': 'color_detours_v1'}
+    sampler = placement.ReachablePlacement(TemplateKinematics(), cfg)
+    positions = {'red': [-.3, -.2], 'yellow': [-.1, -.2], 'blue': [.1, -.2]}
+    approaches = {color: sampler.motion_templates.attach(approach(xy), color)
+                  for color, xy in positions.items()}
+    clearance.accept = lambda path: np.max(path[:, 2]) < .3
+    ok, diagnostic = sampler.validate_layout(positions, approaches)
+    assert not ok and diagnostic['reason'] == 'arm_table_path_collision'
+    assert diagnostic['target_color'] == 'yellow'
+
+
+def test_grid_requires_all_color_routes_to_be_clear(harness):
+    cfg, _, _, clearance = harness
+    cfg['motion_templates'] = {'mode': 'color_detours_v1'}
+    sampler = placement.ReachablePlacement(TemplateKinematics(), cfg)
+    clearance.accept = lambda path: np.max(path[:, 2]) < .3
+    grid = sampler.grid(.2)
+    assert grid['visible_mask'].any()
+    assert not grid['reachable_mask'].any()  # Yellow detour blocked everywhere.
+
+
+@pytest.mark.parametrize('change', ['shared_layout', 'other_color', 'changed_config'])
+def test_prepare_rejects_stale_or_mismatched_routes_before_execution(harness, change):
+    from pressb.table_buttons.collection import LayoutPlanner
+
+    cfg = harness[0]
+    cfg['motion_templates'] = {'mode': 'color_detours_v1'}
+    cfg['position_sampling']['max_attempts'] = 10000
+    planner = LayoutPlanner(TemplateKinematics(), cfg)
+    layout = planner.sample('near', 12)
+    if change == 'shared_layout':
+        for row in layout['approaches'].values():
+            row.pop('motion_template')
+            row.pop('transit_waypoints_rad')
+    elif change == 'other_color':
+        layout['approaches']['red']['motion_template']['color'] = 'blue'
+    else:
+        cfg['motion_templates']['leg_duration_s'] = 2.6
+        planner = LayoutPlanner(TemplateKinematics(), cfg)
+    with pytest.raises(ValueError, match='Stale or mismatched'):
+        planner.prepare('near', 12, 'red', layout)

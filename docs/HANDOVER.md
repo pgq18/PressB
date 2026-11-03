@@ -1,5 +1,184 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-03 核验：三色朝目标模板九组全新 1,000 条已全部完成
+
+- 本轮已于北京时间 **2026-11-01 05:22:49** 完成：`run/suite_status.json` 为 complete，`run/completion_summary.json` success=true。九组各 **1,000 条，共全新 9,000 条、1,286,591 帧**，九份 LeRobot 导出及全量物理／动作／视频审核全部通过，无错误；3,000 个三色配对布局核对无差异。监督器已无活动子进程，无需重新启动。
+- 10 月 30 日晚至 31 日晚主机曾挂起约 22 小时 26 分钟（内核 suspend 计数、BOOTTIME 与 MONOTONIC 差值及日志空档一致）；恢复后正常续采。以下为本轮启动配置记录，数据已完成，不再处于采集中。
+
+- 用户要求使用修订后的 `target_relative_v2`，近／中／远 × 红／黄／蓝，每组 **1,000 条成功示范，共全新 9,000 条**。本次不复用旧数据或 smoke 样本；原有所有数据集保留。同颜色跨间距仍使用相同指令 `Press the red/yellow/blue button.`。
+- 正式入口：`outputs/table_buttons_target_relative_1000_20261030`；北京时间 **2026-10-30 21:19:26** 启动后台监督器，历史 PID **254533**，身份记录见 `launch_record.json`。`run/suite_status.json` 为实时进度，`supervisor.log` 和 `run/logs/` 为日志。不要仅凭本文 PID 重复启动；核对当前状态与 start_ticks。
+- 正式数据输出：`/home/pengguanqi/Datasets/piper_table_buttons_target_relative_1000_20261030/<near|medium|far>_<red|yellow|blue>`，每组满额后自动导出 LeRobot 并校验。原始数据、冻结配置／代码、布局及尝试记录保留在 `run/`。每档按红→黄→蓝依次采集，初始种子 0–999；物理失败会独立重试，三色实际布局配对差异写入 `pairing_report.json`。
+- 两张 5090 上三个 Isaac 进程并行：near GPU0，medium／far GPU1；每进程每完成 50 条轮换一次，限制仿真缓存累积。最多两个 CPU 导出进程。采集保持固定夹爪、30 Hz 控制／图像及 120 Hz 物理；保留原七维数据格式及单位转换。
+- 正式启动前，九个组合各 1 条 **9/9 首次物理按压成功**，无规划／物理重试；九份 LeRobot 导出、官方 reader、动作／接触及 18 路完整视频解码审核全部通过。证据为 `smoke/completion_summary.json` 和 `smoke/audit.json`。相关采集／导出／新模板测试 **90 passed, 1 skipped**。
+- 完成证据为 `run/completion_summary.json` 与 `run/audit.json`，均 success=true；原始记录与 `run/source_archive/` 保留用于复现。此次未安排模型训练。
+
+## 2026-10-30 三色模板修订：持续朝目标推进
+
+- 用户认为 v1 固定基座左右中间点导致绕远，要求整体朝目标移动。当前 `configs/piper_table_buttons_color_templates.json` 改为 **`target_relative_v2`**：红色从初始末端直线到 near；黄色水平前进40%同时抬高6cm，再直线到 near；蓝色先到目标上方（基座高度至少18cm），再垂直下降到 near。三色 XY 都沿初始点到目标的线段推进，初始末端高约16.34cm。旧 shared 默认不变，v1仅保留历史复现。
+- 新增 `target_relative_motion.py`，逐30Hz笛卡尔位置用有界IK求解，姿态采用随位置变化的径向yaw及局部旋转插值；生成的关节前缀同时用于碰撞检查和执行。前缀3.6秒，按压从4.0秒开始，采集成功于4.733秒；包含松开、返回的完整demo为8.7秒。新配置路径平均间距阈值3cm，不再沿用v1的10cm门槛。
+- 固定历史 near seed0–19、保留原按压姿态，**19/20布局的57条路径通过全部稠密预检查**；seed9黄色靠近基座的抬升不可行，尝试其他按压姿态也未找到清晰路线，此类布局会被拒绝。有效布局平均前缀末端间距7.95cm；中、远seed0新采样布局各三色CPU预检查通过（本轮未做这两档物理执行）。
+- 近距seed0–2共9次采集，**9/9首次成功、无重试**；独立重算120Hz动作／接触与18路视频解码全部通过。实测FK水平横向偏差最大0.247mm、单步后退最大0.022mm，平均三色前缀间距7.80cm。seed0三个完整demo也通过按压／回弹／返回检查。相关CPU测试160 passed、1 skipped。
+- 产物：`outputs/table_buttons_target_relative_20261030/`，其中 `near_seed0_<red|yellow|blue>_third_person.mp4` 为三个独立原速全景视频，每条261帧／30fps／8.7秒。配置说明见 [三色模板文档](table_buttons_color_templates.md)。未重采正式全量数据、未训练新模型；本轮仿真已退出。
+
+## 2026-10-30 三色独立运动模板已实现并验证
+
+- 新增可选配置 `configs/piper_table_buttons_color_templates.json`，模式为 `color_detours_v1`。红／蓝经过基座两侧的高位中间点，黄经过更高的中间点，然后进入原有 hover／approach／press；两段各 2.4 秒五次插值，最终下压整体后移 3 秒。原默认 shared 和已有数据保持不变。
+- 布局采样检查三色完整绕行及按钮间碰撞，并要求每对三色移动段的平均 FK 末端间距 ≥10 cm；这是进度对齐的平均间距，不是每一时刻的间距下限。缓存路线需匹配颜色和配置，不可混用旧布局。执行端接触保持、回撤改用规划阶段时间，数据 metadata 保留模板／时间信息。
+- 近距历史 seed0–19 的相同布局、60 条新路径全部通过稠密几何预检查；规划移动段平均间距 4.08→15.52 cm，关节位移余弦 0.945→0.647。中／远 seed0 新采样布局各三条路径也通过 CPU 预检查。
+- 本机 GPU0 实际运行近距 seed0–2、三色共 9 条脚本示范，全部首次按压成功，无错键或意外接触；独立 120Hz 物理／动作检查和 18 路视频完整解码通过，实际布局与旧数据完全匹配。实测 FK 移动段平均间距 **3.55→14.86 cm（4.18倍）**，整段活动轨迹 **5.65→13.11 cm**；episode **3.833→6.833秒**。这是生成器小样本验证，尚未重采正式全量数据或训练新模型。
+- 新红色 3 条示范经原 LeRobot 导出器与 reader 验证通过；136 项相关 CPU 测试通过、1 项依赖测试跳过。旧 shared 的 seed0 三色完整命令序列与改动前逐元素完全一致。
+- 说明和命令见 [三色模板文档](table_buttons_color_templates.md)；数值、独立审核、代码和原速三色视频见 `outputs/table_buttons_color_templates_20261030/`。采集及验证进程均已完成，GPU1 上他人的任务未改动。后续配对统计须继续核对实际 seed＋positions，因为物理失败仍按颜色独立重试。
+
+## 2026-10-30 生成示范的三色轨迹相似度分析
+
+- 对九份 1,000 条原始示范对应的 LeRobot 数值数据进行全量分析，确认近／中／远各 **1,000 个完整匹配三色布局**，共 9,000 条轨迹、9,000 颜色配对。原始数据与训练权重均未修改，也未重新仿真。
+- 剔除开头 0.4 秒共同静止段，每条活动段按时间进度对齐 101 点。近／中／远六关节位移余弦均值为 **0.9478／0.8666／0.6700**；实测关节 FK 末端平均距离 **5.7236／9.8976／16.9687 cm**；六关节 RMSE **7.0839／12.0174／19.9618°**。余弦不是百分比，也不等于空间重合率。末端参考点使用本任务规划器的 link6 局部 +Z 0.1358 m。
+- 接近／下压阶段的局部位移形状余弦接近 1，但绝对末端间距约 **8.05／13.94／23.93 cm**。所有任务共享五次插值及阶段时间表，不能仅据逐关节相关性声称轨迹相同。跨档布局不同，结果为生成数据中的配置差异，不能单独解释模型语言利用或闭环成功率。
+- 27 条原始轨迹与导出表数值对照、独立 FK 抽查及全部结果键／数值检查通过；共同物理时钟对齐的平均距离变化最大仅 0.000694 cm。完整报告、逐配对 CSV、图与脚本在 [轨迹相似度分析](../outputs/table_buttons_trajectory_similarity_20261030/README.md)。
+
+## 2026-10-29 核验：三档多任务 joint6 900 条评测已完成
+
+- 本轮评测及审核于北京时间 **2026-10-28 16:35:44** 全部结束，用时约 **2 小时 34 分钟**。`outputs/table_buttons_multitask_joint6_3000_eval_20261028/run/workflow_status.json` 为 `complete, success=true`；近／中／远各 300 条独立动作、物理、接触与视频审核全部通过，合计 **900/900、0 missing、0 invalid**。专用推理服务和 SSH 转发已自动释放；不要重启历史监督器 PID 1878788。
+- 主任务成功率：近距离红／黄／蓝 **4%／3%／4%**（11/300，3.67%）；中距离 **8%／5%／5%**（18/300，6.00%）；远距离 **17%／22%／17%**（56/300，18.67%）。整体 **85/900（9.44%）**；严格采集口径 **78/900（8.67%）**，差额 7 条均包含已声明允许的指间闭合接触。
+- 815 条主指标失败中 **800 条超时、15 条非目标按键手指接触**，无错键完整按压、其他阻断碰撞或非法模型动作。仅凭超时记录不能确定训练不足、语言混淆等根因。
+- 原 300 条 joint7 多任务模型合计 23/900（2.56%），本轮增至 85/900，但该比较同时改变了数据量与学习动作维度。与上一轮红色 1,000 条 joint6 单任务相比，近／中／远红色为 **3%→4%、6%→8%、44%→17%**；远距离红色多任务表现明显较低，不能笼统称三档均优于单任务。
+- 最终明细见 [本轮结果](../outputs/table_buttons_multitask_joint6_3000_eval_20261028/run/results/README.md)、同目录 `summary.json` 与 `per_episode.csv`。配置仍为匹配采集间距、固定原 100 个测试布局、12 秒时限、无额外平滑和固定夹爪；以下“评测启动”段落为历史记录。
+
+## 2026-10-28 三档多任务 joint6 3,000 条模型：并行闭环评测启动
+
+- 用户要求在权重备份期间同时评测。本轮各模型使用对应近／中／远配置，红／黄／蓝各 **100 条**，每模型 300 条，合计 **900 条**。best step 为近／中 14,400、远 14,100；训练验证选出的 best 在仿真评测前冻结。
+- 逐字复用 `outputs/table_buttons_policy_eval_20261024/run/plan.json` 对应多任务各色的 100 条布局、场景及策略种子，布局 seed10000–10099。保持 **12 秒仿真时限、30 Hz 控制／120 Hz 物理、每次执行 7 步、无额外平滑**，原生六关节预测并追加约 0.2 mm 固定夹爪全宽。保留 `task_success` 和 `strict_collector_success` 双指标及两路执行录像。
+- 专用 H200 GPU0／1／2 推理服务及本机 SSH 转发端口 **18130／18131／18132** 已就绪。三色各 3 观测、每模型 9 条，全部 27 条 HTTP 推理与严格重载的离线结果逐值相同；全部三色现有客户端调用通过。模型信息、契约和验证证据在 `outputs/table_buttons_multitask_joint6_3000_eval_20261028/service/`。
+- 本机后台监督器于北京时间 **14:01:29** 启动，PID **1878788**，入口 `outputs/table_buttons_multitask_joint6_3000_eval_20261028/run_evaluation.py --smoke --run`。本机 **GPU1 三路 Isaac worker**，各负责一个间距，三色顺序执行，每 10 条轮换进程。先每档一条独立 smoke 并审核，再自动正式评测；smoke 不计入 900 条。GPU0 现有 PAP 服务及独立权重备份保持运行。
+- 评测、计分审核及 suite 已兼容每档三色 joint6 多任务计划，183 项相关 CPU 测试通过；独立工作流和实际计划检查通过。**三档 smoke 均通过独立物理、动作及视频审核，正式评测已开始产生有效结果**，当前权重备份仍正常进行。完成后自动全量审核物理／动作／接触及视频，生成逐颜色结果、原 300 条 joint7 多任务比较和红色 1,000 条 joint6 单任务比较，再清理本轮专用服务。
+- **当前是否完成以实时文件为准，不要据历史 PID 重复启动**：`run/workflow_status.json` 汇总进展；`run/<spacing>/summary.json` 为各色实时计数；最终 `run/<spacing>/audit/summary.json` 必须均 `audit_passed=true, complete=true`，并有 `run/results/summary.json`。完整说明见 [本轮评测说明](../outputs/table_buttons_multitask_joint6_3000_eval_20261028/README.md)。
+
+## 2026-10-28 三档 3,000 条多任务 joint6 训练完成，恢复本机备份
+
+- **三组均完成 3 epochs，训练正常退出，最佳权重严格重载及红／黄／蓝实际指令推理全部通过。** 近／中各 14,682 updates，远 14,685 updates；北京时间 10 月 28 日训练结束时间分别为 **13:33:08／13:16:19／12:55:39**。训练用时约 17.21／16.92／16.59 小时。H200 三张训练 GPU 已释放。
+- 近／中／远 best step 分别为 14,400／14,400／14,100，验证六关节 first-action MAE 分别为 **0.521472°／0.462080°／0.473927°**；这是离线动作误差，**尚未进行这三个新模型的闭环成功率评估**。每个模型验证了 9 个观测及全部三色指令，原生六维动作和追加固定夹爪接口均正常。
+- 本轮 live SSH 验收证据为 `outputs/table_buttons_multitask_joint6_3000_20261027/reports/training_completion_verified_20261028.json`，三组 best／last 模型均完整存在于上一节所列 H200 持久目录。远端监督器正常终态为 `ready_for_archive, success=true`，无需重训。
+- 原本机监督器 PID 1573808 因 SSH banner 超时、30 次重试耗尽而退出，**远端训练独立完成，未受影响**。故障状态和日志保存在 `recovery_history/20261028_134047/`。修复本机控制器的 SSH 暂时断连重试及恢复状态清理，8 项流程测试通过；只修改本机监督代码，没有改动已完成训练。
+- 已于北京时间约 **13:41** 重启本机监督器（PID **1875157**），重新接管三组完成状态，串行备份到 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_multitask_joint6_3000_20261027`；已确认 near 进入 `copying`。**本机归档尚未完成，H200 新权重保留。** 后续以实时 `workflow_status.json`、`groups/<model>/archive_status.json` 和模型目录 `durable_archive.json` 判断状态，不要依据旧 PID 或历史日志重复启动训练。
+
+## 2026-10-27 三档 3,000 条多任务 joint6 训练启动
+
+- 用户要求使用三个合并数据集在 H200 分别训练。正式流程已于北京时间 **20:13 左右**启动，本机监督 PID **1573808**；实时状态以 `outputs/table_buttons_multitask_joint6_3000_20261027/workflow_status.json` 和 `startup_receipt.json` 为准，不要重复启动。入口为该目录 `code/scripts/run_workflow.py`，计划为 `plan.json`。
+- `near_multitask_joint6_3000`、`medium_multitask_joint6_3000`、`far_multitask_joint6_3000` 分别使用 H200 **GPU0／1／2**。沿用原生 **state7/action6、不学习夹爪、执行时固定全开度约 0.2 mm**；每组从同一官方预训练重新开始，四个任务接口重新初始化，不 resume 旧模型。
+- 每组红／黄／蓝各 1,000 条，三种指令按样本读取。相同布局的三色按 seed42 分组划分为 **2,700 train／300 val**（900／100 个实际布局），保留原 red1000 的 source-ID 划分；评估 seeds10000–10099 未混入。训练 **3 epochs、batch64**，near／medium 为 **14,682 updates**、far **14,685**；warmup734、eval_interval300，验证三色各 500 anchors，以三色等权六关节 first-action MAE 选 best。
+- 三份数据已传至 H200 `/home/pengguanqi/Datasets/piper_table_buttons_multitask_3000_20261027`（实体在 `/data/scratch`），全部文件核对一致；复用只读红色视频节省约 5.78 GiB。57 项 CPU 回归、三个真实数据集读取检查和三步 batch64 GPU 短测通过；短测实际输出 `[1,7,6]`、峰值显存 **43.76 GiB**，每批包含三色且参数发生更新。额外监督流程 5 项测试通过。独立审查发现并修正了 probe 元数据重复写入覆盖颜色计数的问题，不影响训练计算。
+- **用户已明确授权并完成清理**上轮三个 red_joint6_1000 模型在 H200 的 best／last 模型文件，释放约 **47.8 GiB**；本机原精度备份与两端元数据保留。具体范围、两端重新核对和清理回执在本轮 `storage/checkpoint_cleanup_receipt.json`。旧模型后续推理应使用本机备份，若需 H200 则重新上传。
+- 新权重只保留 best／final，无 optimizer/RNG；near／medium 写 `/home/pengguanqi/vlajepa_multitask_joint6_3000_20261027/runs`，far 写 `/data/scratch/pengguanqi/VLA-JEPA-multitask-joint6-3000-20261027/runs`，均不用 `/tmp`。训练后同卡严格重载 best，实际验证三个颜色指令，再串行归档至本机 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_multitask_joint6_3000_20261027`。工作流以实际备份文件锁协调，避免旧归档流程的重复启动误判。
+- 日志每约 30 秒同步至本机 `groups/<model>/train.jsonl` 和 `train.log`；H200 监督目录为 `/home/pengguanqi/Worksapce/Research/VLA-JEPA/runs/table_buttons_multitask_joint6_3000_20261027`。完整协议见 [本轮训练说明](table_buttons_multitask_joint6_3000_training.md)。训练和最终归档尚未完成，不能将离线验证误差解释为闭环成功率。
+
+## 2026-10-27 三档 3,000 条多任务数据集合并完成
+
+- 用户要求将九份各 1,000 条单任务数据按近／中／远合并。本机新目录为 `/home/pengguanqi/Datasets/piper_table_buttons_multitask_3000_20261027`，子目录 `near_multitask`、`medium_multitask`、`far_multitask` 各 **3,000 episodes（红／黄／蓝各 1,000）**；帧数分别 **348,008／348,016／348,036**，合计 **9,000 条、1,044,060 帧**。根目录 `merge_summary.json` 和三份 `meta/audit.json` 均成功。
+- 原九份 `/home/pengguanqi/Datasets/piper_table_buttons_1000_20261025` 及旧 100／300 条版本保留。原 joint7 数值、30 Hz 时间与两路 RGB 视频保持一致，视频独立复制且不重编码；只重映射 episode／全局帧／任务索引并重算数值统计。三档语言指令保持 `Press the red/yellow/blue button.` 各自一致。
+- 每档 1,000 个真实布局由三色任务共享。新的 `meta/export_manifest.json` 保留源 ID、seed、位置及 `layout_group_id`，后续划分训练／验证时按布局分组。`scripts/merge_table_buttons_datasets.py` 已支持动态数量及 `--expected-episodes-per-color 1000`，兼容原 100 条输入；8 项相关测试通过。
+- 日志与最终目录读取核查在 `outputs/table_buttons_multitask_3000_20261027`，使用说明见 [桌面按键数据集文档](table_buttons.md#expanded-multi-task-datasets--2026-10-27)。此次只完成本机数据合并，未启动新训练或上传 H200。
+
+## 2026-10-27 三档红色 joint6 1000 的 300 条闭环评估完成
+
+- **新权重本机归档也已于北京时间 2026-10-27 14:07:52 全部完成**：训练 workflow 为 `completed, success=true`，三组 `durable_archive.json` 均 `complete=true`。原精度 best／last 及元数据已校验发布至 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_red_joint6_1000_20261026/<near|medium|far>_red_joint6_1000`；far 的 best 与 last 相同，已用硬链接共享存储。此前总归档流程误判 medium 工作进程退出并发生锁冲突；medium 实际已完成，`recovery_archive_20261027` 仅复用 near／medium 回执并续传 far，没有重训或删除新远端模型。三组完成回执为 `outputs/table_buttons_red_joint6_1000_20261026/completion_summary.json`，不需再次启动归档。
+- **正式评估于北京时间 2026-10-27 00:28:56 完成**，约 46.5 分钟。`outputs/table_buttons_red_joint6_1000_eval_20261026/run/workflow_status.json` 为 `complete, success=true`，三组 `audit/summary.json` 均 `audit_passed=true, complete=true`，合计 **300/300、0 missing、0 invalid**，所有执行录像已审核。
+- 每组 100 条：**near 3/100（3%）、medium 6/100（6%）、far 44/100（44%）**；严格采集口径分别 **3/100、5/100、38/100**。总任务成功 **53/300（17.67%）**，严格成功 **46/300（15.33%）**。247 个主指标失败全部为 12 秒超时，没有错键、非目标接触、阻断碰撞或非法动作；medium 1 次、far 6 次任务成功含指间闭合接触，故严格口径不通过。
+- 同布局原 100 条训练 joint7 基线 near／medium／far 分别 **0/100、1/100、0/100**；旧 medium joint6 为 **3/100 task、2/100 strict**。本轮采用相同 seed10000–10099、匹配场景、12 秒及无平滑。joint7 比较同时改变训练数据量和动作维度，不能单独归因于扩充数据；近／中成功率仍低。
+- 报告：[正式结果](../outputs/table_buttons_red_joint6_1000_eval_20261026/run/results/README.md)，机器可读 `run/results/summary.json`，逐条对照 `run/results/per_episode.csv`。`service/cleanup.json` 为 `success=true, all_stopped=true, dry_run=false`，三个专用 H200 服务及 SSH 转发已释放。历史评估 PID1403937 已完成，不要重复启动。
+
+## 2026-10-26 23:42 三档红色 joint6 1000 训练完成；300 条闭环评估启动（历史）
+
+- 此节覆盖下方白天的恢复／等待状态。九份旧 joint7 模型于 **17:11** 完成本机原精度备份并清理 H200 原权重；三组新训练随后并行启动，均完成 **3 epochs / 4,896 updates**。near／medium／far 的最佳 step 分别为 **4100／4100／4896**，训练及 GPU 推理检查分别于 **22:57／23:02／23:04** 全部通过。新权重归档回本机仍由原 workflow 自动进行，不影响评估。
+- 用户已要求同时评估三个新模型。正式入口为 `outputs/table_buttons_red_joint6_1000_eval_20261026`，后台 PID **1403937**（以 `startup_receipt.json` 和 `/proc` start_ticks 核对）。`run/workflow_status.json` 聚合进度；`run/<near|medium|far>/summary.json` 为各组实时结果。不要依据旧 PID 重启。
+- 每组 **100 条、共 300 条**，严格复用原 near_red／medium_red／far_red 的全部 seed10000–10099 布局、配置、policy seed、12 秒时限和无平滑设置；state7/action6、固定夹爪全宽约 0.2 mm。任务成功与严格采集成功双指标沿用原口径，基础设施失败单独记录。
+- **本机 GPU1 三个 Isaac worker 并行**，每组一个，10 条轮换一次，全部录像；H200 GPU0／1／2 分别服务三个最佳权重，专用端口 **18120／18121／18122**，HTTP 输出与独立 GPU 参考共 9 个观测逐值一致。本机已有 PAP 服务和训练归档不动。
+- 正式启动前，三个模型各 1 条物理预检均通过独立动作／接触／视频审核；三条均超时，不计入正式分母。新 joint6 计划审计支持三档 1000 条训练身份，139 项相关 CPU 测试通过，旧 medium_red_joint6 协议保留。
+- 正式结果需各 `run/<spacing>/audit/summary.json` 为 `audit_passed=true, complete=true`，合计 300 条。工作流自动生成 `run/results/` 与旧 joint7、旧 medium joint6 比较，再仅清理本轮专用服务与 SSH 转发。完整说明见 [本轮评估说明](../outputs/table_buttons_red_joint6_1000_eval_20261026/README.md)。
+
+## 2026-10-26 九组扩充完成；三档红色 joint6 重训与持久存储
+
+- **2026-10-26 下午恢复更新**：初次备份队列在北京时间 03:39 因同 UID 的 `sshd/systemd/sd-pam` 等辅助进程 `/proc/.../fd` 不可读而退出，后续训练队列同步退出，三组 GPU 训练因此尚未启动。13:36 左右已修复逐项权限兼容并通过 23 项回归；可见模型读取引用仍阻止清理，不可读条目如实记入回执。原失败状态与启动记录保存于两运行目录的 `recovery_history/20261026_133520/`。
+- 当前恢复后的备份 PID **914515**、训练 workflow PID **914526**，以实时状态及 start_ticks 核对，不要依据旧 PID2396412/2402961 重启。首份 `near_red` 本机完整备份已复用，35 份元数据及模型重新校验后，远端原权重已清理，释放约 9.56 GiB；正在备份 `near_yellow`。持久化数据迁移已实测成功，公开数据路径现已解析到 `/data/scratch/pengguanqi/Datasets/piper_table_buttons_1000_20261025`，原 344,741,327 bytes 中断前缀已校验复制并续传。训练仍需等九个旧权重全部备份清理及余下数据／CPU 验收通过。
+- **扩充数据已全部完成**：北京时间 2026-10-26 02:53，全量 `audit.json` 与 `completion_summary.json` 成功，九组各 1,000、共 9,000 条（原 900 + 新 8,100）；数值、物理轨迹及完整视频审核通过。入口仍是 `outputs/table_buttons_dataset_1000_20261025`。这覆盖下方“后台采集中”的历史状态。
+- 用户确认这次训练 **近／中／远三个红色单任务模型，原生六关节输出**：`near_red_joint6_1000`、`medium_red_joint6_1000`、`far_red_joint6_1000`。每组从相同官方 base 全新初始化，state7/action6、夹爪固定约 0.2 mm；900/100 划分，3 epochs、4,896 updates、warmup245、batch64、500 验证 anchors。新旧离线 holdout 不同，不直接比较其 MAE；独立仿真评估 seed10000+ 未进入训练。
+- 用户进一步要求旧 100 条权重备份／清理以释放配额，新数据不要放 `/tmp`，并减少中间 checkpoint。**当前采用 `best_and_final_model_only`**：只在验证改进时替换单份 best，最终另存 last；不保存 optimizer/RNG，不支持从中间步精确 resume。原子保存峰值已通过测试，每 run 最多两份独立模型，共约 57.4 GiB；最终最佳若同 step 则 hardlink。旧 100 条保存／resume 行为及旧数据 split、fingerprint、contract 均保持兼容。
+- 旧九个 joint7 单任务权重约 86.1 GiB，之前本机没有备份；备份清理队列为 `outputs/table_buttons_joint7_retirement_20261026`，状态 `retirement_status.json`。按 scratch4→home5 顺序，原精度模型与配置／processor／日志先备份至 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_joint7_20261023/<group>`；本机 SHA 与持久回执通过后，再复核远端源并只删该 `model.pt`，保留远端 metadata 与 `retirement.json`。不要删除电梯模型、三份多任务模型或旧 joint6 优化器；它们不属于此清理队列。
+- **两个后台流程已实际启动**：旧权重备份清理 PID2396412，初始状态为 `near_red` 的 `copying_model`，已观察到模型传输增长；新持久训练 workflow PID2402961，初始状态为 `waiting_for_persistent_storage_release`。两者各有 `startup_receipt.json` 和进程锁；实时状态优先于本文 PID。数据处理与调度准备完成，GPU 训练尚须等待存储门禁通过。
+- 新训练入口是 `outputs/table_buttons_red_joint6_1000_20261026/workflow_status.json`，代码／配置已部署 H200。数据传输先等 `persistent_storage_ready.json`；正式训练还需旧九模型全部备份清理完成、真实配额检查和三组远端真实 reader 测试全部通过。三组分别 GPU0/1/2，训练后同卡验证，再原精度归档回本机；按实时状态判断是否已开始 GPU 训练，**不要重复启动**。
+- 新数据持久位置为 `/home/pengguanqi/Datasets/piper_table_buttons_1000_20261025` → `/data/scratch/pengguanqi/Datasets/piper_table_buttons_1000_20261025` 实体目录。near/medium 训练权重写入 `/home/pengguanqi/vlajepa_red_joint6_1000_20261026/runs`，far 写入 `/data/scratch/pengguanqi/VLA-JEPA-red-joint6-1000-20261026/runs`，均不使用 `/tmp`。正式启动前检查 home≥40 GiB、数据盘≥22 GiB 的剩余用户配额（数据已传完）；不能用 `df` 的整盘空闲代替 quota。
+- 初始临时存储尝试的 workflow PID2301601 已按用户新要求停止，尚未训练，仅传输了约 329 MiB near_red 数据；旧计划／状态保存在新运行的 `storage_attempt_tmp/`。新版会在持久配额足够后迁移这些 partial 数据再续传。新源码不能按旧 tmp 计划启动；权重归档不再宣称远端保留 optimizer。
+- 完整协议及日志位置见 [训练说明](table_buttons_joint6_1000_training.md)、`outputs/table_buttons_red_joint6_1000_20261026/README.md`；独立审查为 `reports/final_training_review.json`，旧 tmp 方案审查另存历史文件。此轮尚无新的模型仿真成功率。
+
+## 2026-10-25 中距离红色 joint6 训练与 100 条闭环评估完成
+
+- `medium_red_joint6` 已完成 **3 epochs / 492 updates**，最佳为 step 492，六关节 first-action MAE **1.638603°**（离线误差，不是 SR）。checkpoint SHA 为 `f86b4a4546a0a6cf7089174185af0c1cfb63f26a8b1346d1995fe7287cb94097`。训练使用原 100 条数据；本机原精度 best/last 与元数据已完成校验和归档，回执为 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_joint6_20261025/medium_red_joint6/durable_archive.json`。
+- **正式评估已于北京时间 2026-10-25 19:02:55 完成，100/100 条全部通过独立审计，0 missing、0 invalid。** 任务成功 **3/100（3%）**，严格采集口径 **2/100（2%）**；原 joint7 medium_red 对应为 **1/100（1%）**、**0/100（0%）**。新模型 95 次超时、2 次异常接触；无错键、非目标按键触碰、非法动作或关节限位裁剪。净增加 2 次成功，不能据此认定有稳定收益，整体成功率仍低。
+- 正式计划复用原 `outputs/table_buttons_policy_eval_20261024/run/plan.json` 的 `medium_red` 全部 100 行：seed 10000–10099、相同配置和 policy seed、12 秒时限、无平滑、原双成功指标。模型原生 state7/action6/noise6，执行接口追加固定全夹爪开度约 0.2 mm。严格指标额外拒绝实际指间闭合接触；本次 3 次任务成功中有 1 次因此未通过严格指标。相同 seed 不表示 6D/7D 噪声逐元素相同，也不承诺 RTX 画面逐像素相同。
+- 全流程耗时约 **37 分钟**，使用本机 GPU0 单 worker（每 10 条轮换）与 H200 GPU0 独立 18113 服务。`outputs/table_buttons_medium_red_joint6_eval_20261025/run/workflow_status.json` 为 `state=complete, success=true`，`run/audit/summary.json` 为 `audit_passed=true, complete=true`；`run/service_cleanup.json` 确认专用推理服务与 SSH 转发已清理。历史 workflow PID 2227446 已完成，不需重启；GPU1 数据扩充不受此清理影响。
+- 结果见 [比较报告](../outputs/table_buttons_medium_red_joint6_eval_20261025/run/results/README.md)、`run/results/comparison.json`、`per_episode.csv`。配对结果为新模型独有成功 3 次、旧模型独有成功 1 次、同时成功 0 次。独立 smoke 不计入正式 100 条；新 client 保留每次原生六维动作和实际初始噪声供审核，旧 joint7 client 与采集冻结代码未改。
+
+## 2026-10-25 桌面按键九组数据扩充至每组 1,000 条（后台采集中）
+
+- 本轮用户要求九个单任务数据集从各 100 条扩充到各 **1,000 条**。目标共 **9,000 条：原 900 条 + 新采 8,100 条**。原 `/home/pengguanqi/Datasets/piper_table_buttons_20261023` 和旧 raw 均保留；扩充版单独发布至 `/home/pengguanqi/Datasets/piper_table_buttons_1000_20261025/<near|medium|far>_<red|yellow|blue>`。
+- **后台监督器已于北京时间 2026-10-25 17:26 启动，PID 1871885。实时状态优先读** `outputs/table_buttons_dataset_1000_20261025/suite_status.json`；日志为 `supervisor.log` 和 `logs/`。入口 `scripts/run_table_buttons_collection_suite.py` 默认只准备，`--run` 才采集。不要依据本文的历史 PID 重复启动，先检查实时状态与进程。
+- 每组新 raw 独立复制原 episode 0–99，再从 100 续采至 999；首轮布局 seed 同为 100–999，与现有评估 10000–10099 分离。配置、轨迹、相机、材质、光照与物理成功标准均沿用原采集。语言指令只依赖目标颜色。7D 数据语义保持六关节角度（度）+ 夹爪全开度（厘米），当前 joint6 实验仅在训练时去除夹爪输出，不改这些数据。
+- 原 900 条的独立复制、原 raw/LeRobot 未改动及配置一致性已通过核查；关键 CPU 测试 13 项通过。三档首批新增样本各 3 条、共 9 条已通过独立物理轨迹与 18 路完整视频解码检查，见 `reports/new_samples_audit.json`；这不是全量验收。采集使用 **GPU1 三路**（近/中/远），每进程新增 50 条后自动轮换；每组满 1,000 条后用现有导出器生成完整 LeRobot v3，最多两路 CPU 导出。19 个相关源码与各分片配置已冻结，重启前核对，避免长程中混入配置变化。
+- 预计 **9–11 小时**，以实时进度为准。只有 `suite_status.json` 为 `complete`、`completion_summary.json` 为成功且最终 `audit.json` 成功确认 **9,000 条**时，才算整个任务完成。按颜色独立重试可能造成少数布局不配对，实际 seed/位置差异保存于 `pairing_report.json`。本轮不启动新训练；H200 上 medium_red_joint6 仍使用原 100 条训练。
+- 详情与证据见 [扩充运行说明](../outputs/table_buttons_dataset_1000_20261025/README.md)。导出器会正常重新编码复用的 raw 视频；原始 100 条版本文件本身保持不变。
+
+## 2026-10-25 中距离红色单任务：去除夹爪学习维度重训
+
+- 用户指定只重训 `medium_red`，新实验为 `medium_red_joint6`：保留真实 **7 维状态输入**，动作目标、flow noise、模型输出及训练损失均为 **6 维手臂关节**。推理适配器追加数据集中固定的夹爪开口（约 **0.2 mm 全宽**），不再预测夹爪。选模只使用 `first_joint_mae_deg`。
+- 沿用原 100 episodes、90/10 划分、batch 64、学习率、7-step chunk 和 **3 epochs / 492 updates**；从相同官方预训练权重重新初始化四个动作/状态接口，不 resume 旧模型。原数据与十二个既有模型保持。新旧 split 逐字节相同；22 项训练 CPU 回归、8 项推理 CPU 检查及真实 batch64 两步 GPU 短测通过，短测输出 `[1,7,6]`，显存峰值 43.76 GiB。
+- **正式训练已在 H200 GPU0 后台启动。实时状态优先读**本机 `outputs/table_buttons_medium_red_joint6_20261025/archive_status.json`、`train.jsonl` 和 `train.log`，不要据本文重复启动。远端监督入口为 `/home/pengguanqi/Worksapce/Research/VLA-JEPA/runs/table_buttons_medium_red_joint6_20261025/supervisor_status.json`。日志约每 20 秒同步本机。
+- 因远端 home/scratch 配额不足，大型 checkpoint 与优化器写入 `/tmp/pengguanqi-table-buttons-joint6-20261025/medium_red_joint6`。监督流程在训练结束后自动用 GPU1 严格加载最佳权重、核对六维生成与固定夹爪接口，再将原精度 best/last 模型、processor 和完整小型元数据归档至本机 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_joint6_20261025/medium_red_joint6`。以 `archive_status.json` 的 `state=completed` 和模型目录内 `durable_archive.json` 为最终归档完成证据；本机 last 为 model-only，优化器保留远端，不能当作本机完整恢复 checkpoint。
+- 新代码在 H200 VLA-JEPA：独立 joint6 数据适配器、推理模块与服务，以及兼容 joint7 的训练入口分支。原十二模型推理服务未修改。详情与代码快照见 [实验记录](../outputs/table_buttons_medium_red_joint6_20261025/README.md)。本轮只重训和检查推理完整性，尚未评估新模型仿真成功率；旧评估 audit 的初始噪声检查为 joint7，后续评估 joint6 时需按原生 `[1,7,6]` 噪声核对。
+
+## 2026-10-25 桌面按键 12 个模型训练与闭环评估完成
+
+本节覆盖此前评估“运行中”及下方 2026-10-23 的“运行中／等待接续”状态；历史协议与预检记录保留用于复现。训练完成、权重归档和本次完整闭环审核均已核对。
+
+- **九个单任务模型和三个多任务模型均已完成 3 epochs**：九组单任务分别完成 **492 updates**，三组多任务分别完成 **1,470 updates**。两套实验独立从官方预训练权重开始；多任务模型没有接着九个单任务模型的权重训练。原九份数据保持不变，新三份数据是同间距下红、黄、蓝示范的合并版本。
+- H200 的两个统一入口分别为 `/home/pengguanqi/Worksapce/Research/VLA-JEPA/runs/table_buttons_joint7_20261023` 和 `/home/pengguanqi/Worksapce/Research/VLA-JEPA/runs/table_buttons_multitask_joint7_20261023`。两者的 `final_verification.json` 与 `validation/final_models.json` 均为 `success=true`；十二组各自的 `completed.json` 均为 `success=true`、`epoch=3`。这些训练完整性验收包含严格重载最佳权重及实际动作预测，其 `task_success_rate_evaluated=false` 仅描述当时的离线验收；之后完成的正式闭环结果见下。
+- 三个多任务最佳模型已经按原精度归档到本机 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_multitask_joint7_20261023/<group>/checkpoints/best/model.pt`，`<group>` 为 `near_multitask`、`medium_multitask`、`far_multitask`，对应 best step 为 **1400 / 1300 / 1100**。各 group 目录同时保存 processor、config、split、归一化和训练日志。根目录 `durable_archive_completion.json` 为 `status=completed`、`completed_count=3`，三组归档均完成模型字节数／SHA256 校验及 H200 回执；本次复核三个模型文件存在、大小均为 10,268,096,930 字节。
+- 多任务 H200 `suite_status.json` 留在远端训练监督器的终态 `ready_for_local_archive`，本机归档监督器已经完成后续工作，应结合 `durable_archive_completion.json` 判断最终状态。本机 `outputs/.../suite/suite_status.json` 是此前复制的历史快照，仍可能显示训练或等待中；不要因此重启训练。
+- **正式闭环评估已完成并通过独立审核：1,800/1,800 episodes，0 missing、0 invalid。** `task_success` 为 **37/1800（2.06%）**，`strict_collector_success` 为 **13/1800（0.72%）**；单任务主指标 **14/900（1.56%）**，多任务 **23/900（2.56%）**。正式计划为 `outputs/table_buttons_policy_eval_20261024/run/plan.json`：18 个模型—任务组合各 100 条，种子 **10000–10099**，匹配原始 `near/medium/far` 采集配置；单任务与多任务模型共享对应布局和请求随机种子。逐颜色结果及完整双指标见 [评估说明](table_buttons_policy_eval.md)、[本机结果汇总](../outputs/table_buttons_policy_eval_20261024/run/results/README.md) 和 [逐组合 CSV](../outputs/table_buttons_policy_eval_20261024/run/results/per_cell.csv)。
+- 评估于**北京时间 2026-10-25 03:16:54**结束（UTC 2026-10-24 19:16:54），墙钟耗时约 **4 小时 50 分钟**；之后完成完整轨迹审核和录像解码。`run/workflow_status.json` 与 `run/suite_status.json` 均为 `state=complete`，`run/audit/summary.json` 为 `audit_passed=true`、`complete=true`；最终结果以此审核文件为准。`run/service_cleanup.json` 确认本轮三个 H200 推理服务均已自动结束。历史监督 PID 为 3915546；运行曾使用本机 GPU1 的 3 个 Isaac worker、每进程 20 episodes 轮换，以及 H200 18110/18111/18112 三个四模型缓存服务，当前无需继续盯守或重启。
+- 正式运行前已冻结双指标口径：`task_success` 仅允许准确匹配 `/World/Piper/link7` ↔ `/World/Piper/link8` 的手指闭合接触后继续任务；`strict_collector_success` 同时保留原采集器对该接触判失败的标准。两项使用**相同有效 episode 分母**，另记录手指闭合接触率；其余错按、非目标触碰、异常自碰和环境碰撞仍判失败。完整保留模型预测的七维动作（包括夹爪开度），执行端只做物理关节限位裁剪，**不固定夹爪、不添加平滑**。
+- 原始严格口径 `outputs/table_buttons_policy_eval_20261024/plan.json` 和三个 `smoke_<spacing>_multitask_red` 预检保留；正式计划通过 `parent_plan` 记录口径变更。随后三个 `smoke2_<spacing>_multitask_red/audit.json` 全部通过独立审核：medium 出现物理任务成功，near/far 超时，medium 的严格采集器指标仍为失败。它们只验证执行与计分链路，**不计入正式 1,800 条评估，也不作为正式 SR**。十二模型 HTTP batch=1 输出与独立离线重载结果逐值一致，证据为 `service_reports/summary.json`；本机已保存 `run/source_archive/` 源码快照。
+- 全量终止原因以**超时为主（1,722 条）**，另有 30 条异常接触、11 条非目标手指接触。`outputs/table_buttons_policy_eval_20261024/diagnostics/first_nine_single_red.json` 只读分析了三档单任务红色模型最初各 3 条：观察到悬停、游移或下压不足，未发现这些样本中的数值桥接错误。这是九例失败形态诊断，不能代表所有失败，也不能据此确定训练不足等根因。
+
+## 2026-10-23 三份多任务数据与接续训练队列
+
+- 按用户要求将同间距下的红、黄、蓝合并为 `near_multitask`、`medium_multitask`、`far_multitask`，每份 300 episodes（三色各 100），帧数分别 34,802 / 34,804 / 34,804；它们复用同一批 900 条示范，不是重新采集。原九份数据逐文件哈希不变。
+- 本机和 H200 均保存在 `/home/pengguanqi/Datasets/piper_table_buttons_multitask_20261023`；传输完整校验一致。合并入口 `scripts/merge_table_buttons_datasets.py` 使用官方 LeRobot 0.6.1 聚合，无视频重编码；任务、episode、全局帧索引正确重映射，数值统计重算。独立审核确认全部 104,410 行、18 个视频及 episode 相机偏移与源一致。
+- H200 新增独立 multi-task adapter/trainer，不改正在运行的九组训练文件。每条样本读取自身颜色语言指令；按共享原 episode ID/seed/完整布局划分 270 train / 30 val，三色分别 90/10；同布局的不同颜色任务不能跨训练与验证。固定验证布局 ID `[18,21,27,33,42,50,56,59,71,92]`，150 anchors（三色各 50），逐色及总体指标均保存，best 采用三色等权动作误差分数。
+- 每个新模型独立从相同官方预训练开始，joint7 四接口重新初始化，不继承原九个微调模型；沿用固定 joint7 归一化、batch 64、3 epochs，实际每组 1,470 updates。原九组每组 492 updates 的配置保持不变。
+- 新接续控制器已经后台启动，目前状态为 `waiting_for_previous_suite`。H200 统一入口：`/home/pengguanqi/Worksapce/Research/VLA-JEPA/runs/table_buttons_multitask_joint7_20261023`，先读取 `suite_status.json`，不要重复启动。严格等待原九组训练、归档和最终权重验证成功，再用 GPU0/1/2 并行训练 near/medium/far 三模型；训练结束后逐个严格加载原精度和 processor，按三种语言生成动作作完整性验收。这不是仿真 SR 评估。
+- H200 持久配额不足追加三份完整模型：新 best 暂存在 `/tmp/pengguanqi-table-buttons-multitask-20261023/<group>/checkpoints/best`，远端统一入口提供对应链接和元数据。本机后台归档监督器在训练/验证完成后，将原精度模型、processor、config、split、归一化及完整日志复制到 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_multitask_joint7_20261023/<group>`；确认实际字节一致、原子发布后写远端 `durable_archive.json`，保留 H200 临时 best 副本。
+- 本机实时状态为 `outputs/table_buttons_multitask_h200_training_20261023/local_archive_status.json`（包含远端队列状态，约每 30 秒更新），日志 `local_archive.log`；最终归档完成时 Models 根目录产生 `durable_archive_completion.json`。输入、传输、训练配置和独立审计证据也位于该 outputs 目录。新合并 6 项、适配/训练 23 项、独立验收 12 项、队列/归档 5 项 CPU 测试通过；未提前占用原训练 GPU。
+
+## 2026-10-23 桌面按键九组 VLA-JEPA 独立训练（运行中）
+
+- 用户要求九份数据全部传到 H200 并分别训练。已传至 H200 `/home/pengguanqi/Datasets/piper_table_buttons_20261023`，900 episodes、104,410 帧，全文件校验一致。训练仓库为 `/home/pengguanqi/Worksapce/Research/VLA-JEPA`（路径中的 `Worksapce` 是实际拼写）。
+- 新增独立 `starVLA/dataloader/table_buttons_lerobot.py`、`starVLA/training/train_table_buttons.py`、suite controller 与验收脚本。使用双相机 `up/wrist` 和真正 joint7（六关节度数、夹爪全开度厘米），固定除以 `[180,180,180,180,180,180,8]`；没有复用电梯的 pose9/floor 数据逻辑。旧电梯代码和本机冻结推理 clone 保持原样。
+- 每组从同一官方预训练权重独立开始，四个动作/状态接口重新初始化；seed 42 共用 90/10 整 episode 划分；batch 64、3 epochs、每组 492 updates。没有从旧电梯、RL 或其他组微调权重恢复。GPU 0/1/2 分别依次训练红/黄/蓝的 near、medium、far。
+- 九组统一入口（H200）：`runs/table_buttons_joint7_20261023/suite_status.json`；配置在 `configs/`，控制器日志 `logs/controller.log`，各组日志 `logs/<group>.log`。不要仅依据本文的“运行中”启动重复进程，应先读实时状态。训练过程 JSONL 在 `/tmp/pengguanqi-table-buttons-20261023/<group>/train.jsonl`，完成后复制至统一入口的 `<group>/`。
+- 因 H200 用户磁盘配额有限，训练中的 best/last 暂存 `/tmp/pengguanqi-table-buttons-20261023`；完成后仅归档 best 模型及完整小型训练元数据。前四组 near_red/near_yellow/near_blue/medium_red 在统一入口 `<group>/checkpoints/best`，后五组实际在 `/home/pengguanqi/vlajepa_table_buttons_models_20261023/<group>/best`，统一入口保留软链接。归档大小与内容一致验证后，才清理本轮对应临时 checkpoint。
+- 验证选取固定 50 个 held-out anchors，以 `first_joint_mae_deg + 22.5 × first_gripper_mae_cm` 选择 best；这是离线动作预测误差，不能当作闭环任务成功率。尚未运行这九个模型的 Isaac 闭环评估。
+- 已验证首批三组第 100 步验证及 best/last 真实保存，随后继续训练。独立后台 `scripts/finish_table_buttons_suite.py` 等待九组归档结束，再用 GPU0 逐一严格重载 best 并生成动作，结果写统一入口 `validation/final_models.json` 与 `final_verification.json`；这仍不是 Isaac 成功率评估。
+- 本机记录在 `outputs/table_buttons_h200_training_20261023`；H200 使用文档为 `docs/table_buttons_training.md`。适配器真实九组数据检查 30 项通过，trainer 9 项通过，controller 4 项通过；batch64 短测峰值显存 43.72 GiB、第二次 update 2.72 秒，三个可训练组件的参数确有更新。正式运行状态以 suite_status 为准。
+
+## 2026-10-23 桌面按键三档间距与 900 条数据
+
+- 新增 `near/medium/far` 三档随机间距，约束所有按键两两中心距离为 6–10 / 10–18 / 18–30 cm；保留完整相机可见且可执行区域的采样与碰撞检查，不固定三键相对形状。用户确认本次仍用红、黄、蓝，“绿”为笔误。
+- 已完成三档 × 三色 × 100，共 **900 条成功物理示范、104,410 个 30 Hz 采样帧**，九份独立 LeRobot v3.0 数据集保存在 `/home/pengguanqi/Datasets/piper_table_buttons_20261023`。每个颜色的指令在各档完全一致，格式为 `Press the red button.`。每组 100 个不同布局，优先使用共同 seed 0–99 以便跨任务比较。
+- 数据为 `observation.images.up/wrist` 两路 640×480 RGB；state/action 为六关节角（度）与夹爪**全开度（厘米）**，匹配 PAP 的 7D 接口。动作对应观测后四个 120 Hz 物理步的保持目标；包含 t=0 到首次物理成功后的采样边界，不含撤回，末帧动作重复前一目标。
+- 入口是 `scripts/collect_table_buttons.py`、`scripts/export_table_buttons.py`、`scripts/audit_table_buttons_dataset.py`，方法为脚本 IK 示范，不是 VLA/RL 成功率评估。独立审核对全部 900 条重算接触成功、动作/状态时间映射、视频帧与布局，九组官方 LeRobot 读取检查全部通过。原始数据、日志、源代码快照和汇总在 `outputs/table_buttons_dataset_20261023`。
+- 独立 `.conda/envs/lerobot` 已安装（Python 3.12，LeRobot 0.6.1、CPU PyTorch 2.10）；有 `--lerobot-root` 的联合审核需使用此环境，原 Isaac 环境没有 pyarrow。Isaac 保持原 Python 3.11 环境。
+- 批量采集时必须控制进程寿命，避免反复建 stage 的 CPU 缓存累积。使用 `--max-new-episodes 50 --resume`，退出码 75 / `restart_required` 后重启同命令；退出 0 才是整个配额完成，示例循环见 `docs/table_buttons.md`。保留本机有效 DISPLAY/XAUTHORITY：直接清空的独立试验返回空相机图像，已撤销该试验。实际采集前中断均保留并在原 seed 重采，正式数据无不完整或重复 episode。
+- 采集及导出已结束，GPU1 已释放；GPU0 原 Wall-X 推理服务保留。当前这些新增采集与间距改动尚未 commit/push。
+
 ## 2026-10-23 三任务与 Wall-X 发布整理
 
 - PressB 现包含电梯按键、PAP 抓取放盒、桌面红黄蓝按键三个独立任务。电梯的既有配置和 RL 实验结果保留；PAP 对齐真实数据集，相机和物体尺寸仍是图像拟合估计；桌面按键的腕部相机光心、内外参对齐电梯，PAP 保持自己的标定。
