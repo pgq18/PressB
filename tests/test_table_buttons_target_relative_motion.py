@@ -4,9 +4,9 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from pressb.table_buttons.motion import plan_press, screening_path
-from pressb.table_buttons.motion_templates import ColorMotionTemplates
-from pressb.table_buttons.target_relative_motion import targetward_metrics
+from pressb.tasks.table_buttons.motion import plan_press, screening_path
+from pressb.tasks.table_buttons.motion_templates import ColorMotionTemplates
+from pressb.tasks.table_buttons.target_relative_motion import targetward_metrics
 
 
 class CartesianKinematics:

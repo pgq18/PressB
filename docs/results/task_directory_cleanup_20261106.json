@@ -1,0 +1,294 @@
+{
+  "date": "2026-11-07",
+  "started_date": "2026-11-06",
+  "status": "passed",
+  "base_commit": "23cd4b8afcc5b2777d52324eaca0388aa713a662",
+  "scope": "Remove the top-level PAP/table-button compatibility packages; use canonical task plugins, update source identity and migrate paused RL checkpoints without resuming training.",
+  "layout": {
+    "removed_packages": [
+      "pressb.pick_place",
+      "pressb.table_buttons"
+    ],
+    "removed_files": [
+      "src/pressb/pick_place/__init__.py",
+      "src/pressb/pick_place/evaluation.py",
+      "src/pressb/pick_place/scene.py",
+      "src/pressb/pick_place/task.py",
+      "src/pressb/pick_place/wallx.py",
+      "src/pressb/table_buttons/__init__.py",
+      "src/pressb/table_buttons/camera_domain.py",
+      "src/pressb/table_buttons/collection.py",
+      "src/pressb/table_buttons/collision.py",
+      "src/pressb/table_buttons/execution.py",
+      "src/pressb/table_buttons/motion.py",
+      "src/pressb/table_buttons/motion_templates.py",
+      "src/pressb/table_buttons/placement.py",
+      "src/pressb/table_buttons/policy_evaluation.py",
+      "src/pressb/table_buttons/policy_evaluation_joint6.py",
+      "src/pressb/table_buttons/scene.py",
+      "src/pressb/table_buttons/spacing.py",
+      "src/pressb/table_buttons/target_relative_motion.py",
+      "src/pressb/table_buttons/task.py",
+      "src/pressb/table_buttons/workspace.py"
+    ],
+    "pap": "src/pressb/tasks/pap",
+    "table_buttons": "src/pressb/tasks/table_buttons",
+    "historical_policy_clients": "src/pressb/compat"
+  },
+  "compatibility": {
+    "old_python_imports_supported": false,
+    "custom_pickle_with_old_task_class_paths_requires_conversion": true,
+    "dataset_and_wire_schema_strings_unchanged": true,
+    "task_model_action_semantics_unchanged": true,
+    "ordinary_checkpoint_identity_checks_relaxed": false
+  },
+  "source_change_audit": {
+    "status": "passed",
+    "base_commit": "23cd4b8afcc5b2777d52324eaca0388aa713a662",
+    "removed_files": [
+      "src/pressb/pick_place/__init__.py",
+      "src/pressb/pick_place/evaluation.py",
+      "src/pressb/pick_place/scene.py",
+      "src/pressb/pick_place/task.py",
+      "src/pressb/pick_place/wallx.py",
+      "src/pressb/table_buttons/__init__.py",
+      "src/pressb/table_buttons/camera_domain.py",
+      "src/pressb/table_buttons/collection.py",
+      "src/pressb/table_buttons/collision.py",
+      "src/pressb/table_buttons/execution.py",
+      "src/pressb/table_buttons/motion.py",
+      "src/pressb/table_buttons/motion_templates.py",
+      "src/pressb/table_buttons/placement.py",
+      "src/pressb/table_buttons/policy_evaluation.py",
+      "src/pressb/table_buttons/policy_evaluation_joint6.py",
+      "src/pressb/table_buttons/scene.py",
+      "src/pressb/table_buttons/spacing.py",
+      "src/pressb/table_buttons/target_relative_motion.py",
+      "src/pressb/table_buttons/task.py",
+      "src/pressb/table_buttons/workspace.py"
+    ],
+    "changed_surviving_sources": [
+      "scripts/analyze_pap_eval_locations.py",
+      "src/pressb/tasks/pap/backend.py"
+    ],
+    "unchanged_tracked_source_files": 393,
+    "executable_ast_unchanged_except_pap_source_manifest": true,
+    "source_manifest_removed_only": [
+      "pick_place/task.py",
+      "pick_place/scene.py",
+      "pick_place/evaluation.py"
+    ],
+    "source_manifest_exact_delta_verified": true
+  },
+  "regression": {
+    "main": {
+      "tests": 2068,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 16,
+      "time": 64.825,
+      "passed": 2052
+    },
+    "usd_collision": {
+      "tests": 71,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.866,
+      "passed": 71
+    },
+    "lerobot": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.392,
+      "passed": 1
+    },
+    "vla": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 5.358,
+      "passed": 4
+    },
+    "unique_passed": 2127,
+    "unresolved_main_skips": [],
+    "previous_unique_passed": 2137,
+    "count_change_reason": "Removed 25 alias/pickle consolidation cases and replaced them with 15 canonical ownership, absence, dependency and archive checks (-10)."
+  },
+  "installed_wheel": {
+    "wheel_sha256": "43783c00bc63a4f6b345cce2aca75be31791eab5bbbc310092736797fba80270",
+    "wheel_bytes": 826657,
+    "wheel_members": 284,
+    "clean_build_stage": true,
+    "installed_offline_with_pip": true,
+    "removed_package_directories_absent": true,
+    "unchanged_model_and_training_files": 169,
+    "cli_check_count": 24
+  },
+  "real_pipeline_two_env": {
+    "audit": {
+      "status": "passed",
+      "new_learner_initialization_verified": true,
+      "dsrl_resume_preserves_all_40_replay_rows": true,
+      "dsrl_resume_optimizer_steps_increased": true,
+      "dsrl_resume_actor_changed": true,
+      "actors_finite": true,
+      "full_checkpoints_preserved": {
+        "dsrl_train": [
+          "step_000000000020.pt",
+          "step_000000000040.pt"
+        ],
+        "dsrl_resume": [
+          "step_000000000048.pt"
+        ],
+        "residual_train": [
+          "step_000000000020.pt",
+          "step_000000000040.pt"
+        ]
+      },
+      "frozen_actor_unchanged": true,
+      "frozen_actor_trainable_parameters": 0,
+      "frozen_optimizer_and_replay_not_restored": true,
+      "collection": {
+        "episodes": 2,
+        "complete_episodes": 2,
+        "transitions": 27,
+        "verified_png_images": 108,
+        "early_terminated_action_prefixes": 2,
+        "requested_action_shape": [
+          32,
+          7
+        ],
+        "measured_elapsed_steps_preserved": true
+      },
+      "services_exit_zero_and_ports_released": true
+    },
+    "stages": {
+      "base_eval": {
+        "transitions": 27,
+        "episodes": 2,
+        "updates": 0
+      },
+      "dsrl_train": {
+        "transitions": 40,
+        "episodes": 2,
+        "updates": 40
+      },
+      "dsrl_resume": {
+        "transitions": 48,
+        "episodes": 2,
+        "updates": 48
+      },
+      "residual_train": {
+        "transitions": 40,
+        "episodes": 2,
+        "updates": 40
+      },
+      "residual_eval": {
+        "transitions": 27,
+        "episodes": 2,
+        "updates": 40
+      },
+      "collection": {
+        "transitions": 27,
+        "episodes": 2,
+        "updates": 0
+      }
+    },
+    "simulation_source_revision": "sha256:17e473e363979f274e86ce49fd3f51acb746d35f7bce4504cbdd385e07613eba",
+    "inference_source_revision": "41dc7603d523ef66d13a1ede6c54a916cfce074c60e7be02fb98f8638abec455"
+  },
+  "checkpoint_migration": {
+    "dsrl_transitions": 100022,
+    "residual_transitions": 16704,
+    "strict_cpu_resume_verified": true,
+    "originals_and_previous_copies_unchanged": true,
+    "model_optimizer_replay_rng_exact": true,
+    "formal_training_resumed": false,
+    "resume_experiment": "outputs/task_directory_cleanup_20261106/checkpoint_migration/resume_experiment.json",
+    "resume_task_num_envs": 64,
+    "offline_strict_resume_health_num_envs": 2
+  },
+  "limits": [
+    "The new real pipeline test uses two environments. The prior batch64 test belongs to the earlier consolidation and was not rerun in this round.",
+    "Short learning runs verify functionality and state restoration, not learning quality or throughput.",
+    "Custom historical pickle objects with deleted task-module paths were not migrated; standard RL checkpoints were verified."
+  ],
+  "evidence": {
+    "source_snapshot.json": {
+      "path": "outputs/task_directory_cleanup_20261106/source_snapshot.json",
+      "sha256": "714b32a394e8e8d841e772bdc6f6bb97362acca1d7f5bfb0cb6e7bdb3bab7f82"
+    },
+    "source_change_audit.json": {
+      "path": "outputs/task_directory_cleanup_20261106/source_change_audit.json",
+      "sha256": "0a62051da8b2ed1bc4ba917d608cd2bf9616b768830328cf37d222acb9061902"
+    },
+    "tests/summary.json": {
+      "path": "outputs/task_directory_cleanup_20261106/tests/summary.json",
+      "sha256": "dfa257ac8ec2068f2f44758814983625a597751ba990f4a806297ae9d980fa89"
+    },
+    "tests/run_manifest.json": {
+      "path": "outputs/task_directory_cleanup_20261106/tests/run_manifest.json",
+      "sha256": "ea493ca0b90e3d37f40e548fa05fc3c0704b88cddf3654002f7d704b9d79cd0e"
+    },
+    "tests/main.xml": {
+      "path": "outputs/task_directory_cleanup_20261106/tests/main.xml",
+      "sha256": "65fbac1cd80d6344d6a2dc73096e8d6aefdda2895e6a03a8244b01319a6da991"
+    },
+    "tests/usd_collision.xml": {
+      "path": "outputs/task_directory_cleanup_20261106/tests/usd_collision.xml",
+      "sha256": "a3004e2a9879ef5d650c367fd113608ef591887ff35711e07851aa0e61898115"
+    },
+    "tests/lerobot.xml": {
+      "path": "outputs/task_directory_cleanup_20261106/tests/lerobot.xml",
+      "sha256": "fc1b2ebfa8684c67328597bca6185ab7284e173c6dc6aae83e7d03bb4c65ab3d"
+    },
+    "tests/vla.xml": {
+      "path": "outputs/task_directory_cleanup_20261106/tests/vla.xml",
+      "sha256": "86636f52ec644f792dcf21f467df62aa64d75abeefe650199e28fcdae2ca3c56"
+    },
+    "packaging/verification.json": {
+      "path": "outputs/task_directory_cleanup_20261106/packaging/verification.json",
+      "sha256": "07683e64584e8c99876c9953f7e277cbeadc39d8ed1624a35a2f0b0bf86c9286"
+    },
+    "verification/real_pipeline_smoke/audit.json": {
+      "path": "outputs/task_directory_cleanup_20261106/verification/real_pipeline_smoke/audit.json",
+      "sha256": "d7e31c5b79b1ddde436d53b61ce4303e660765dbb23789db6318dc7327dcb53e"
+    },
+    "verification/real_pipeline_smoke/receipt.json": {
+      "path": "outputs/task_directory_cleanup_20261106/verification/real_pipeline_smoke/receipt.json",
+      "sha256": "57d1373918bf5696a7408964a2d82382fe66326fc3cb2923b7cb2d4a9927112b"
+    },
+    "verification/real_pipeline_smoke/source_identity_verification.json": {
+      "path": "outputs/task_directory_cleanup_20261106/verification/real_pipeline_smoke/source_identity_verification.json",
+      "sha256": "eca8c79800669b12f0854142d46553d34ec64d1b67d5455947580e6e9bf65a8c"
+    },
+    "verification/real_pipeline_smoke/resource_and_shutdown_verification.json": {
+      "path": "outputs/task_directory_cleanup_20261106/verification/real_pipeline_smoke/resource_and_shutdown_verification.json",
+      "sha256": "f35af9344ce70292b494493fe4198db8ffbd6b98357cd53d72f03ac84ff6836b"
+    },
+    "checkpoint_migration/verification.json": {
+      "path": "outputs/task_directory_cleanup_20261106/checkpoint_migration/verification.json",
+      "sha256": "f6e939da1fb377ec7e0d8e0c81100c5c3e4bd8369fbfb3a1a8d7740bff4b4253"
+    },
+    "checkpoint_migration/resume_experiment.json": {
+      "path": "outputs/task_directory_cleanup_20261106/checkpoint_migration/resume_experiment.json",
+      "sha256": "aa261b061094449602104319125316157dbb3c20de9f3e855bff031bc147a760"
+    },
+    "checkpoint_migration/resume_experiment_validation.json": {
+      "path": "outputs/task_directory_cleanup_20261106/checkpoint_migration/resume_experiment_validation.json",
+      "sha256": "2961d8e4fd0f9d526ff98c9b1b55000381a9aaeab637b4e84050ae4edea783da"
+    },
+    "checkpoint_migration/dsrl_step_000000100022.pt.migration.json": {
+      "path": "outputs/task_directory_cleanup_20261106/checkpoint_migration/dsrl_step_000000100022.pt.migration.json",
+      "sha256": "0d96e492e0369fd3ecec9b696ed495138e34aaaaac88758b56a27cd80507cfa6"
+    },
+    "checkpoint_migration/residual_step_000000016704.pt.migration.json": {
+      "path": "outputs/task_directory_cleanup_20261106/checkpoint_migration/residual_step_000000016704.pt.migration.json",
+      "sha256": "442716ff24852809f3a1b4337864623ef07c47ad2fd11946ca57ceeff4dd3eb5"
+    }
+  }
+}

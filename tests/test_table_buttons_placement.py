@@ -4,8 +4,8 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from pressb.table_buttons import placement
-from pressb.table_buttons.task import COLORS
+from pressb.tasks.table_buttons import placement
+from pressb.tasks.table_buttons.task import COLORS
 
 
 def approach(xy, branch=0.):
@@ -380,7 +380,7 @@ def test_grid_requires_all_color_routes_to_be_clear(harness):
 
 @pytest.mark.parametrize('change', ['shared_layout', 'other_color', 'changed_config'])
 def test_prepare_rejects_stale_or_mismatched_routes_before_execution(harness, change):
-    from pressb.table_buttons.collection import LayoutPlanner
+    from pressb.tasks.table_buttons.collection import LayoutPlanner
 
     cfg = harness[0]
     cfg['motion_templates'] = {'mode': 'color_detours_v1'}

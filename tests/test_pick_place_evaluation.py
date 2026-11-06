@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pressb.pick_place.evaluation import (COLORS, effective_config, make_plan, placement_region,
+from pressb.tasks.pap.evaluation import (COLORS, effective_config, make_plan, placement_region,
                                         read_reports, sample_polygon, summarize_results, wilson_interval,
                                         write_summary)
 

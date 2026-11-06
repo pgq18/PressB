@@ -4,8 +4,8 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from pressb.table_buttons.spacing import resolve_spacing
-from pressb.table_buttons.task import COLORS, button_in_camera, sample_button_positions
+from pressb.tasks.table_buttons.spacing import resolve_spacing
+from pressb.tasks.table_buttons.task import COLORS, button_in_camera, sample_button_positions
 
 
 PROFILES = [("near", .06, .10), ("medium", .10, .18), ("far", .18, .30)]

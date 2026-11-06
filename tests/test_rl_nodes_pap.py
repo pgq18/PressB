@@ -17,7 +17,7 @@ import pytest
 from pressb.action_postprocessing import JointActionPostprocessor
 from pressb.rl_nodes.pap import PAPParallelBackend, load_config, sample_reset, task_identity
 from pressb.rl_nodes.pap_worker import PAPEnvironment
-from pressb.pick_place.task import PickPlaceOutcome
+from pressb.tasks.pap.task import PickPlaceOutcome
 from pressb.rl_nodes import pap
 
 

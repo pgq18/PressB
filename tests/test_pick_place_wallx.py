@@ -6,8 +6,9 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.pick_place.wallx import (WallXClient, WallXChunkPolicy, decode_actions,
-    load_policy_initial, observation_from_sim, pack, unpack)
+from pressb.compat.wallx import (WallXClient, WallXChunkPolicy, decode_actions,
+    observation_from_sim, pack, unpack)
+from pressb.tasks.pap.initialization import load_policy_initial
 
 
 def test_native_server_roundtrip_and_fresh_observation_at_prefix_boundary(tmp_path):

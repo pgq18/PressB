@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from pressb.table_buttons.execution import (
+from pressb.tasks.table_buttons.execution import (
     contact_limited_command, in_press_window, press_phase_times,
 )
 

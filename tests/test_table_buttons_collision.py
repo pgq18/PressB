@@ -10,7 +10,7 @@ pin = pytest.importorskip("pinocchio")
 pytest.importorskip("hppfcl")
 
 from pressb.kinematics import PiperKinematics
-from pressb.table_buttons.collision import RobotClearance
+from pressb.tasks.table_buttons.collision import RobotClearance
 
 
 ROOT = Path(__file__).resolve().parents[1]

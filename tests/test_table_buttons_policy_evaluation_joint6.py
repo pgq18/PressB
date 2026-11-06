@@ -4,8 +4,7 @@ import hashlib
 import numpy as np
 import pytest
 
-from pressb.table_buttons.policy_evaluation import HTTPJointPolicy
-from pressb.table_buttons.policy_evaluation_joint6 import HTTPJoint6Policy
+from pressb.compat.table_buttons_policy import HTTPJoint6Policy, HTTPJointPolicy
 
 
 def client_and_response(monkeypatch, mutation=None):

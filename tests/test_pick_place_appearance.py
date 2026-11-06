@@ -12,7 +12,7 @@ import pytest
 Usd = pytest.importorskip("pxr.Usd")
 from pxr import Gf, UsdGeom, UsdLux, UsdPhysics, UsdShade
 
-from pressb.pick_place.scene import build_scene
+from pressb.tasks.pap.scene import build_scene
 
 
 def scene(config=None):

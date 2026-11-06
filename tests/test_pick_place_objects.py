@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from pressb.pick_place.task import (
+from pressb.tasks.pap.task import (
     PickPlaceOutcome,
     cube_inside_box,
     object_geometry,
@@ -196,7 +196,7 @@ def test_explicit_cube_scene_matches_legacy_cube_physics_and_geometry():
     """Run with PYTHONPATH=.cache/usd-inspect:src for isolated CPU USD."""
     Usd = pytest.importorskip("pxr.Usd")
     from pxr import UsdGeom, UsdPhysics
-    from pressb.pick_place.scene import build_scene
+    from pressb.tasks.pap.scene import build_scene
 
     parameters = dict(edge=.03, center_xy=[.28, -.02], mass=.025, yaw_deg=17)
     common = dict(background=False, lights=False, mount_hardware=False)
@@ -223,7 +223,7 @@ def test_explicit_cube_scene_matches_legacy_cube_physics_and_geometry():
 ])
 def test_scene_rejects_missing_or_conflicting_cube_edge(object_config, match):
     Usd = pytest.importorskip("pxr.Usd")
-    from pressb.pick_place.scene import build_scene
+    from pressb.tasks.pap.scene import build_scene
 
     stage = Usd.Stage.CreateInMemory()
     with pytest.raises(ValueError, match=match):
@@ -238,7 +238,7 @@ def test_scene_rejects_missing_or_conflicting_cube_edge(object_config, match):
 ])
 def test_scene_reports_shape_correct_dimensions_without_cube_alias_for_other_shapes(geometry, expected_size, expected_edge):
     Usd = pytest.importorskip("pxr.Usd")
-    from pressb.pick_place.scene import build_scene
+    from pressb.tasks.pap.scene import build_scene
 
     result = build_scene(Usd.Stage.CreateInMemory(), {"object": geometry,
                          "background": False, "lights": False, "mount_hardware": False})

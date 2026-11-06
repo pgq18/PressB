@@ -130,21 +130,21 @@ Without a spacing profile, the minimum button-centre separation remains
 0.10 m with no additional upper distance limit. All profiles retain a 16-pixel
 image margin around the full housing. The three stages are:
 
-1. [`camera_center_domain`](../src/pressb/table_buttons/camera_domain.py)
+1. [`camera_center_domain`](../src/pressb/tasks/table_buttons/camera_domain.py)
    intersects the tabletop with the configured camera frustum, accounting for
    the housing radius, button height and image margin. With the current
    configuration, this polygon has area **0.21462185 m²** and approximate
    bounding intervals **X∈[0.0806, 0.5217] m**, **Y∈[−0.2994, 0.3046] m**.
    These intervals enclose the camera polygon; they are not an executable
    rectangular workspace or a promise that every enclosed point is visible.
-2. [`PressWorkspace`](../src/pressb/table_buttons/workspace.py) tests actual URDF
+2. [`PressWorkspace`](../src/pressb/tasks/table_buttons/workspace.py) tests actual URDF
    joint limits and a sampled hover-to-press path at each proposed position.
    It tries multiple gripper pitches and hover heights, retaining alternatives
    when the preferred approach fails. Radial profiles reuse the first joint's
    Z-axis symmetry to narrow the search; the proposed radius is still solved
    individually and its resulting poses checked by forward kinematics.
-3. [`ReachablePlacement`](../src/pressb/table_buttons/placement.py) uses
-   [`RobotClearance`](../src/pressb/table_buttons/collision.py) to screen the
+3. [`ReachablePlacement`](../src/pressb/tasks/table_buttons/placement.py) uses
+   [`RobotClearance`](../src/pressb/tasks/table_buttons/collision.py) to screen the
    sampled initial-pose transit, approach, press and retreat against the finite
    tabletop, nonadjacent robot bodies, wrist-camera housing and bracket, and
    button geometry. After placing all three colors, it checks each selected

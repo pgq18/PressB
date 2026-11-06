@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from pressb.table_buttons.task import (
+from pressb.tasks.table_buttons.task import (
     COLORS, TableButtonOutcome, button_in_camera, parse_instruction,
     project_base_points, sample_button_positions, task_instruction,
 )
@@ -187,8 +187,8 @@ def test_default_and_workspace_corner_approaches_have_bounded_ik():
 def test_scene_has_only_three_dynamic_caps_and_preserves_original_pap_props():
     Usd = pytest.importorskip("pxr.Usd")
     from pxr import UsdPhysics
-    from pressb.table_buttons.scene import build_scene
-    from pressb.pick_place.scene import build_scene as build_pap
+    from pressb.tasks.table_buttons.scene import build_scene
+    from pressb.tasks.pap.scene import build_scene as build_pap
     cfg = config()
     original = deepcopy(cfg)
     stage = Usd.Stage.CreateInMemory()

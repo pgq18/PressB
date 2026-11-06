@@ -8,7 +8,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from pressb.kinematics import PiperKinematics
-from pressb.table_buttons.workspace import PressWorkspace
+from pressb.tasks.table_buttons.workspace import PressWorkspace
 
 
 ROOT = Path(__file__).resolve().parents[1]

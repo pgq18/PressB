@@ -12,11 +12,12 @@ import numpy as np
 from PIL import Image
 import pytest
 
-from pressb.table_buttons.policy_evaluation import (HTTPJointPolicy, InvalidPolicyAction, JointPolicyCommands,
-    command_limits, episode_config, load_cell, png_base64, strict_outcome, summarize,
+from pressb.compat.table_buttons_policy import HTTPJointPolicy, png_base64
+from pressb.tasks.table_buttons.policy_evaluation import (InvalidPolicyAction, JointPolicyCommands,
+    command_limits, episode_config, load_cell, strict_outcome, summarize,
     to_policy_units, to_sim_units, validate_execution_arrays, collision_settings,
     is_allowed_finger_closure, DUAL_COLLISION_POLICY, STRICT_COLLISION_POLICY)
-from pressb.table_buttons.task import COLORS, TableButtonOutcome
+from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome
 
 
 def test_joint_units_full_opening_and_inverse():

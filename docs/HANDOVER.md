@@ -1,5 +1,15 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-07 顶层旧任务目录彻底移除
+
+- 用户确认彻底归并目录结构。已删除 `src/pressb/pick_place/`、`src/pressb/table_buttons/` 的全部 20 个兼容文件及残留字节码目录；PAP／桌面按键唯一实现位于 `tasks/pap`、`tasks/table_buttons`。历史策略客户端继续放在 `compat`。旧 Python 导入不再支持，外部脚本按 [路径迁移表](project_framework.md#task-package-paths) 更新；含旧任务类路径的自定义 pickle 需在旧版本中转换。数据 schema 字符串保持不变。
+- 当前脚本、22 个测试文件和文档已更新。PAP 源码身份清单移除三个已删除路径，普通检查点身份校验没有放宽。除源码身份清单外，可执行 AST 与上一提交相同；模型／训练源码、场景、物理、动作及任务语义未改。
+- 本轮 **2,127 项独立测试全部通过，无未解决跳过**：主环境 2052，USD／碰撞 71，LeRobot 1，VLA 补充 3。相对上一轮少 10 项，是将 25 项旧别名／pickle 测试替换为 15 项规范路径、目录不存在、依赖边界及采集归档检查。干净构建的 wheel 不包含旧包，隔离安装、双任务 USD 场景、9 个插件及 24 项 CLI／配置检查通过。
+- 新的真实 Wall＋Isaac **2 环境**短链通过：基础评估、DSRL40→恢复48、冻结 DSRL 后残差40、残差评估、2 个完整 episode 采集（27 transitions／108 PNG）。服务正常退出并释放 GPU。本轮未重跑 64 环境，上一轮证据作为历史记录保留，不作为本轮新实测。
+- **最新恢复入口：** `outputs/task_directory_cleanup_20261106/checkpoint_migration/resume_experiment.json`，已校验、未启动，仍为 64 环境／batch64／总预算 200000。DSRL100022 与残差16704 的新副本通过严格 CPU 恢复；参数、优化器、回放及 RNG 保持一致，冻结 actor 不变。原权重及此前派生副本均未修改。正式 PAP 残差仍暂停在 **16,704 transitions／14,673 updates**。
+- 最终检查点 SHA：DSRL `1bac6cb0ab21486cc1f265280890b038090ae55e6c1824439d19de1c473ac78d`；残差 `8344485abb5584a93e67a6feb21c4d2fc615ac8be5d6555418864c662c600a42`。离线迁移记录保留了元信息更正后的中断重启，以及修正验证脚本 PyTorch guard 后仅继续恢复验证的过程；最终均通过，产品代码没有因此变化。
+- 证据目录 `outputs/task_directory_cleanup_20261106/`；便携摘要 [results/task_directory_cleanup_20261106.json](results/task_directory_cleanup_20261106.json)。下方“保留旧任务别名”和较早恢复配置均属于历史阶段，当前以本节为准。
+
 ## 2026-11-06 PAP／桌面按键任务目录归并与完整回归
 
 - 用户要求归并 `src/pressb/pick_place`、`src/pressb/table_buttons` 并测试。PAP 场景、物理结果、采样／统计已归入 `tasks/pap`；桌面按键场景、布局、运动模板、碰撞、采集和评估已归入 `tasks/table_buttons`。原两个目录的 20 个文件仅保留说明或模块别名，不再有函数／类实现；旧导入、monkeypatch 和历史 pickle 类路径仍兼容。

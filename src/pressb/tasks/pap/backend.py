@@ -38,13 +38,12 @@ _TASK_SOURCE_FILES = (
     "rl_nodes/pap.py", "rl_nodes/pap_worker.py",
     "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
     "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
-    "pick_place/task.py", "pick_place/scene.py", "pick_place/evaluation.py",
     "wrist_camera.py", "action_postprocessing.py", "kinematics.py", "runtime/isaac.py",
 )
 
 
 def _source_identity(names):
-    """Record implementation files as well as compatibility entry points."""
+    """Record task implementations, shared dependencies and worker entry points."""
     result = {}
     for name in names:
         content = (ROOT / "src" / "pressb" / name).read_bytes()

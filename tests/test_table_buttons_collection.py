@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pressb.table_buttons.collection import measured_state, validate_raw_arrays
+from pressb.tasks.table_buttons.collection import measured_state, validate_raw_arrays
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("table_buttons_dataset_audit", ROOT / "scripts/audit_table_buttons_dataset.py")

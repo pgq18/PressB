@@ -57,7 +57,7 @@ def load_records(root, plan, source):
         report = read_json(report_path) if source != "summary" and report_path.exists() else None
         row = summary_rows.get(episode_id)
         status = report.get("evaluation_status", report.get("status", "complete")) if report is not None else (row or {}).get("status")
-        # Match pressb.pick_place.evaluation.normalize_result: interrupted or
+        # Match pressb.tasks.pap.evaluation.normalize_result: interrupted or
         # malformed reports are infrastructure errors; invalid model actions
         # remain completed failures, even when they carry an error message.
         if report is not None:

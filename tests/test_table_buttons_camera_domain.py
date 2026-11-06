@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 from scipy.spatial import Delaunay
 
-from pressb.table_buttons.camera_domain import camera_center_domain
-from pressb.table_buttons.task import button_in_camera
+from pressb.tasks.table_buttons.camera_domain import camera_center_domain
+from pressb.tasks.table_buttons.task import button_in_camera
 
 
 def overhead_config():

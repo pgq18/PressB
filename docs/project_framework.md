@@ -49,17 +49,38 @@ the shared table, room, mounting hardware, materials, lighting and camera tripod
 The table-button scene does not import the PAP scene. A task-specific planner or
 success test is part of the plugin, not another training framework.
 
-The older `pick_place` and `table_buttons` packages contain only compatibility
-aliases. Old and canonical module imports share the same module objects so old
-imports, monkeypatches and saved class paths continue to resolve. Historical
-Wall-X WebSocket and table-button HTTP clients live in `compat`; normal task
-backends do not depend on them. PAP observation-only initialization is separate
-from the historical client. Existing collection/evaluation scripts now import
-canonical task and shared-runtime modules, while retaining their original
+Historical Wall-X WebSocket and table-button HTTP clients live in `compat`;
+normal task backends do not depend on them. PAP observation-only initialization
+is separate from the historical client. Collection/evaluation scripts and tests
+import canonical task and shared-runtime modules, while retaining their original
 frame alignment, dataset schema strings and LeRobot export commands. Collection
-source archives and task fingerprints cover the moved implementations and shared
-dependencies, not just forwarding files. Elevator scene/planner libraries and
-`rl_nodes` aliases retain their earlier compatibility roles.
+source archives and task fingerprints cover the task implementations and shared
+dependencies. Elevator scene/planner libraries and `rl_nodes` aliases retain
+their earlier compatibility roles.
+
+### Task package paths
+
+The top-level `pressb.pick_place` and `pressb.table_buttons` packages have been
+removed, including their import aliases. Use the following paths in external
+scripts and notebooks:
+
+| Former import | Current import |
+|---|---|
+| `pressb.pick_place.scene`, `.task`, `.evaluation` | `pressb.tasks.pap.scene`, `.task`, `.evaluation` |
+| `pressb.pick_place.wallx` | `pressb.compat.wallx` |
+| `pressb.table_buttons.<module>` | `pressb.tasks.table_buttons.<module>` |
+| `pressb.table_buttons.policy_evaluation_joint6.HTTPJoint6Policy` | `pressb.compat.table_buttons_policy.HTTPJoint6Policy` |
+| `pressb.table_buttons.policy_evaluation.HTTPJointPolicy` | `pressb.compat.table_buttons_policy.HTTPJointPolicy` |
+
+Old imports now raise `ModuleNotFoundError`. Custom pickle files that contain
+these old class paths require conversion using the earlier code version. The
+standard RL checkpoint format stores parameter dictionaries and learning state;
+it does not require the removed task classes. Removing the PAP aliases from the
+source fingerprint does change its recorded source revision, so older RL
+checkpoints require the verified source-only migration described below before
+strict resume, RL evaluation or frozen-DSRL loading. The ordinary identity checks
+remain enforced. Dataset identifiers such as `pressb.table_buttons.raw.v1` are
+unchanged protocol strings, not Python imports.
 
 ## One configuration, three processes
 
@@ -213,15 +234,23 @@ The subsequent model-source integration creates another verified set at
 earlier refactor-only configuration records its earlier source identity. Neither
 configuration has been launched automatically.
 
-After the task-directory consolidation, the current prepared resume configuration
-is `outputs/task_consolidation_20261106/checkpoint_migration/resume_experiment.json`.
+The task-directory consolidation produced the historical resume configuration
+`outputs/task_consolidation_20261106/checkpoint_migration/resume_experiment.json`,
+bound to that stage's real PAP64 service identity.
+
+After removing the top-level task packages, the **current prepared resume
+configuration** is
+`outputs/task_directory_cleanup_20261106/checkpoint_migration/resume_experiment.json`.
 Its derived DSRL (100,022 transitions) and residual (16,704 transitions) checkpoints
-bind the real, newly verified PAP64 service identity. Only the simulation source
-revision changes; model, task semantics, learning settings, optimizer, replay and
-RNG values are preserved. Original and earlier derived files remain untouched.
-Strict CPU loading accepts the new copies and rejects the stale identities.
-The resume configuration continues toward the original 200k total budget in a
-new output directory; validation does not start or resume training.
+use the updated PAP source identity. Model parameters, task semantics, learning
+settings, optimizer, replay and RNG values are preserved; original and earlier
+derived files remain untouched. Strict CPU loading accepts the new copies and
+rejects the stale identities. The source identity was verified in a new real
+two-environment pipeline; offline loading uses that actual metadata. The prepared
+configuration retains 64 environments, batch64 and the original total budget of
+200k transitions through the existing capacity-independent policy fingerprint.
+It writes to a new output directory and has not been launched. This cleanup did
+not repeat the prior 64-environment GPU test.
 
 ## Verification
 
@@ -249,3 +278,16 @@ wheel resolves old and canonical imports, all plugins and model sources; five
 experiment configurations and 14 modified script entrypoints also pass checks.
 These are regression and short functional runs, not a new long training campaign
 or learned-policy success-rate comparison. Formal PAP training remains paused.
+
+The subsequent [directory cleanup report](results/task_directory_cleanup_20261106.json)
+records **2,127 unique passing tests**, with all dependency skips resolved. The
+count changes because 25 old alias/pickle cases were replaced by 15 canonical
+ownership, removed-package, dependency-boundary and archive checks. A clean
+wheel build and isolated installation contain neither removed package; canonical
+imports, both task scenes, nine plugins and 24 CLI/config checks pass. All 169
+tracked model/training files remain byte-identical. A new real two-environment
+Wall/Isaac workflow covers DSRL updates/resume, frozen-DSRL residual updates,
+evaluation and collection, followed by strict offline verification of the paused
+formal checkpoints. The final migration evidence also records an interrupted
+attempt after a provenance correction and a validation-only retry after fixing a
+PyTorch guard in the offline harness; neither required a product-code change.

@@ -348,7 +348,6 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 | `src/pressb/models/`, `src/pressb/model_sources/` | 模型适配器和内置 Wall-OSS／VLA-JEPA 推理、数据读取及监督训练源码 |
 | `src/pressb/experiments/`, `src/pressb/training/` | 实验命令／配置与监督训练入口 |
 | `src/pressb/compat/` | 历史 Wall-X WebSocket 和桌面按键 HTTP 策略客户端 |
-| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | 指向规范任务实现的薄兼容别名，不再保留第二份任务逻辑 |
 | `src/pressb/online_rl/`, `src/pressb/rl_nodes/` | 历史入口与保留的电梯辅助代码，通用模块转发至公共运行核心 |
 | `scripts/` | 安装、资产准备、采集、转换、回放、评估和审计入口 |
 | `configs/` | 固定场景、随机位置和 1,200 条分层采集配置 |
@@ -359,5 +358,7 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 | `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | 可选历史／参考仓库，默认模型推理与训练使用内置源码（本仓库忽略） |
 | `vendor/`, `assets/generated/`, `assets/isaac/` | 本地下载或生成的依赖与素材（忽略） |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | 本地数据、结果、环境与缓存（忽略） |
+
+PAP 与桌面按键代码统一位于 `src/pressb/tasks/pap/` 和 `src/pressb/tasks/table_buttons/`，原顶层任务目录已删除。旧脚本导入和旧 RL 检查点的处理方式见[路径与检查点迁移说明](docs/project_framework.md#task-package-paths)。
 
 更多说明：[30 Hz 数据](docs/dataset_30hz.md) · [首次亮灯裁剪](docs/dataset_press_only.md) · [位置随机化](docs/dataset_panel_randomization.md) · [分层覆盖记录](docs/dataset_panel_stratified.md)。

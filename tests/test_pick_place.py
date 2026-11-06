@@ -9,7 +9,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from pressb.pick_place.task import PickPlaceOutcome, cube_inside_box, load_trajectory
+from pressb.tasks.pap.task import PickPlaceOutcome, cube_inside_box, load_trajectory
 
 
 EDGE = .035

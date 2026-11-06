@@ -59,12 +59,17 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
     instance = vector.PAPVectorBackend(cpu_vector_config)
     try:
         sources = instance.identity["source_identity"]
+        assert not any(name.startswith(("pick_place/", "table_buttons/")) for name in sources)
         for name in ("tasks/pap/backend.py", "tasks/pap/worker.py", "tasks/pap/vector.py",
+                     "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
+                     "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
                      "runtime/physics.py", "runtime/image_transport.py", "runtime/isaac.py",
                      "rl_nodes/pap.py", "rl_nodes/pap_worker.py", "rl_nodes/pap_vector.py"):
+            assert name in sources
+        for name, identity in sources.items():
             contents = (backend.ROOT / "src/pressb" / name).read_bytes()
-            assert sources[name] == {"sha256": hashlib.sha256(contents).hexdigest(),
-                                     "bytes": len(contents)}
+            assert identity == {"sha256": hashlib.sha256(contents).hexdigest(),
+                                "bytes": len(contents)}
     finally:
         instance.close()
 

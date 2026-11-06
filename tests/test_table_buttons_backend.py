@@ -8,7 +8,7 @@ import pytest
 from pressb.runtime.contract import decode_image, validate_metadata
 from pressb.runtime.simulation import SimulationService
 from pressb.tasks.table_buttons.backend import TableButtonsBackend, load_config
-from pressb.table_buttons.task import COLORS
+from pressb.tasks.table_buttons.task import COLORS
 
 
 LAYOUTS = {

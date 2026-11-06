@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from pressb.pick_place.task import PickPlaceOutcome, _half_extent, object_geometry
+from pressb.tasks.pap.task import PickPlaceOutcome, _half_extent, object_geometry
 
 
 SPEC = importlib.util.spec_from_file_location("pap_outcome_benchmark",
