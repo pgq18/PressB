@@ -1,0 +1,5 @@
+# Preserve imported source and checkpoint metadata exactly as hashed in manifests.
+# Upstream whitespace is retained; first-party wrappers keep normal checks.
+src/pressb/model_sources/walloss/** -text -whitespace
+src/pressb/model_sources/vlajepa/** -text -whitespace
+configs/model_metadata/** -text -whitespace

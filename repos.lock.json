@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-23",
-  "layout": "Independent clones, not Git submodules; paths are ignored by PressB",
+  "updated_at": "2026-11-06",
+  "layout": "Model source is bundled in PressB; independent ignored clones remain optional legacy overrides, not Git submodules",
   "repositories": {
     "VLA-JEPA": {
       "url": "https://github.com/pgq18/VLA-JEPA.git",
@@ -9,8 +9,11 @@
       "publication_branch": "base",
       "publication_commit": "2cd35ecbc5a5ce6c4074e3ca7e35a0bb6c656b1b",
       "runtime_commit": "9c9dc71c8e199c7428b25d103ab666395832c001",
-      "required_for": "Frozen model inference",
-      "pin_reason": "Existing RL checkpoints bind the VLA Git commit, absolute source path, model/addon source hashes and model weights. Documentation publication must not silently change runtime identity."
+      "required_for": "Historical source override only; default inference and supervised training use bundled model code",
+      "pin_reason": "Existing RL checkpoints bind the VLA Git commit, absolute source path, model/addon source hashes and model weights. Documentation publication must not silently change runtime identity.",
+      "bundled_path": "src/pressb/model_sources/vlajepa",
+      "bundled_manifest": "src/pressb/model_sources/vlajepa/source_manifest.json",
+      "bundled_manifest_sha256": "a59dd7caf235e00afb13add5d2e6cd662ea08c743bc8e2f4a8abe27524c900ea"
     },
     "ZPRL": {
       "url": "https://github.com/pgq18/ZPRL-PressB.git",
@@ -24,9 +27,12 @@
       "url": "https://github.com/pgq18/wall-x.git",
       "path": "ref/wall-x",
       "publication_branch": "base",
-      "publication_commit": "d7a8748f8bcc988d3ea38c9e68af5578e47bd1ea",
-      "required_for": "Native Wall-X PAP inference and the Wall-X-compatible WebSocket transport for frozen VLA-JEPA inference",
-      "pin_reason": "Includes backward-compatible PressB RPC/auth extensions and RTX 5090 PiPER deployment. Model weights, normalization statistics and training configuration are separate local inputs."
+      "publication_commit": "cc4dd1e0579869c3e782205be0339c84c78f1d41",
+      "required_for": "Historical source override only; default inference and supervised training use bundled model code",
+      "pin_reason": "Bundled manifest preserves the deployed native-batch/noise/context/prefix-cache and CUDA changes. Explicit legacy clone remains supported. Model weights, statistics and datasets are external inputs.",
+      "bundled_path": "src/pressb/model_sources/walloss",
+      "bundled_manifest": "src/pressb/model_sources/walloss/source_manifest.json",
+      "bundled_manifest_sha256": "a457eff77e6c6a8be3bb39fc5d9310f3b36f60897176b9a68ec4f1079c950423"
     }
   }
 }

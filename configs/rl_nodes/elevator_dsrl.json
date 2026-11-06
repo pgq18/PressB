@@ -1,0 +1,9 @@
+{
+  "method": "dsrl", "mode": "train", "device": "cuda:0", "seed": 42,
+  "endpoints": {"inference": "ws://127.0.0.1:8100", "simulation": "http://127.0.0.1:8101", "timeout": 180},
+  "rollout": {"max_transitions": 400000, "execution_horizon": 7},
+  "learner": {"noise_steps": 1, "noise_scale": 1.5, "batch_size": 256, "hidden_dim": 256},
+  "update": {"replay_capacity": 100000, "learning_starts": 2000, "utd": 1},
+  "checkpoint": {"interval": 100000, "keep": null, "include_replay": true},
+  "output_dir": "outputs/elevator_dsrl_nodes"
+}

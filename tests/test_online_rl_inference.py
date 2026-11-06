@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -405,7 +406,7 @@ def test_loader_forwards_backbone_paths_without_rewriting_run_config(backend, mo
     module = SimpleNamespace(__file__=str(source), PiperPolicy=policy_loader,
                              prepare_state=prepare_state, pose9_to_pose8=backend.pose_converter)
     backend.model.qwen_vl_interface.model.config.hidden_size = 2048
-    monkeypatch.setattr(inference.sys, "path", inference.sys.path.copy())
+    monkeypatch.setattr(inference, "activate_source", lambda family, root: Path(root).resolve())
     monkeypatch.setattr(inference.importlib, "import_module", lambda name: module)
     monkeypatch.setattr(inference, "_source_identity", lambda path: dict(vla_repo=str(path)))
     loaded = FrozenPiperBackend.load(repo, checkpoint, device="cpu", **kwargs)

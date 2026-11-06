@@ -1,0 +1,20 @@
+{
+  "server": {"host": "127.0.0.1", "port": 8101, "transport": "http"},
+  "service": {"request_cache_size": 8},
+  "backend": {
+    "factory": "pressb.rl_nodes.pap:create_backend",
+    "config": {
+      "scene_config": "configs/piper_pick_place.json",
+      "trajectory": "outputs/piper_pap_reconstruction_20261022/dataset_audit/episode_000000.npz",
+      "python": ".conda/envs/pressb/bin/python",
+      "num_envs": 2, "gpu_ids": [0], "horizon": 32,
+      "gamma": 0.995, "max_episode_seconds": 20,
+      "smoothing": {"mode": "none", "alpha": 0.8},
+      "randomization": {"position": "markers", "colors": ["red"]},
+      "reward": {"success": 1.0, "failure": 0.0},
+      "outcome": {"stable_seconds": 0.5, "lift_height": 0.04},
+      "terminate_on_drop": true, "drop_below_table_m": 0.05,
+      "startup_timeout": 300, "command_timeout": 180
+    }
+  }
+}

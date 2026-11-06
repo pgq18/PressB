@@ -1,0 +1,14 @@
+# Inference dependencies only. Torch/CUDA packages are installed separately.
+numpy==1.26.4
+transformers==4.49.0
+accelerate==1.10.1
+peft==0.17.1
+scipy==1.15.3
+torchdiffeq==0.2.5
+qwen-vl-utils==0.0.11
+tyro==0.9.35
+PyYAML==6.0.2
+msgpack==1.1.0
+msgpack-numpy==0.4.8
+websockets==15.0.1
+ninja==1.11.1.3

@@ -9,6 +9,10 @@ description = "PiPER manipulation tasks, frozen VLA inference and online residua
 requires-python = ">=3.10,<3.12"
 dependencies = ["numpy<2", "scipy", "Pillow", "matplotlib"]
 
+[project.scripts]
+pressb = "pressb.experiments.cli:main"
+pressb-model-train = "pressb.training.cli:main"
+
 [project.optional-dependencies]
 online-rl = ["torch>=2.6", "threadpoolctl>=3", "websockets>=12,<16", "msgpack>=1,<2"]
 inference-server = ["websockets>=14,<16", "msgpack>=1,<2"]
@@ -18,6 +22,9 @@ table-buttons = ["pin==2.7.0", "hpp-fcl==2.4.4"]
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["pressb*"]
+
+[tool.setuptools.package-data]
+"pressb.model_sources" = ["**/*.py", "**/*.json", "**/*.yaml", "**/*.yml", "**/*.toml", "**/*.txt", "**/*.md", "**/*.cu", "**/*.cuh", "**/*.h", "**/*.sh", "**/LICENSE*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

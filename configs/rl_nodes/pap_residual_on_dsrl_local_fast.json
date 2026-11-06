@@ -1,0 +1,92 @@
+{
+  "method": "action_residual",
+  "mode": "train",
+  "device": "cuda:1",
+  "seed": 42,
+  "endpoints": {
+    "inference": "ws://127.0.0.1:18131",
+    "simulation": "http://127.0.0.1:18101",
+    "timeout": 300,
+    "token": null,
+    "max_message_bytes": 201326592,
+    "image_transport": "auto",
+    "preprocess_images": true,
+    "image_workers": 8
+  },
+  "rollout": {
+    "max_transitions": 400000,
+    "eval_episodes": 100,
+    "execution_horizon": 32,
+    "num_envs": 64,
+    "reset_options": {},
+    "recent_window": 100,
+    "deterministic_eval": true,
+    "action_bounds": "clip",
+    "terminal_observation_mode": "state_only_if_no_bootstrap",
+    "fused_step_reset": true
+  },
+  "learner": {
+    "residual_mode": "all",
+    "residual_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "residual_scale": [
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.005
+    ],
+    "residual_q_bounds": null,
+    "batch_size": 256,
+    "hidden_dim": 256,
+    "bootstrap_truncated": false
+  },
+  "update": {
+    "replay_capacity": 100000,
+    "learning_starts": 2000,
+    "utd": 1,
+    "max_backlog": 1000,
+    "max_updates_per_wait": 16,
+    "progressive_exploration_steps": 50000
+  },
+  "checkpoint": {
+    "interval": 100000,
+    "keep": null,
+    "include_replay": true,
+    "resume": null
+  },
+  "wandb": {
+    "enabled": true,
+    "project": "pressb-online-rl",
+    "entity": "penggq2025-southern-university-of-science-technology",
+    "name": "pap-residual-on-frozen-dsrl-local5090-64env-400k",
+    "mode": "online",
+    "tags": [
+      "pap",
+      "action-residual",
+      "frozen-dsrl400k",
+      "walloss",
+      "400k",
+      "joint7",
+      "local5090",
+      "fused-reset"
+    ],
+    "log_interval_seconds": 5.0,
+    "init_timeout_seconds": 20
+  },
+  "output_dir": "outputs/pap_residual_on_dsrl_400k_NEW_RUN/train",
+  "frozen_dsrl": {
+    "checkpoint": "outputs/pap_dsrl_local_400k_20261105/train/checkpoints/step_000000400000.pt",
+    "checkpoint_sha256": "3fe807dc0ba36bbcf4f3b8a66d134d145266f915d9c78ce02a1842b55b0654cf",
+    "deterministic": true
+  }
+}

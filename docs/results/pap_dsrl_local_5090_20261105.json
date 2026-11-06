@@ -1,0 +1,765 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "scope": "PAP Wall-OSS remote H200 versus local RTX 5090 deployment comparison",
+  "unit": "one environment action chunk is one transition",
+  "end_to_end": {
+    "scope": "Three complete 10,048-transition fresh learner placement runs; steady measurements exclude warmup",
+    "data": {
+      "h200": {
+        "full_run_seconds": 799.9348693549982,
+        "full_run_transitions": 10048,
+        "window": {
+          "start_transitions": 2048,
+          "end_transitions": 10048,
+          "start_elapsed_seconds": 162.42877331597265,
+          "end_elapsed_seconds": 799.9348693549982,
+          "wall_seconds": 637.5060960390256,
+          "transitions": 8000,
+          "transitions_per_second": 12.548899610067842,
+          "metric_records": 127,
+          "end_state": "completed",
+          "includes_final_status_time": true
+        },
+        "learning": {
+          "updates": 8001,
+          "configured_utd": 1,
+          "completed_utd": 1.000125,
+          "backlog_start": 47.0,
+          "backlog_end": 46.0,
+          "new_dropped_update_credit": 0.0,
+          "credit_accounting_error": 0.0,
+          "learner_seconds": 50.12130731268553,
+          "learner_seconds_overlap_rpc": true
+        },
+        "resets": {
+          "observed": true,
+          "evidence_source": "validated_reset_items_counters",
+          "environment_resets": 580,
+          "actual_reset_batches": 123,
+          "explicit_reset_rpc_calls": 0,
+          "fused_step_rpc_calls": 125,
+          "fused_rpc_call_count_is_not_a_reset_count": true
+        },
+        "episodes": {
+          "completed": 586,
+          "successes": 295,
+          "timeouts": 290,
+          "termination_reasons": {
+            "success": 295,
+            "timeout": 290,
+            "object_dropped": 1
+          },
+          "success_rate": 0.5034129692832765,
+          "counter_match": true
+        },
+        "rpc_seconds_per_call": {
+          "inference/decode": 1.1661868040491827,
+          "inference/encode": 1.8203015624149703,
+          "inference/release": 0.015217162239830941,
+          "simulation/step_and_reset": 1.9494393287077547
+        },
+        "resources": {
+          "scope": "entire_resource_file_not_time_aligned_to_training_window",
+          "samples": 80,
+          "devices": {
+            "GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199": {
+              "index": 0,
+              "peak_used_mib": 15549.0,
+              "minimum_free_mib": 16539.0
+            },
+            "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9": {
+              "index": 1,
+              "peak_used_mib": 1029.0,
+              "minimum_free_mib": 31081.0
+            }
+          },
+          "minimum_host_available_bytes": 45871489024,
+          "peak_process_tree_rss_bytes": 15768739840,
+          "measurement_errors": []
+        },
+        "projection_hours": {
+          "400000": 8.854251333875355,
+          "1000000": 22.135628334688388
+        },
+        "qualification": {
+          "passed": false,
+          "checks": {
+            "sufficient_wall_time": true,
+            "sufficient_transitions": true,
+            "target_throughput": false,
+            "configured_utd_one": true,
+            "completed_utd_at_least_098": true,
+            "no_dropped_update_credit": true,
+            "update_accounting_balances": true,
+            "finite_learner_metrics": true,
+            "episode_log_matches_counters": true,
+            "success_and_timeout_observed": true,
+            "indexed_resets_observed": true,
+            "no_failed_run": true
+          },
+          "target_transitions_per_second": 15.0,
+          "minimum_seconds": 300.0,
+          "minimum_transitions": 5000
+        },
+        "throughput_speedup_over_h200": 1.0,
+        "throughput_speedup_over_first_local": 0.9719802506125241
+      },
+      "local_inference_with_learner": {
+        "full_run_seconds": 774.8144364840118,
+        "full_run_transitions": 10048,
+        "window": {
+          "start_transitions": 2048,
+          "end_transitions": 10048,
+          "start_elapsed_seconds": 155.17110148898792,
+          "end_elapsed_seconds": 774.8144364840118,
+          "wall_seconds": 619.6433349950239,
+          "transitions": 8000,
+          "transitions_per_second": 12.910652867853802,
+          "metric_records": 127,
+          "end_state": "completed",
+          "includes_final_status_time": true
+        },
+        "learning": {
+          "updates": 8000,
+          "configured_utd": 1,
+          "completed_utd": 1.0,
+          "backlog_start": 47.0,
+          "backlog_end": 47.0,
+          "new_dropped_update_credit": 0.0,
+          "credit_accounting_error": 0.0,
+          "learner_seconds": 188.00823973759543,
+          "learner_seconds_overlap_rpc": true
+        },
+        "resets": {
+          "observed": true,
+          "evidence_source": "validated_reset_items_counters",
+          "environment_resets": 604,
+          "actual_reset_batches": 123,
+          "explicit_reset_rpc_calls": 0,
+          "fused_step_rpc_calls": 125,
+          "fused_rpc_call_count_is_not_a_reset_count": true
+        },
+        "episodes": {
+          "completed": 608,
+          "successes": 331,
+          "timeouts": 274,
+          "termination_reasons": {
+            "success": 331,
+            "timeout": 274,
+            "object_dropped": 3
+          },
+          "success_rate": 0.5444078947368421,
+          "counter_match": true
+        },
+        "rpc_seconds_per_call": {
+          "inference/decode": 1.9327182886595837,
+          "inference/encode": 0.9613510523387231,
+          "inference/release": 0.005800351368263364,
+          "simulation/step_and_reset": 1.9061986440592444
+        },
+        "resources": {
+          "scope": "entire_resource_file_not_time_aligned_to_training_window",
+          "samples": 77,
+          "devices": {
+            "GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199": {
+              "index": 0,
+              "peak_used_mib": 15549.0,
+              "minimum_free_mib": 16539.0
+            },
+            "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9": {
+              "index": 1,
+              "peak_used_mib": 15268.0,
+              "minimum_free_mib": 16842.0
+            }
+          },
+          "minimum_host_available_bytes": 43430768640,
+          "peak_process_tree_rss_bytes": 18392330240,
+          "measurement_errors": []
+        },
+        "projection_hours": {
+          "400000": 8.606157430486444,
+          "1000000": 21.51539357621611
+        },
+        "qualification": {
+          "passed": false,
+          "checks": {
+            "sufficient_wall_time": true,
+            "sufficient_transitions": true,
+            "target_throughput": false,
+            "configured_utd_one": true,
+            "completed_utd_at_least_098": true,
+            "no_dropped_update_credit": true,
+            "update_accounting_balances": true,
+            "finite_learner_metrics": true,
+            "episode_log_matches_counters": true,
+            "success_and_timeout_observed": true,
+            "indexed_resets_observed": true,
+            "no_failed_run": true
+          },
+          "target_transitions_per_second": 15.0,
+          "minimum_seconds": 300.0,
+          "minimum_transitions": 5000
+        },
+        "throughput_speedup_over_h200": 1.0288274883875659,
+        "throughput_speedup_over_first_local": 1.0,
+        "inference_receipt": {
+          "pid": 2408331,
+          "start_ticks": "46996846",
+          "physical_gpu": 1,
+          "cmd": [
+            "/home/pengguanqi/Workspace/Research/PressB/.conda/envs/wallx-inference/bin/python",
+            "-u",
+            "scripts/serve_inference_node.py",
+            "--config",
+            "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_dsrl_local_5090_20261105/inference_config.json"
+          ]
+        }
+      },
+      "local_inference_with_simulation": {
+        "full_run_seconds": 755.006108622998,
+        "full_run_transitions": 10048,
+        "window": {
+          "start_transitions": 2048,
+          "end_transitions": 10048,
+          "start_elapsed_seconds": 155.45924651098903,
+          "end_elapsed_seconds": 755.006108622998,
+          "wall_seconds": 599.546862112009,
+          "transitions": 8000,
+          "transitions_per_second": 13.343410674886359,
+          "metric_records": 127,
+          "end_state": "completed",
+          "includes_final_status_time": true
+        },
+        "learning": {
+          "updates": 8000,
+          "configured_utd": 1,
+          "completed_utd": 1.0,
+          "backlog_start": 47.0,
+          "backlog_end": 47.0,
+          "new_dropped_update_credit": 0.0,
+          "credit_accounting_error": 0.0,
+          "learner_seconds": 50.36660856642993,
+          "learner_seconds_overlap_rpc": true
+        },
+        "resets": {
+          "observed": true,
+          "evidence_source": "validated_reset_items_counters",
+          "environment_resets": 602,
+          "actual_reset_batches": 122,
+          "explicit_reset_rpc_calls": 0,
+          "fused_step_rpc_calls": 125,
+          "fused_rpc_call_count_is_not_a_reset_count": true
+        },
+        "episodes": {
+          "completed": 606,
+          "successes": 323,
+          "timeouts": 279,
+          "termination_reasons": {
+            "success": 323,
+            "timeout": 279,
+            "object_dropped": 4
+          },
+          "success_rate": 0.533003300330033,
+          "counter_match": true
+        },
+        "rpc_seconds_per_call": {
+          "inference/decode": 1.7702883266350253,
+          "inference/encode": 0.9519203293281607,
+          "inference/release": 0.005761831847019494,
+          "simulation/step_and_reset": 1.917865914870985
+        },
+        "resources": {
+          "scope": "entire_resource_file_not_time_aligned_to_training_window",
+          "samples": 75,
+          "devices": {
+            "GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199": {
+              "index": 0,
+              "peak_used_mib": 29852.0,
+              "minimum_free_mib": 2235.0
+            },
+            "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9": {
+              "index": 1,
+              "peak_used_mib": 1029.0,
+              "minimum_free_mib": 31081.0
+            }
+          },
+          "minimum_host_available_bytes": 44639731712,
+          "peak_process_tree_rss_bytes": 18063949824,
+          "measurement_errors": []
+        },
+        "projection_hours": {
+          "400000": 8.32703975155568,
+          "1000000": 20.8175993788892
+        },
+        "qualification": {
+          "passed": false,
+          "checks": {
+            "sufficient_wall_time": true,
+            "sufficient_transitions": true,
+            "target_throughput": false,
+            "configured_utd_one": true,
+            "completed_utd_at_least_098": true,
+            "no_dropped_update_credit": true,
+            "update_accounting_balances": true,
+            "finite_learner_metrics": true,
+            "episode_log_matches_counters": true,
+            "success_and_timeout_observed": true,
+            "indexed_resets_observed": true,
+            "no_failed_run": true
+          },
+          "target_transitions_per_second": 15.0,
+          "minimum_seconds": 300.0,
+          "minimum_transitions": 5000
+        },
+        "throughput_speedup_over_h200": 1.0633132058990327,
+        "throughput_speedup_over_first_local": 1.0335194363493483,
+        "inference_receipt": {
+          "pid": 2419135,
+          "start_ticks": "47112225",
+          "physical_gpu": 0,
+          "cmd": [
+            "/home/pengguanqi/Workspace/Research/PressB/.conda/envs/wallx-inference/bin/python",
+            "-u",
+            "scripts/serve_inference_node.py",
+            "--config",
+            "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/inference_config.json"
+          ]
+        }
+      }
+    },
+    "matching_condition_checks": {
+      "trainer_only_output_labels_differ": true,
+      "simulation_only_log_directory_differs": true,
+      "inference_logical_config_same": true,
+      "all_negotiated_metadata_identical": true,
+      "same_postwarmup_transition_boundaries": true,
+      "local_checkpoint_audits_pass": true,
+      "local_episode_audits_pass": true,
+      "inference_placement_changed_gpu1_to_gpu0": true,
+      "same_input_output_validation_pass": true
+    },
+    "matching_condition_checks_passed": true,
+    "local_placement_config_differences": {
+      "trainer": [
+        {
+          "path": ".output_dir",
+          "first": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_dsrl_local_5090_20261105/train",
+          "second": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/train"
+        },
+        {
+          "path": ".wandb.name",
+          "first": "pap-dsrl-local5090-native640-64env-20261105",
+          "second": "pap-dsrl-local5090-sim-inference-colocated-20261105"
+        },
+        {
+          "path": ".wandb.tags",
+          "first": [
+            "pap",
+            "dsrl",
+            "walloss",
+            "throughput-validation",
+            "native640",
+            "full-attention-prefix",
+            "fused-reset",
+            "local5090"
+          ],
+          "second": [
+            "pap",
+            "dsrl",
+            "walloss",
+            "throughput-validation",
+            "native640",
+            "full-attention-prefix",
+            "fused-reset",
+            "local5090",
+            "sim-inference-colocated"
+          ]
+        }
+      ],
+      "simulation": [
+        {
+          "path": ".backend.config.log_dir",
+          "first": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_dsrl_local_5090_20261105/simulation_workers",
+          "second": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/simulation_workers"
+        }
+      ],
+      "inference_config": []
+    },
+    "limitations": [
+      "Single runs, no confidence interval; deployment comparisons do not isolate GPU silicon.",
+      "H200 and local use different PyTorch/CUDA stacks; both retain BF16 batch64 and identical weights/contracts.",
+      "Postwarmup windows are 8,000 transitions including resets/checkpoints; actor updates and simulation counts remain unchanged.",
+      "Learner seconds overlap inference/physics; they are not additive exclusive timing buckets.",
+      "Resource peaks are 10-second samples; H200 baseline excludes remote H200 host/device memory.",
+      "Episode trajectories/reset counts can differ; training success fractions are not policy evaluation.",
+      "400k/1M hours are rate extrapolations, not completed long training runs."
+    ]
+  },
+  "paired_inference": {
+    "state": "completed",
+    "scope": "Paired inference-only fixed real B64 comparison; not end-to-end training or task success.",
+    "observation_sha256": "4742e7738fc91c25187d77c10a9e513eb1405d5f408b9b6645cf8dc5b1777f9e",
+    "warmup_rounds_per_node": 1,
+    "timed_rounds_per_node": 5,
+    "metadata_equal": {
+      "model_id": true,
+      "weights_sha256": true,
+      "normalization_sha256": true,
+      "model_config_sha256": true,
+      "source_revision": true,
+      "image_preprocessing": true,
+      "diffusion_prefix_cache_mode": true,
+      "num_inference_timesteps": true,
+      "noise": true,
+      "action": true
+    },
+    "repeat_exact_by_node": {
+      "h200": true,
+      "local5090": true
+    },
+    "final_cache_by_node": {
+      "h200": 0,
+      "local5090": 0
+    },
+    "runtime_boundary": {
+      "h200": {
+        "torch": "2.6.0+cu124",
+        "cuda": "12.4",
+        "pillow": "12.3.0"
+      },
+      "local5090": {
+        "torch": "2.7.0+cu128",
+        "cuda": "12.8",
+        "pillow": "12.2.0"
+      },
+      "interpretation": "Hardware and PyTorch/CUDA kernels both differ; cannot attribute differences solely to hardware or batch. Both services use identical BF16 checkpoint and native batch64."
+    },
+    "timing": {
+      "h200": {
+        "encode_mean_seconds": 1.8117065605940297,
+        "encode_median_seconds": 1.768694782978855,
+        "encode_server_mean_seconds": 0.9970931563526392,
+        "encode_residual_mean_seconds": 0.7898803422576748,
+        "decode": {
+          "normal": {
+            "mean_seconds": 1.1791875433991663,
+            "median_seconds": 1.1602826910093427,
+            "server_mean_seconds": 1.0669208005070687,
+            "residual_mean_seconds": 0.11159958388889209,
+            "encode_plus_decode_mean_seconds": 2.990894103993196,
+            "inference_only_chunks_per_second": 21.3982835148033
+          },
+          "clipped_normal": {
+            "mean_seconds": 1.1606981221935713,
+            "median_seconds": 1.1603917299653403,
+            "server_mean_seconds": 1.067035784944892,
+            "residual_mean_seconds": 0.09299943083897233,
+            "encode_plus_decode_mean_seconds": 2.9724046827876007,
+            "inference_only_chunks_per_second": 21.531388498546935
+          },
+          "uniform": {
+            "mean_seconds": 1.159136344201397,
+            "median_seconds": 1.1584207539563067,
+            "server_mean_seconds": 1.0675003133714198,
+            "residual_mean_seconds": 0.09096600041957573,
+            "encode_plus_decode_mean_seconds": 2.970842904795427,
+            "inference_only_chunks_per_second": 21.542707592075477
+          }
+        }
+      },
+      "local5090": {
+        "encode_mean_seconds": 0.9641543576144613,
+        "encode_median_seconds": 0.95432122197235,
+        "encode_server_mean_seconds": 0.9293921712087467,
+        "encode_residual_mean_seconds": 0.009564480581320822,
+        "decode": {
+          "normal": {
+            "mean_seconds": 1.7428934260155073,
+            "median_seconds": 1.7446402630303055,
+            "server_mean_seconds": 1.7390242572175338,
+            "residual_mean_seconds": 0.003201338986400515,
+            "encode_plus_decode_mean_seconds": 2.7070477836299687,
+            "inference_only_chunks_per_second": 23.641991244860964
+          },
+          "clipped_normal": {
+            "mean_seconds": 1.7424772516125813,
+            "median_seconds": 1.7433706910233013,
+            "server_mean_seconds": 1.7396098704077303,
+            "residual_mean_seconds": 0.0022083406220190227,
+            "encode_plus_decode_mean_seconds": 2.706631609227043,
+            "inference_only_chunks_per_second": 23.645626461251982
+          },
+          "uniform": {
+            "mean_seconds": 1.7530844862107187,
+            "median_seconds": 1.743399719009176,
+            "server_mean_seconds": 1.7502834115875885,
+            "residual_mean_seconds": 0.002136318408884108,
+            "encode_plus_decode_mean_seconds": 2.71723884382518,
+            "inference_only_chunks_per_second": 23.553321470226116
+          }
+        }
+      }
+    },
+    "feature_difference": {
+      "exact": false,
+      "max_abs": 0.031963348388671875,
+      "mean_abs": 0.0027640640314166402,
+      "rms": 0.003667059550293126,
+      "relative_l2": 0.004221688916864747,
+      "row_cosine_min": 0.9999586381876205,
+      "row_cosine_mean": 0.9999914071652385
+    },
+    "action_difference": {
+      "normal": {
+        "exact": false,
+        "max_abs": 0.04581490159034729,
+        "mean_abs": 0.00128630079012331,
+        "rms": 0.002707775007259239,
+        "relative_l2": 0.006644255024368524,
+        "arm_max_abs_deg": 2.625000499934103,
+        "arm_rms_deg": 0.165910034557637,
+        "gripper_max_abs_mm": 14.921874739229679,
+        "gripper_rms_mm": 1.007307679007348,
+        "coordinate_max_abs_si": [
+          0.010908305644989014,
+          0.026179969310760498,
+          0.008726656436920166,
+          0.018544122576713562,
+          0.04581490159034729,
+          0.01745329052209854,
+          0.014921874739229679
+        ],
+        "coordinate_rms_si": [
+          0.0020340560386817993,
+          0.004034841608862025,
+          0.0024807409596893557,
+          0.0014624307009954566,
+          0.004313924444188725,
+          0.0017290446835786276,
+          0.0010073076790073478
+        ],
+        "maximum_location_env_step_coordinate": [
+          23,
+          9,
+          4
+        ]
+      },
+      "clipped_normal": {
+        "exact": false,
+        "max_abs": 0.04799655079841614,
+        "mean_abs": 0.0012082685965668003,
+        "rms": 0.002673245878552973,
+        "relative_l2": 0.006543562987976252,
+        "arm_max_abs_deg": 2.7499997919345063,
+        "arm_rms_deg": 0.16491213347475459,
+        "gripper_max_abs_mm": 7.03125074505806,
+        "gripper_rms_mm": 0.563410234492832,
+        "coordinate_max_abs_si": [
+          0.007635816931724548,
+          0.026179969310760498,
+          0.008726656436920166,
+          0.012544557452201843,
+          0.04799655079841614,
+          0.0152716264128685,
+          0.00703125074505806
+        ],
+        "coordinate_rms_si": [
+          0.0019302920406197796,
+          0.003944846629604677,
+          0.0024694733941682087,
+          0.0014984874374521053,
+          0.004363273570590883,
+          0.0017425589253638278,
+          0.0005634102344928313
+        ],
+        "maximum_location_env_step_coordinate": [
+          7,
+          1,
+          4
+        ]
+      },
+      "uniform": {
+        "exact": false,
+        "max_abs": 0.08726650476455688,
+        "mean_abs": 0.0011394891317308975,
+        "rms": 0.002532169892894996,
+        "relative_l2": 0.006132929222799276,
+        "arm_max_abs_deg": 5.0000024158673995,
+        "arm_rms_deg": 0.15638497742967764,
+        "gripper_max_abs_mm": 5.156250670552254,
+        "gripper_rms_mm": 0.4293850508222116,
+        "coordinate_max_abs_si": [
+          0.006544988602399826,
+          0.017453312873840332,
+          0.008726656436920166,
+          0.009272061288356781,
+          0.08726650476455688,
+          0.013089969754219055,
+          0.005156250670552254
+        ],
+        "coordinate_rms_si": [
+          0.002014971211945303,
+          0.003754685455640631,
+          0.002377411262057424,
+          0.0011907804977312508,
+          0.004138449991657854,
+          0.0015310899227551375,
+          0.00042938505082221125
+        ],
+        "maximum_location_env_step_coordinate": [
+          4,
+          0,
+          4
+        ]
+      }
+    },
+    "normal_inference_only_speedup": 1.1048545659517723
+  },
+  "checkpoint_audits": {
+    "local_A": {
+      "scope": "Read-only CPU final checkpoint and episode audit; not learning convergence",
+      "checkpoint": "/mnt/data/pengguanqi/Data/PressB/outputs/pap_dsrl_local_5090_20261105/train/checkpoints/step_000000010048.pt",
+      "bytes": 360564327,
+      "transitions": 10048,
+      "updates": 8017,
+      "replay_size": 10048,
+      "terminal_transitions": 751,
+      "feature_dim": 2048,
+      "obs_dim": 2062,
+      "action_dim": 640,
+      "episodes": 751,
+      "termination_reasons": {
+        "success": 437,
+        "timeout": 311,
+        "object_dropped": 3
+      },
+      "schema_fingerprint": "9e678a2fa0216ba4420db15e968f534ae57f65ccaa9f16f013e1f0c185811532",
+      "previous_checkpoint": "/mnt/data/pengguanqi/Data/PressB/outputs/pap_dsrl_local_5090_20261105/train/checkpoints/step_000000005056.pt",
+      "actor_max_abs_parameter_delta": 0.0915364921092987,
+      "checks": {
+        "checkpoint_values_finite": true,
+        "fresh_replay_index_mapping": true,
+        "checkpoint_matches_final_status": true,
+        "no_overlap_terminated_truncated": true,
+        "terminal_count_matches_episode_log": true,
+        "terminal_visual_features_exact_zero": true,
+        "continuing_visual_features_nonzero": true,
+        "no_bootstrap_configured_for_timeouts": true,
+        "normalized_noise_in_bounds": true,
+        "actor_optimizer_populated": true,
+        "critic_optimizer_populated": true,
+        "no_dropped_update_credit": true,
+        "episode_ids_unique": true,
+        "episode_semantics_and_replay_match": true,
+        "actor_parameters_changed_since_previous_checkpoint": true
+      },
+      "all_passed": true,
+      "nonfinite_fields": [],
+      "episode_failures": [],
+      "limitations": [
+        "Initial randomized positions are not recorded in episodes.jsonl; spatial coverage is not checked."
+      ],
+      "source_episode_sha256": "6bd9e1d4df2e92ce2305e46f86e237d565d1cb6d956f547634334235a92ebac8"
+    },
+    "local_B": {
+      "scope": "Read-only CPU final checkpoint and episode audit; not learning convergence",
+      "checkpoint": "/mnt/data/pengguanqi/Data/PressB/outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/train/checkpoints/step_000000010048.pt",
+      "bytes": 360589031,
+      "transitions": 10048,
+      "updates": 8017,
+      "replay_size": 10048,
+      "terminal_transitions": 755,
+      "feature_dim": 2048,
+      "obs_dim": 2062,
+      "action_dim": 640,
+      "episodes": 755,
+      "termination_reasons": {
+        "success": 433,
+        "timeout": 318,
+        "object_dropped": 4
+      },
+      "schema_fingerprint": "9e678a2fa0216ba4420db15e968f534ae57f65ccaa9f16f013e1f0c185811532",
+      "previous_checkpoint": "/mnt/data/pengguanqi/Data/PressB/outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/train/checkpoints/step_000000005056.pt",
+      "actor_max_abs_parameter_delta": 0.1289212703704834,
+      "checks": {
+        "checkpoint_values_finite": true,
+        "fresh_replay_index_mapping": true,
+        "checkpoint_matches_final_status": true,
+        "no_overlap_terminated_truncated": true,
+        "terminal_count_matches_episode_log": true,
+        "terminal_visual_features_exact_zero": true,
+        "continuing_visual_features_nonzero": true,
+        "no_bootstrap_configured_for_timeouts": true,
+        "normalized_noise_in_bounds": true,
+        "actor_optimizer_populated": true,
+        "critic_optimizer_populated": true,
+        "no_dropped_update_credit": true,
+        "episode_ids_unique": true,
+        "episode_semantics_and_replay_match": true,
+        "actor_parameters_changed_since_previous_checkpoint": true
+      },
+      "all_passed": true,
+      "nonfinite_fields": [],
+      "episode_failures": [],
+      "limitations": [
+        "Initial randomized positions are not recorded in episodes.jsonl; spatial coverage is not checked."
+      ],
+      "source_episode_sha256": "ea904e6a3fb052a93d2669aff0452cfb46d17864c846ca86d0dc8a7d5c64d8cd"
+    }
+  },
+  "deployment_state_at_completion": {
+    "checked_unix": 1793812787.0309834,
+    "processes": {
+      "local_A_trainer": {
+        "pid": 2410955,
+        "start_ticks": "47029485",
+        "alive_with_matching_identity": false
+      },
+      "local_A_simulation": {
+        "pid": 2407263,
+        "start_ticks": "46987219",
+        "alive_with_matching_identity": false
+      },
+      "local_A_inference": {
+        "pid": 2408331,
+        "start_ticks": "46996846",
+        "alive_with_matching_identity": false
+      },
+      "local_B_trainer": {
+        "pid": 2420530,
+        "start_ticks": "47125465",
+        "alive_with_matching_identity": false
+      },
+      "local_B_simulation": {
+        "pid": 2418748,
+        "start_ticks": "47110712",
+        "alive_with_matching_identity": false
+      },
+      "retained_local_inference": {
+        "pid": 2419135,
+        "start_ticks": "47112225",
+        "alive_with_matching_identity": true
+      }
+    },
+    "inference_endpoint": "ws://127.0.0.1:18131",
+    "inference_physical_gpu": 0,
+    "inference_cache_size": 0,
+    "port_18101_listening": false,
+    "port_18131_listening": true,
+    "gpu": "0, 14726 MiB, 17361 MiB\n1, 17 MiB, 32093 MiB",
+    "h200_temporary_service_shutdown": {
+      "checked_unix": 1793810985.427357,
+      "gpu2_memory_used_mib": 0,
+      "port_18130_listening": false,
+      "compute_processes": []
+    }
+  },
+  "evidence_files": {
+    "outputs/pap_dsrl_local_5090_20261105/three_deployment_comparison.json": "35fde1ea1d67886fa3c405e85a3c364b38a73ca1cb7c8c0a0c5e8859303662b5",
+    "outputs/pap_dsrl_local_5090_20261105/paired_comparison.json": "1334d1ce15fd147978d6a79b4b06c9fad72dd9bbdbda2355401a36bbde7ecf73",
+    "outputs/pap_dsrl_local_5090_20261105/paired_independent_audit.json": "054e19aa4fdd4c754007579acb07f11c47b3c3ba2c076fcf7a13b2eb1a1e4898",
+    "outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/same_inputs_cross_gpu_comparison.json": "a5207b9f2c91226a37adb316da7368177d455400aa3675f8414d55071c52edb6",
+    "outputs/pap_dsrl_local_5090_20261105/final_deployment_state.json": "adddddd6b0aa2537ad1347670f995bb1f41b205b649518a8ef52e9404c4f13a2"
+  }
+}

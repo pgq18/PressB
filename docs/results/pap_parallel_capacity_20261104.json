@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-04",
+  "scope": "PAP simulation capacity and prerecorded-action physical qualification; no policy inference or learner",
+  "device": "NVIDIA GeForce RTX 5090",
+  "artifact_root": "outputs/pap_parallel_capacity_20261104",
+  "native_camera_resolution": [
+    640,
+    480
+  ],
+  "control_hz": 30,
+  "physics_hz": 120,
+  "cases": [
+    {
+      "name": "process_2",
+      "state": "completed",
+      "report": "outputs/pap_parallel_capacity_20261104/process_2/report.json",
+      "config": "outputs/pap_parallel_capacity_20261104/process_2/simulation_config.json",
+      "num_envs": 2,
+      "backend": "isaac_process_parallel",
+      "reset_render_frames": 48,
+      "render_subframes": 2,
+      "max_episode_seconds": 2.0,
+      "transitions": 20,
+      "step_transitions_per_second": 9.110519558810052,
+      "rollout_including_resets_transitions_per_second": 2.700451873150825,
+      "initial_reset_seconds": 1.177445859008003,
+      "peak_owned_gpu_gib": 8.654296875,
+      "peak_process_tree_rss_gib": 10.84136962890625,
+      "unique_initial_object_centers": 2,
+      "valid_rgb_camera_count": 4,
+      "cleanup_surviving_process_count": 0,
+      "identity": {
+        "task_config_sha256": "80fb37dfc0ddcfd1a4234f85dc8bbc24c28b16b7754effedbeaa7a79d7583f63",
+        "source_revision": "sha256:3063fbbcda7f840ea11e229de1a74eabe43c89b25bf36400d3bf7b3437e8aad0",
+        "configuration_file_sha256": "35058a02c5c386b0d74bd64eb3183731d4021713bf251f77c8c3a19a85532690"
+      },
+      "indexed_reset_checks": 10,
+      "all_untouched_protocol_state_unchanged": true,
+      "all_untouched_physical_state_unchanged": null,
+      "timeout_episodes": 10
+    },
+    {
+      "name": "vector_16_native",
+      "state": "completed",
+      "report": "outputs/pap_parallel_capacity_20261104/vector_16_native/report.json",
+      "config": "outputs/pap_parallel_capacity_20261104/vector_16_native/simulation_config.json",
+      "num_envs": 16,
+      "backend": "isaac_shared_world_tiled",
+      "reset_render_frames": 8,
+      "render_subframes": 2,
+      "max_episode_seconds": 2.0,
+      "transitions": 64,
+      "step_transitions_per_second": 29.412718160545264,
+      "rollout_including_resets_transitions_per_second": 9.154186337704928,
+      "initial_reset_seconds": 1.0824470029911026,
+      "peak_owned_gpu_gib": 6.87890625,
+      "peak_process_tree_rss_gib": 7.167209625244141,
+      "unique_initial_object_centers": 16,
+      "valid_rgb_camera_count": 32,
+      "cleanup_surviving_process_count": 0,
+      "identity": {
+        "task_config_sha256": "563c36b4d8937da4e74cbc7672fbe80fd6eede2afdfb1f6d057b5ef679ad4f41",
+        "source_revision": "sha256:1ec99da9999aa4f2b871c6fbd87dbe95e37f568d3508769f927bc176df142bd0",
+        "configuration_file_sha256": "75c28f6ca4e001c264fde6ac009b00171590891ca75d14b4d05f09c103260938"
+      },
+      "indexed_reset_checks": 4,
+      "all_untouched_protocol_state_unchanged": true,
+      "all_untouched_physical_state_unchanged": true,
+      "timeout_episodes": 32
+    },
+    {
+      "name": "vector_64_native",
+      "state": "completed",
+      "report": "outputs/pap_parallel_capacity_20261104/vector_64_native/report.json",
+      "config": "outputs/pap_parallel_capacity_20261104/vector_64_native/simulation_config.json",
+      "num_envs": 64,
+      "backend": "isaac_shared_world_tiled",
+      "reset_render_frames": 8,
+      "render_subframes": 2,
+      "max_episode_seconds": 2.0,
+      "transitions": 640,
+      "step_transitions_per_second": 35.8246331731693,
+      "rollout_including_resets_transitions_per_second": 9.266186771083099,
+      "initial_reset_seconds": 5.79374838800868,
+      "peak_owned_gpu_gib": 15.06640625,
+      "peak_process_tree_rss_gib": 12.461559295654297,
+      "unique_initial_object_centers": 64,
+      "valid_rgb_camera_count": 128,
+      "cleanup_surviving_process_count": 0,
+      "identity": {
+        "task_config_sha256": "e57b401df4542438269ba03101d551dd80646da4797de8afc3b79e3f493e6344",
+        "source_revision": "sha256:7fd35b18c38acf5d85710e1d973eea0e57dc30f8385de3d187f8c1fe27e236a8",
+        "configuration_file_sha256": "77fee150e10f8853c1320360bd079dd9400ed405609d93d2ceacc7398ffd8a51"
+      },
+      "indexed_reset_checks": 10,
+      "all_untouched_protocol_state_unchanged": true,
+      "all_untouched_physical_state_unchanged": true,
+      "timeout_episodes": 320
+    },
+    {
+      "name": "vector_64_replay_native48",
+      "state": "completed",
+      "report": "outputs/pap_parallel_capacity_20261104/vector_64_replay_native48/report.json",
+      "config": "outputs/pap_parallel_capacity_20261104/vector_64_replay_native48/simulation_config.json",
+      "num_envs": 64,
+      "backend": "isaac_shared_world_tiled",
+      "reset_render_frames": 48,
+      "render_subframes": 2,
+      "max_episode_seconds": 20.0,
+      "transitions": 455,
+      "step_transitions_per_second": 24.42169157528281,
+      "rollout_including_resets_transitions_per_second": 24.41865420093316,
+      "initial_reset_seconds": 26.9987638790044,
+      "peak_owned_gpu_gib": 15.1015625,
+      "peak_process_tree_rss_gib": 12.652225494384766,
+      "unique_initial_object_centers": 1,
+      "valid_rgb_camera_count": 128,
+      "cleanup_surviving_process_count": 0,
+      "identity": {
+        "task_config_sha256": "668b9b0caf216fe030d7f132d17075102fd3c087e17762df245e9e6e47292ce2",
+        "source_revision": "sha256:7fd35b18c38acf5d85710e1d973eea0e57dc30f8385de3d187f8c1fe27e236a8",
+        "configuration_file_sha256": "cbb2eceea6fd4fcab0becc3b43262573a9de42d9d38e65fc185c34a8cec2834b"
+      },
+      "recorded_action_replay_successes": 64,
+      "recorded_action_replay_episodes": 64,
+      "policy_success_rate_not_evaluated": true,
+      "all_bilateral_contacts": true,
+      "physical_success_conditions": {
+        "inside_box": 64,
+        "gripper_released": 64,
+        "object_stable": 64,
+        "resting_on_box_floor": 64,
+        "lifted": 64,
+        "success": 64
+      },
+      "max_lift_m_range": [
+        0.12487379312515258,
+        0.12492755651473998
+      ],
+      "successful_episode_seconds_range": [
+        7.325,
+        7.5
+      ],
+      "source_replay": {
+        "source_episode": "/mnt/data/pengguanqi/Data/PressB/outputs/wallx_pap_eval_20261023/run/episodes/red_000",
+        "control_commands": 224,
+        "source_physics_samples": 897,
+        "physics_stride": 4,
+        "command_sha256": "4499f38e298ffb978c474991d88aafad1aa14a551dba71ec1b633b41eb3d30f4",
+        "already_smoothed": true,
+        "continuation": "hold final command until terminal/timeout"
+      }
+    },
+    {
+      "name": "vector_64_native48",
+      "state": "completed",
+      "report": "outputs/pap_parallel_capacity_20261104/vector_64_native48/report.json",
+      "config": "outputs/pap_parallel_capacity_20261104/vector_64_native48/simulation_config.json",
+      "num_envs": 64,
+      "backend": "isaac_shared_world_tiled",
+      "reset_render_frames": 48,
+      "render_subframes": 2,
+      "max_episode_seconds": 2.0,
+      "transitions": 128,
+      "step_transitions_per_second": 39.104198658634246,
+      "rollout_including_resets_transitions_per_second": 2.2673941435381466,
+      "initial_reset_seconds": 26.901248532929458,
+      "peak_owned_gpu_gib": 15.1015625,
+      "peak_process_tree_rss_gib": 12.231502532958984,
+      "unique_initial_object_centers": 64,
+      "valid_rgb_camera_count": 128,
+      "cleanup_surviving_process_count": 0,
+      "identity": {
+        "task_config_sha256": "972638cf2d319189955b8f8d030d67eed9a8e0cb925e795d26f5d9869a1c1e4e",
+        "source_revision": "sha256:7fd35b18c38acf5d85710e1d973eea0e57dc30f8385de3d187f8c1fe27e236a8",
+        "configuration_file_sha256": "19ee9905ae2c711215a3471307bdce8a692a363eb6dc1dfc00b7f25f77188317"
+      },
+      "indexed_reset_checks": 2,
+      "all_untouched_protocol_state_unchanged": true,
+      "all_untouched_physical_state_unchanged": true,
+      "timeout_episodes": 64,
+      "json_payloads": {
+        "budget_bytes": 67108864,
+        "calls_measured": 5,
+        "all_within_budget": true,
+        "max_request_json_bytes": 313619,
+        "max_response_json_bytes": 66183538,
+        "actual_network_transport_tested": false
+      }
+    }
+  ],
+  "limits": [
+    "Throughput counts environment/action-chunk responses, not episodes or per-tick transitions.",
+    "Eight reset render frames are a capacity-only override and show visible temporal ghosts; calibrated default is 48.",
+    "Process and vector probes have different reset contracts; no controlled backend-only speedup is claimed.",
+    "Physical replay uses one fixed recorded trajectory in translated scenes and is not a randomized policy success-rate evaluation.",
+    "Direct JSON sizing does not qualify HTTP/WebSocket transport or full DSRL training at 64 environments.",
+    "Largest native-resolution response is 63.12 MiB: less than 1 MiB of headroom under the current 64 MiB budget."
+  ]
+}

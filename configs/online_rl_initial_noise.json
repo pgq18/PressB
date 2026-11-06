@@ -9,7 +9,7 @@
   "utd": 1.0,
   "progressive_exploration": 0,
   "replay_capacity": 100000,
-  "checkpoint_every": 10000,
+  "checkpoint_every": 100000,
   "single_gamma": 0.99,
   "deterministic_eval": false,
   "learner": {

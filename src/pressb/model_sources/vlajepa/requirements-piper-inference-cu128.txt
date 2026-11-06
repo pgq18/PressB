@@ -1,0 +1,23 @@
+# Frozen PiPER inference on RTX 5090 with an existing PyTorch CUDA 12.8 runtime.
+# Create an isolated --system-site-packages venv first; do not install into Isaac.
+# Keep torch==2.7.0+cu128 and torchvision==0.22.0+cu128 from the parent runtime.
+# Supply the two pins as pip constraints; see docs/piper_rtx5090_inference.md.
+# These model/processor versions match the verified H200 inference environment.
+transformers==4.57.0
+tokenizers==0.22.2
+huggingface-hub==0.36.2
+safetensors==0.8.0
+accelerate==1.5.2
+diffusers==0.35.1
+timm==1.0.20
+qwen-vl-utils==0.0.14
+omegaconf==2.3.0
+einops==0.8.1
+numpy==1.26.4
+pillow==12.3.0
+scipy==1.15.3
+# Original pose helpers share a module with the native dataset reader.
+# They import these packages even when inference never opens a dataset.
+pyarrow==18.1.0
+av==15.1.0
+rich==15.0.0

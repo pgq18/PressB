@@ -15,7 +15,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--vla-repo", type=Path, required=True)
+    parser.add_argument("--vla-repo", type=Path,
+                        help="Optional external VLA-JEPA source override; defaults to bundled source")
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--base-vlm", type=Path,
                         help="Relocated Qwen3-VL config/tokenizer directory; preserves saved run metadata")
@@ -26,8 +27,8 @@ def main():
     parser.add_argument("--port", type=int, default=19871)
     parser.add_argument("--transport", choices=("websocket", "http"), default="websocket",
                         help="Wall-X WebSocket/MessagePack by default; http retains the legacy JSON API")
-    parser.add_argument("--wall-x-repo", type=Path, default=ROOT / "ref/wall-x",
-                        help="Wall-X checkout providing packages/openpi_client/websocket_policy_server.py")
+    parser.add_argument("--wall-x-repo", type=Path,
+                        help="Optional external Wall-X protocol source override; defaults to bundled source")
     parser.add_argument("--cache-size", type=int, default=256)
     parser.add_argument("--cache-ttl", type=float, default=600.0)
     parser.add_argument("--batch-size", type=int, default=1,

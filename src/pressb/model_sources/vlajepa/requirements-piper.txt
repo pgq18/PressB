@@ -1,0 +1,19 @@
+# Dedicated Piper/LeRobot v3 training environment (Python 3.10).
+# Install torch/torchvision first from https://download.pytorch.org/whl/cu124.
+torch==2.6.0
+torchvision==0.21.0
+transformers==4.57.0
+accelerate==1.5.2
+numpy==1.26.4
+pyarrow==18.1.0
+av==15.1.0
+diffusers==0.35.1
+timm==1.0.20
+qwen-vl-utils==0.0.14
+omegaconf==2.3.0
+einops==0.8.1
+rich
+scipy
+pillow
+pytest
+tensorboard

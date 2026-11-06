@@ -31,7 +31,7 @@ class RunConfig:
     utd: float = 1.
     progressive_exploration: int = 50000
     replay_capacity: int = 100000
-    checkpoint_every: int = 10000
+    checkpoint_every: int = 100_000
     single_gamma: float = .99
     expected_checkpoint_step: int = BEST_STEP
     expected_checkpoint_sha256: str = BEST_SHA

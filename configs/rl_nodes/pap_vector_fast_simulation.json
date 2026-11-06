@@ -1,0 +1,66 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 18101,
+    "transport": "http"
+  },
+  "service": {
+    "request_cache_size": 2
+  },
+  "backend": {
+    "factory": "pressb.rl_nodes.pap_vector:create_backend",
+    "config": {
+      "scene_config": "configs/piper_pick_place.json",
+      "trajectory": "outputs/piper_pap_reconstruction_20261022/dataset_audit/episode_000000.npz",
+      "python": ".conda/envs/pressb/bin/python",
+      "num_envs": 64,
+      "gpu_ids": [
+        0
+      ],
+      "horizon": 32,
+      "render_resolution": [
+        640,
+        480
+      ],
+      "render_subframes": 1,
+      "reset_render_frames": 2,
+      "spacing_m": 6,
+      "cpu_threads": 8,
+      "png_workers": 8,
+      "gamma": 0.995,
+      "max_episode_seconds": 20,
+      "smoothing": {
+        "mode": "none",
+        "alpha": 0.8
+      },
+      "randomization": {
+        "position": "markers",
+        "colors": [
+          "red"
+        ]
+      },
+      "reward": {
+        "success": 1.0,
+        "failure": 0.0
+      },
+      "outcome": {
+        "stable_seconds": 0.5,
+        "lift_height": 0.04
+      },
+      "terminate_on_drop": true,
+      "drop_below_table_m": 0.05,
+      "startup_timeout": 300,
+      "command_timeout": 300,
+      "renderer_profile": "rl_fast",
+      "observation_render_frames": 2,
+      "image_preprocessing": {
+        "version": 1,
+        "kind": "walloss_pil_longest_edge",
+        "longest_edge": 256,
+        "mode": "RGB",
+        "resample": "bicubic",
+        "rounding": "truncate"
+      }
+    }
+  }
+}

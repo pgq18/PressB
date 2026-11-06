@@ -11,11 +11,19 @@
 | Intel RealSense description | 上述固定源树中 `_d435.urdf.xacro`、D435 网格和包声明 | 保留源文件中的 Intel 许可声明与归属信息 |
 | NVIDIA Isaac 4.5 内容库 | 逐文件 SHA-256 | 桌子、支架及材质；适用 NVIDIA 的资产使用条款 |
 | ZPRL / ZPRL-PressB | 方法来源 `a34a1cba029702af82c0fed873be9e0e6bd274b3` | `src/pressb/online_rl/learner.py` 的 SAC 适配保留上游 MIT notice；参考仓库独立克隆，不打包其环境或数据 |
-| VLA-JEPA PiPER 适配 | 推理运行版本 `9c9dc71c8e199c7428b25d103ab666395832c001` | 独立模型仓库；PressB 提供冻结推理 addon，不随源码发布模型权重或第三方基础模型 |
+| VLA-JEPA PiPER 适配 | 来源版本 `9c9dc71c8e199c7428b25d103ab666395832c001`，另含 H200 的 joint／多任务工作区模块 | 推理、训练和数据代码已内置 `src/pressb/model_sources/vlajepa`，来源和逐文件 SHA 见其中清单；不含权重 |
+| Wall-X / Wall-OSS | 来源和本地修改摘要见 `src/pressb/model_sources/walloss/source_manifest.json` | 模型、推理、训练、数据和 CUDA 源码已内置；原源码版权头保留；不含权重或编译二进制 |
+| NVIDIA CUTLASS | `e51efbfe18fe4f4cbb66ab814c55bf4aa0185491` | 仅构建 Wall-OSS CUDA 扩展时获取到缓存；原许可文本保留于 Wall-OSS 源码包的 `licenses/` |
 
 `prepare_wrist_asset.py` 在隔离的 OpenUSD 24.11 中提取官方支架与相机子树，以兼容 Isaac Sim 4.5。它保留网格点与拓扑，生成文件及来源记录位于 `assets/generated/official_wrist/`，不提交 Git。
 
 本仓库尚未指定自有代码的开源许可证。公开可见不替代许可授权；第三方组件始终遵循各自的许可。
+
+模型内化保留已有逐文件版权／SPDX 声明，不另行授予许可。所用 VLA-JEPA
+源树未包含其 `pyproject.toml` 引用的 LICENSE 文件，原元数据的 MIT 声明单独保留；
+Wall-X 源树也无顶层 LICENSE，原 `setup.py` 只有 BSD classifier。
+未把这些元数据推定为全部文件的统一授权，也未补造缺失的许可原文。
+各文件来源、原始摘要与本地改动见两份 `source_manifest.json`。
 
 `docs/media/` 仅发布 PressB 仿真生成的精选压缩演示，并记录原始视频哈希与审核范围；
 不包含机器人网格或场景资产，不改变上述第三方许可。仓库版本与用途见 `repos.lock.json`。

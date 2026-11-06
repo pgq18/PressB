@@ -1,0 +1,12 @@
+{
+  "server": {"host": "127.0.0.1", "port": 8100, "transport": "ws"},
+  "service": {"cache_size": 128, "cache_ttl": 600, "batch_size": 4},
+  "backend": {
+    "factory": "pressb.rl_nodes.vlajepa:create_backend",
+    "config": {
+      "vla_repo": "src/VLA-JEPA",
+      "checkpoint": ".cache/vlajepa/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600",
+      "device": "cuda:0", "image_preprocess_device": "cpu"
+    }
+  }
+}

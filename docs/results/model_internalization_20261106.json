@@ -1,0 +1,209 @@
+{
+  "date": "2026-11-06",
+  "status": "passed",
+  "scope": "Bundle model implementations and native supervised trainers inside PressB, while preserving external source overrides and frozen model/runtime contracts.",
+  "bundles": {
+    "walloss": {
+      "path": "src/pressb/model_sources/walloss",
+      "source_manifest": "src/pressb/model_sources/walloss/source_manifest.json",
+      "source_manifest_sha256": "a457eff77e6c6a8be3bb39fc5d9310f3b36f60897176b9a68ec4f1079c950423"
+    },
+    "vlajepa": {
+      "path": "src/pressb/model_sources/vlajepa",
+      "source_manifest": "src/pressb/model_sources/vlajepa/source_manifest.json",
+      "source_manifest_sha256": "a59dd7caf235e00afb13add5d2e6cd662ea08c743bc8e2f4a8abe27524c900ea"
+    }
+  },
+  "supervised_training": {
+    "entry": "scripts/train_model.py",
+    "walloss": [
+      "train_qact.py"
+    ],
+    "vlajepa_profiles": [
+      "pose9",
+      "joint6",
+      "joint7",
+      "joint6_multitask",
+      "joint7_multitask"
+    ],
+    "validation": "Native tiny flow loss/backward/AdamW/model+optimizer checkpoint restore, native trainer/data tests and entrypoint resolution. No full production supervised training run was started."
+  },
+  "pressb_regression": {
+    "passed": 2031,
+    "skipped_in_main_environment": 16,
+    "failed": 0,
+    "seconds": 62.68,
+    "supplement_passed_usd_and_collision": 71,
+    "supplement_passed_lerobot": 1,
+    "supplement_passed_real_vla_flow_training": 3,
+    "passed_across_required_environments": 2106,
+    "unresolved_main_suite_skips": 0,
+    "prior_unchanged_dependency_evidence": "outputs/framework_refactor_20261106/cpu_regression_summary.json"
+  },
+  "bundled_source_suites": {
+    "walloss_model": 29,
+    "walloss_legacy_launcher": 3,
+    "vlajepa_native": 202,
+    "vlajepa_historical_pose_dataset_tests_skipped": 5,
+    "vlajepa_specialized": 4,
+    "note": "VLA specialized inventory test is included in the main suite; three specialized flow tests resolve its dependency skips. Five archived pose-data tests in the additional upstream suite lack their historical input paths. No aggregate count double-counts these suites."
+  },
+  "real_model_comparison": {
+    "walloss": {
+      "batches": [
+        2,
+        8
+      ],
+      "max_abs_action_difference": 0.0,
+      "max_abs_feature_difference": 0.0,
+      "external_noise_cache_and_split_infer": "passed",
+      "cuda_extension_rebuilt_from_bundled_sources": true,
+      "cuda_window_index_trials": 200,
+      "final_source_revision": "41dc7603d523ef66d13a1ede6c54a916cfce074c60e7be02fb98f8638abec455"
+    },
+    "vlajepa": {
+      "profiles": [
+        "pose9",
+        "joint6",
+        "joint7"
+      ],
+      "joint_batch": 2,
+      "max_abs_action_difference": 0.0,
+      "pose9_strict_loaded_tensors": 1617,
+      "external_noise_cache_and_split_infer": "passed"
+    }
+  },
+  "packaging": {
+    "status": "passed",
+    "wheel_sha256": "9b243ac2fcfa0bf4371371a682b0fa659c7bab4efc99d7f37d5d3c9a01ae377a",
+    "wheel_bytes": 822164,
+    "file_count": 280,
+    "isolated_directory": "/tmp",
+    "training_profiles_resolved_without_source_clones": 6,
+    "model_weights_or_shared_libraries_in_wheel": false
+  },
+  "compatibility": {
+    "old_explicit_repo_vla_repo": "supported",
+    "legacy_websocket_wire_protocol": "preserved",
+    "regular_checkpoint_guards": "unchanged",
+    "weights_and_datasets": "external inputs",
+    "inference_and_training_dependencies": "separate from Isaac environment"
+  },
+  "training_state": {
+    "pap_residual": "stopped",
+    "transitions": 16704,
+    "automatically_resumed": false
+  },
+  "evidence": {
+    "migrated_checkpoints/verification.json": {
+      "path": "outputs/model_internalization_20261106/migrated_checkpoints/verification.json",
+      "sha256": "cde87b420fe99da63d6eb0104368d2e7e875830d1dbb05281cc81c2f59e2ca00"
+    },
+    "pressb_full_suite_final.log": {
+      "path": "outputs/model_internalization_20261106/pressb_full_suite_final.log",
+      "sha256": "24570ffccfa53d1832f8aa03e03f9563716864f03041924e1d49392cd7ef3b19"
+    },
+    "pressb_full_suite_final.xml": {
+      "path": "outputs/model_internalization_20261106/pressb_full_suite_final.xml",
+      "sha256": "c512f96e92f6787c3e6370a7f77892fb1514e596bcf9c6fa6ea4599dc11617c0"
+    },
+    "source_loader_final.log": {
+      "path": "outputs/model_internalization_20261106/source_loader_final.log",
+      "sha256": "1aa8cadc4129dd096a901429e38800ff1b1c34aad62095bf9ab44b4665a4ad0e"
+    },
+    "vlajepa/bundled_tests.log": {
+      "path": "outputs/model_internalization_20261106/vlajepa/bundled_tests.log",
+      "sha256": "567a22498f99d3bc90769586abce3ab2318cb620c2aca219953d57edb8533bc7"
+    },
+    "vlajepa/cpu_validation.json": {
+      "path": "outputs/model_internalization_20261106/vlajepa/cpu_validation.json",
+      "sha256": "b05748af80554376d12181b19adc9228a0f20f49df37e3b9e6fc35c19b191649"
+    },
+    "vlajepa/real_dataset_tests.log": {
+      "path": "outputs/model_internalization_20261106/vlajepa/real_dataset_tests.log",
+      "sha256": "04064e6f98225d961ffd206d15a575ab05337ad6fbf4b6d515f33d3c5af64956"
+    },
+    "vlajepa/upstream_tests.log": {
+      "path": "outputs/model_internalization_20261106/vlajepa/upstream_tests.log",
+      "sha256": "62abc832bfecc537ab0fb291f7a6c3dffe749be496ef8e8f7e1b467839d5bc10"
+    },
+    "vlajepa/validation.json": {
+      "path": "outputs/model_internalization_20261106/vlajepa/validation.json",
+      "sha256": "b6cfc7700e4ed4b49bfd29abc1b676e93f53c03327a9523b366525caeff0a6d7"
+    },
+    "walloss/cpu_legacy_launcher_tests.log": {
+      "path": "outputs/model_internalization_20261106/walloss/cpu_legacy_launcher_tests.log",
+      "sha256": "8f5f135519419ad1f8254b7c6488eb009f6df61a04bad55e6850c6448a5edce2"
+    },
+    "walloss/cpu_model_tests.log": {
+      "path": "outputs/model_internalization_20261106/walloss/cpu_model_tests.log",
+      "sha256": "8d29d6078f1184c8e73b833207f18c68418ba925853b937975972a4d95f601de"
+    },
+    "walloss/cuda_build_receipt.json": {
+      "path": "outputs/model_internalization_20261106/walloss/cuda_build_receipt.json",
+      "sha256": "4d2709b41e87a3dcb1e02287680af617b0d355ce8e765815f242cf7da174a383"
+    },
+    "walloss/cuda_window_index.json": {
+      "path": "outputs/model_internalization_20261106/walloss/cuda_window_index.json",
+      "sha256": "d1ff9415ff178b6acc9cd6d971ed07ce58d6d1d1f64c02ecad9d323c32373e18"
+    },
+    "walloss/final_bundled_model.json": {
+      "path": "outputs/model_internalization_20261106/walloss/final_bundled_model.json",
+      "sha256": "6d773c562c6897a25adae6d6ae46aca9dcfaf29eec2ac0e89a2913c64485cf2c"
+    },
+    "walloss/final_verification.json": {
+      "path": "outputs/model_internalization_20261106/walloss/final_verification.json",
+      "sha256": "ded4f3a895f342d88de4b25b79ca7fb66dd8339c9e061f8350a74eb85495a6cf"
+    },
+    "walloss/verification.json": {
+      "path": "outputs/model_internalization_20261106/walloss/verification.json",
+      "sha256": "a6d6b4600ea608f209fa887fd43ed895052336891f2efa9a21ee6a767ee71b53"
+    },
+    "wheel_verification.json": {
+      "path": "outputs/model_internalization_20261106/wheel_verification.json",
+      "sha256": "65460efcd890824bf4272344a5a309727519b604e7e75fc63547bb6b617a90d1"
+    },
+    "migrated_checkpoints/residual_resume_patch.json": {
+      "path": "outputs/model_internalization_20261106/migrated_checkpoints/residual_resume_patch.json",
+      "sha256": "166c884e3a1935dc513a94027ad5cb5898247eabb29c0f25af07be8837d48c35"
+    },
+    "migrated_checkpoints/health_provenance.json": {
+      "path": "outputs/model_internalization_20261106/migrated_checkpoints/health_provenance.json",
+      "sha256": "a3bed9c749fee379658c3649a006b9fd16a90c29cd29d29c9e258e7d7ec3778b"
+    },
+    "migrated_checkpoints/resume_experiment.json": {
+      "path": "outputs/model_internalization_20261106/migrated_checkpoints/resume_experiment.json",
+      "sha256": "c6dec820a760320d211d34c2e890c52309fe2cc43ccef7ec9574ea355e5f3bed"
+    },
+    "migrated_checkpoints/resume_experiment_validation.json": {
+      "path": "outputs/model_internalization_20261106/migrated_checkpoints/resume_experiment_validation.json",
+      "sha256": "742c6d1f8be2f0de27c19e59903ec16e244a10706490849128926bb382aa3396"
+    }
+  },
+  "checkpoint_migration": {
+    "status": "passed",
+    "source": "previous audited refactor derived checkpoints; original chain preserved",
+    "original_and_previous_checkpoints_unchanged": true,
+    "only_source_identity_changed": true,
+    "strict_cpu_resume_passed": true,
+    "physics_requests": 0,
+    "training_updates": 0,
+    "gpu_access": false,
+    "model_optimizer_replay_rng_exact": true,
+    "dsrl_transitions": 100022,
+    "residual_transitions": 16704,
+    "dsrl_sha256": "856500b9b5f509cceb5378d943fcf53c7cc9821ca5546db14c737bf79e3f385a",
+    "residual_sha256": "29196769fb55752742b122cd699d4e6432e3d2e6cea4c8bf22eba2784ee5ef97",
+    "resume_experiment": "outputs/model_internalization_20261106/migrated_checkpoints/resume_experiment.json",
+    "resume_started": false,
+    "health_provenance": "Real final bundled batch2/8 backend describe with a metadata-only service wrapper reproducing earlier batch64 settings; no new 64-environment/GPU batch64 run is claimed.",
+    "resume_experiment_validated": true
+  },
+  "experiment_templates_validated": [
+    "configs/experiments/elevator_vlajepa_dsrl.json",
+    "configs/experiments/pap_walloss_eval.json",
+    "configs/experiments/pap_walloss_residual.json",
+    "configs/experiments/table_buttons_vlajepa_eval.json",
+    "configs/experiments/pap_walloss_dsrl.json"
+  ]
+}

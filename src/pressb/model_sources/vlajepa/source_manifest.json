@@ -1,0 +1,467 @@
+{
+  "commit": "9c9dc71c8e199c7428b25d103ab666395832c001",
+  "files": {
+    "UPSTREAM_PYPROJECT.toml": {
+      "bytes": 2255,
+      "origin": "PressB local adaptation",
+      "sha256": "17d01326b0fa38590a8869ee9430cd2aa1d9a3b87c905a2caa30408242a52485",
+      "source_sha256": null
+    },
+    "configs/joint6.yaml": {
+      "bytes": 2412,
+      "origin": "PressB local adaptation",
+      "sha256": "6be23d51231fa4d607a4205817a408bcd8c2b68f88ece79974fbbb423c6be318",
+      "source_sha256": null
+    },
+    "configs/joint6_multitask.yaml": {
+      "bytes": 2423,
+      "origin": "PressB local adaptation",
+      "sha256": "509abe980e1df4e2577da3f808c6554b3152e708b5452abda1abab50a3c8c4ab",
+      "source_sha256": null
+    },
+    "configs/joint7.yaml": {
+      "bytes": 2363,
+      "origin": "PressB local adaptation",
+      "sha256": "debd47ca07e2766429f3cac0a36eb83859447f06e726de5cd0bf8fc5db850a8b",
+      "source_sha256": null
+    },
+    "configs/joint7_multitask.yaml": {
+      "bytes": 2374,
+      "origin": "PressB local adaptation",
+      "sha256": "03b1ee6cdfbcbeb1de871b6c58799bdc81a82ca691b1dd55957693d34e1a76bc",
+      "source_sha256": null
+    },
+    "configs/pose9.yaml": {
+      "bytes": 2258,
+      "origin": "PressB local adaptation",
+      "sha256": "a82ee0fb49104288dbf821ada0899d78ee471ef0457f2eda0056aebfd8462157",
+      "source_sha256": null
+    },
+    "docs/table_buttons_multitask_training.md": {
+      "bytes": 4338,
+      "origin": "h200_worktree_addition",
+      "sha256": "3e1fa4f480efbc09035da6c7bc379688dcff1964e0f6b6a0dff957ca5a6cc7f8",
+      "source_sha256": "3e1fa4f480efbc09035da6c7bc379688dcff1964e0f6b6a0dff957ca5a6cc7f8"
+    },
+    "docs/table_buttons_training.md": {
+      "bytes": 7444,
+      "origin": "h200_worktree_addition",
+      "sha256": "1074f8ce42079e85ff1717c92e673dd5e6afe778ef8776799fec0393cba92396",
+      "source_sha256": "1074f8ce42079e85ff1717c92e673dd5e6afe778ef8776799fec0393cba92396"
+    },
+    "requirements-piper-inference-cu128.txt": {
+      "bytes": 815,
+      "origin": "local_checkout",
+      "sha256": "6c5607081d31133726790ed74e1245e859f320f00e43ac5beede33aa08fb2635",
+      "source_sha256": "6c5607081d31133726790ed74e1245e859f320f00e43ac5beede33aa08fb2635"
+    },
+    "requirements-piper.txt": {
+      "bytes": 378,
+      "origin": "local_checkout",
+      "sha256": "c44573a43d5859824e4aac7cb585db1fd61b6a67446e660cdd841970fb6d5307",
+      "source_sha256": "c44573a43d5859824e4aac7cb585db1fd61b6a67446e660cdd841970fb6d5307"
+    },
+    "scripts/configs/vlajepa_piper_ft.yaml": {
+      "bytes": 2268,
+      "origin": "local_checkout",
+      "sha256": "4c9b21eea908af12f667ce180d3167d4192dc7a97bb0d838d9fb1dffc2115ac4",
+      "source_sha256": "4c9b21eea908af12f667ce180d3167d4192dc7a97bb0d838d9fb1dffc2115ac4"
+    },
+    "scripts/eval_piper_checkpoint.py": {
+      "bytes": 13822,
+      "origin": "local_checkout",
+      "sha256": "2e7654b63db0b2358e305384953ff396b9087ff26e3771eeb87fc1390f761084",
+      "source_sha256": "2e7654b63db0b2358e305384953ff396b9087ff26e3771eeb87fc1390f761084"
+    },
+    "scripts/serve_piper_policy.py": {
+      "bytes": 9610,
+      "origin": "local_checkout",
+      "sha256": "46e2f1f0ddef79b9f7765c64cabae28600c9db2e81168c0a245254441da3a662",
+      "source_sha256": "46e2f1f0ddef79b9f7765c64cabae28600c9db2e81168c0a245254441da3a662"
+    },
+    "scripts/serve_table_buttons_joint6_policy.py": {
+      "bytes": 3308,
+      "origin": "h200_worktree_addition",
+      "sha256": "5886fce6fd0e63d7aa3dfb1820c6c7c08ea50fb9034eb6b856ea6bc7f89c65d9",
+      "source_sha256": "5886fce6fd0e63d7aa3dfb1820c6c7c08ea50fb9034eb6b856ea6bc7f89c65d9"
+    },
+    "scripts/serve_table_buttons_policies.py": {
+      "bytes": 8915,
+      "origin": "h200_worktree_addition",
+      "sha256": "4f208004b2e6a2eae08984f9fff8fb98781f690c8604ac480a832970d37f5779",
+      "source_sha256": "4f208004b2e6a2eae08984f9fff8fb98781f690c8604ac480a832970d37f5779"
+    },
+    "starVLA/__init__.py": {
+      "bytes": 0,
+      "origin": "local_checkout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "starVLA/dataloader/__init__.py": {
+      "bytes": 5232,
+      "origin": "local_checkout",
+      "sha256": "8d7d4b31507dba7a3a8d90c9634dbf391dc6bfee7c14ea97e2df93cbad77e550",
+      "source_sha256": "8d7d4b31507dba7a3a8d90c9634dbf391dc6bfee7c14ea97e2df93cbad77e550"
+    },
+    "starVLA/dataloader/piper_lerobot.py": {
+      "bytes": 23191,
+      "origin": "local_checkout",
+      "sha256": "f7165f5d6e69aaeda513ad8abf6f72408d797e4b4bc774d8d8c57f1ffc421243",
+      "source_sha256": "f7165f5d6e69aaeda513ad8abf6f72408d797e4b4bc774d8d8c57f1ffc421243"
+    },
+    "starVLA/dataloader/table_buttons_joint6_lerobot.py": {
+      "bytes": 2986,
+      "origin": "h200_worktree_addition",
+      "sha256": "ac99bf762981c560a2e62ac26740c992509df5bebc9556509daaa10e9e5dbb1e",
+      "source_sha256": "ac99bf762981c560a2e62ac26740c992509df5bebc9556509daaa10e9e5dbb1e"
+    },
+    "starVLA/dataloader/table_buttons_lerobot.py": {
+      "bytes": 19711,
+      "origin": "h200_worktree_addition",
+      "sha256": "abf275cd46769dfe20870d3a3641003c47900c605fdc20cddb65473a8e733821",
+      "source_sha256": "abf275cd46769dfe20870d3a3641003c47900c605fdc20cddb65473a8e733821"
+    },
+    "starVLA/dataloader/table_buttons_multitask_joint6_lerobot.py": {
+      "bytes": 5186,
+      "origin": "h200_worktree_addition",
+      "sha256": "9b47bf76f9e3a54182d32b78fb16c8406233fc6194c729484aa58e152238f659",
+      "source_sha256": "9b47bf76f9e3a54182d32b78fb16c8406233fc6194c729484aa58e152238f659"
+    },
+    "starVLA/dataloader/table_buttons_multitask_lerobot.py": {
+      "bytes": 20664,
+      "origin": "h200_worktree_addition",
+      "sha256": "d2f7d3347fe139503b81e5ac1adbb76336b2c39bec718f13848d86a00c5a62db",
+      "source_sha256": "d2f7d3347fe139503b81e5ac1adbb76336b2c39bec718f13848d86a00c5a62db"
+    },
+    "starVLA/inference/__init__.py": {
+      "bytes": 81,
+      "origin": "local_checkout",
+      "sha256": "1e25efab74023163e14799b52eec685220bc51a43193b9aa2d42b022b8673120",
+      "source_sha256": "1e25efab74023163e14799b52eec685220bc51a43193b9aa2d42b022b8673120"
+    },
+    "starVLA/inference/piper_policy.py": {
+      "bytes": 19732,
+      "origin": "local_checkout",
+      "sha256": "37d80380f2dfaf34f111e324a3f9db76acfffb904d47c7446cb7f5e0cbdaa447",
+      "source_sha256": "37d80380f2dfaf34f111e324a3f9db76acfffb904d47c7446cb7f5e0cbdaa447"
+    },
+    "starVLA/inference/table_buttons_joint6_policy.py": {
+      "bytes": 16041,
+      "origin": "h200_worktree_addition",
+      "sha256": "f99d45c13d0853eac40e9ced71ab39341642912625a180fd8e583d8d34b7bd28",
+      "source_sha256": "f99d45c13d0853eac40e9ced71ab39341642912625a180fd8e583d8d34b7bd28"
+    },
+    "starVLA/inference/table_buttons_multitask_joint6_policy.py": {
+      "bytes": 6058,
+      "origin": "h200_worktree_addition",
+      "sha256": "171e331ecc29aea23960e37f4dbe53c77601c16ac2f51c0ed275aa48f67d32e9",
+      "source_sha256": "171e331ecc29aea23960e37f4dbe53c77601c16ac2f51c0ed275aa48f67d32e9"
+    },
+    "starVLA/inference/table_buttons_policy.py": {
+      "bytes": 13018,
+      "origin": "h200_worktree_addition",
+      "sha256": "3f61f7d14ebc0cfc8892d0122e3d9360b1f88c942a88c88a7045257a6cd564ae",
+      "source_sha256": "3f61f7d14ebc0cfc8892d0122e3d9360b1f88c942a88c88a7045257a6cd564ae"
+    },
+    "starVLA/model/framework/VLA_JEPA.py": {
+      "bytes": 23250,
+      "origin": "local_checkout",
+      "sha256": "211f75b4a29a2f6afc3952485b0e339ef2dcde35a964e391b4315eb30e7e0181",
+      "source_sha256": "211f75b4a29a2f6afc3952485b0e339ef2dcde35a964e391b4315eb30e7e0181"
+    },
+    "starVLA/model/framework/__init__.py": {
+      "bytes": 2432,
+      "origin": "local_checkout",
+      "sha256": "4cdca867936992675dc0f9444ad78746f3e4ac092489fa2c6bdd039e1a6ca709",
+      "source_sha256": "4cdca867936992675dc0f9444ad78746f3e4ac092489fa2c6bdd039e1a6ca709"
+    },
+    "starVLA/model/framework/base_framework.py": {
+      "bytes": 8951,
+      "origin": "local_checkout",
+      "sha256": "12cdfc8afbff72a44e3f4d0bbafc229721e49de26fe97c5b79821db06118c334",
+      "source_sha256": "12cdfc8afbff72a44e3f4d0bbafc229721e49de26fe97c5b79821db06118c334"
+    },
+    "starVLA/model/framework/share_tools.py": {
+      "bytes": 9597,
+      "origin": "local_checkout",
+      "sha256": "fee7212f0a1e5d22da4ca29e5dd75b366b51833c3de68676da05842f5eaffd52",
+      "source_sha256": "fee7212f0a1e5d22da4ca29e5dd75b366b51833c3de68676da05842f5eaffd52"
+    },
+    "starVLA/model/modules/action_model/DiT_modules/diffusion_utils.py": {
+      "bytes": 3121,
+      "origin": "local_checkout",
+      "sha256": "e43fc9aa2ddb52d553b56306bfa389595b9755bc6508bc09f70b51b81efd72dc",
+      "source_sha256": "e43fc9aa2ddb52d553b56306bfa389595b9755bc6508bc09f70b51b81efd72dc"
+    },
+    "starVLA/model/modules/action_model/DiT_modules/gaussian_diffusion.py": {
+      "bytes": 34291,
+      "origin": "local_checkout",
+      "sha256": "91afcc8002300c36f58c16f6c24a15852945313b0ef5f6c561d738e9f7dcdd82",
+      "source_sha256": "91afcc8002300c36f58c16f6c24a15852945313b0ef5f6c561d738e9f7dcdd82"
+    },
+    "starVLA/model/modules/action_model/DiT_modules/models.py": {
+      "bytes": 21809,
+      "origin": "local_checkout",
+      "sha256": "65f18a9f4b20dc3f87639b7c575b29ee88648afa16322067ae991f133f12cbf3",
+      "source_sha256": "65f18a9f4b20dc3f87639b7c575b29ee88648afa16322067ae991f133f12cbf3"
+    },
+    "starVLA/model/modules/action_model/DiT_modules/respace.py": {
+      "bytes": 5443,
+      "origin": "local_checkout",
+      "sha256": "1a1df0ae517bd467585449bc79c2c8df330f3a9b3883a25c45d2fb4cf25e19e4",
+      "source_sha256": "1a1df0ae517bd467585449bc79c2c8df330f3a9b3883a25c45d2fb4cf25e19e4"
+    },
+    "starVLA/model/modules/action_model/DiT_modules/timestep_sampler.py": {
+      "bytes": 5933,
+      "origin": "local_checkout",
+      "sha256": "147beb460d77d5c0c926b080ef68251567ce4d1185c57d92f47701ff7dc37b46",
+      "source_sha256": "147beb460d77d5c0c926b080ef68251567ce4d1185c57d92f47701ff7dc37b46"
+    },
+    "starVLA/model/modules/action_model/GR00T_ActionHeader.py": {
+      "bytes": 17701,
+      "origin": "local_checkout",
+      "sha256": "0766c47609f1c6187960ef08737394c287a8cc367a32304d38473f658a80c68a",
+      "source_sha256": "0766c47609f1c6187960ef08737394c287a8cc367a32304d38473f658a80c68a"
+    },
+    "starVLA/model/modules/action_model/__init__.py": {
+      "bytes": 1562,
+      "origin": "local_checkout",
+      "sha256": "579e88c5ae47b8ad98ce663ea5d5845b0314b2097a2f9f74feaebc89633cd6bb",
+      "source_sha256": "579e88c5ae47b8ad98ce663ea5d5845b0314b2097a2f9f74feaebc89633cd6bb"
+    },
+    "starVLA/model/modules/action_model/flow_matching_head/__init__.py": {
+      "bytes": 679,
+      "origin": "local_checkout",
+      "sha256": "dd7d5f5e544e1d2923bf4f1aa548504255938f58a6e74a119356573e6ce9e36e",
+      "source_sha256": "dd7d5f5e544e1d2923bf4f1aa548504255938f58a6e74a119356573e6ce9e36e"
+    },
+    "starVLA/model/modules/action_model/flow_matching_head/action_encoder.py": {
+      "bytes": 3461,
+      "origin": "local_checkout",
+      "sha256": "c5ec2088a521e6c3a477bfdcbf191ffc470a3edc8787ebf0ac25d2da4f380cc4",
+      "source_sha256": "c5ec2088a521e6c3a477bfdcbf191ffc470a3edc8787ebf0ac25d2da4f380cc4"
+    },
+    "starVLA/model/modules/action_model/flow_matching_head/cross_attention_dit.py": {
+      "bytes": 14685,
+      "origin": "local_checkout",
+      "sha256": "23a23db9646e6a08d131ca5a2201daabc8528a633f1b2ed0ef6ba492cdd98965",
+      "source_sha256": "23a23db9646e6a08d131ca5a2201daabc8528a633f1b2ed0ef6ba492cdd98965"
+    },
+    "starVLA/model/modules/vlm/QWen3.py": {
+      "bytes": 9041,
+      "origin": "local_checkout",
+      "sha256": "a178520d672b7d30d9a02b9f20da5620753d761bbc6513bd4d1358716d862ed5",
+      "source_sha256": "a178520d672b7d30d9a02b9f20da5620753d761bbc6513bd4d1358716d862ed5"
+    },
+    "starVLA/model/modules/vlm/__init__.py": {
+      "bytes": 573,
+      "origin": "local_checkout",
+      "sha256": "bfdf6c343217188262b9f1931e4ff1e8300d0414bb47faa6d0d6466cf96a61ff",
+      "source_sha256": "bfdf6c343217188262b9f1931e4ff1e8300d0414bb47faa6d0d6466cf96a61ff"
+    },
+    "starVLA/model/modules/world_model/vj2_modules.py": {
+      "bytes": 23001,
+      "origin": "local_checkout",
+      "sha256": "b93f6c7e0747deb216419c000c2878f11a9189024a9adeacfd437e172396dff0",
+      "source_sha256": "b93f6c7e0747deb216419c000c2878f11a9189024a9adeacfd437e172396dff0"
+    },
+    "starVLA/model/modules/world_model/vj2_predictor.py": {
+      "bytes": 9346,
+      "origin": "local_checkout",
+      "sha256": "49e261015343cbad1176cbb6ee11c8315897ff668001ba1f6a5ef36e66e32a15",
+      "source_sha256": "49e261015343cbad1176cbb6ee11c8315897ff668001ba1f6a5ef36e66e32a15"
+    },
+    "starVLA/model/modules/world_model/vj2_tensors.py": {
+      "bytes": 1832,
+      "origin": "local_checkout",
+      "sha256": "782b58bd2af456e184750e5318ab773105108383f61b280fe4c7a90f46add2c8",
+      "source_sha256": "782b58bd2af456e184750e5318ab773105108383f61b280fe4c7a90f46add2c8"
+    },
+    "starVLA/model/tools.py": {
+      "bytes": 8462,
+      "origin": "local_checkout",
+      "sha256": "101424c0ce13567a434a3c28fc973c66a2589622d4dc134c756c141bcfea6dc0",
+      "source_sha256": "101424c0ce13567a434a3c28fc973c66a2589622d4dc134c756c141bcfea6dc0"
+    },
+    "starVLA/training/__init__.py": {
+      "bytes": 0,
+      "origin": "local_checkout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "starVLA/training/train_piper.py": {
+      "bytes": 46546,
+      "origin": "local_checkout",
+      "sha256": "5abcb63ff7ebfeea3a2eec64e5740620dda2accbd1abbc0a0e97459885263883",
+      "source_sha256": "5abcb63ff7ebfeea3a2eec64e5740620dda2accbd1abbc0a0e97459885263883"
+    },
+    "starVLA/training/train_table_buttons.py": {
+      "bytes": 43956,
+      "origin": "h200_worktree_addition",
+      "sha256": "e0d78a0b0187f1b1ad65002bfe29920db743b7c0b0e65411f2ca029811eff579",
+      "source_sha256": "e0d78a0b0187f1b1ad65002bfe29920db743b7c0b0e65411f2ca029811eff579"
+    },
+    "starVLA/training/train_table_buttons_multitask.py": {
+      "bytes": 23564,
+      "origin": "h200_worktree_addition",
+      "sha256": "3f8493070a587b24979fbe442509ced3e40e196e54da64a482e0a68a788508be",
+      "source_sha256": "3f8493070a587b24979fbe442509ced3e40e196e54da64a482e0a68a788508be"
+    },
+    "starVLA/training/train_table_buttons_multitask_joint6.py": {
+      "bytes": 6312,
+      "origin": "h200_worktree_addition",
+      "sha256": "13c0f97a80aaf5fdadfea0d7a91599700f5fb20919528b5a6ed4c84d44acb734",
+      "source_sha256": "13c0f97a80aaf5fdadfea0d7a91599700f5fb20919528b5a6ed4c84d44acb734"
+    },
+    "starVLA/training/trainer_utils/__init__.py": {
+      "bytes": 44,
+      "origin": "local_checkout",
+      "sha256": "bd036db0376e394f189a420f798d0fa0b93637b72004419ccaaf316b8b5e757d",
+      "source_sha256": "bd036db0376e394f189a420f798d0fa0b93637b72004419ccaaf316b8b5e757d"
+    },
+    "starVLA/training/trainer_utils/overwatch.py": {
+      "bytes": 4941,
+      "origin": "local_checkout",
+      "sha256": "26490d610d638c975b1f60ade0d94125d09f86e1773ce8ad0fb65d81e6bf057f",
+      "source_sha256": "26490d610d638c975b1f60ade0d94125d09f86e1773ce8ad0fb65d81e6bf057f"
+    },
+    "starVLA/training/trainer_utils/trainer_tools.py": {
+      "bytes": 17751,
+      "origin": "local_checkout",
+      "sha256": "61f948fe7cb0b48907475468f7130e01e2cd940dd3e8c93cca011165f0fa8cbe",
+      "source_sha256": "61f948fe7cb0b48907475468f7130e01e2cd940dd3e8c93cca011165f0fa8cbe"
+    },
+    "tests/fixtures/medium_red_joint6.yaml": {
+      "bytes": 2415,
+      "origin": "PressB local adaptation",
+      "sha256": "ae465ac2e2ccce725d55ac957cf24cbb053269f4124ce348433a23eb62450172",
+      "source_sha256": null
+    },
+    "tests/fixtures/near_multitask_joint6_3000.yaml": {
+      "bytes": 2508,
+      "origin": "PressB local adaptation",
+      "sha256": "3530e165e66ab32c6b629cddbaeb4cd2a5fe257b392af1546dbc07da8134719e",
+      "source_sha256": null
+    },
+    "tests/test_eval_piper_checkpoint.py": {
+      "bytes": 7159,
+      "origin": "local_checkout",
+      "sha256": "80f23d17e40ab2f6a3d2f0f2f44cf651d71534e3e1f0f242fcd5e9a1bacc89c5",
+      "source_sha256": "80f23d17e40ab2f6a3d2f0f2f44cf651d71534e3e1f0f242fcd5e9a1bacc89c5"
+    },
+    "tests/test_piper_lerobot.py": {
+      "bytes": 10889,
+      "origin": "local_checkout",
+      "sha256": "b524d4a63b6308f9f3ffae5dd6fc2c8971714aead71f52f9aedcec8234fa0b22",
+      "source_sha256": "b524d4a63b6308f9f3ffae5dd6fc2c8971714aead71f52f9aedcec8234fa0b22"
+    },
+    "tests/test_piper_model_masks.py": {
+      "bytes": 15247,
+      "origin": "local_checkout",
+      "sha256": "a5fd1c6803e80d0c78bdccd8db49a3e052a4a28182b0fce9d0887b4d40135022",
+      "source_sha256": "a5fd1c6803e80d0c78bdccd8db49a3e052a4a28182b0fce9d0887b4d40135022"
+    },
+    "tests/test_piper_policy.py": {
+      "bytes": 13936,
+      "origin": "local_checkout",
+      "sha256": "0c202d38fdcd0b16dd1b1e5f104469a1a6bde28f70a4dc402017e8aa18626e40",
+      "source_sha256": "0c202d38fdcd0b16dd1b1e5f104469a1a6bde28f70a4dc402017e8aa18626e40"
+    },
+    "tests/test_piper_trainer.py": {
+      "bytes": 13825,
+      "origin": "local_checkout",
+      "sha256": "12ff0b896b1917df52d0cc609ea7fc4aeac38679391935afc92da218dbc1e4fc",
+      "source_sha256": "12ff0b896b1917df52d0cc609ea7fc4aeac38679391935afc92da218dbc1e4fc"
+    },
+    "tests/test_serve_piper_policy.py": {
+      "bytes": 8593,
+      "origin": "local_checkout",
+      "sha256": "5419ad0bd9c69517ab6a051d25e0c16bcf79c70eabcfb469c82b586e3ec71f43",
+      "source_sha256": "5419ad0bd9c69517ab6a051d25e0c16bcf79c70eabcfb469c82b586e3ec71f43"
+    },
+    "tests/test_table_buttons_1000_training.py": {
+      "bytes": 7179,
+      "origin": "h200_worktree_addition",
+      "sha256": "b7a167935c2ea019f73eaf33a3efacf67a550f86227ac8bb001df5cc4a88fa69",
+      "source_sha256": "01cbcb7058c5984ea61778f340cde3ef17804d06376247fc9cbfce78234884b9"
+    },
+    "tests/test_table_buttons_joint6_policy.py": {
+      "bytes": 12216,
+      "origin": "h200_worktree_addition",
+      "sha256": "9b5fdbb88c3965fb99d33ce25dcb8929e839e20d9fb98f796d5d3d05f37d8253",
+      "source_sha256": "9b5fdbb88c3965fb99d33ce25dcb8929e839e20d9fb98f796d5d3d05f37d8253"
+    },
+    "tests/test_table_buttons_joint6_training.py": {
+      "bytes": 7778,
+      "origin": "h200_worktree_addition",
+      "sha256": "7fc417120f032bdaed7a28c076874ce55108c950b4dbbf3c300d6df902e65958",
+      "source_sha256": "7fc417120f032bdaed7a28c076874ce55108c950b4dbbf3c300d6df902e65958"
+    },
+    "tests/test_table_buttons_lerobot.py": {
+      "bytes": 16464,
+      "origin": "h200_worktree_addition",
+      "sha256": "830d665bac638bd240bf16d26bc9bb83330d83f7c59866f47fd11c1d3dbf621f",
+      "source_sha256": "830d665bac638bd240bf16d26bc9bb83330d83f7c59866f47fd11c1d3dbf621f"
+    },
+    "tests/test_table_buttons_model_only_checkpoints.py": {
+      "bytes": 8985,
+      "origin": "h200_worktree_addition",
+      "sha256": "1a8a18743f0ec2e7af3c5a5272401e9b3893b810446412ae4761327af708c431",
+      "source_sha256": "1a8a18743f0ec2e7af3c5a5272401e9b3893b810446412ae4761327af708c431"
+    },
+    "tests/test_table_buttons_multitask_joint6_policy.py": {
+      "bytes": 3515,
+      "origin": "h200_worktree_addition",
+      "sha256": "04cb95106133d584b0a749ad9a959005238a6a3fedf9ad364a2f837557eb32ef",
+      "source_sha256": "04cb95106133d584b0a749ad9a959005238a6a3fedf9ad364a2f837557eb32ef"
+    },
+    "tests/test_table_buttons_multitask_joint6_training.py": {
+      "bytes": 7920,
+      "origin": "h200_worktree_addition",
+      "sha256": "2c564a973ff8e36468cdcc9a1fcacdf31a2af4947bff38acf0c6c6c49b2091ca",
+      "source_sha256": "8ff7efadad9c57ad5c5d3f81f0737501614dbd6cb7dceec89cac2b7a76f592e2"
+    },
+    "tests/test_table_buttons_multitask_lerobot.py": {
+      "bytes": 13652,
+      "origin": "h200_worktree_addition",
+      "sha256": "e9535d2cc7f5e09815e8bbf290cd7dd6da482710550c09c42b9ed5d965eea703",
+      "source_sha256": "e9535d2cc7f5e09815e8bbf290cd7dd6da482710550c09c42b9ed5d965eea703"
+    },
+    "tests/test_table_buttons_multitask_training.py": {
+      "bytes": 3116,
+      "origin": "h200_worktree_addition",
+      "sha256": "ea6c234e60b23fca36c71a925f514c005bbe9a3f0af7a48d0a420d31972465cd",
+      "source_sha256": "ea6c234e60b23fca36c71a925f514c005bbe9a3f0af7a48d0a420d31972465cd"
+    },
+    "tests/test_table_buttons_policy.py": {
+      "bytes": 3390,
+      "origin": "h200_worktree_addition",
+      "sha256": "5a354553ddc07b6bbc7b811bfdad73117e9421efdb741e58ff8d97836ee0c665",
+      "source_sha256": "5a354553ddc07b6bbc7b811bfdad73117e9421efdb741e58ff8d97836ee0c665"
+    },
+    "tests/test_table_buttons_training.py": {
+      "bytes": 7909,
+      "origin": "h200_worktree_addition",
+      "sha256": "9de5b85cc9a26bd5648f42035037b32f132f595ecd5dc44ac0abafd6c46ced0e",
+      "source_sha256": "9de5b85cc9a26bd5648f42035037b32f132f595ecd5dc44ac0abafd6c46ced0e"
+    }
+  },
+  "notes": [
+    "One shared model implementation supports pose9 and joint6/joint7; table-specific data and training extensions were untracked in the H200 worktree.",
+    "No original LICENSE file exists in either checkout; UPSTREAM_PYPROJECT.toml retains the upstream MIT declaration. Per-file notices (including Apache-2.0 flow matching code) remain intact.",
+    "Two upstream test configuration paths point to bundled fixtures; config templates replace machine paths with environment inputs."
+  ],
+  "profiles": [
+    "pose9",
+    "joint6",
+    "joint7",
+    "joint6_multitask",
+    "joint7_multitask"
+  ],
+  "repository": "https://github.com/pgq18/VLA-JEPA.git",
+  "schema_version": 1,
+  "source": "VLA-JEPA",
+  "source_roots": [
+    "starVLA"
+  ]
+}

@@ -1,0 +1,7 @@
+# Install the inference requirements and a hardware-appropriate Torch build first.
+# LeRobot is the exact revision recorded by the deployed Wall-X repository.
+# Install with the matching Torch constraints; never replace CUDA Torch silently.
+wandb>=0.19,<0.20
+numpydantic>=1.5,<2
+matplotlib>=3.7,<4
+lerobot @ git+https://github.com/huggingface/lerobot.git@60efd875fad262d1343e14867bd0ad21fbbe862f

@@ -1,0 +1,78 @@
+run_id: piper_raw_pose9
+run_root_dir: /home/pengguanqi/Worksapce/Research/VLA-JEPA/runs
+seed: 42
+framework:
+  name: VLA_JEPA
+  qwenvl:
+    base_vlm: /home/pengguanqi/Models/Qwen3-VL-2B-Instruct
+    init_from_config: true
+    attn_implementation: sdpa
+    features_only: true
+    vl_hidden_dim: 2048
+  action_model:
+    action_model_type: DiT-B
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: true
+    max_seq_len: 1024
+    action_dim: 9
+    state_dim: 9
+    future_action_window_size: 6
+    action_horizon: 7
+    past_action_window_size: 0
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    num_inference_timesteps: 4
+    num_target_vision_tokens: 32
+    diffusion_model_cfg:
+      cross_attention_dim: 2048
+      dropout: 0.2
+      final_dropout: true
+      interleave_self_attention: true
+      norm_type: ada_norm
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+  vj2_model:
+    base_encoder: /home/pengguanqi/Models/vjepa2-vitl-fpc64-256
+    init_from_config: true
+    num_frames: 8
+    depth: 12
+    num_heads: 8
+    special_action_token: <|action_{}|>
+    num_action_tokens_per_timestep: 8
+    embodied_action_token: <|embodied_action|>
+    num_embodied_action_tokens_per_instruction: 32
+datasets:
+  vla_data:
+    data_root_dir: /home/pengguanqi/Datasets/piper_elevator_lerobot_press_30hz
+    CoT_prompt: Your task is {instruction}. Infer the temporal dynamics from frames {actions} and produce the corresponding policy actions {e_actions}.
+    resolution_size: 224
+    per_device_batch_size: 16
+    num_workers: 2
+    sample_stride: 1
+    frame_cache_size: 256
+    decoder_cache_size: 4
+trainer:
+  pretrained_checkpoint: /home/pengguanqi/Models/VLA-JEPA/Pretrain/checkpoints/VLA-JEPA-pretrain.pt
+  max_train_steps: 2000
+  num_warmup_steps: 100
+  eval_interval: 200
+  val_anchors_per_episode: 5
+  val_max_samples: 0
+  gradient_accumulation_steps: 1
+  repeated_diffusion_steps: 4
+  enable_gradient_checkpointing: true
+  memory_limit_gib: 90
+  learning_rate:
+    qwen_vl_interface: 1.0e-5
+    action_model: 1.0e-4
+    vj_predictor: 5.0e-4
+  optimizer:
+    betas: [0.9, 0.95]
+    eps: 1.0e-8
+  weight_decay: 1.0e-8
+  max_grad_norm: 1.0
+  logging_frequency: 10

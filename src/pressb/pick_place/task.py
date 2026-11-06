@@ -136,6 +136,8 @@ class PickPlaceOutcome:
         self.geometry = object_geometry(edge)
         self.edge = self.geometry["grasp_width_m"]
         self.tabletop_z, self.box = tabletop_z, box
+        self._box_key = None
+        self._prepare_box()
         self.stable_seconds, self.lift_height = stable_seconds, lift_height
         self.max_lift_m = 0.
         self.max_bottom_clearance_m = 0.
@@ -143,18 +145,47 @@ class PickPlaceOutcome:
         self.success = False
         self.first_success_time_s = None
 
+    def _prepare_box(self):
+        # A box is fixed within an episode. Still detect changes to the public
+        # mapping so callers that edit/reuse it retain the previous behaviour.
+        key = (tuple(self.box["center_world"]), tuple(self.box["inner_size_xy"]),
+               float(self.box.get("yaw_deg", 0)), float(self.box["floor_z_world"]),
+               float(self.box["rim_z_world"]))
+        if key != self._box_key:
+            self._box_center = np.asarray(key[0])
+            self._box_inverse = Rotation.from_euler("z", -key[2], degrees=True).as_matrix()
+            self._box_half = np.asarray(key[1])/2
+            self._box_floor, self._box_rim = key[3:]
+            self._box_key = key
+
     def update(self, seconds, position, quaternion, velocity, gripper_width, finger_contact=False):
         self.max_lift_m = max(self.max_lift_m, float(position[2])-self.tabletop_z-self.geometry["size_xyz"][2]/2)
-        inside = object_inside_box(position, quaternion, self.geometry, self.box)
+        self._prepare_box()
+        # Geometry is validated/normalized at construction. Re-validating the
+        # same cube on every physics tick used to repeat size allclose checks.
+        # Reuse the identical SciPy rotation for containment and bottom support;
+        # do not reuse the box-frame Z extent for world support because a yaw
+        # matrix's floating-point Z entry can differ slightly from exactly 1.
+        position_array = np.asarray(position, dtype=float)
+        quaternion_array = np.asarray(quaternion, dtype=float)
+        rotation = Rotation.from_quat(quaternion_array[[1, 2, 3, 0]]).as_matrix()
+        inside = False
+        if (position_array.shape == (3,) and quaternion_array.shape == (4,)
+                and np.isfinite(position_array).all() and np.isfinite(quaternion_array).all()
+                and abs(np.linalg.norm(quaternion_array)-1) <= .01):
+            local = self._box_inverse @ (position_array-self._box_center)
+            extent = _half_extent(rotation, self.geometry, self._box_inverse)
+            inside = bool(np.all(np.abs(local[:2])+extent[:2] <= self._box_half+.001) and
+                          position_array[2]-extent[2] >= self._box_floor-.002 and
+                          position_array[2]+extent[2] <= self._box_rim+.001)
         velocity = np.asarray(velocity)
         released = gripper_width >= self.edge + .008 and not finger_contact
-        rotation = Rotation.from_quat(np.asarray(quaternion)[[1, 2, 3, 0]]).as_matrix()
         bottom = float(position[2]) - float(_half_extent(rotation, self.geometry, [0., 0., 1.]))
         # Tipping a long object upright can raise its centre while it remains
         # supported by the table. Actual lift requires its lowest point clear.
         self.max_bottom_clearance_m = max(self.max_bottom_clearance_m, bottom-self.tabletop_z)
         lifted = self.max_bottom_clearance_m >= self.lift_height
-        resting_on_box_floor = abs(bottom-float(self.box["floor_z_world"])) <= .003
+        resting_on_box_floor = abs(bottom-self._box_floor) <= .003
         stable = np.linalg.norm(velocity[:3]) < .025 and np.linalg.norm(velocity[3:]) < .25
         valid = inside and released and stable and resting_on_box_floor and lifted
         if not valid:

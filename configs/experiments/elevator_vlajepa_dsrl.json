@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "name": "elevator_vlajepa_dsrl",
+  "task": {
+    "plugin": "elevator",
+    "config": {
+      "output": "${project_root}/outputs/elevator_vlajepa_dsrl/simulation",
+      "gpu": 0,
+      "num_envs": 64,
+      "max_seconds": 15,
+      "smoothing_window": 3,
+      "single_gamma": 0.99,
+      "camera_resolution": 224,
+      "floors": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "panel_randomization": true
+    }
+  },
+  "model": {
+    "plugin": "vlajepa",
+    "config": {
+      "checkpoint": "${project_root}/.cache/vlajepa/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600",
+      "device": "cuda:1",
+      "image_preprocess_device": "cpu",
+      "base_vlm": "${project_root}/.cache/vlajepa/Qwen3-VL-2B-Instruct",
+      "base_encoder": "${project_root}/.cache/vlajepa/vjepa2-vitl-fpc64-256"
+    }
+  },
+  "nodes": {
+    "simulation": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 8101,
+        "transport": "http"
+      },
+      "service": {
+        "request_cache_size": 8
+      }
+    },
+    "inference": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 8100,
+        "transport": "ws"
+      },
+      "service": {
+        "cache_size": 128,
+        "cache_ttl": 600,
+        "batch_size": 4
+      }
+    }
+  },
+  "run": {
+    "method": "dsrl",
+    "mode": "train",
+    "device": "cuda:1",
+    "seed": 42,
+    "endpoints": {
+      "inference": "ws://127.0.0.1:8100",
+      "simulation": "http://127.0.0.1:8101",
+      "timeout": 180
+    },
+    "rollout": {
+      "max_transitions": 400000,
+      "execution_horizon": 7
+    },
+    "learner": {
+      "noise_steps": 1,
+      "noise_scale": 1.5,
+      "batch_size": 256,
+      "hidden_dim": 256
+    },
+    "update": {
+      "replay_capacity": 100000,
+      "learning_starts": 2000,
+      "utd": 1
+    },
+    "checkpoint": {
+      "interval": 100000,
+      "keep": null,
+      "include_replay": true
+    },
+    "output_dir": "${project_root}/outputs/elevator_vlajepa_dsrl/run"
+  }
+}

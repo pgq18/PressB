@@ -1,0 +1,169 @@
+# Training Configuration for Wall-X Robotic Multi-Modal Learning
+# This configuration supports multi-modal learning with vision, language, and action data
+
+# Model and paths configuration
+log_name: "piper_pap_20260606"
+log_project: "vla_training"
+model_type: wall-oss
+# pretrained_wallx_path: "/home/pengguanqi/Models/wall-oss-flow/"  # Must set
+pretrained_wallx_path: "/home/pengguanqi/Workspace/VLA/test/wall-x/workspace/piper_pap_20260606/workspace/test1_s0/5/"  # Must set
+save_path: "/home/pengguanqi/Workspace/VLA/test/wall-x/workspace/piper_pap_20260606/workspace/"                # Must set
+use_fast_tokenizer: False                       # True: train FAST, False: train Flow
+action_tokenizer_path: "/home/pengguanqi/Models/fast/"         # Must set if use_fast_tokenizer is true
+use_flash_attn: False
+
+# Torch Profile
+profile: False
+profile_save_path: /home/pengguanqi/Workspace/VLA/test/wall-x/workspace/piper_pap_20260606/profile/
+profile_wait_iters: 10
+profile_warmup_iters: 5
+profile_active_iters: 2
+
+# Training hyperparameters
+num_warmup_steps: 100
+num_training_steps: 64000000
+learning_rate: 0.00005
+min_lr: 0.00005
+num_epoch: 100
+gradient_accumulation_steps: 64
+batch_size_per_gpu: 4
+padding_side: left
+epoch_save_interval: 2
+
+# Training optimization settings
+FSDP2: False
+torch_compile: False
+
+# # Checkpoint resuming configuration
+resume:
+  ckpt: "/home/pengguanqi/Workspace/VLA/test/wall-x/workspace/piper_pap_20260606/workspace/test1_s0/5/"
+  load_ckpt_only: true
+
+# Robot configuration - Define degrees of freedom for each component
+dof_config:
+  joint_1.pos: 1
+  joint_2.pos: 1
+  joint_3.pos: 1
+  joint_4.pos: 1
+  joint_5.pos: 1
+  joint_6.pos: 1
+  gripper.pos: 1
+
+# Agent proprioception configuration (typically matches DOF config)
+agent_pos_config:
+  joint_1.pos: 1
+  joint_2.pos: 1
+  joint_3.pos: 1
+  joint_4.pos: 1
+  joint_5.pos: 1
+  joint_6.pos: 1
+  gripper.pos: 1
+
+norm_stats_path: "/home/pengguanqi/Workspace/VLA/test/wall-x/workspace/piper_pap_20260606/lerobot/piper/norm_stats.json"
+
+enable_customized_robot_config: true
+customized_robot_config:
+  name: "lerobot/piper"
+  customized_dof_config:
+    joint_1.pos: 1
+    joint_2.pos: 1
+    joint_3.pos: 1
+    joint_4.pos: 1
+    joint_5.pos: 1
+    joint_6.pos: 1
+    gripper.pos: 1
+  customized_agent_pos_config:
+    joint_1.pos: 1
+    joint_2.pos: 1
+    joint_3.pos: 1
+    joint_4.pos: 1
+    joint_5.pos: 1
+    joint_6.pos: 1
+    gripper.pos: 1
+
+# Data configuration
+data:
+  use_lerobot: true
+
+  # LeRobot dataset configuration
+  lerobot_config:
+    repo_id: "lerobot/piper"
+    root: "/home/pengguanqi/Datasets/piper_pap_20260606_20260629_offset_merged"
+    episodes: null
+    image_transforms:
+      enable: true
+      max_num_transforms: 3
+      random_order: false
+      tfs:
+        brightness:
+          weight: 1.0
+          type: ColorJitter
+          kwargs:
+            brightness: [0.8, 1.2]
+        contrast:
+          weight: 1.0
+          type: ColorJitter
+          kwargs:
+            contrast: [0.8, 1.2]
+        saturation:
+          weight: 1.0
+          type: ColorJitter
+          kwargs:
+            saturation: [0.8, 1.2]
+        hue:
+          weight: 1.0
+          type: ColorJitter
+          kwargs:
+            hue: [-0.05, 0.05]
+        sharpness:
+          weight: 1.0
+          type: SharpnessJitter
+          kwargs:
+            sharpness: [0.8, 1.2]
+        affine:
+          weight: 1.0
+          type: RandomAffine
+          kwargs:
+            degrees: [-3.0, 3.0]
+            translate: [0.05, 0.05]
+    delta_timestamps: null
+    tolerance_s: 0.04
+    revision: null
+    force_cache_sync: false
+    download_videos: true
+    video_backend: null
+
+  action_horizon: 32
+  train_test_split: 0.98
+
+  # Action keys for observation and prediction
+  obs_action_keys:
+    - joint_1.pos
+    - joint_2.pos
+    - joint_3.pos
+    - joint_4.pos
+    - joint_5.pos
+    - joint_6.pos
+    - gripper.pos
+
+  predict_action_keys:
+    - joint_1.pos
+    - joint_2.pos
+    - joint_3.pos
+    - joint_4.pos
+    - joint_5.pos
+    - joint_6.pos
+    - gripper.pos
+
+  # Image resolution configuration for different camera views
+  resolution:
+    face_view: 256
+    left_wrist_view: 256
+    right_wrist_view: 256
+    move1_view: 256
+    move2_view: 256
+    top_view: 256
+    wall_view: 256
+    multi_modal: 256
+    up: 256
+    wrist: 256

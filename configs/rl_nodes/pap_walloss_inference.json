@@ -1,0 +1,17 @@
+{
+  "server": {"host": "127.0.0.1", "port": 8100, "transport": "ws"},
+  "service": {"cache_size": 128, "cache_ttl": 600, "batch_size": 1},
+  "backend": {
+    "factory": "pressb.rl_nodes.walloss:create_backend",
+    "config": {
+      "repo": "ref/wall-x",
+      "model_path": "/home/pengguanqi/Models/piper_pap_20260606",
+      "train_config": "ref/wall-x/workspace/piper_pap_20260606/config_qact.yml",
+      "norm_stats": "/home/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+      "device": "cuda:0", "dtype": "bfloat16",
+      "horizon": 32, "control_hz": 30,
+      "num_inference_timesteps": 10, "input_image_resolution": 256,
+      "camera_mapping": {"up": "face_view", "wrist": "left_wrist_view"}
+    }
+  }
+}

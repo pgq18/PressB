@@ -52,7 +52,7 @@ def control_state(actual_q, actual_velocity, ik_endpoint, linear_history, elapse
         raise ValueError("Control state requires three six-joint vectors and six-joint history")
     if not math.isfinite(maximum) or maximum <= 0 or not math.isfinite(elapsed) or elapsed < 0:
         raise ValueError("Invalid control state episode time")
-    result = np.r_[*vectors, history.ravel(), elapsed / maximum]
+    result = np.r_[tuple([*vectors, history.ravel(), elapsed / maximum])]
     if not np.isfinite(result).all():
         raise ValueError("Nonfinite control state")
     return result.tolist()

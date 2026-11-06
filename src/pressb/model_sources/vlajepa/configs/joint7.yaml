@@ -1,0 +1,84 @@
+# Adapted from a validated native training config; see source_manifest.json.
+run_id: vlajepa_joint7
+run_root_dir: ${oc.env:PRESSB_RUN_ROOT,outputs/model_training}
+seed: 42
+framework:
+  name: VLA_JEPA
+  qwenvl:
+    base_vlm: ${oc.env:PRESSB_QWEN_ROOT}
+    init_from_config: true
+    attn_implementation: sdpa
+    features_only: true
+    vl_hidden_dim: 2048
+  action_model:
+    action_model_type: DiT-B
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: true
+    max_seq_len: 1024
+    action_dim: 7
+    state_dim: 7
+    future_action_window_size: 6
+    action_horizon: 7
+    past_action_window_size: 0
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    num_inference_timesteps: 4
+    num_target_vision_tokens: 32
+    diffusion_model_cfg:
+      cross_attention_dim: 2048
+      dropout: 0.2
+      final_dropout: true
+      interleave_self_attention: true
+      norm_type: ada_norm
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+  vj2_model:
+    base_encoder: ${oc.env:PRESSB_VJEPA_ROOT}
+    init_from_config: true
+    num_frames: 8
+    depth: 12
+    num_heads: 8
+    special_action_token: <|action_{}|>
+    num_action_tokens_per_timestep: 8
+    embodied_action_token: <|embodied_action|>
+    num_embodied_action_tokens_per_instruction: 32
+datasets:
+  vla_data:
+    data_root_dir: ${oc.env:PRESSB_DATASET_ROOT}
+    CoT_prompt: Your task is {instruction}. Infer the temporal dynamics from frames
+      {actions} and produce the corresponding policy actions {e_actions}.
+    resolution_size: 224
+    per_device_batch_size: 64
+    num_workers: 4
+    sample_stride: 1
+    frame_cache_size: 256
+    decoder_cache_size: 4
+trainer:
+  pretrained_checkpoint: ${oc.env:PRESSB_PRETRAINED_CHECKPOINT}
+  max_train_steps: 492
+  num_warmup_steps: 25
+  eval_interval: 100
+  val_anchors_per_episode: 5
+  val_max_samples: 0
+  gradient_accumulation_steps: 1
+  repeated_diffusion_steps: 4
+  enable_gradient_checkpointing: true
+  memory_limit_gib: 125
+  learning_rate:
+    qwen_vl_interface: 1.0e-05
+    action_model: 0.0001
+    vj_predictor: 0.0005
+  optimizer:
+    betas:
+    - 0.9
+    - 0.95
+    eps: 1.0e-08
+  weight_decay: 1.0e-08
+  max_grad_norm: 1.0
+  logging_frequency: 10
+  target_epochs: 3
+  pretrained_sha256: fd929c79d9bbd0bda56c0b952c7acb470d93c6241a519013fe5248c3f3ea5fab

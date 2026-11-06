@@ -1,0 +1,6 @@
+{
+  "method": "base", "mode": "eval", "device": "cpu", "seed": 42,
+  "endpoints": {"inference": "ws://127.0.0.1:8100", "simulation": "http://127.0.0.1:8101", "timeout": 180},
+  "rollout": {"max_transitions": 10000, "eval_episodes": 100, "execution_horizon": 32, "action_bounds": "clip"},
+  "output_dir": "outputs/pap_base_eval_nodes"
+}

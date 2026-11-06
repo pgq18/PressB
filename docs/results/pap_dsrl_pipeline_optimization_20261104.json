@@ -1,0 +1,224 @@
+{
+  "date": "2026-11-04",
+  "scope": "PAP frozen Wall-OSS BF16 DSRL pipeline optimization; bounded training validation, not a completed 400k run",
+  "original_run_stopped_at_transitions": 3520,
+  "configuration": {
+    "environments": 64,
+    "native_camera_resolution": [
+      640,
+      480
+    ],
+    "cameras": 128,
+    "transmitted_resolution": [
+      256,
+      192
+    ],
+    "model_dtype": "bfloat16",
+    "model_batch": 64,
+    "flow_steps": 10,
+    "action_horizon": 32,
+    "control_hz": 30,
+    "physics_hz": 120,
+    "episode_seconds": 20,
+    "configured_utd": 1,
+    "bootstrap_truncated": false,
+    "fused_step_reset": true,
+    "flow_prefix_cache_mode": "full_attention"
+  },
+  "validation_run": {
+    "run_id": "1781eecaceed49f08508cd3f1b8a301c",
+    "state": "completed",
+    "transitions": 10048,
+    "updates": 8018,
+    "episodes": 732,
+    "successes": 399,
+    "elapsed_seconds": 799.9348693549982,
+    "transitions_per_second": 12.561022634382574,
+    "dropped_update_credit": 0.0
+  },
+  "post_warmup": {
+    "start_transitions": 2048,
+    "end_transitions": 10048,
+    "start_elapsed_seconds": 162.42877331597265,
+    "end_elapsed_seconds": 799.9348693549982,
+    "wall_seconds": 637.5060960390256,
+    "transitions": 8000,
+    "transitions_per_second": 12.548899610067842,
+    "metric_records": 127,
+    "end_state": "completed",
+    "includes_final_status_time": true
+  },
+  "learning": {
+    "updates": 8001,
+    "configured_utd": 1,
+    "completed_utd": 1.000125,
+    "backlog_start": 47.0,
+    "backlog_end": 46.0,
+    "new_dropped_update_credit": 0.0,
+    "credit_accounting_error": 0.0,
+    "learner_seconds": 50.12130731268553,
+    "learner_seconds_overlap_rpc": true
+  },
+  "resets": {
+    "observed": true,
+    "evidence_source": "validated_reset_items_counters",
+    "environment_resets": 580,
+    "actual_reset_batches": 123,
+    "explicit_reset_rpc_calls": 0,
+    "fused_step_rpc_calls": 125,
+    "fused_rpc_call_count_is_not_a_reset_count": true
+  },
+  "original_post_warmup": {
+    "start_transitions": 2048,
+    "end_transitions": 3520,
+    "start_elapsed_seconds": 1217.4054677509703,
+    "end_elapsed_seconds": 2239.2357097769855,
+    "wall_seconds": 1021.8302420260152,
+    "transitions": 1472,
+    "transitions_per_second": 1.440552392617994,
+    "metric_records": 25,
+    "end_state": "stopped",
+    "includes_final_status_time": true
+  },
+  "end_to_end_speedup": 8.71117196040475,
+  "projected_hours": {
+    "400000": 8.854251333875355,
+    "1000000": 22.135628334688388
+  },
+  "original_projected_hours": {
+    "400000": 77.13090595003133,
+    "1000000": 192.82726487507833
+  },
+  "qualification": {
+    "passed": false,
+    "checks": {
+      "sufficient_wall_time": true,
+      "sufficient_transitions": true,
+      "target_throughput": false,
+      "configured_utd_one": true,
+      "completed_utd_at_least_098": true,
+      "no_dropped_update_credit": true,
+      "update_accounting_balances": true,
+      "finite_learner_metrics": true,
+      "episode_log_matches_counters": true,
+      "success_and_timeout_observed": true,
+      "indexed_resets_observed": true,
+      "no_failed_run": true
+    },
+    "target_transitions_per_second": 15.0,
+    "minimum_seconds": 300.0,
+    "minimum_transitions": 5000
+  },
+  "rpc": {
+    "inference/decode": {
+      "seconds": 145.77335050614784,
+      "calls": 125,
+      "seconds_per_call": 1.1661868040491827,
+      "duration_over_wall": 0.22866189266561016
+    },
+    "inference/encode": {
+      "seconds": 227.53769530187128,
+      "calls": 125,
+      "seconds_per_call": 1.8203015624149703,
+      "duration_over_wall": 0.3569184619811735
+    },
+    "inference/health": {
+      "seconds": 0.0,
+      "calls": 0,
+      "seconds_per_call": null,
+      "duration_over_wall": 0.0
+    },
+    "inference/release": {
+      "seconds": 1.9021452799788676,
+      "calls": 125,
+      "seconds_per_call": 0.015217162239830941,
+      "duration_over_wall": 0.0029837287702773998
+    },
+    "simulation/health": {
+      "seconds": 0.0,
+      "calls": 0,
+      "seconds_per_call": null,
+      "duration_over_wall": 0.0
+    },
+    "simulation/reset": {
+      "seconds": 0.0,
+      "calls": 0,
+      "seconds_per_call": null,
+      "duration_over_wall": 0.0
+    },
+    "simulation/step_and_reset": {
+      "seconds": 243.67991608846933,
+      "calls": 125,
+      "seconds_per_call": 1.9494393287077547,
+      "duration_over_wall": 0.3822393504979946
+    }
+  },
+  "resources": {
+    "scope": "entire_resource_file_not_time_aligned_to_training_window",
+    "samples": 80,
+    "devices": {
+      "GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199": {
+        "index": 0,
+        "peak_used_mib": 15549.0,
+        "minimum_free_mib": 16539.0
+      },
+      "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9": {
+        "index": 1,
+        "peak_used_mib": 1029.0,
+        "minimum_free_mib": 31081.0
+      }
+    },
+    "minimum_host_available_bytes": 45871489024,
+    "peak_process_tree_rss_bytes": 15768739840,
+    "measurement_errors": []
+  },
+  "quality": {
+    "native640_expert_replay_successes": 64,
+    "native640_expert_replay_environments": 64,
+    "real_batch64_three_noise_families_feature_action_max_difference": 0.0,
+    "cpu_regression_passed": 302,
+    "separate_wall_prefix_tests_passed": 14,
+    "full_checkpoint_audit_passed": true
+  },
+  "network_ab": {
+    "scope": "Same fixed batch-64 inference encode/release only; not end-to-end training throughput.",
+    "phases": [
+      {
+        "name": "normal",
+        "elapsed_seconds": 1.8411422109929845,
+        "server_seconds_median": 0.8632326009683311,
+        "exchange_minus_server_median": 0.8894178970949724
+      },
+      {
+        "name": "paused",
+        "elapsed_seconds": 1.718210913008079,
+        "server_seconds_median": 0.8830987857654691,
+        "exchange_minus_server_median": 0.7811797402682714
+      },
+      {
+        "name": "resumed",
+        "elapsed_seconds": 1.8272782459971495,
+        "server_seconds_median": 0.8546634498052299,
+        "exchange_minus_server_median": 0.8878728257841431
+      }
+    ],
+    "backup_pause_seconds": 10.871445411001332,
+    "backup_resumed_writing": true,
+    "all_features_identical": true
+  },
+  "wandb_url": "https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/1781eecaceed49f08508cd3f1b8a301c",
+  "evidence": {
+    "main": "outputs/pap_dsrl_optimization_20261104",
+    "renderer": "outputs/pap_dsrl_optimize_20261104",
+    "original_profile": "outputs/pap_dsrl_profile_20261104"
+  },
+  "limitations": [
+    "15 transitions/s performance target was not met; other qualification checks passed.",
+    "Projected hours are not measured 400k/1M completion times; larger later replay checkpoints and startup add overhead.",
+    "Training recent SR and expert replay are not an independent learned-policy success evaluation.",
+    "Bitwise model agreement applies to the sampled batch64 comparisons, not BF16 singleton equivalence or the entire rendered training process.",
+    "Before/after changes include moving inference away from a shared H200 GPU; not an isolated code-only benchmark.",
+    "Local resource measurements do not include H200 GPU memory."
+  ],
+  "long_training_restarted": false
+}

@@ -1,0 +1,50 @@
+{
+  "method": "dsrl",
+  "mode": "train",
+  "device": "cuda:1",
+  "seed": 42,
+  "endpoints": {
+    "inference": "ws://127.0.0.1:18131",
+    "simulation": "http://127.0.0.1:18101",
+    "timeout": 300,
+    "max_message_bytes": 201326592,
+    "image_transport": "auto",
+    "preprocess_images": true,
+    "image_workers": 8
+  },
+  "rollout": {
+    "max_transitions": 400000,
+    "execution_horizon": 32,
+    "recent_window": 100,
+    "action_bounds": "clip",
+    "num_envs": 64,
+    "terminal_observation_mode": "state_only_if_no_bootstrap",
+    "fused_step_reset": true
+  },
+  "learner": {
+    "noise_steps": 32,
+    "noise_scale": 1.5,
+    "batch_size": 256,
+    "hidden_dim": 256,
+    "bootstrap_truncated": false
+  },
+  "update": {
+    "replay_capacity": 100000,
+    "learning_starts": 2000,
+    "utd": 1,
+    "max_backlog": 1000,
+    "max_updates_per_wait": 16
+  },
+  "checkpoint": {
+    "interval": 100000,
+    "keep": null,
+    "include_replay": true
+  },
+  "output_dir": "outputs/pap_dsrl_local_fast",
+  "wandb": {
+    "enabled": false,
+    "project": "pressb-online-rl",
+    "name": "pap-dsrl-walloss-bf16-64env-local5090",
+    "mode": "online"
+  }
+}

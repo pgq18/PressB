@@ -1,0 +1,23 @@
+{
+  "extends": "pap_walloss_dsrl.json",
+  "name": "pap_walloss_residual",
+  "run": {
+    "method": "action_residual",
+    "learner": {
+      "residual_scale": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.005
+      ],
+      "residual_q_bounds": null
+    },
+    "rollout": {
+      "max_transitions": 200000
+    },
+    "output_dir": "${project_root}/outputs/pap_walloss_residual/run"
+  }
+}

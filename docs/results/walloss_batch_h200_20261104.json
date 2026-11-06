@@ -1,0 +1,4193 @@
+{
+  "date": "2026-11-04",
+  "scope": "Real PAP Wall-OSS checkpoint inference on H200; no new closed-loop policy success evaluation or DSRL training.",
+  "checkpoint_file_sha256": "ce0b8c9963195f8725610c29bf022223ff2ab5c85d839add4a72284c9ee33f19",
+  "configuration": "configs/rl_nodes/pap_walloss_h200_inference.json",
+  "raw_evidence": "outputs/walloss_batch_h200_20261104",
+  "benchmarks": {
+    "batch_1_to_64": {
+      "state": "completed",
+      "started_utc": "2026-11-04T13:10:25.778639+00:00",
+      "benchmark_sha256": "d25405614b5c3482da5e2c2823c13cadf0533599ce6349fb323cfec7c378eaed",
+      "mode": "all",
+      "batch_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "mixed_prompts": true,
+      "warmups": 1,
+      "repeats": 3,
+      "seed": 20261104,
+      "scope": "Direct model calls; excludes network, simulation and learner.",
+      "results": [
+        {
+          "batch_size": 1,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.054799837060272694,
+                "decode_seconds": 0.34002062771469355
+              },
+              {
+                "encode_seconds": 0.05511841410771012,
+                "decode_seconds": 0.3371548489667475
+              },
+              {
+                "encode_seconds": 0.05492201307788491,
+                "decode_seconds": 0.34022146882489324
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.054946754748622574,
+            "decode_mean_seconds": 0.3391323151687781,
+            "total_mean_seconds": 0.39407906991740066,
+            "total_median_seconds": 0.39482046477496624,
+            "observations_per_second": 2.537561815220486
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "2": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 2,
+                "pixel_shape": [
+                  504,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "1": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 1,
+                "shape": [
+                  1,
+                  218,
+                  2048
+                ]
+              },
+              {
+                "batch": 1,
+                "shape": [
+                  1,
+                  218,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 1,
+            "actual_vision_images_max": 2,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.063734531402588,
+            "peak_reserved_gib": 8.5234375
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.0,
+              "rms": 0.0
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.0,
+                "rms": 0.0
+              },
+              "gripper_m": {
+                "max_abs": 0.0,
+                "rms": 0.0
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                },
+                "gripper_m": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                },
+                "gripper_m": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.00872659683227539,
+                  "rms": 0.0019061080314782058
+                },
+                "gripper_m": {
+                  "max_abs": 0.0004687495529651642,
+                  "rms": 0.00018082468997002526
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218
+          ]
+        },
+        {
+          "batch_size": 2,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.06666346127167344,
+                "decode_seconds": 0.3388846078887582
+              },
+              {
+                "encode_seconds": 0.06523108622059226,
+                "decode_seconds": 0.33492705086246133
+              },
+              {
+                "encode_seconds": 0.06385522428900003,
+                "decode_seconds": 0.33390334341675043
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.06524992392708857,
+            "decode_mean_seconds": 0.33590500072265667,
+            "total_mean_seconds": 0.4011549246497452,
+            "total_median_seconds": 0.4001581370830536,
+            "observations_per_second": 4.985605004715403
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "4": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 4,
+                "pixel_shape": [
+                  1008,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "2": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 2,
+                "shape": [
+                  2,
+                  218,
+                  2048
+                ]
+              },
+              {
+                "batch": 2,
+                "shape": [
+                  2,
+                  218,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 2,
+            "actual_vision_images_max": 4,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.12734603881836,
+            "peak_reserved_gib": 8.58984375
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.023774802684783936,
+              "rms": 0.004794719547639856
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.008726656436920166,
+                "rms": 0.0026068188897915793
+              },
+              "gripper_m": {
+                "max_abs": 0.004374999552965164,
+                "rms": 0.0014441548340265733
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.0026068188897915793
+                },
+                "gripper_m": {
+                  "max_abs": 0.004374999552965164,
+                  "rms": 0.0014441548340265733
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.0026068188897915793
+                },
+                "gripper_m": {
+                  "max_abs": 0.004374999552965164,
+                  "rms": 0.0014441548340265733
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.0025253075040253935
+                },
+                "gripper_m": {
+                  "max_abs": 0.004374999552965164,
+                  "rms": 0.0017530547005793786
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218
+          ]
+        },
+        {
+          "batch_size": 4,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.11711075203493237,
+                "decode_seconds": 0.3622826258651912
+              },
+              {
+                "encode_seconds": 0.1164146470837295,
+                "decode_seconds": 0.34396923379972577
+              },
+              {
+                "encode_seconds": 0.11768640903756022,
+                "decode_seconds": 0.34851293824613094
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.1170706027187407,
+            "decode_mean_seconds": 0.3515882659703493,
+            "total_mean_seconds": 0.46865886868909,
+            "total_median_seconds": 0.46619934728369117,
+            "observations_per_second": 8.534992650813601
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "8": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 8,
+                "pixel_shape": [
+                  2016,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "4": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 4,
+                "shape": [
+                  4,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 4,
+                "shape": [
+                  4,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 4,
+            "actual_vision_images_max": 8,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.238777160644531,
+            "peak_reserved_gib": 8.76953125
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.026792675256729126,
+              "rms": 0.005245951208861325
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.021816611289978027,
+                "rms": 0.002792133218842317
+              },
+              "gripper_m": {
+                "max_abs": 0.008515624329447746,
+                "rms": 0.002029304112502288
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.021816611289978027,
+                  "rms": 0.002792133218842317
+                },
+                "gripper_m": {
+                  "max_abs": 0.008515624329447746,
+                  "rms": 0.0020293041125022874
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                3,
+                0,
+                2
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.013089954853057861,
+                  "rms": 0.0029547694836021036
+                },
+                "gripper_m": {
+                  "max_abs": 0.01210937462747097,
+                  "rms": 0.0032882712609791113
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.0025539810704687227
+                },
+                "gripper_m": {
+                  "max_abs": 0.004218749701976776,
+                  "rms": 0.0017114501942665952
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232
+          ]
+        },
+        {
+          "batch_size": 8,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.22164977435022593,
+                "decode_seconds": 0.389091317076236
+              },
+              {
+                "encode_seconds": 0.22240570606663823,
+                "decode_seconds": 0.38865029579028487
+              },
+              {
+                "encode_seconds": 0.21896947594359517,
+                "decode_seconds": 0.3872387600131333
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.22100831878681979,
+            "decode_mean_seconds": 0.3883267909598847,
+            "total_mean_seconds": 0.6093351097467045,
+            "total_median_seconds": 0.6107410914264619,
+            "observations_per_second": 13.129064568961951
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "16": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 16,
+                "pixel_shape": [
+                  4032,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "8": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 8,
+                "shape": [
+                  8,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 8,
+                "shape": [
+                  8,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 8,
+            "actual_vision_images_max": 16,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.465822696685791,
+            "peak_reserved_gib": 9.119140625
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.03279557079076767,
+              "rms": 0.004908641184008058
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.08290314674377441,
+                "rms": 0.005018901575667022
+              },
+              "gripper_m": {
+                "max_abs": 0.004374999552965164,
+                "rms": 0.0007027098408073612
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.08290314674377441,
+                  "rms": 0.005018901575667022
+                },
+                "gripper_m": {
+                  "max_abs": 0.004374999552965164,
+                  "rms": 0.0007027098408073612
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                7,
+                0,
+                4
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.03926989436149597,
+                  "rms": 0.003620801398123512
+                },
+                "gripper_m": {
+                  "max_abs": 0.003437500447034836,
+                  "rms": 0.0008088377295339797
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.013089984655380249,
+                  "rms": 0.002546994999673087
+                },
+                "gripper_m": {
+                  "max_abs": 0.00546875037252903,
+                  "rms": 0.00211508269209705
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        },
+        {
+          "batch_size": 16,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.4156004120595753,
+                "decode_seconds": 0.6649194597266614
+              },
+              {
+                "encode_seconds": 0.41479028994217515,
+                "decode_seconds": 0.6674624122679234
+              },
+              {
+                "encode_seconds": 0.41545191733166575,
+                "decode_seconds": 0.666613238863647
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.41528087311113876,
+            "decode_mean_seconds": 0.6663317036194106,
+            "total_mean_seconds": 1.0816125767305493,
+            "total_median_seconds": 1.0820651561953127,
+            "observations_per_second": 14.792727400012389
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "32": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 32,
+                "pixel_shape": [
+                  8064,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "16": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 16,
+                "shape": [
+                  16,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 16,
+                "shape": [
+                  16,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 16,
+            "actual_vision_images_max": 32,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.919857501983643,
+            "peak_reserved_gib": 9.73046875
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.023083090782165527,
+              "rms": 0.003962126296971556
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.11999139189720154,
+                "rms": 0.004779217193383495
+              },
+              "gripper_m": {
+                "max_abs": 0.009921874850988388,
+                "rms": 0.001448453735244803
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.11999139189720154,
+                  "rms": 0.004779217193383495
+                },
+                "gripper_m": {
+                  "max_abs": 0.009921874850988388,
+                  "rms": 0.001448453735244803
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                15,
+                0,
+                8
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.013089954853057861,
+                  "rms": 0.002800606109154363
+                },
+                "gripper_m": {
+                  "max_abs": 0.003437500447034836,
+                  "rms": 0.0007920973626057217
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.013090014457702637,
+                  "rms": 0.0025963989218750045
+                },
+                "gripper_m": {
+                  "max_abs": 0.0032812505960464478,
+                  "rms": 0.001307958092943572
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        },
+        {
+          "batch_size": 32,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.8181855687871575,
+                "decode_seconds": 1.2225456298328936
+              },
+              {
+                "encode_seconds": 0.9355853484012187,
+                "decode_seconds": 1.2234489093534648
+              },
+              {
+                "encode_seconds": 0.8318715547211468,
+                "decode_seconds": 1.2243076339364052
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.861880823969841,
+            "decode_mean_seconds": 1.223434057707588,
+            "total_mean_seconds": 2.0853148816774287,
+            "total_median_seconds": 2.056179188657552,
+            "observations_per_second": 15.345404322947706
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "64": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 64,
+                "pixel_shape": [
+                  16128,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "32": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 32,
+                "shape": [
+                  32,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 32,
+                "shape": [
+                  32,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 32,
+            "actual_vision_images_max": 64,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 9.827076435089111,
+            "peak_reserved_gib": 10.947265625
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.030096933245658875,
+              "rms": 0.005348515350037948
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.13526302576065063,
+                "rms": 0.004460304706771426
+              },
+              "gripper_m": {
+                "max_abs": 0.008124999701976776,
+                "rms": 0.0007616105436203873
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                31,
+                30,
+                29,
+                28,
+                27,
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.13526302576065063,
+                  "rms": 0.004460304706771426
+                },
+                "gripper_m": {
+                  "max_abs": 0.008124999701976776,
+                  "rms": 0.0007616105436203873
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                31,
+                0,
+                16
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.017453253269195557,
+                  "rms": 0.0026537454807293273
+                },
+                "gripper_m": {
+                  "max_abs": 0.005312500521540642,
+                  "rms": 0.0013116696738477158
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.002842519976058753
+                },
+                "gripper_m": {
+                  "max_abs": 0.004062499850988388,
+                  "rms": 0.0015580911072918197
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        },
+        {
+          "batch_size": 64,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 1.6233586966991425,
+                "decode_seconds": 2.312352198176086
+              },
+              {
+                "encode_seconds": 1.7154385629110038,
+                "decode_seconds": 2.313437470700592
+              },
+              {
+                "encode_seconds": 1.6316687669605017,
+                "decode_seconds": 2.3196701649576426
+              }
+            ],
+            "preprocess_encode_mean_seconds": 1.6568220088568826,
+            "decode_mean_seconds": 2.3151532779447734,
+            "total_mean_seconds": 3.9719752868016562,
+            "total_median_seconds": 3.9513389319181442,
+            "observations_per_second": 16.112889778711228
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "128": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 128,
+                "pixel_shape": [
+                  32256,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "64": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 64,
+                "shape": [
+                  64,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 64,
+                "shape": [
+                  64,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 64,
+            "actual_vision_images_max": 128,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 11.644421100616455,
+            "peak_reserved_gib": 13.416015625
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.030096933245658875,
+              "rms": 0.0053808507803845135
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.13526302576065063,
+                "rms": 0.0040827010722358946
+              },
+              "gripper_m": {
+                "max_abs": 0.008124999701976776,
+                "rms": 0.0006199806644795985
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                63,
+                62,
+                61,
+                60,
+                59,
+                58,
+                57,
+                56,
+                55,
+                54,
+                53,
+                52,
+                51,
+                50,
+                49,
+                48,
+                47,
+                46,
+                45,
+                44,
+                43,
+                42,
+                41,
+                40,
+                39,
+                38,
+                37,
+                36,
+                35,
+                34,
+                33,
+                32,
+                31,
+                30,
+                29,
+                28,
+                27,
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.13526302576065063,
+                  "rms": 0.0040827010722358946
+                },
+                "gripper_m": {
+                  "max_abs": 0.008124999701976776,
+                  "rms": 0.0006199806644795985
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                63,
+                0,
+                32
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.019634932279586792,
+                  "rms": 0.0032338339514471136
+                },
+                "gripper_m": {
+                  "max_abs": 0.005312500521540642,
+                  "rms": 0.0012279917052792192
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.002842519976058753
+                },
+                "gripper_m": {
+                  "max_abs": 0.004062499850988388,
+                  "rms": 0.0015580911072918197
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        }
+      ],
+      "supplied_observation_count": 3,
+      "unique_prompts": [
+        "Grab the stuff into the box.",
+        "Pick up the object and place it in the box.",
+        "Pick up the object from the tabletop, move it over the box, and release it inside the box.",
+        "Place the object in the box."
+      ],
+      "backend_config": {
+        "factory": "pressb.rl_nodes.walloss:create_backend",
+        "config": {
+          "repo": "ref/wall-x",
+          "model_path": "/home/pengguanqi/walloss_models/piper_pap_20260606",
+          "train_config": "ref/wall-x/workspace/piper_pap_20260606/config_qact.yml",
+          "norm_stats": "/home/pengguanqi/walloss_models/piper_pap_20260606/norm_stats.json",
+          "device": "cuda:0",
+          "dtype": "bfloat16",
+          "horizon": 32,
+          "control_hz": 30,
+          "num_inference_timesteps": 10,
+          "input_image_resolution": 256,
+          "camera_mapping": {
+            "up": "face_view",
+            "wrist": "left_wrist_view"
+          }
+        }
+      },
+      "metadata": {
+        "schema_version": 2,
+        "node_type": "inference",
+        "model_id": "piper_pap_20260606",
+        "capabilities": [
+          "encode",
+          "decode",
+          "infer",
+          "external_initial_noise",
+          "features",
+          "context_cache"
+        ],
+        "observation": {
+          "state": {
+            "names": [
+              "joint1",
+              "joint2",
+              "joint3",
+              "joint4",
+              "joint5",
+              "joint6",
+              "gripper_width"
+            ],
+            "units": [
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "m"
+            ]
+          },
+          "cameras": [
+            "up",
+            "wrist"
+          ]
+        },
+        "action": {
+          "representation": "joint_position",
+          "frame": "robot_base",
+          "names": [
+            "joint1",
+            "joint2",
+            "joint3",
+            "joint4",
+            "joint5",
+            "joint6",
+            "gripper_width"
+          ],
+          "units": [
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "m"
+          ],
+          "horizon": 32,
+          "control_hz": 30.0
+        },
+        "noise": {
+          "shape": [
+            32,
+            20
+          ]
+        },
+        "feature_dim": 2048,
+        "feature_kind": "mean_multimodal_embedding_excluding_action_and_padding",
+        "cache_kind": "multimodal_embeddings_and_rope_indices",
+        "transformer_kv_cache": false,
+        "batching": {
+          "native_model_batching": true
+        },
+        "frozen": true,
+        "norm_stats": "/data/scratch/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+        "num_inference_timesteps": 10,
+        "cuda_memory_fraction": null,
+        "model_inputs": {
+          "dataset_name": "lerobot/piper"
+        },
+        "weights_sha256": "c5509660ace0ea5d100290781e7ae165884bdf34308fccb7692b041feeeb887d",
+        "normalization_sha256": "0382bb75f230ab115a795343b13d3580bf96401f5d5d17b237cd390084b14f7a",
+        "model_config_sha256": "8a292e6c0f70f1cbb1ee0f4149bc143a3c2ac95e17d0bad402b43b8467259814",
+        "source_revision": "0d1e0ee92d2a79a81605f63e71cdfa1c399172eb5531d7157a5cebce8cef61d9"
+      },
+      "torch_version": "2.6.0+cu124",
+      "cuda_version": "12.4",
+      "device": "cuda:0",
+      "gpu_name": "NVIDIA H200 NVL",
+      "attention": {
+        "action_transformer": "eager",
+        "vision": "eager",
+        "native_multirow_vision": "batched_per_observation_with_original_internal_masks"
+      },
+      "torch_cpu_threads": 8,
+      "noise_sha256": "429b41fe49fa30e079cfac8874d02db76a3b18579b2b7192647c2cc582ff5a98",
+      "reference_completed": 64,
+      "native_single_reference_timing": {
+        "samples": [
+          {
+            "encode_seconds": 0.3024689508602023,
+            "decode_seconds": 0.3985555269755423
+          },
+          {
+            "encode_seconds": 0.05572722479701042,
+            "decode_seconds": 0.3354888213798404
+          },
+          {
+            "encode_seconds": 0.05159822478890419,
+            "decode_seconds": 0.3373383670113981
+          },
+          {
+            "encode_seconds": 0.05256572179496288,
+            "decode_seconds": 0.3373830928467214
+          },
+          {
+            "encode_seconds": 0.05125929834321141,
+            "decode_seconds": 0.3371442211791873
+          },
+          {
+            "encode_seconds": 0.05100089032202959,
+            "decode_seconds": 0.33624404622241855
+          },
+          {
+            "encode_seconds": 0.051714787259697914,
+            "decode_seconds": 0.33514229115098715
+          },
+          {
+            "encode_seconds": 0.05202388484030962,
+            "decode_seconds": 0.33615297731012106
+          },
+          {
+            "encode_seconds": 0.051118789706379175,
+            "decode_seconds": 0.3382438747212291
+          },
+          {
+            "encode_seconds": 0.05320008099079132,
+            "decode_seconds": 0.33571453113108873
+          },
+          {
+            "encode_seconds": 0.05111736385151744,
+            "decode_seconds": 0.334982821252197
+          },
+          {
+            "encode_seconds": 0.0507702580653131,
+            "decode_seconds": 0.33711644215509295
+          },
+          {
+            "encode_seconds": 0.05161696393042803,
+            "decode_seconds": 0.3413422838784754
+          },
+          {
+            "encode_seconds": 0.052934358827769756,
+            "decode_seconds": 0.3519890499301255
+          },
+          {
+            "encode_seconds": 0.05319322692230344,
+            "decode_seconds": 0.33392716897651553
+          },
+          {
+            "encode_seconds": 0.05361732514575124,
+            "decode_seconds": 0.3344052969478071
+          },
+          {
+            "encode_seconds": 0.05287879565730691,
+            "decode_seconds": 0.3388361637480557
+          },
+          {
+            "encode_seconds": 0.05278387013822794,
+            "decode_seconds": 0.33292277809232473
+          },
+          {
+            "encode_seconds": 0.053874922916293144,
+            "decode_seconds": 0.3340064212679863
+          },
+          {
+            "encode_seconds": 0.052467430010437965,
+            "decode_seconds": 0.3349344371818006
+          },
+          {
+            "encode_seconds": 0.05263656098395586,
+            "decode_seconds": 0.35404849192127585
+          },
+          {
+            "encode_seconds": 0.056174598168581724,
+            "decode_seconds": 0.3338244310580194
+          },
+          {
+            "encode_seconds": 0.0540729439817369,
+            "decode_seconds": 0.3340413002297282
+          },
+          {
+            "encode_seconds": 0.05226089991629124,
+            "decode_seconds": 0.4013609034009278
+          },
+          {
+            "encode_seconds": 0.05318038212135434,
+            "decode_seconds": 0.3379208850674331
+          },
+          {
+            "encode_seconds": 0.0530949248932302,
+            "decode_seconds": 0.33312185667455196
+          },
+          {
+            "encode_seconds": 0.05226779216900468,
+            "decode_seconds": 0.3353700330480933
+          },
+          {
+            "encode_seconds": 0.05393735505640507,
+            "decode_seconds": 0.34017343213781714
+          },
+          {
+            "encode_seconds": 0.053226177114993334,
+            "decode_seconds": 0.33983056992292404
+          },
+          {
+            "encode_seconds": 0.05290251411497593,
+            "decode_seconds": 0.3338260930031538
+          },
+          {
+            "encode_seconds": 0.05369260674342513,
+            "decode_seconds": 0.33396787010133266
+          },
+          {
+            "encode_seconds": 0.0532142361626029,
+            "decode_seconds": 0.33790871081873775
+          },
+          {
+            "encode_seconds": 0.05358230508863926,
+            "decode_seconds": 0.340648818295449
+          },
+          {
+            "encode_seconds": 0.05381121579557657,
+            "decode_seconds": 0.3354723360389471
+          },
+          {
+            "encode_seconds": 0.053179258946329355,
+            "decode_seconds": 0.3411962306126952
+          },
+          {
+            "encode_seconds": 0.05323863308876753,
+            "decode_seconds": 0.3397076530382037
+          },
+          {
+            "encode_seconds": 0.05386928701773286,
+            "decode_seconds": 0.3395647001452744
+          },
+          {
+            "encode_seconds": 0.05339985806494951,
+            "decode_seconds": 0.3380611860193312
+          },
+          {
+            "encode_seconds": 0.05318567994982004,
+            "decode_seconds": 0.3368889489211142
+          },
+          {
+            "encode_seconds": 0.05363525403663516,
+            "decode_seconds": 0.33444517105817795
+          },
+          {
+            "encode_seconds": 0.05337648978456855,
+            "decode_seconds": 0.3396172281354666
+          },
+          {
+            "encode_seconds": 0.056291572749614716,
+            "decode_seconds": 0.3438327768817544
+          },
+          {
+            "encode_seconds": 0.05387541372328997,
+            "decode_seconds": 0.33805207442492247
+          },
+          {
+            "encode_seconds": 0.052924489602446556,
+            "decode_seconds": 0.33848229283466935
+          },
+          {
+            "encode_seconds": 0.05370985995978117,
+            "decode_seconds": 0.3439127909950912
+          },
+          {
+            "encode_seconds": 0.05474434792995453,
+            "decode_seconds": 0.34493182599544525
+          },
+          {
+            "encode_seconds": 0.06052407529205084,
+            "decode_seconds": 0.33404710004106164
+          },
+          {
+            "encode_seconds": 0.05337828630581498,
+            "decode_seconds": 0.33715459797531366
+          },
+          {
+            "encode_seconds": 0.05430433014407754,
+            "decode_seconds": 0.33722578827291727
+          },
+          {
+            "encode_seconds": 0.05439913086593151,
+            "decode_seconds": 0.3360178587026894
+          },
+          {
+            "encode_seconds": 0.05365422600880265,
+            "decode_seconds": 0.3356714118272066
+          },
+          {
+            "encode_seconds": 0.05441589513793588,
+            "decode_seconds": 0.33565241284668446
+          },
+          {
+            "encode_seconds": 0.05248013976961374,
+            "decode_seconds": 0.3357308297418058
+          },
+          {
+            "encode_seconds": 0.053451052866876125,
+            "decode_seconds": 0.34869598504155874
+          },
+          {
+            "encode_seconds": 0.05403438908979297,
+            "decode_seconds": 0.33428022591397166
+          },
+          {
+            "encode_seconds": 0.053501253947615623,
+            "decode_seconds": 0.3550950977951288
+          },
+          {
+            "encode_seconds": 0.052385002840310335,
+            "decode_seconds": 0.3360079061239958
+          },
+          {
+            "encode_seconds": 0.05496592214331031,
+            "decode_seconds": 0.3370161182247102
+          },
+          {
+            "encode_seconds": 0.05326055036857724,
+            "decode_seconds": 0.3351337881758809
+          },
+          {
+            "encode_seconds": 0.05344524933025241,
+            "decode_seconds": 0.3357105581089854
+          },
+          {
+            "encode_seconds": 0.05526173999533057,
+            "decode_seconds": 0.3406035709194839
+          },
+          {
+            "encode_seconds": 0.054306020960211754,
+            "decode_seconds": 0.33683008467778563
+          },
+          {
+            "encode_seconds": 0.05373258190229535,
+            "decode_seconds": 0.3345843721181154
+          },
+          {
+            "encode_seconds": 0.05444146692752838,
+            "decode_seconds": 0.3403219939209521
+          }
+        ],
+        "preprocess_encode_mean_seconds": 0.057302474066091236,
+        "decode_mean_seconds": 0.3399665456963703,
+        "total_mean_seconds": 0.39726901976246154,
+        "total_median_seconds": 0.3902458092197776,
+        "observations_per_second": 2.5171859627965163
+      },
+      "current_batch_size": 64,
+      "native_batch_proof_passed": true,
+      "all_supplied_thresholds_passed": true,
+      "completed_utc": "2026-11-04T13:13:20.226106+00:00",
+      "runtime_precision_override": null
+    },
+    "batch_fp32": {
+      "state": "completed",
+      "started_utc": "2026-11-04T13:11:53.216584+00:00",
+      "benchmark_sha256": "d25405614b5c3482da5e2c2823c13cadf0533599ce6349fb323cfec7c378eaed",
+      "mode": "all",
+      "batch_sizes": [
+        1,
+        8,
+        64
+      ],
+      "mixed_prompts": true,
+      "warmups": 1,
+      "repeats": 3,
+      "seed": 20261104,
+      "scope": "Direct model calls; excludes network, simulation and learner.",
+      "results": [
+        {
+          "batch_size": 1,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.07385334838181734,
+                "decode_seconds": 0.4454628494568169
+              },
+              {
+                "encode_seconds": 0.07438140595331788,
+                "decode_seconds": 0.4450842905789614
+              },
+              {
+                "encode_seconds": 0.07414741208776832,
+                "decode_seconds": 0.44475689996033907
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.07412738880763452,
+            "decode_mean_seconds": 0.44510134666537243,
+            "total_mean_seconds": 0.519228735473007,
+            "total_median_seconds": 0.5193161978386343,
+            "observations_per_second": 1.9259334695507946
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "2": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 2,
+                "pixel_shape": [
+                  504,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "1": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 1,
+                "shape": [
+                  1,
+                  218,
+                  2048
+                ]
+              },
+              {
+                "batch": 1,
+                "shape": [
+                  1,
+                  218,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 1,
+            "actual_vision_images_max": 2,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 15.821188926696777,
+            "peak_reserved_gib": 19.55078125
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.0,
+              "rms": 0.0
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.0,
+                "rms": 0.0
+              },
+              "gripper_m": {
+                "max_abs": 0.0,
+                "rms": 0.0
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                },
+                "gripper_m": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                },
+                "gripper_m": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 7.152557373046875e-07,
+                  "rms": 1.4718868202782892e-07
+                },
+                "gripper_m": {
+                  "max_abs": 6.332993507385254e-08,
+                  "rms": 2.5049083742475854e-08
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218
+          ]
+        },
+        {
+          "batch_size": 8,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.35682234400883317,
+                "decode_seconds": 2.5814603311009705
+              },
+              {
+                "encode_seconds": 0.3510308568365872,
+                "decode_seconds": 2.5816177087835968
+              },
+              {
+                "encode_seconds": 0.3512845211662352,
+                "decode_seconds": 2.5813656910322607
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.3530459073372185,
+            "decode_mean_seconds": 2.5814812436389425,
+            "total_mean_seconds": 2.934527150976161,
+            "total_median_seconds": 2.932650212198496,
+            "observations_per_second": 2.7261632244018688
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "16": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 16,
+                "pixel_shape": [
+                  4032,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "8": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 8,
+                "shape": [
+                  8,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 8,
+                "shape": [
+                  8,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 8,
+            "actual_vision_images_max": 16,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 16.26945686340332,
+            "peak_reserved_gib": 19.921875
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 2.86102294921875e-06,
+              "rms": 1.7203931362038267e-07
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 4.947185516357422e-06,
+                "rms": 5.13201501370336e-07
+              },
+              "gripper_m": {
+                "max_abs": 1.7937272787094116e-06,
+                "rms": 2.7406955675163173e-07
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 4.947185516357422e-06,
+                  "rms": 5.13201501370336e-07
+                },
+                "gripper_m": {
+                  "max_abs": 1.7937272787094116e-06,
+                  "rms": 2.7406955675163173e-07
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                7,
+                0,
+                4
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 5.781650543212891e-06,
+                  "rms": 4.6792309555547333e-07
+                },
+                "gripper_m": {
+                  "max_abs": 1.955777406692505e-07,
+                  "rms": 4.8184842076427995e-08
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 8.344650268554688e-07,
+                  "rms": 2.0022744425978588e-07
+                },
+                "gripper_m": {
+                  "max_abs": 2.2351741790771484e-08,
+                  "rms": 1.0739185930017331e-08
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        },
+        {
+          "batch_size": 64,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 2.8250911571085453,
+                "decode_seconds": 17.967488072346896
+              },
+              {
+                "encode_seconds": 2.5652490039356053,
+                "decode_seconds": 17.96451022475958
+              },
+              {
+                "encode_seconds": 2.5347451381385326,
+                "decode_seconds": 17.963065891060978
+              }
+            ],
+            "preprocess_encode_mean_seconds": 2.6416950997275612,
+            "decode_mean_seconds": 17.965021396055818,
+            "total_mean_seconds": 20.606716495783377,
+            "total_median_seconds": 20.529759228695184,
+            "observations_per_second": 3.105783496031302
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "128": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 128,
+                "pixel_shape": [
+                  32256,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "64": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 64,
+                "shape": [
+                  64,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 64,
+                "shape": [
+                  64,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 64,
+            "actual_vision_images_max": 128,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 19.781495094299316,
+            "peak_reserved_gib": 24.5859375
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 3.814697265625e-06,
+              "rms": 1.7260555574831314e-07
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 3.737211227416992e-05,
+                "rms": 1.0149593519949794e-06
+              },
+              "gripper_m": {
+                "max_abs": 2.250075340270996e-06,
+                "rms": 2.0010893429420541e-07
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                63,
+                62,
+                61,
+                60,
+                59,
+                58,
+                57,
+                56,
+                55,
+                54,
+                53,
+                52,
+                51,
+                50,
+                49,
+                48,
+                47,
+                46,
+                45,
+                44,
+                43,
+                42,
+                41,
+                40,
+                39,
+                38,
+                37,
+                36,
+                35,
+                34,
+                33,
+                32,
+                31,
+                30,
+                29,
+                28,
+                27,
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 3.737211227416992e-05,
+                  "rms": 1.0149593519949794e-06
+                },
+                "gripper_m": {
+                  "max_abs": 2.250075340270996e-06,
+                  "rms": 2.0010893429420541e-07
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                63,
+                0,
+                32
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 6.377696990966797e-06,
+                  "rms": 3.722686489813105e-07
+                },
+                "gripper_m": {
+                  "max_abs": 5.774199962615967e-08,
+                  "rms": 1.701258091006597e-08
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 7.152557373046875e-07,
+                  "rms": 1.845073807831732e-07
+                },
+                "gripper_m": {
+                  "max_abs": 1.1920928955078125e-07,
+                  "rms": 4.9062844369095325e-08
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        }
+      ],
+      "supplied_observation_count": 3,
+      "unique_prompts": [
+        "Grab the stuff into the box.",
+        "Pick up the object and place it in the box.",
+        "Pick up the object from the tabletop, move it over the box, and release it inside the box.",
+        "Place the object in the box."
+      ],
+      "backend_config": {
+        "factory": "pressb.rl_nodes.walloss:create_backend",
+        "config": {
+          "repo": "ref/wall-x",
+          "model_path": "/home/pengguanqi/walloss_models/piper_pap_20260606",
+          "train_config": "ref/wall-x/workspace/piper_pap_20260606/config_qact.yml",
+          "norm_stats": "/home/pengguanqi/walloss_models/piper_pap_20260606/norm_stats.json",
+          "device": "cuda:0",
+          "dtype": "float32",
+          "horizon": 32,
+          "control_hz": 30,
+          "num_inference_timesteps": 10,
+          "input_image_resolution": 256,
+          "camera_mapping": {
+            "up": "face_view",
+            "wrist": "left_wrist_view"
+          }
+        }
+      },
+      "metadata": {
+        "schema_version": 2,
+        "node_type": "inference",
+        "model_id": "piper_pap_20260606",
+        "capabilities": [
+          "encode",
+          "decode",
+          "infer",
+          "external_initial_noise",
+          "features",
+          "context_cache"
+        ],
+        "observation": {
+          "state": {
+            "names": [
+              "joint1",
+              "joint2",
+              "joint3",
+              "joint4",
+              "joint5",
+              "joint6",
+              "gripper_width"
+            ],
+            "units": [
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "m"
+            ]
+          },
+          "cameras": [
+            "up",
+            "wrist"
+          ]
+        },
+        "action": {
+          "representation": "joint_position",
+          "frame": "robot_base",
+          "names": [
+            "joint1",
+            "joint2",
+            "joint3",
+            "joint4",
+            "joint5",
+            "joint6",
+            "gripper_width"
+          ],
+          "units": [
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "m"
+          ],
+          "horizon": 32,
+          "control_hz": 30.0
+        },
+        "noise": {
+          "shape": [
+            32,
+            20
+          ]
+        },
+        "feature_dim": 2048,
+        "feature_kind": "mean_multimodal_embedding_excluding_action_and_padding",
+        "cache_kind": "multimodal_embeddings_and_rope_indices",
+        "transformer_kv_cache": false,
+        "batching": {
+          "native_model_batching": true
+        },
+        "frozen": true,
+        "norm_stats": "/data/scratch/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+        "num_inference_timesteps": 10,
+        "cuda_memory_fraction": null,
+        "model_inputs": {
+          "dataset_name": "lerobot/piper"
+        },
+        "weights_sha256": "c5509660ace0ea5d100290781e7ae165884bdf34308fccb7692b041feeeb887d",
+        "normalization_sha256": "0382bb75f230ab115a795343b13d3580bf96401f5d5d17b237cd390084b14f7a",
+        "model_config_sha256": "9ba8a53721741a8fd8ce491e90ad08b92f41f893de24c605e293ab7f5028eebf",
+        "source_revision": "0d1e0ee92d2a79a81605f63e71cdfa1c399172eb5531d7157a5cebce8cef61d9"
+      },
+      "torch_version": "2.6.0+cu124",
+      "cuda_version": "12.4",
+      "device": "cuda:0",
+      "gpu_name": "NVIDIA H200 NVL",
+      "attention": {
+        "action_transformer": "eager",
+        "vision": "eager",
+        "native_multirow_vision": "batched_per_observation_with_original_internal_masks"
+      },
+      "torch_cpu_threads": 8,
+      "noise_sha256": "429b41fe49fa30e079cfac8874d02db76a3b18579b2b7192647c2cc582ff5a98",
+      "reference_completed": 64,
+      "native_single_reference_timing": {
+        "samples": [
+          {
+            "encode_seconds": 0.3410168578848243,
+            "decode_seconds": 0.4643984721042216
+          },
+          {
+            "encode_seconds": 0.07427333714440465,
+            "decode_seconds": 0.44496177788823843
+          },
+          {
+            "encode_seconds": 0.07275442639365792,
+            "decode_seconds": 0.4524092632345855
+          },
+          {
+            "encode_seconds": 0.0818831161595881,
+            "decode_seconds": 0.505760507658124
+          },
+          {
+            "encode_seconds": 0.07248423201963305,
+            "decode_seconds": 0.4450350827537477
+          },
+          {
+            "encode_seconds": 0.0722903567366302,
+            "decode_seconds": 0.4460824280977249
+          },
+          {
+            "encode_seconds": 0.07350930524989963,
+            "decode_seconds": 0.44544174708426
+          },
+          {
+            "encode_seconds": 0.07256656186655164,
+            "decode_seconds": 0.5039070318453014
+          },
+          {
+            "encode_seconds": 0.07218647794798017,
+            "decode_seconds": 0.44463830068707466
+          },
+          {
+            "encode_seconds": 0.0715587711893022,
+            "decode_seconds": 0.44422572711482644
+          },
+          {
+            "encode_seconds": 0.07041307492181659,
+            "decode_seconds": 0.44563242932781577
+          },
+          {
+            "encode_seconds": 0.07323485519737005,
+            "decode_seconds": 0.5094690038822591
+          },
+          {
+            "encode_seconds": 0.07383637921884656,
+            "decode_seconds": 0.45521554769948125
+          },
+          {
+            "encode_seconds": 0.07265936210751534,
+            "decode_seconds": 0.44517909502610564
+          },
+          {
+            "encode_seconds": 0.07224388280883431,
+            "decode_seconds": 0.44567169714719057
+          },
+          {
+            "encode_seconds": 0.07322663115337491,
+            "decode_seconds": 0.5044686682522297
+          },
+          {
+            "encode_seconds": 0.07220148108899593,
+            "decode_seconds": 0.44415611401200294
+          },
+          {
+            "encode_seconds": 0.07084596110507846,
+            "decode_seconds": 0.4441485027782619
+          },
+          {
+            "encode_seconds": 0.0713520641438663,
+            "decode_seconds": 0.4466009819880128
+          },
+          {
+            "encode_seconds": 0.07175897108390927,
+            "decode_seconds": 0.5116117228753865
+          },
+          {
+            "encode_seconds": 0.07494602398946881,
+            "decode_seconds": 0.44406106090173125
+          },
+          {
+            "encode_seconds": 0.07186729973182082,
+            "decode_seconds": 0.44404836371541023
+          },
+          {
+            "encode_seconds": 0.07031585928052664,
+            "decode_seconds": 0.4444684023037553
+          },
+          {
+            "encode_seconds": 0.0702052409760654,
+            "decode_seconds": 0.5033632153645158
+          },
+          {
+            "encode_seconds": 0.07100448291748762,
+            "decode_seconds": 0.4451461397111416
+          },
+          {
+            "encode_seconds": 0.07591881603002548,
+            "decode_seconds": 0.4482111120596528
+          },
+          {
+            "encode_seconds": 0.07091996679082513,
+            "decode_seconds": 0.4447305491194129
+          },
+          {
+            "encode_seconds": 0.07507928181439638,
+            "decode_seconds": 0.5046432833187282
+          },
+          {
+            "encode_seconds": 0.07058352325111628,
+            "decode_seconds": 0.4439483219757676
+          },
+          {
+            "encode_seconds": 0.06992074102163315,
+            "decode_seconds": 0.443809294141829
+          },
+          {
+            "encode_seconds": 0.07060558767989278,
+            "decode_seconds": 0.44457686273381114
+          },
+          {
+            "encode_seconds": 0.06989646470174193,
+            "decode_seconds": 0.5031896750442684
+          },
+          {
+            "encode_seconds": 0.06973441177979112,
+            "decode_seconds": 0.443720577750355
+          },
+          {
+            "encode_seconds": 0.07294971263036132,
+            "decode_seconds": 0.44389608316123486
+          },
+          {
+            "encode_seconds": 0.06963799800723791,
+            "decode_seconds": 0.44441705429926515
+          },
+          {
+            "encode_seconds": 0.06966719310730696,
+            "decode_seconds": 0.5062005892395973
+          },
+          {
+            "encode_seconds": 0.071443947032094,
+            "decode_seconds": 0.44553532963618636
+          },
+          {
+            "encode_seconds": 0.07214879104867578,
+            "decode_seconds": 0.44504230469465256
+          },
+          {
+            "encode_seconds": 0.07170151825994253,
+            "decode_seconds": 0.4445501253940165
+          },
+          {
+            "encode_seconds": 0.07141321199014783,
+            "decode_seconds": 0.503401065710932
+          },
+          {
+            "encode_seconds": 0.07033592369407415,
+            "decode_seconds": 0.4443614981137216
+          },
+          {
+            "encode_seconds": 0.07044541509822011,
+            "decode_seconds": 0.4441651878878474
+          },
+          {
+            "encode_seconds": 0.07103376416489482,
+            "decode_seconds": 0.4449495291337371
+          },
+          {
+            "encode_seconds": 0.07006867742165923,
+            "decode_seconds": 0.5030668703839183
+          },
+          {
+            "encode_seconds": 0.06986497296020389,
+            "decode_seconds": 0.44374397210776806
+          },
+          {
+            "encode_seconds": 0.07062186300754547,
+            "decode_seconds": 0.44392097229138017
+          },
+          {
+            "encode_seconds": 0.06992190377786756,
+            "decode_seconds": 0.44533444894477725
+          },
+          {
+            "encode_seconds": 0.06981642404571176,
+            "decode_seconds": 0.5032835500314832
+          },
+          {
+            "encode_seconds": 0.07044585095718503,
+            "decode_seconds": 0.44375417195260525
+          },
+          {
+            "encode_seconds": 0.06988841481506824,
+            "decode_seconds": 0.4436514819972217
+          },
+          {
+            "encode_seconds": 0.06966184871271253,
+            "decode_seconds": 0.4444040022790432
+          },
+          {
+            "encode_seconds": 0.07061018329113722,
+            "decode_seconds": 0.5031189918518066
+          },
+          {
+            "encode_seconds": 0.0696061891503632,
+            "decode_seconds": 0.4438104648143053
+          },
+          {
+            "encode_seconds": 0.06968745915219188,
+            "decode_seconds": 0.4436996076256037
+          },
+          {
+            "encode_seconds": 0.07031091535463929,
+            "decode_seconds": 0.44441032502800226
+          },
+          {
+            "encode_seconds": 0.06971816718578339,
+            "decode_seconds": 0.5034773489460349
+          },
+          {
+            "encode_seconds": 0.0719477878883481,
+            "decode_seconds": 0.444849596824497
+          },
+          {
+            "encode_seconds": 0.07347508193925023,
+            "decode_seconds": 0.4451180910691619
+          },
+          {
+            "encode_seconds": 0.07261506235226989,
+            "decode_seconds": 0.4470388167537749
+          },
+          {
+            "encode_seconds": 0.07233977131545544,
+            "decode_seconds": 0.5039485483430326
+          },
+          {
+            "encode_seconds": 0.07388203078880906,
+            "decode_seconds": 0.44448460126295686
+          },
+          {
+            "encode_seconds": 0.07256125099956989,
+            "decode_seconds": 0.444450194016099
+          },
+          {
+            "encode_seconds": 0.07228336902335286,
+            "decode_seconds": 0.45469320518895984
+          },
+          {
+            "encode_seconds": 0.07319362694397569,
+            "decode_seconds": 0.5045632547698915
+          }
+        ],
+        "preprocess_encode_mean_seconds": 0.07594675205473322,
+        "decode_mean_seconds": 0.4605042538023554,
+        "total_mean_seconds": 0.5364510058570886,
+        "total_median_seconds": 0.5173552052583545,
+        "observations_per_second": 1.8641031316593366
+      },
+      "current_batch_size": 64,
+      "native_batch_proof_passed": true,
+      "all_supplied_thresholds_passed": true,
+      "completed_utc": "2026-11-04T13:16:25.889050+00:00",
+      "runtime_precision_override": null
+    },
+    "batch_bf16_full_reduction": {
+      "state": "completed",
+      "started_utc": "2026-11-04T13:13:14.252151+00:00",
+      "benchmark_sha256": "d25405614b5c3482da5e2c2823c13cadf0533599ce6349fb323cfec7c378eaed",
+      "mode": "all",
+      "batch_sizes": [
+        1,
+        8,
+        64
+      ],
+      "mixed_prompts": true,
+      "warmups": 1,
+      "repeats": 3,
+      "seed": 20261104,
+      "scope": "Direct model calls; excludes network, simulation and learner.",
+      "results": [
+        {
+          "batch_size": 1,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.052949133794754744,
+                "decode_seconds": 0.33467561937868595
+              },
+              {
+                "encode_seconds": 0.052347623743116856,
+                "decode_seconds": 0.3343424708582461
+              },
+              {
+                "encode_seconds": 0.05205920431762934,
+                "decode_seconds": 0.33397573605179787
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.05245198728516698,
+            "decode_mean_seconds": 0.33433127542957664,
+            "total_mean_seconds": 0.3867832627147436,
+            "total_median_seconds": 0.38669009460136294,
+            "observations_per_second": 2.5854272829212612
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "2": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 2,
+                "pixel_shape": [
+                  504,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "1": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 1,
+                "shape": [
+                  1,
+                  218,
+                  2048
+                ]
+              },
+              {
+                "batch": 1,
+                "shape": [
+                  1,
+                  218,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 1,
+            "actual_vision_images_max": 2,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.063734531402588,
+            "peak_reserved_gib": 8.5234375
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.0,
+              "rms": 0.0
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.0,
+                "rms": 0.0
+              },
+              "gripper_m": {
+                "max_abs": 0.0,
+                "rms": 0.0
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                },
+                "gripper_m": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                },
+                "gripper_m": {
+                  "max_abs": 0.0,
+                  "rms": 0.0
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.008726656436920166,
+                  "rms": 0.0019483196316734854
+                },
+                "gripper_m": {
+                  "max_abs": 0.00031250156462192535,
+                  "rms": 0.00019511424696484503
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218
+          ]
+        },
+        {
+          "batch_size": 8,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 0.2275702808983624,
+                "decode_seconds": 0.3872255338355899
+              },
+              {
+                "encode_seconds": 0.21790667297318578,
+                "decode_seconds": 0.3874736428260803
+              },
+              {
+                "encode_seconds": 0.21659754868596792,
+                "decode_seconds": 0.3879519500769675
+              }
+            ],
+            "preprocess_encode_mean_seconds": 0.22069150085250536,
+            "decode_mean_seconds": 0.3875503755795459,
+            "total_mean_seconds": 0.6082418764320513,
+            "total_median_seconds": 0.6053803157992661,
+            "observations_per_second": 13.152662304226773
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "16": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 16,
+                "pixel_shape": [
+                  4032,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "8": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 8,
+                "shape": [
+                  8,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 8,
+                "shape": [
+                  8,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 8,
+            "actual_vision_images_max": 16,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 8.467195987701416,
+            "peak_reserved_gib": 9.140625
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.03279557079076767,
+              "rms": 0.004908641184008058
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.08290314674377441,
+                "rms": 0.004417953014951944
+              },
+              "gripper_m": {
+                "max_abs": 0.004843750968575478,
+                "rms": 0.0008502245696406626
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.08290314674377441,
+                  "rms": 0.004417953014951944
+                },
+                "gripper_m": {
+                  "max_abs": 0.004843750968575478,
+                  "rms": 0.0008502245696406626
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                7,
+                0,
+                4
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.026179969310760498,
+                  "rms": 0.0030502349856102763
+                },
+                "gripper_m": {
+                  "max_abs": 0.003125002607703209,
+                  "rms": 0.0007905787203252884
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.013089954853057861,
+                  "rms": 0.003266567238267825
+                },
+                "gripper_m": {
+                  "max_abs": 0.005937499925494194,
+                  "rms": 0.0023195363882317667
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        },
+        {
+          "batch_size": 64,
+          "timing": {
+            "samples": [
+              {
+                "encode_seconds": 1.8018655497580767,
+                "decode_seconds": 2.2960611297748983
+              },
+              {
+                "encode_seconds": 1.642021686770022,
+                "decode_seconds": 2.3001001812517643
+              },
+              {
+                "encode_seconds": 1.65914202388376,
+                "decode_seconds": 2.3009774279780686
+              }
+            ],
+            "preprocess_encode_mean_seconds": 1.7010097534706194,
+            "decode_mean_seconds": 2.2990462463349104,
+            "total_mean_seconds": 4.00005599980553,
+            "total_median_seconds": 3.9601194518618286,
+            "observations_per_second": 15.999776003913816
+          },
+          "encode_forward_evidence": {
+            "vision_calls": 1,
+            "vision_image_count_histogram": {
+              "128": 1
+            },
+            "transformer_calls": 0,
+            "transformer_batch_histogram": {},
+            "vision_examples": [
+              {
+                "images": 128,
+                "pixel_shape": [
+                  32256,
+                  1176
+                ]
+              }
+            ],
+            "transformer_examples": []
+          },
+          "decode_forward_evidence": {
+            "vision_calls": 0,
+            "vision_image_count_histogram": {},
+            "transformer_calls": 10,
+            "transformer_batch_histogram": {
+              "64": 10
+            },
+            "vision_examples": [],
+            "transformer_examples": [
+              {
+                "batch": 64,
+                "shape": [
+                  64,
+                  232,
+                  2048
+                ]
+              },
+              {
+                "batch": 64,
+                "shape": [
+                  64,
+                  232,
+                  2048
+                ]
+              }
+            ]
+          },
+          "batch_proof": {
+            "actual_transformer_batch_max": 64,
+            "actual_vision_images_max": 128,
+            "decode_reuses_vision_cache": true,
+            "single_native_batch": true,
+            "not_serial_single_environment_calls": true
+          },
+          "cuda_memory": {
+            "peak_allocated_gib": 11.644917011260986,
+            "peak_reserved_gib": 13.59375
+          },
+          "comparison_vs_native_single": {
+            "features": {
+              "max_abs": 0.030096933245658875,
+              "rms": 0.0053808507803845135
+            },
+            "actions": {
+              "arm_rad": {
+                "max_abs": 0.10471972823143005,
+                "rms": 0.004105837812833481
+              },
+              "gripper_m": {
+                "max_abs": 0.005234374664723873,
+                "rms": 0.0005029523333036041
+              }
+            },
+            "thresholds": {},
+            "status": "measured_without_acceptance_threshold"
+          },
+          "cache_checks": {
+            "reversed": {
+              "indices": [
+                63,
+                62,
+                61,
+                60,
+                59,
+                58,
+                57,
+                56,
+                55,
+                54,
+                53,
+                52,
+                51,
+                50,
+                49,
+                48,
+                47,
+                46,
+                45,
+                44,
+                43,
+                42,
+                41,
+                40,
+                39,
+                38,
+                37,
+                36,
+                35,
+                34,
+                33,
+                32,
+                31,
+                30,
+                29,
+                28,
+                27,
+                26,
+                25,
+                24,
+                23,
+                22,
+                21,
+                20,
+                19,
+                18,
+                17,
+                16,
+                15,
+                14,
+                13,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7,
+                6,
+                5,
+                4,
+                3,
+                2,
+                1,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.10471972823143005,
+                  "rms": 0.004105837812833481
+                },
+                "gripper_m": {
+                  "max_abs": 0.005234374664723873,
+                  "rms": 0.0005029523333036041
+                }
+              },
+              "thresholds_passed": true
+            },
+            "subset": {
+              "indices": [
+                63,
+                0,
+                32
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.013089954853057861,
+                  "rms": 0.0033424451228653367
+                },
+                "gripper_m": {
+                  "max_abs": 0.005625000223517418,
+                  "rms": 0.0013095761828699854
+                }
+              },
+              "thresholds_passed": true
+            },
+            "duplicate": {
+              "indices": [
+                0,
+                0
+              ],
+              "actions_vs_native_single": {
+                "arm_rad": {
+                  "max_abs": 0.010908305644989014,
+                  "rms": 0.0026821069446169078
+                },
+                "gripper_m": {
+                  "max_abs": 0.004218751564621925,
+                  "rms": 0.0017481211243968258
+                }
+              },
+              "thresholds_passed": true
+            },
+            "cache_unchanged_after_reorder_subset_duplicate_and_alternate_noise": true
+          },
+          "valid_token_lengths": [
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232,
+            218,
+            218,
+            222,
+            232
+          ]
+        }
+      ],
+      "supplied_observation_count": 3,
+      "unique_prompts": [
+        "Grab the stuff into the box.",
+        "Pick up the object and place it in the box.",
+        "Pick up the object from the tabletop, move it over the box, and release it inside the box.",
+        "Place the object in the box."
+      ],
+      "backend_config": {
+        "factory": "pressb.rl_nodes.walloss:create_backend",
+        "config": {
+          "repo": "ref/wall-x",
+          "model_path": "/home/pengguanqi/walloss_models/piper_pap_20260606",
+          "train_config": "ref/wall-x/workspace/piper_pap_20260606/config_qact.yml",
+          "norm_stats": "/home/pengguanqi/walloss_models/piper_pap_20260606/norm_stats.json",
+          "device": "cuda:0",
+          "dtype": "bfloat16",
+          "horizon": 32,
+          "control_hz": 30,
+          "num_inference_timesteps": 10,
+          "input_image_resolution": 256,
+          "camera_mapping": {
+            "up": "face_view",
+            "wrist": "left_wrist_view"
+          }
+        }
+      },
+      "metadata": {
+        "schema_version": 2,
+        "node_type": "inference",
+        "model_id": "piper_pap_20260606",
+        "capabilities": [
+          "encode",
+          "decode",
+          "infer",
+          "external_initial_noise",
+          "features",
+          "context_cache"
+        ],
+        "observation": {
+          "state": {
+            "names": [
+              "joint1",
+              "joint2",
+              "joint3",
+              "joint4",
+              "joint5",
+              "joint6",
+              "gripper_width"
+            ],
+            "units": [
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "rad",
+              "m"
+            ]
+          },
+          "cameras": [
+            "up",
+            "wrist"
+          ]
+        },
+        "action": {
+          "representation": "joint_position",
+          "frame": "robot_base",
+          "names": [
+            "joint1",
+            "joint2",
+            "joint3",
+            "joint4",
+            "joint5",
+            "joint6",
+            "gripper_width"
+          ],
+          "units": [
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "m"
+          ],
+          "horizon": 32,
+          "control_hz": 30.0
+        },
+        "noise": {
+          "shape": [
+            32,
+            20
+          ]
+        },
+        "feature_dim": 2048,
+        "feature_kind": "mean_multimodal_embedding_excluding_action_and_padding",
+        "cache_kind": "multimodal_embeddings_and_rope_indices",
+        "transformer_kv_cache": false,
+        "batching": {
+          "native_model_batching": true
+        },
+        "frozen": true,
+        "norm_stats": "/data/scratch/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+        "num_inference_timesteps": 10,
+        "cuda_memory_fraction": null,
+        "model_inputs": {
+          "dataset_name": "lerobot/piper"
+        },
+        "weights_sha256": "c5509660ace0ea5d100290781e7ae165884bdf34308fccb7692b041feeeb887d",
+        "normalization_sha256": "0382bb75f230ab115a795343b13d3580bf96401f5d5d17b237cd390084b14f7a",
+        "model_config_sha256": "8a292e6c0f70f1cbb1ee0f4149bc143a3c2ac95e17d0bad402b43b8467259814",
+        "source_revision": "0d1e0ee92d2a79a81605f63e71cdfa1c399172eb5531d7157a5cebce8cef61d9"
+      },
+      "torch_version": "2.6.0+cu124",
+      "cuda_version": "12.4",
+      "device": "cuda:0",
+      "gpu_name": "NVIDIA H200 NVL",
+      "attention": {
+        "action_transformer": "eager",
+        "vision": "eager",
+        "native_multirow_vision": "batched_per_observation_with_original_internal_masks"
+      },
+      "torch_cpu_threads": 8,
+      "noise_sha256": "429b41fe49fa30e079cfac8874d02db76a3b18579b2b7192647c2cc582ff5a98",
+      "reference_completed": 64,
+      "native_single_reference_timing": {
+        "samples": [
+          {
+            "encode_seconds": 0.29187096329405904,
+            "decode_seconds": 0.40037496481090784
+          },
+          {
+            "encode_seconds": 0.05342575814574957,
+            "decode_seconds": 0.33443553885445
+          },
+          {
+            "encode_seconds": 0.05190489813685417,
+            "decode_seconds": 0.3347985129803419
+          },
+          {
+            "encode_seconds": 0.057668054942041636,
+            "decode_seconds": 0.3389445897191763
+          },
+          {
+            "encode_seconds": 0.0519866649992764,
+            "decode_seconds": 0.3365884702652693
+          },
+          {
+            "encode_seconds": 0.05157959507778287,
+            "decode_seconds": 0.3358346060849726
+          },
+          {
+            "encode_seconds": 0.0522952233441174,
+            "decode_seconds": 0.3345576678402722
+          },
+          {
+            "encode_seconds": 0.05195946805179119,
+            "decode_seconds": 0.3316018492914736
+          },
+          {
+            "encode_seconds": 0.05218617292121053,
+            "decode_seconds": 0.3359789000824094
+          },
+          {
+            "encode_seconds": 0.055571069940924644,
+            "decode_seconds": 0.32949197897687554
+          },
+          {
+            "encode_seconds": 0.05187067110091448,
+            "decode_seconds": 0.3294751108624041
+          },
+          {
+            "encode_seconds": 0.05162803782150149,
+            "decode_seconds": 0.3328023920767009
+          },
+          {
+            "encode_seconds": 0.052245809230953455,
+            "decode_seconds": 0.33075098181143403
+          },
+          {
+            "encode_seconds": 0.051742388401180506,
+            "decode_seconds": 0.33182879677042365
+          },
+          {
+            "encode_seconds": 0.05154191004112363,
+            "decode_seconds": 0.3339923908933997
+          },
+          {
+            "encode_seconds": 0.05235740402713418,
+            "decode_seconds": 0.3308339542709291
+          },
+          {
+            "encode_seconds": 0.051402832847088575,
+            "decode_seconds": 0.3306115181185305
+          },
+          {
+            "encode_seconds": 0.051545517053455114,
+            "decode_seconds": 0.3376551768742502
+          },
+          {
+            "encode_seconds": 0.052176624070852995,
+            "decode_seconds": 0.3307151487097144
+          },
+          {
+            "encode_seconds": 0.05148375499993563,
+            "decode_seconds": 0.3329859785735607
+          },
+          {
+            "encode_seconds": 0.05194886075332761,
+            "decode_seconds": 0.3343163123354316
+          },
+          {
+            "encode_seconds": 0.05261203180998564,
+            "decode_seconds": 0.3315026261843741
+          },
+          {
+            "encode_seconds": 0.05149923963472247,
+            "decode_seconds": 0.3312265928834677
+          },
+          {
+            "encode_seconds": 0.05144102405756712,
+            "decode_seconds": 0.3351842323318124
+          },
+          {
+            "encode_seconds": 0.052313698921352625,
+            "decode_seconds": 0.33650894509628415
+          },
+          {
+            "encode_seconds": 0.05219495017081499,
+            "decode_seconds": 0.3316778102889657
+          },
+          {
+            "encode_seconds": 0.05241336394101381,
+            "decode_seconds": 0.334277112968266
+          },
+          {
+            "encode_seconds": 0.052524632308632135,
+            "decode_seconds": 0.3318232907913625
+          },
+          {
+            "encode_seconds": 0.050902989227324724,
+            "decode_seconds": 0.33078674180433154
+          },
+          {
+            "encode_seconds": 0.0511791817843914,
+            "decode_seconds": 0.3315601642243564
+          },
+          {
+            "encode_seconds": 0.05168353719636798,
+            "decode_seconds": 0.33455470530316234
+          },
+          {
+            "encode_seconds": 0.05201798118650913,
+            "decode_seconds": 0.3335500559769571
+          },
+          {
+            "encode_seconds": 0.051638545002788305,
+            "decode_seconds": 0.3321294039487839
+          },
+          {
+            "encode_seconds": 0.052366789896041155,
+            "decode_seconds": 0.3305228720419109
+          },
+          {
+            "encode_seconds": 0.05192261282354593,
+            "decode_seconds": 0.33210183680057526
+          },
+          {
+            "encode_seconds": 0.05120359128341079,
+            "decode_seconds": 0.33355140686035156
+          },
+          {
+            "encode_seconds": 0.05164804821833968,
+            "decode_seconds": 0.3307900680229068
+          },
+          {
+            "encode_seconds": 0.05103179905563593,
+            "decode_seconds": 0.3300737929530442
+          },
+          {
+            "encode_seconds": 0.05111410701647401,
+            "decode_seconds": 0.3326226742938161
+          },
+          {
+            "encode_seconds": 0.05180675629526377,
+            "decode_seconds": 0.3320726966485381
+          },
+          {
+            "encode_seconds": 0.050745315849781036,
+            "decode_seconds": 0.3311728718690574
+          },
+          {
+            "encode_seconds": 0.05131421098485589,
+            "decode_seconds": 0.33528448874130845
+          },
+          {
+            "encode_seconds": 0.05188688216730952,
+            "decode_seconds": 0.3313890299759805
+          },
+          {
+            "encode_seconds": 0.05134307499974966,
+            "decode_seconds": 0.3315295781940222
+          },
+          {
+            "encode_seconds": 0.05146061908453703,
+            "decode_seconds": 0.330802156124264
+          },
+          {
+            "encode_seconds": 0.05181914987042546,
+            "decode_seconds": 0.3303008642978966
+          },
+          {
+            "encode_seconds": 0.051116340793669224,
+            "decode_seconds": 0.3324712603352964
+          },
+          {
+            "encode_seconds": 0.05491185653954744,
+            "decode_seconds": 0.3325717896223068
+          },
+          {
+            "encode_seconds": 0.05230458686128259,
+            "decode_seconds": 0.33252147678285837
+          },
+          {
+            "encode_seconds": 0.05131056439131498,
+            "decode_seconds": 0.3352739200927317
+          },
+          {
+            "encode_seconds": 0.05100941378623247,
+            "decode_seconds": 0.33196874614804983
+          },
+          {
+            "encode_seconds": 0.053405542857944965,
+            "decode_seconds": 0.3312444919720292
+          },
+          {
+            "encode_seconds": 0.0513727180659771,
+            "decode_seconds": 0.33517012000083923
+          },
+          {
+            "encode_seconds": 0.051782399881631136,
+            "decode_seconds": 0.33237318228930235
+          },
+          {
+            "encode_seconds": 0.05212095892056823,
+            "decode_seconds": 0.3317136517725885
+          },
+          {
+            "encode_seconds": 0.0518985646776855,
+            "decode_seconds": 0.33640650380402803
+          },
+          {
+            "encode_seconds": 0.051964808721095324,
+            "decode_seconds": 0.334678472019732
+          },
+          {
+            "encode_seconds": 0.0524028530344367,
+            "decode_seconds": 0.3344419300556183
+          },
+          {
+            "encode_seconds": 0.0515091079287231,
+            "decode_seconds": 0.33454600162804127
+          },
+          {
+            "encode_seconds": 0.05163452913984656,
+            "decode_seconds": 0.33556143613532186
+          },
+          {
+            "encode_seconds": 0.05207007611170411,
+            "decode_seconds": 0.3341224938631058
+          },
+          {
+            "encode_seconds": 0.0511983479373157,
+            "decode_seconds": 0.33487906912341714
+          },
+          {
+            "encode_seconds": 0.05152676161378622,
+            "decode_seconds": 0.33326417580246925
+          },
+          {
+            "encode_seconds": 0.05253326799720526,
+            "decode_seconds": 0.3336398508399725
+          }
+        ],
+        "preprocess_encode_mean_seconds": 0.05575857048825128,
+        "decode_mean_seconds": 0.33410030361119425,
+        "total_mean_seconds": 0.38985887409944553,
+        "total_median_seconds": 0.38470251648686826,
+        "observations_per_second": 2.5650307494216977
+      },
+      "current_batch_size": 64,
+      "native_batch_proof_passed": true,
+      "all_supplied_thresholds_passed": true,
+      "completed_utc": "2026-11-04T13:15:42.930936+00:00",
+      "runtime_precision_override": "torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction=False"
+    }
+  },
+  "gpu_window_checks": {
+    "gpu": "NVIDIA H200 NVL",
+    "torch": "2.6.0+cu124",
+    "cuda": "12.4",
+    "checks": [
+      {
+        "case": "pap_b1",
+        "nondefault_stream": false,
+        "windows": 12,
+        "merged_tokens": 126,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b1",
+        "nondefault_stream": true,
+        "windows": 12,
+        "merged_tokens": 126,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b4",
+        "nondefault_stream": false,
+        "windows": 48,
+        "merged_tokens": 504,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b4",
+        "nondefault_stream": true,
+        "windows": 48,
+        "merged_tokens": 504,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b32",
+        "nondefault_stream": false,
+        "windows": 384,
+        "merged_tokens": 4032,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b32",
+        "nondefault_stream": true,
+        "windows": 384,
+        "merged_tokens": 4032,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b64",
+        "nondefault_stream": false,
+        "windows": 768,
+        "merged_tokens": 8064,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "pap_b64",
+        "nondefault_stream": true,
+        "windows": 768,
+        "merged_tokens": 8064,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "mixed_128_images",
+        "nondefault_stream": false,
+        "windows": 672,
+        "merged_tokens": 7200,
+        "repeats": 20,
+        "passed": true
+      },
+      {
+        "case": "mixed_128_images",
+        "nondefault_stream": true,
+        "windows": 672,
+        "merged_tokens": 7200,
+        "repeats": 20,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "native_cpu_tests": 23,
+  "pressb_focused_tests": 30,
+  "network": {
+    "state": "passed",
+    "endpoint": "ws://127.0.0.1:18130",
+    "observations": 64,
+    "observation_files": [
+      {
+        "path": "/mnt/data/pengguanqi/Data/PressB/outputs/walloss_batch_h200_20261104/real_observations.json",
+        "sha256": "a29f7f5676c6222f220cf298b58d4edc6ad72acb0d217102951ca68d5ca50784",
+        "observations": 3
+      }
+    ],
+    "calls": [
+      {
+        "method": "/health",
+        "seconds": 0.0805957880220376,
+        "request_msgpack_bytes": 49,
+        "response_msgpack_bytes": 1360
+      },
+      {
+        "method": "/encode",
+        "seconds": 6.234959271037951,
+        "request_msgpack_bytes": 30034330,
+        "response_msgpack_bytes": 1183388
+      },
+      {
+        "method": "/decode",
+        "seconds": 2.445070752000902,
+        "request_msgpack_bytes": 378874,
+        "response_msgpack_bytes": 134748
+      },
+      {
+        "method": "/decode",
+        "seconds": 2.402464565995615,
+        "request_msgpack_bytes": 378874,
+        "response_msgpack_bytes": 134748
+      },
+      {
+        "method": "/infer",
+        "seconds": 8.202766280039214,
+        "request_msgpack_bytes": 30409323,
+        "response_msgpack_bytes": 131868
+      },
+      {
+        "method": "/release",
+        "seconds": 0.011006448999978602,
+        "request_msgpack_bytes": 2241,
+        "response_msgpack_bytes": 29
+      },
+      {
+        "method": "/health",
+        "seconds": 0.009233760996721685,
+        "request_msgpack_bytes": 49,
+        "response_msgpack_bytes": 1362
+      }
+    ],
+    "health_before": {
+      "schema_version": 2,
+      "node_type": "inference",
+      "model_id": "piper_pap_20260606",
+      "capabilities": [
+        "encode",
+        "decode",
+        "infer",
+        "external_initial_noise",
+        "features",
+        "context_cache"
+      ],
+      "observation": {
+        "state": {
+          "names": [
+            "joint1",
+            "joint2",
+            "joint3",
+            "joint4",
+            "joint5",
+            "joint6",
+            "gripper_width"
+          ],
+          "units": [
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "m"
+          ]
+        },
+        "cameras": [
+          "up",
+          "wrist"
+        ]
+      },
+      "action": {
+        "representation": "joint_position",
+        "frame": "robot_base",
+        "names": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6",
+          "gripper_width"
+        ],
+        "units": [
+          "rad",
+          "rad",
+          "rad",
+          "rad",
+          "rad",
+          "rad",
+          "m"
+        ],
+        "horizon": 32,
+        "control_hz": 30.0
+      },
+      "noise": {
+        "shape": [
+          32,
+          20
+        ]
+      },
+      "feature_dim": 2048,
+      "feature_kind": "mean_multimodal_embedding_excluding_action_and_padding",
+      "cache_kind": "multimodal_embeddings_and_rope_indices",
+      "transformer_kv_cache": false,
+      "batching": {
+        "native_model_batching": true,
+        "microbatch_size": 64
+      },
+      "frozen": true,
+      "norm_stats": "/data/scratch/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+      "num_inference_timesteps": 10,
+      "cuda_memory_fraction": null,
+      "model_inputs": {
+        "dataset_name": "lerobot/piper"
+      },
+      "weights_sha256": "c5509660ace0ea5d100290781e7ae165884bdf34308fccb7692b041feeeb887d",
+      "normalization_sha256": "0382bb75f230ab115a795343b13d3580bf96401f5d5d17b237cd390084b14f7a",
+      "model_config_sha256": "8a292e6c0f70f1cbb1ee0f4149bc143a3c2ac95e17d0bad402b43b8467259814",
+      "source_revision": "0d1e0ee92d2a79a81605f63e71cdfa1c399172eb5531d7157a5cebce8cef61d9",
+      "ready": true,
+      "cache": {
+        "size": 0,
+        "capacity": 256,
+        "ttl_seconds": 600.0,
+        "eviction": "oldest_created",
+        "ttl_refresh_on_decode": false
+      },
+      "microbatch_size": 64,
+      "encoded_count": 0,
+      "decoded_count": 0,
+      "protocol_version": 1
+    },
+    "action_shape": [
+      64,
+      32,
+      7
+    ],
+    "repeated_decode_max_abs_error": 0.0,
+    "infer_vs_cached_decode_max_abs_error": 0.0,
+    "health_after": {
+      "schema_version": 2,
+      "node_type": "inference",
+      "model_id": "piper_pap_20260606",
+      "capabilities": [
+        "encode",
+        "decode",
+        "infer",
+        "external_initial_noise",
+        "features",
+        "context_cache"
+      ],
+      "observation": {
+        "state": {
+          "names": [
+            "joint1",
+            "joint2",
+            "joint3",
+            "joint4",
+            "joint5",
+            "joint6",
+            "gripper_width"
+          ],
+          "units": [
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "rad",
+            "m"
+          ]
+        },
+        "cameras": [
+          "up",
+          "wrist"
+        ]
+      },
+      "action": {
+        "representation": "joint_position",
+        "frame": "robot_base",
+        "names": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6",
+          "gripper_width"
+        ],
+        "units": [
+          "rad",
+          "rad",
+          "rad",
+          "rad",
+          "rad",
+          "rad",
+          "m"
+        ],
+        "horizon": 32,
+        "control_hz": 30.0
+      },
+      "noise": {
+        "shape": [
+          32,
+          20
+        ]
+      },
+      "feature_dim": 2048,
+      "feature_kind": "mean_multimodal_embedding_excluding_action_and_padding",
+      "cache_kind": "multimodal_embeddings_and_rope_indices",
+      "transformer_kv_cache": false,
+      "batching": {
+        "native_model_batching": true,
+        "microbatch_size": 64
+      },
+      "frozen": true,
+      "norm_stats": "/data/scratch/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+      "num_inference_timesteps": 10,
+      "cuda_memory_fraction": null,
+      "model_inputs": {
+        "dataset_name": "lerobot/piper"
+      },
+      "weights_sha256": "c5509660ace0ea5d100290781e7ae165884bdf34308fccb7692b041feeeb887d",
+      "normalization_sha256": "0382bb75f230ab115a795343b13d3580bf96401f5d5d17b237cd390084b14f7a",
+      "model_config_sha256": "8a292e6c0f70f1cbb1ee0f4149bc143a3c2ac95e17d0bad402b43b8467259814",
+      "source_revision": "0d1e0ee92d2a79a81605f63e71cdfa1c399172eb5531d7157a5cebce8cef61d9",
+      "ready": true,
+      "cache": {
+        "size": 0,
+        "capacity": 256,
+        "ttl_seconds": 600.0,
+        "eviction": "oldest_created",
+        "ttl_refresh_on_decode": false
+      },
+      "microbatch_size": 64,
+      "encoded_count": 128,
+      "decoded_count": 192,
+      "protocol_version": 1
+    }
+  },
+  "deployment": {
+    "service": {
+      "host": "h200",
+      "pid": 3084098,
+      "start_ticks": "225715836",
+      "cmdline": ".venv/bin/python -u scripts/serve_inference_node.py --config configs/rl_nodes/pap_walloss_h200_inference.json ",
+      "root": "/home/pengguanqi/Worksapce/Research/PressB-walloss",
+      "endpoint": "ws://127.0.0.1:18130",
+      "physical_gpu": 0,
+      "microbatch_size": 64,
+      "dtype": "bfloat16",
+      "recorded_unix": 1793798376.8649516
+    },
+    "tunnel": {
+      "pid": 2272260,
+      "start_ticks": "45766091",
+      "local_port": 18130,
+      "remote_host": "h200",
+      "remote_port": 18130
+    },
+    "configuration": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18130,
+        "transport": "ws"
+      },
+      "service": {
+        "cache_size": 256,
+        "cache_ttl": 600,
+        "batch_size": 64
+      },
+      "backend": {
+        "factory": "pressb.rl_nodes.walloss:create_backend",
+        "config": {
+          "repo": "ref/wall-x",
+          "model_path": "/home/pengguanqi/walloss_models/piper_pap_20260606",
+          "train_config": "ref/wall-x/workspace/piper_pap_20260606/config_qact.yml",
+          "norm_stats": "/home/pengguanqi/walloss_models/piper_pap_20260606/norm_stats.json",
+          "device": "cuda:0",
+          "dtype": "bfloat16",
+          "horizon": 32,
+          "control_hz": 30,
+          "num_inference_timesteps": 10,
+          "input_image_resolution": 256,
+          "camera_mapping": {
+            "up": "face_view",
+            "wrist": "left_wrist_view"
+          }
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Benchmarks cycle three real Isaac observations and four prompt lengths; they do not evaluate 64 independent layouts or task success.",
+    "BF16 cross-batch action differences are measured, not accepted against a task-specific tolerance.",
+    "FP32 comparisons are against an FP32 singleton baseline, not against the original BF16 policy.",
+    "Timing excludes simulation and learning; direct model timings also exclude network.",
+    "The successful network request sizes do not establish a worst-case 64-environment message bound.",
+    "Default BF16 reduction behavior is retained; disabling reduced precision did not eliminate cross-batch action drift."
+  ]
+}

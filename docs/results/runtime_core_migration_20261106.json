@@ -1,0 +1,105 @@
+{
+  "recorded_at_utc": "2026-11-06T07:19:57.312186+00:00",
+  "scope": "Runtime implementation migration, legacy import compatibility, registered backend loading, validated rollout observer",
+  "canonical_package": "pressb.runtime",
+  "migrated_modules": [
+    "contract",
+    "client",
+    "inference",
+    "simulation",
+    "trainer",
+    "server",
+    "image_transport",
+    "learner",
+    "rpc",
+    "inference_transport"
+  ],
+  "legacy_module_aliases": [
+    "pressb.rl_nodes.contract",
+    "pressb.rl_nodes.client",
+    "pressb.rl_nodes.inference",
+    "pressb.rl_nodes.simulation",
+    "pressb.rl_nodes.trainer",
+    "pressb.rl_nodes.server",
+    "pressb.rl_nodes.image_transport",
+    "pressb.online_rl.learner",
+    "pressb.online_rl.rpc"
+  ],
+  "legacy_transport": {
+    "module": "pressb.online_rl.inference_transport",
+    "strategy": "Re-export common transport objects; keep the legacy policy adapter and Wall-X server loader in their original module",
+    "reason": "Keep task-specific pose9 semantics out of the generic runtime"
+  },
+  "entrypoints": [
+    "scripts/run_rl_training.py",
+    "scripts/serve_inference_node.py",
+    "scripts/serve_simulation_node.py"
+  ],
+  "backend_loading": {
+    "factory": "Existing module:function configuration and single-argument load_backend hook remain supported",
+    "plugin": "Resolve task/model short names with pressb.registry.resolve(kind, name)",
+    "inference_kind": "model",
+    "simulation_kind": "task"
+  },
+  "observer": {
+    "constructor": "GenericTrainer(config, *, inference_client=None, simulation_client=None, observer=None)",
+    "callbacks": [
+      "on_reset(rows)",
+      "on_transition(before, actions_executed, rows)",
+      "close(status)"
+    ],
+    "snapshots": "Deep copies passed only after complete response validation; fused step and reset validate together",
+    "actions": "[batch, execution_horizon, action_dim] clipped submitted prefix, aligned with before and rows",
+    "early_termination": "Actual elapsed duration is rows[i].info.elapsed_control_steps and can be fractional",
+    "before": "Prior slot includes env_id, episode_id, step_id, observation, encoded, vector, and base when applicable",
+    "failure": "Callback failures fail the run; close runs once after cleanup and preserves an earlier rollout error",
+    "default": "No observer changes to training configuration, schema fingerprint, or checkpoint payload"
+  },
+  "validation": {
+    "python": "/home/pengguanqi/miniconda3/envs/zprl/bin/python",
+    "environment": {
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "CUDA_VISIBLE_DEVICES": ""
+    },
+    "pytest_result": {
+      "passed": 299,
+      "failed": 0,
+      "seconds": 17.42
+    },
+    "pytest_targets": [
+      "tests/test_rl_nodes_contract_simulation.py",
+      "tests/test_rl_nodes_inference.py",
+      "tests/test_rl_nodes_image_transport.py",
+      "tests/test_rl_nodes_trainer.py",
+      "tests/test_online_rl_generic_learner.py",
+      "tests/test_online_rl_learner.py",
+      "tests/test_online_rl_inference.py",
+      "tests/test_online_rl_protocol.py",
+      "tests/test_runtime_migration.py",
+      "tests/test_runtime_observer.py",
+      "tests/test_rl_nodes_transport.py::test_message_limit_requires_positive_integer_before_backend_loading",
+      "tests/test_rl_nodes_transport.py::test_node_config_passes_websocket_message_limit"
+    ],
+    "new_tests": {
+      "tests/test_runtime_migration.py": 34,
+      "tests/test_runtime_observer.py": 14
+    },
+    "cli_help": {
+      "run_rl_training": "passed",
+      "serve_inference_node": "passed",
+      "serve_simulation_node": "passed"
+    },
+    "boundary": "No GPU, training ports, running trainer process, or historical outputs/configs touched; socket tests deliberately excluded",
+    "environment_note": "Disable unrelated auto-loaded ROS pytest plugins; installed launch_pytest requires unavailable lark"
+  },
+  "unchanged_compatibility": [
+    "SOURCE_COMMIT=a34a1cb",
+    "SCHEMA_VERSION=2",
+    "PROTOCOL_VERSION=1",
+    "Runtime modules retain the former source directory depth",
+    "Old pickle class paths resolve to the canonical runtime objects"
+  ]
+}

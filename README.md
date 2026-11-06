@@ -4,9 +4,19 @@
 
 PressB builds Isaac environments for evaluating robot policies and improving frozen vision-language-action models through online residual reinforcement learning. It connects physical simulation, model inference and policy training, with recorded camera observations and contact-based task outcomes.
 
-**Updated 2026-11-03:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation; PAP Wall-X evaluations achieved **65/100** for red cubes and **54/100** for five colors. Tabletop buttons now support single-/multi-task VLA-JEPA evaluation and have completed a new [9,000-episode collection with color-specific approaches](docs/results/table_buttons_target_relative_20261030/README.md), separate from the earlier shared-motion datasets.
+**Updated 2026-11-06:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation; PAP Wall-X evaluations achieved **65/100** for red cubes and **54/100** for five colors. Tabletop buttons now support single-/multi-task VLA-JEPA evaluation and have completed a new [9,000-episode collection with color-specific approaches](docs/results/table_buttons_target_relative_20261030/README.md), separate from the earlier shared-motion datasets.
 
 [Tasks](#tasks) · [Results](#current-results) · [Videos](#demo-videos) · [Run](#run-the-tasks) · [Three-node RL](#online-reinforcement-learning-three-independent-nodes) · [Handover](docs/HANDOVER.md)
+
+## Shared runtime and plugins
+
+**2026-11-06 framework refactor:** new experiments use **one runtime + task plugins + model adapters + experiment configurations**. The same rollout supports DSRL, action residuals, fixed DSRL with a new residual, evaluation and chunk trajectory recording. Robot/camera setup and PhysX controls are shared; task physics and rewards remain explicit plugins. Existing commands and imports remain compatible.
+
+Start with [the framework guide](docs/project_framework.md) and [`configs/experiments`](configs/experiments). Use `python scripts/run_experiment.py list` to inspect plugins, then `validate`, `inference`, `simulation`, `train`, `eval` or `collect` with one experiment JSON. PAP supports the 64-environment profile; table buttons currently runs one environment per node. Historical frame-aligned LeRobot collection remains available.
+
+[Refactor verification](docs/results/framework_refactor_20261106.json): 2,049 regression tests passed, plus real Isaac replay and three-node training/resume/evaluation/recording checks, including PAP64 with Wall-OSS native batch64. These are functional checks, not new policy success-rate estimates.
+
+**Models are now bundled:** Wall-OSS and VLA-JEPA inference, data readers and supervised training live in PressB. The [model guide](docs/bundled_models.md) covers the new common training launcher and source provenance. [Integration verification](docs/results/model_internalization_20261106.json) includes 2,106 main-project tests across the required environments and real-weight comparisons: Wall-OSS batch 2/8 and VLA-JEPA pose9/joint6/joint7 match their original implementations on the tested inputs.
 
 ## Tasks
 
@@ -16,7 +26,7 @@ PressB builds Isaac environments for evaluating robot policies and improving fro
 | [Pick-and-place (PAP)](docs/piper_pick_place.md) | Dataset-fitted green workbench, cardboard box, movable cubes and two cameras | Real-trajectory replay, native Wall-X closed-loop inference, optional joint smoothing, paired position/color evaluation |
 | [Tabletop color buttons](docs/table_buttons.md) | Red/yellow/blue spring-loaded buttons on the PAP workbench | Near/medium/far randomized layouts, color-specific IK demonstrations, LeRobot collection/merge, VLA-JEPA training and closed-loop evaluation |
 
-The tasks have separate configurations. PAP reconstructs `piper_pap_20260606_offset` from recorded joints, camera images and scene photos, including a smooth cube, rougher cardboard/tabletop and soft lighting. Red and blue cube replay presets are available; other dataset objects need their own geometry. PAP retains its dataset-fitted cameras. The tabletop button task uses the elevator wrist-camera intrinsics **and optical pose**, while retaining the PAP fixed camera. Tabletop buttons have learned-policy inference and audited closed-loop evaluation. Online RL remains implemented for the elevator task; PAP and tabletop buttons have not undergone online RL training. Tabletop training and its dedicated HTTP inference server live in the separate VLA-JEPA workspace; this repository includes the simulation client and evaluation tools. See the [server dependency and deployment scope](docs/table_buttons_policy_eval.md) before reproducing those model experiments.
+The tasks have separate configurations. PAP reconstructs `piper_pap_20260606_offset` from recorded joints, camera images and scene photos, including a smooth cube, rougher cardboard/tabletop and soft lighting. Red and blue cube replay presets are available; other dataset objects need their own geometry. PAP retains its dataset-fitted cameras. The tabletop button task uses the elevator wrist-camera intrinsics **and optical pose**, while retaining the PAP fixed camera. Tabletop buttons have learned-policy inference and audited closed-loop evaluation. Completed online RL experiments cover the elevator task and PAP/Wall-OSS. PAP training logs and evaluation evidence are recorded in the handover; training recent SR is distinct from independent evaluation. Tabletop buttons have a common task/model interface and functional checks, but have not undergone a long online RL experiment. Tabletop supervised training and model inference are now bundled in PressB; the [historical HTTP evaluation guide](docs/table_buttons_policy_eval.md) retains earlier experiment commands.
 
 The framework can support a future **real2sim2real** workflow: use an AI agent to reconstruct a real workspace, improve policy robustness in simulation, then adapt and validate on the real robot. The current experiments establish simulation feasibility; real2sim2real transfer and direct real-robot validation of the RL policies remain future work.
 
@@ -85,25 +95,24 @@ See the [media notes](docs/media/README.md) for original video sources, compress
 
 ## Repository roles and reproduction scope
 
-| Repository | Role | Local location |
+| Component | Role | Location |
 |---|---|---|
-| [PressB](https://github.com/pgq18/PressB) | Isaac scene, three-node services, SAC integration, experiments, evaluation, and video audits | This repository; RL code is in `src/pressb/online_rl/` |
-| [VLA-JEPA](https://github.com/pgq18/VLA-JEPA/tree/base) | Vision/state/language encoders, flow-matching model, and PiPER fine-tuning and inference | Separate repository at `src/VLA-JEPA/` |
-| [Wall-X](https://github.com/pgq18/wall-x/tree/base) | Native PAP model inference and backward-compatible transport extension for PressB | Separate repository at `ref/wall-x/`; its own Conda environment |
-| [ZPRL-PressB](https://github.com/pgq18/ZPRL-PressB) | Reference implementation for residual SAC, initial-noise methods, and sampling schedules | Optional separate repository at `src/ZPRL/`; PressB does not need to import it |
+| PressB runtime | Isaac services, online RL, experiments, evaluation and recording | `src/pressb/runtime`, `tasks`, `models`, `experiments` |
+| VLA-JEPA | Model, pose9/joint6/joint7 inference, single-/multi-task supervised training | Bundled in `src/pressb/model_sources/vlajepa` |
+| Wall-OSS | Model, native batches, noise/context APIs, supervised trainer, data readers and CUDA kernels | Bundled in `src/pressb/model_sources/walloss` |
+| [ZPRL-PressB](https://github.com/pgq18/ZPRL-PressB) | Original residual SAC / initial-noise reference | Optional `src/ZPRL`; PressB runs its own implementation |
 
-These are independent clones, ignored by PressB and not Git submodules. Their versions and roles are recorded in the [repository lock file](repos.lock.json). Trained RL checkpoints are tied to their inference source. Existing VLA-JEPA RL weights require runtime commit `9c9dc71c8e199c7428b25d103ab666395832c001`:
+**Model code is included in PressB.** New experiments do not require separate
+Wall-X or VLA-JEPA clones. See [bundled models and supervised training](docs/bundled_models.md)
+for environments, CUDA builds and `scripts/train_model.py`. Source revisions and
+file hashes are preserved in the bundles' manifests and [repository lock](repos.lock.json).
+Weights, datasets and third-party software packages remain separate inputs.
 
-```bash
-git clone --branch base https://github.com/pgq18/VLA-JEPA.git src/VLA-JEPA
-git -C src/VLA-JEPA checkout --detach 9c9dc71c8e199c7428b25d103ab666395832c001
-
-# PAP policy inference; select the Wall-X commit recorded in repos.lock.json.
-git clone --branch base https://github.com/pgq18/wall-x.git ref/wall-x
-
-# Optional: inspect the original RL methods. The training code is already in PressB.
-git clone https://github.com/pgq18/ZPRL-PressB.git src/ZPRL
-```
+Historical `src/VLA-JEPA` and `ref/wall-x` clones remain optional explicit source
+overrides for old experiments. They are ignored, not submodules. Unmigrated
+elevator RL checkpoints still bind the original VLA-JEPA runtime commit
+`9c9dc71c8e199c7428b25d103ab666395832c001`; switching implementation requires
+verified checkpoint migration rather than bypassing identity checks.
 
 A clean clone includes source code, selected media, and statistical summaries. It **does not include** VLA/RL weights, scene snapshots, collection metadata, or model caches. The three general-purpose nodes accept explicit paths. In contrast, `run_residual_on_noise_experiment.py` and the smoothing and video experiment supervisors are reproduction entry points for this workspace: they depend on the existing `outputs/` assets and identity manifests documented here and cannot run directly in an empty directory. See the [high-throughput run guide](docs/online_rl_fast.md) and [5090 environment guide](docs/rtx5090_setup.md) for deployment.
 
@@ -154,7 +163,9 @@ bash scripts/run.sh --headless --gpu 0 --video --output outputs/edge_feedback
 
 The generated `outputs/edge_feedback/scene.usda`, along with `wrist_camera/intrinsics.json` and `global_camera/intrinsics.json` in the same output directory, supplies the inputs for subsequent collection; these files do not exist in a clean clone. `--gpu` selects an Isaac/Vulkan device index; choose a device with available VRAM. The demo defaults to 10 Hz images and 120 Hz physics; batch collection sets the sampling rate independently through `--fps`.
 
-### PAP: deploy Wall-X and run closed-loop inference
+### PAP: historical Wall-X server and closed-loop inference
+
+For new deployments, use the [bundled model guide](docs/bundled_models.md) and the common experiment entrypoint. The following commands retain the original separate-clone deployment for reproducing historical results.
 
 Provide the real dataset and trained model locally. Prepare the initial joint state from the dataset before launching the simulator; policy mode uses subsequent model predictions, while `--mode replay` follows the recorded trajectory. See the [Wall-X deployment guide](https://github.com/pgq18/wall-x/blob/base/inference/README_rtx5090.md) for CUDA 12.8 requirements, model/config overrides and the checkpoint-matched normalization file.
 
@@ -281,9 +292,19 @@ A previous fixed 60-trial evaluation of step 10600 on the old collection machine
 
 ## Online reinforcement learning: three independent nodes
 
+**Checkpoint policy (2026-11-05):** new RL runs save every **100,000 transitions and retain all numbered checkpoints**. The configurable trainer uses `checkpoint.interval=100000` and `checkpoint.keep=null`; normal completion also saves the final state. The legacy fast runner retains its 100k milestones plus a separate rolling `last.pt`. See [checkpoint and log configuration](docs/configurable_rl_nodes.md).
+
+**Configurable API (2026-11-04):** the new [three-node guide](docs/configurable_rl_nodes.md) and [JSON examples](configs/rl_nodes/) separate model capabilities, task execution and learning. They add external-noise Wall-OSS encoding/decoding, PAP process-parallel `reset/step`, and shape-aware DSRL/action-residual SAC with asynchronous updates, optional smoothing/action projection, replay and retained checkpoints. State/action units and latent dimensions are negotiated at startup. CPU socket/process/learning tests and full-checkpoint GPU integration pass: two real Isaac environments completed 24 transitions and 22 SAC updates for each RL method. These short checks do not establish a PAP RL success rate. Existing elevator experiments below retain their original entry points.
+
+PAP also has a [shared-World simulation backend](docs/pap_parallel_capacity.md): **64 environments and 128 native 640×480 camera streams** passed a single-RTX-5090 capacity test, and all 64 environments completed a recorded grasp-and-place replay. [Wall-OSS now supports native batch-64 inference on H200](docs/walloss_batch_inference.md): **16.11 observation chunks/s**, **6.35×** the measured singleton throughput, with **11.64 GiB** peak PyTorch allocation. Real cross-machine WebSocket encode/decode/infer checks also passed. BF16 outputs vary with batch size; measured action differences and the slower FP32 option are documented. The initial [400k-budget PAP DSRL run](outputs/pap_dsrl_h200_bf16_64env_400k_20261104/README.md) was stopped at the user’s request at 3,520 transitions and 1,532 updates to optimize its throughput. Its full checkpoint and W&B history are preserved. The [optimized PAP pipeline](docs/pap_dsrl_pipeline_optimization.md) subsequently completed a 10,048-transition validation with native 640×480 cameras, 10 flow steps and UTD 1. Measured post-warmup throughput increased **1.44 → 12.55 transitions/s (8.71×)**; projected 400k/1M times are **8.85/22.14 hours**, not completed long-run durations. The 15/s performance target remains unmet. This was the pre-training validation; completed local training runs are listed below. Learning effectiveness still requires independent evaluation.
+
 The [online RL run guide](docs/online_rl.md) provides three elevator-task nodes for simulation, frozen VLA-JEPA inference and SAC training, deployable across three machines. The [high-throughput version](docs/online_rl_fast.md) adds independent episode resets, batched inference and overlapping sampling and gradient updates. It supports colocating simulation and inference on local GPU 1 with training on GPU 0, and retains a cross-node configuration for H200 inference.
 
-Inference defaults to **WebSocket/MessagePack**, using a backward-compatible extension to Wall-X's existing WebSocket transport. PressB supplies the VLA-JEPA-specific `encode`, explicit-noise `decode`, `release` and `health` operations needed by RL. Simulation remains **HTTP**; legacy HTTP inference is selectable with `--transport http` and an `http://` client URL. The PAP client instead uses ordinary Wall-X observation/action prediction; the native Wall-X model does not acquire split inference or RL support from the transport extension alone. See the [PressB protocol](docs/online_rl_protocol.md) and [Wall-X interface notes](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md).
+**Local inference comparison (2026-11-05):** Wall-OSS is now also deployed on RTX 5090. Two complete 10,048-transition trials measured **12.91 transitions/s** with inference and SAC sharing GPU 1, and **13.34/s** with simulation and inference sharing GPU 0 while SAC uses GPU 1. The latter is **6.33% faster** than the optimized H200 deployment; projected 400k/1M durations are **8.33/20.82 hours**. The 15/s target is still unmet. Both runs passed checkpoint/replay audits. All associated services are now stopped following the November 6 refactor checks. Cross-deployment BF16 outputs differ, so task success still needs separate evaluation. See the [deployment and timing report](docs/pap_dsrl_local_inference.md).
+
+**Training status (2026-11-06):** local PAP DSRL and the subsequent frozen-DSRL action residual each completed **400,000 transitions**. A fresh DSRL run with a 100k budget completed **100,022 transitions in 2h 05m** (the final parallel batch exceeded the budget by 22). The subsequent 200k-budget residual run was paused by request at **16,704 transitions** for the refactor; its full checkpoint and source DSRL are preserved. Verified compatibility copies and a validated resume configuration are ready, but training has not resumed. See the [handover](docs/HANDOVER.md) and [migration verification](docs/results/framework_refactor_20261106.json). Training recent SR is not an independent evaluation result.
+
+Inference defaults to **WebSocket/MessagePack**, using a backward-compatible extension to Wall-X's existing WebSocket transport. PressB supplies the VLA-JEPA-specific `encode`, explicit-noise `decode`, `release` and `health` operations needed by RL. Simulation remains **HTTP**; legacy HTTP inference is selectable with `--transport http` and an `http://` client URL. The original PAP client continues to use ordinary Wall-X observation/action prediction. The new configurable path adds a dedicated Wall-OSS model adapter; the transport extension alone is insufficient. See the [PressB protocol](docs/online_rl_protocol.md) and [Wall-X interface notes](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md).
 
 ```mermaid
 flowchart LR

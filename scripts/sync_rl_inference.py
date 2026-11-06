@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""Copy the inference addon and Wall-X serving files; do not alter VLA-JEPA."""
+"""Deploy PressB inference source, including its bundled model implementations.
+
+Model weights, backbone caches, datasets and Python environments are provisioned
+separately. Explicit external-source overrides remain a caller responsibility.
+"""
 import argparse
 from pathlib import Path
 import shlex
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = ["src/pressb/__init__.py", "src/pressb/online_rl/__init__.py",
-         "src/pressb/online_rl/protocol.py", "src/pressb/online_rl/rpc.py",
-         "src/pressb/online_rl/inference.py", "src/pressb/online_rl/inference_transport.py",
-         "scripts/serve_rl_inference.py",
-         "ref/wall-x/packages/openpi_client/__init__.py",
-         "ref/wall-x/packages/openpi_client/base_policy.py",
-         "ref/wall-x/packages/openpi_client/msgpack_numpy.py",
-         "ref/wall-x/packages/openpi_client/websocket_policy_server.py"]
+FILES = ["src/pressb/", "scripts/serve_rl_inference.py", "scripts/serve_inference_node.py",
+         "scripts/run_experiment.py", "configs/experiments/"]
 
 
 def main():
@@ -30,7 +28,9 @@ def main():
         ssh += ["-S", args.ssh_socket]
     if not args.dry_run:
         subprocess.run([*ssh, args.host, "mkdir -p -- " + shlex.quote(args.remote_root)], check=True)
-    command = ["rsync", "-a", "--relative", "--protect-args", "-e", shlex.join(ssh)]
+    command = ["rsync", "-a", "--relative", "--protect-args",
+               "--exclude=__pycache__/", "--exclude=*.pyc", "--exclude=.git/",
+               "-e", shlex.join(ssh)]
     if args.dry_run:
         command.append("--dry-run")
     subprocess.run([*command, *FILES, args.host + ":" + args.remote_root.rstrip("/") + "/"], cwd=ROOT, check=True)

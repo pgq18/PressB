@@ -1,5 +1,156 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-06 模型推理与监督训练代码内化，统一提交版本
+
+- 用户在要求整理 commit/push 后追加“将 wall-x 和 vla-jepa 中框架需要的推理和训练代码内化”。默认推理现在使用 `src/pressb/model_sources/walloss` 与 `vlajepa`，不依赖原独立源码克隆；保留显式 `repo/vla_repo` 旧源覆盖。旧克隆未删除。模型权重、数据集、基础模型文件、Conda 依赖和 CUDA toolkit 仍是外部输入。
+- Wall-OSS 包含原生批推理、外部噪声、编码／前缀缓存、数据读取、监督训练、协议兼容和 CUDA 源码；VLA-JEPA 共用原模型主体，内化 pose9 及 H200 原本未提交的 joint6/joint7 单／多任务数据、训练和推理代码。原模块名和权重键保持一致；来源版本、原始／内置逐文件摘要和版权信息随源码保留，没有推定缺失的上游 LICENSE。
+- 统一监督训练入口 `scripts/train_model.py` / `python -m pressb.training`；Wall-OSS 一个模板，VLA-JEPA 五个 profile：pose9、joint6、joint7、joint6_multitask、joint7_multitask，均在 `configs/model_training/`。在线 RL 继续用 `scripts/run_experiment.py train`。PAP 历史 checkpoint 配对配置逐字保存在 `configs/model_metadata/walloss_pap_20260606.yaml`，不要拿其历史 resume 路径启动新训练。
+- Wall CUDA 扩展已从内置 csrc 重建，二进制位于用户缓存（不入 Git），构建脚本可获取固定版本 CUTLASS；loader 校验 Python/Torch ABI、CUDA 源码摘要和二进制摘要。默认安装包包含必要源码、配置、CUDA 和来源清单，隔离 Python／目录下的六种训练入口解析均通过。
+- 新主回归 **2031 passed**；16个缺依赖跳过项在专用环境展开补测75项，主项目合计 **2106 项通过**。额外原源测试：Wall模型29项、旧launcher3项、VLA202项（含6项真实数据读取）；VLA的5项历史pose数据测试缺原输入路径仍跳过。真实小型flow head进行了反向传播、AdamW更新及优化器／权重恢复；未启动完整监督长训。
+- 完整GPU权重对照：Wall BF16 batch2/8使用内置源码＋新CUDA扩展，与旧源码＋旧扩展动作／特征最大差0.0，200次CUDA窗口索引检查通过；VLA pose9/joint6/joint7与原策略动作最大差均0.0，pose9严格加载1617个张量。全程未恢复PAP残差训练。报告 [results/model_internalization_20261106.json](results/model_internalization_20261106.json)，使用说明 [bundled_models.md](bundled_models.md)。
+- Wall-X 独立仓库的批推理改动已提交并推送 `base`：`cc4dd1e0579869c3e782205be0339c84c78f1d41`。PressB 内化清单仍保留导入时的源 HEAD＋工作区补丁摘要，不篡改历史来源记录。VLA-JEPA / ZPRL 的本地独立克隆未修改。
+- **当前可恢复副本以新目录为准：** `outputs/model_internalization_20261106/migrated_checkpoints/`。内置模型来源身份变化后，再次生成 DSRL100022／残差16704 兼容副本，CPU严格恢复、完整学习状态逐字节一致验证通过，原件和上次副本均不变。新 DSRL SHA `856500b9b5f509cceb5378d943fcf53c7cc9821ca5546db14c737bf79e3f385a`，残差 SHA `29196769fb55752742b122cd699d4e6432e3d2e6cea4c8bf22eba2784ee5ef97`。同目录 `resume_experiment.json` 已校验但未启动，预算仍是总200000。下方旧重构目录的恢复配置仅对应上一版源码，不用于当前默认内置模型。
+
+## 2026-11-06 通用框架重构已完成，PAP 残差训练按要求暂停
+
+- 用户要求“通用运行核心＋任务插件＋模型适配器＋实验配置”，并要求重构后验证功能。统一入口为 `scripts/run_experiment.py`，支持 `list / validate / prepare / inference / simulation / train / eval / collect`。配置在 `configs/experiments/`，完整说明见 [project_framework.md](project_framework.md)。后续模型内化及提交状态见上方最新记录。
+- `src/pressb/runtime/` 负责三端协议、批推理缓存、reset/step 调度、SAC、回放、异步更新、评估、记录、检查点及共享 PiPER/PhysX/相机工具；`tasks/` 实现 PAP、桌面按键和电梯的物理规则；`models/` 实现 Wall-OSS、pose9 VLA-JEPA、joint6/joint7 VLA-JEPA；`experiments/` 负责配置继承、校验、展开和统一启动。旧导入、旧 CLI、旧节点配置及逐帧 LeRobot 专家采集保留兼容。通用 `collect` 输出 chunk 轨迹，不能当作逐帧 LeRobot 数据。
+- 全量回归 **1977 passed**，缺依赖的 13 个跳过项在 USD/碰撞与 LeRobot 环境中展开补测 **72 passed**，合计 **2049 项通过，无未解决跳过/失败**。真实 Isaac 专家回放 PAP 2/2、近中远×三色桌面按键 9/9、电梯 2/2 成功；同时验证错误目标、超时、独立 reset、夹爪与采样复现。真实 joint6/joint7 模型同输入与原实现输出差值为 0。以上是功能验证，不是新模型成功率评估。
+- 真实三端短测覆盖 base eval、DSRL 更新/恢复、冻结 DSRL 后残差更新、残差 eval 和轨迹记录；**64 环境、128 路相机、Wall-OSS 原生 batch64** 短测完成 192 transitions/39 次更新。终止与融合重置另在 2 环境测试中验证。桌面按键插件目前每节点仅 1 个环境；未声称所有任务都已向量化。证据汇总 [results/framework_refactor_20261106.json](results/framework_refactor_20261106.json)，原始日志位于 `outputs/framework_refactor_20261106/`。
+- 用户明确要求 PAP 残差先停：原 `outputs/pap_residual_on_dsrl100k_200k_20261106/train/checkpoints/step_000000016704.pt` 已完整保存 **16704 transitions / 14673 updates / 16704 replay**。原 trainer、monitor 及两服务已退出；全部重构验收服务也已停止。**不要自动恢复，不要按下面历史“已启动”记录重复启动。**
+- 为兼容源码迁移，新增 `scripts/migrate_rl_checkpoint.py`，仅允许有回归证据的显式源码版本迁移，普通加载身份检查未放宽。原 DSRL100022 与残差16704 检查点不变；兼容副本位于 `outputs/framework_refactor_20261106/migrated_checkpoints/`：`dsrl_step_000000100022.pt`、`residual_step_000000016704.pt`。`verification.json` 记录严格加载、全部模型/优化器/回放/RNG 数据一致和原 SHA 不变；冻结 actor SHA 仍为 `aaaf59ebb33287876bcb52ae144b09071e3719361caa0819d62a5cae32074050`。仅做 CPU 恢复校验，没有训练更新或仿真请求。
+- 已准备并校验同目录 `resume_experiment.json`，但未启动。它沿用原训练语义，恢复至总预算 200000（不是额外 200000），新日志目录为 `outputs/pap_residual_on_dsrl100k_200k_after_refactor/`，原输出保留。以后启动前仍核对 GPU/端口资源。检查点默认每 100k 永久保存，正常停止额外保存；恢复优化器/回放/RNG 后从新 episode 开始，不保证中途物理状态续接。
+
+## 2026-11-06 固定100k DSRL，新增200k动作残差训练启动记录（现已暂停，见上）
+
+- 用户要求“用这个100k的dsrl权重，继续训练200k的动作残差”。**14:51:03 已启动** `outputs/pap_residual_on_dsrl100k_200k_20261106/`，先读 `train/status.json`，不要重复启动。冻结Wall-OSS和100k DSRL；新残差actor/critic/optimizer/replay从零开始，未resume旧400k残差。本轮预算是新增200000，不包含源DSRL步数。
+- 冻结源 `outputs/pap_dsrl_local_100k_20261105/train/checkpoints/step_000000100022.pt`，实际100022条/98001更新；SHA `d5c11f892b0dc899f9f21c8d0d294d2770a96503609f0985b53d0f3d37c444a8`，冻结actor SHA `aaaf59ebb33287876bcb52ae144b09071e3719361caa0819d62a5cae32074050`。只读actor，原optimizer/replay/RNG不加载；deterministic、noise32×20/scale1.5从源继承。
+- 沿用上一轮残差配置：64env、32步chunk、全7维scale `[.05,.05,.05,.05,.05,.05,.005]`（六关节rad、夹爪全宽m）、gamma.995按30Hz时间折扣；warmup2000零残差+50k渐进启用，batch256/UTD1/replay100k，timeout不bootstrap、Q不设上下界、无额外动作平滑。新配置 `checkpoint.interval=100000, keep=null` 保留全部；首次100k跨界可能保存100032，最终200000可整除64。保留冻结源用于组合评估。
+- GPU0复用推理PID2419135/start47112225（WS18131）和64环境仿真PID2559979/start50881195（HTTP18101）；GPU1新trainer PID2864548/start60722307，monitor PID2864549/start60722307。receipt、实际配置副本、源码快照/SHAs、资源预检在新run目录，操作前核对PID/start_ticks/命令。与源DSRL模型/任务/观测身份13项一致；6个关键实现文件与已验证100k快照逐字一致，未改训练代码。
+- [实时W&B](https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/b3676d48406448a29665ea37e6bb424c) 已连接，远端API已确认学习指标上传。`initialization.json`记录0更新/0回放/空optimizer，正确冻结源及0可训练参数。14:55启动验收达到3136条/1105更新，数值有限、drop0、四进程身份一致；独立32项检查通过。1024→3136窗口13.27条/s，预计总耗时4.19h。证据 `startup_verified.json` / `startup_independent_audit.json` / `wandb_learning_check.json`；后续看实时status，recent SR仍是训练统计。
+- 按历史约13条/s预计4h10–20m，约19:00–19:15完成，属于估计。原DSRL100k/400k及残差400k均保留。本轮未commit/push。
+
+## 2026-11-06 PAP DSRL 100k 已完成，训练曲线已生成
+
+- `outputs/pap_dsrl_local_100k_20261105/` 于北京时间11月5日23:10:19正常完成，耗时7515.35秒（2h05m15s），100022 transitions / 98001 updates。预算100000，因最后完整并行批次多22条，status准确记录；drop0。
+- 全部9915条episode、1563条metrics核对一致：7499成功，累计训练SR75.6329%，recent100=91%、recent1000=90.8%。曲线PNG/PDF/SVG、CSV、逐episode数据及日志SHA摘要在该目录 `plots/`。这是训练探索统计，尚未独立评估。
+- 最终检查点 `train/checkpoints/step_000000100022.pt` 已保存，包含回放和优化器；配置 `interval=100000, keep=null` 全部保留。原400k DSRL与400k残差权重不变，后续不得退回keep2默认。
+- trainer和资源monitor正常结束。W&B上传子进程在收尾时超时，`wandb_status.json` 为 `local_fallback/shutdown_timeout`，远端最后指标可能缺失；本地status、metrics和权重完整，曲线按本地证据生成。本轮未启动额外训练/评估，未commit/push。
+
+## 2026-11-05 重新训练 PAP DSRL 100k，后续检查点每100k全部保留
+
+- **用户新的持久要求：后续强化学习每100k保存一次权重，保留全部，不再默认只留最新两份。** 通用三端trainer默认及6份训练模板改为 `checkpoint.interval=100000, keep=null`；旧普通runner默认及两份通用模板同步100k，原本不删除编号权重。旧fast runner继续100k永久编号权重+10k覆盖last.pt，永久文件不删除。历史outputs配置/已有权重不改；不要从旧配置复制回keep2。
+- 通用checkpoint按绝对区间跨界保存，避免批次越界导致后续保存时间持续漂移；final/正常停止仍保存。`keep`正整数仅用于显式选择轮转的兼容配置。96项trainer/end-to-end与34项旧runner测试通过，涵盖全部保留、旧keep2兼容、跨界/提前final/resume、非法配置和尾批计数。
+- 应用户要求从头重训PAP DSRL到100k。**21:05:03 已启动** `outputs/pap_dsrl_local_100k_20261105/`；先读取 `train/status.json`，不要重复启动。新actor/critic/optimizer/replay全部从零，无resume、无动作残差、无冻结旧DSRL；只冻结Wall-OSS。原DSRL和残差的400k权重保留。
+- 配置与原DSRL400k一致，只改预算/保存策略/输出日志：64环境、noise32×20/scale1.5、gamma.995按30Hz控制步、warmup2000、batch256、UTD1、replay100k；相同红方块位置随机任务、20秒episode和原相机、无动作平滑。`training_config_comparison.json`和14项身份检查证明契约一致。64环境必须执行全部活跃槽，100k尾批可能最多超32条，文件名/status按真实计数，不能假称精确100000。
+- GPU0复用推理PID2419135/start47112225和64环境仿真PID2559979/start50881195；GPU1新trainer PID2712306/start54326306，resource monitor PID2712307/start54326306。receipt均在新run目录，操作前核对PID/start_ticks/命令；源快照、配置和资源预检同目录。预计约2小时10分钟，约23:15完成，属于估计。
+- [本轮W&B实时日志](https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/c79e43a6291746e5b2aa073fd5ea8c0f)。21:08启动验收达到2816条/785更新，数值有限、drop0、四进程身份正常；远端W&B已收到真实学习指标。CPU独立按seed42重建actor哈希与新初始化完全相同，22项独立审计通过。证据 `startup_verified.json` / `startup_independent_audit.json` / `wandb_learning_check.json`；当前值请读实时status。本轮未commit/push。
+- 上轮固定DSRL+动作残差400k已于20:14完成，397969更新，52576个episode中46102成功，recent100=94%、recent1000=92.2%；冻结DSRL哈希全程不变。曲线在 `outputs/pap_residual_on_dsrl_400k_20261105/plots/`，尚未独立评估组合策略。原DSRL约100k checkpoint（100480）曾保存后被旧keep2轮转删除，只剩391872/400000，因此此次从头重训，不是恢复丢失权重。
+
+## 2026-11-05 PAP 固定 400k DSRL，重新训练 400k 动作残差
+
+- 上轮本机 PAP DSRL 已完成：400,000 transitions / 397,969 更新，耗时8h27m52；累计训练SR90.45%、recent100=95%。随后独立确定性评估128条、122成功（95.31%）。这两个SR口径不同。源checkpoint位于 `outputs/pap_dsrl_local_400k_20261105/train/checkpoints/step_000000400000.pt`，SHA256 `3fe807dc0ba36bbcf4f3b8a66d134d145266f915d9c78ce02a1842b55b0654cf`。
+- 用户要求在此基础上再训练400k动作残差。**11:39:15 已正式启动** `outputs/pap_residual_on_dsrl_400k_20261105/`，先读 `train/status.json`，不要重复启动。原Wall-OSS和DSRL actor冻结；新残差actor/critic、优化器、replay从零开始，未resume预检或任何旧残差。`initialization.json`和`frozen_dsrl.json`保存证据。
+- GPU0复用原BF16 Wall-OSS batch64推理PID2419135/start47112225（WS18131）及新64环境仿真PID2559979/start50881195（HTTP18101）；GPU1残差训练PID2561762/start50931471。资源monitor PID2561763/start50931471。实际receipt、配置、源码快照均在新run目录；操作前核对PID/start_ticks/命令。
+- PAP执行绝对关节/夹爪动作；残差全7维scale `[0.05,0.05,0.05,0.05,0.05,0.05,0.005]`，单位前6项rad、末项全夹爪宽m。gamma0.995按30Hz实际控制时长折扣；warmup2000零残差，随后50k渐进探索；batch256、UTD1、replay100k，timeout不bootstrap、critic不做Q值裁剪；每10k保存完整checkpoint，保留最近2份。原冻结DSRL使用确定性actor、noise32×20、scale1.5。保留源checkpoint供组合策略加载。
+- 同一观测编码一次→冻结DSRL产生噪声→缓存解码base动作→新残差→统一物理边界裁剪。新 `frozen_dsrl` 配置严格绑定源权重SHA、原模型/任务/观测契约；不恢复旧优化器、replay或RNG，保存时核对冻结actor张量哈希。实现见 `src/pressb/rl_nodes/trainer.py`，公开模板 `configs/rl_nodes/pap_residual_on_dsrl_local_fast.json`，说明 `docs/configurable_rl_nodes.md`。
+- 真实512-transition短预检已完成277更新，新actor确实变化、冻结actor不变，replay与指标有限，缓存/仿真所有权已释放，独立结果 `preflight_verified.json`；77项trainer/end-to-end测试通过。正式启动验收11:43达到2,880 transitions / 849更新，数值有限、drop0、四进程身份正常；W&B远端API已收到学习指标。证据 `startup_verified.json`、`wandb_learning_check.json`。1024→2880启动窗口13.66条/s，预计总耗时约8–9小时；后续以实时status为准。
+- [W&B实时日志](https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/119bc01936f440feb876eb69ab8a16d5)，recent SR为训练探索最近100个完成episode。仅统计本轮新增400k transition，不包含源DSRL的400k。未commit/push。
+- 上轮执行视频及频闪修正已完成：`outputs/pap_dsrl_400k_video_20261105/stable_render/pap_dsrl_400k_execution_1x.mp4`。同3条实际轨迹、30fps原速；离线重渲染提高到2×8子帧，冻结画面波动第三视角下降37.2%、腕部33.7%。**正式训练仍保持原2×1渲染和无动作平滑**，未把视频效果调整带入训练。
+
+## 2026-11-05 本机 PAP DSRL 400k 正式训练已启动
+
+- 用户要求“先在本机启动400k训练”。北京时间 **02:16:50** 从头启动 **400,000 chunk transitions**，无 resume，未使用两轮10k基准的RL权重/回放。运行目录 `outputs/pap_dsrl_local_400k_20261105/`；先读取实际 `train/status.json`，不要重复启动。
+- GPU0：复用健康的本机BF16 Wall-OSS推理，原生batch64/H32/10flow/full_attention，PID2419135/start47112225，WS18131；新64环境PAP仿真PID2449684/start47551707，HTTP18101。GPU1：DSRL训练PID2450028/start47556959，cuda:1、两卡可见、CPU线程1。实际receipt/配置/源码SHA快照均在运行目录；管理进程前核对PID/start_ticks/命令。
+- 配置沿用本机较快方案：红方块、四条绿标记边围成矩形内随机位置；640×480原生相机、20秒episode、不平滑、动作裁剪；noise32×20、scale1.5、warmup2000、batch256、UTD1、replay100k，gamma0.995按30Hz控制步，timeout不bootstrap。只学习噪声策略，Wall-OSS冻结；每10k保存含replay/优化器/RNG完整检查点，保留最近2份。原仿真与模型元数据逐项核对通过。
+- W&B已启用且远端API收到真实指标：[实时日志](https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/a8dab53dbad144a7b69042c9f2919485)。recent SR是训练探索最近100个完成episode统计，不是独立评估。`train/metrics.jsonl`、`episodes.jsonl`为本地证据，`wandb_status.json`为上传状态；启动后核验写入 `startup_verified.json`。
+- 磁盘剩余约13.7TiB，仿真加载后主机available约39.5GiB，100k replay原始约1.776GiB，keep2+临时写入峰值有充分余量；预检 `resource_preflight.json`。资源采样每60秒、上限48h，trainer退出即结束，PID2450240/start47560499；无RPC/GPU分配，不干扰采样。
+- 启动验收：2,560 transitions / 529 SAC更新 / 189.68秒（13.50条/s），3端身份正常、指标有限、drop0；W&B远端已收到学习指标。`startup_verified.json`、`wandb_learning_check.json`保存证据。该计数为启动快照，后续直接看实时status。
+- 按上一轮实测13.3434条/s预计约 **8.33小时**，对应11月5日约 **10:37**，属于估计。运行说明与安全停止步骤在该目录 `README.md`。本轮未commit/push。下方“仅保留推理/未启动400k”是此前基准结束时的历史记录。
+
+## 2026-11-05 Wall-OSS 已迁回本机，三种部署耗时对照完成
+
+- 用户要求本机两张 5090 上运行推理并比较耗时。复用独立 `.conda/envs/wallx-inference`（Torch2.7.0+cu128），将已有修正的 Wall CUDA 扩展重编为原生 sm120；200项GPU窗口索引检查通过。模型保持BF16、batch64、H32、10步flow、full_attention前缀缓存。新公开配置 `configs/rl_nodes/pap_walloss_local_fast_inference.json` 与 `pap_dsrl_local_fast.json`，配合已有 `pap_vector_fast_simulation.json`。
+- 真实三组同口径：均10,048条，主窗口2048→10048。H200推理 **12.5489条/s**；本机GPU1推理+SAC共卡 **12.9107条/s**；本机GPU0仿真+推理、GPU1独占SAC **13.3434条/s**。最后一种比H200快 **6.33%**，400k/1M外推 **8.33/20.82h**，并非已完成长程训练。15条/s仍未达到，未更改门槛。第二轮总耗时755.006秒，两轮本机均8017更新，窗口8000更新、零drop、47未消费credit保存在完整checkpoint内。checkpoint/replay/episode审计全部通过。
+- 同64组观测的5次稳定纯推理对照：H200 encode/decode **1.812/1.179秒**，本机 **0.964/1.743秒**。通信减少而本地flow更慢，净收益有限。完整训练中，推理与SAC共卡decode1.933秒，改为与仿真共卡后1.770秒；SAC窗口累计耗时188→50秒（与RPC重叠不可直接相加）。共卡GPU0采样峰值29,852MiB，最低空闲2,235MiB，无OOM；64环境/128路640×480及任务物理配置均未降低。
+- 输出差异：两张本机5090同输入特征/动作完全一致；H200与本机虽权重/源码/归一化一致，Torch/CUDA栈不同，BF16输出不完全一致。三组固定噪声手臂RMS约0.16度、最大2.625–5度，夹爪最大5.16–14.92mm。这是执行前命令差异，不能用训练recent SR证明迁移后的成功率等价。纯推理配对与三种部署均只做有限次数测量，不是硬件单因素或统计显著性结论。
+- 当前仅保留本机GPU0推理 `ws://127.0.0.1:18131`，PID2419135/start_ticks47112225，cache0；管理前必须核对 `outputs/pap_dsrl_local_5090_20261105/sim_inference_colocated/inference_process.json`。两组测试trainer/simulation已退出，临时H200 GPU2服务也已停。GPU0约14726MiB已用（含桌面），GPU1约17MiB。下次仿真GPU0+推理GPU0、SAC GPU1；推理启动用 `CUDA_VISIBLE_DEVICES=0` 配JSON逻辑`cuda:0`。未启动新的400k训练。
+- 原始证据 `outputs/pap_dsrl_local_5090_20261105/`，第二组 `sim_inference_colocated/`；汇总 `three_deployment_comparison.json`、最终服务状态 `final_deployment_state.json`。文档 [本机推理对照](pap_dsrl_local_inference.md)，可跟踪报告 `docs/results/pap_dsrl_local_5090_20261105.json`。W&B两组已结束：`748e5ea0bc1d4ae88d38ff4166090f5f`、`3f047d6e915742fcb3a98e57c1d545b4`。本轮未commit/push。
+
+## 2026-11-04 PAP DSRL 提速完成，10k 持续验证已结束
+
+- 用户要求停止原训练并优化。旧运行 `outputs/pap_dsrl_h200_bf16_64env_400k_20261104/` 安全停止于 **3,520 transitions / 1,532 updates**，完整checkpoint/replay/优化器/RNG保留。不要自动重启旧run或把其replay恢复到新profile；渲染、调度和模型运行身份不同。下方“正式训练已启动”是历史记录。
+- 新配置：`configs/rl_nodes/pap_vector_fast_simulation.json`、`pap_walloss_h200_fast_inference.json`、`pap_dsrl_fast.json`。保留64环境、128路原生640×480、最多32动作/chunk、10步BF16 flow、20秒episode、UTD1与物理成功标准。已实现DLSS历史显式清除+两次零物理tick渲染，step/indexed-reset共用观测边界，零bootstrap终止态省略视觉编码，精确PIL预缩放/二进制PNG，以及单次decode内 `full_attention` 前缀隐藏态复用。默认旧接口和电梯入口保留。
+- 最终验证 `outputs/pap_dsrl_optimization_20261104/fused_native_train/` 完成 **10,048 transitions / 8,018 updates / 799.935秒**。warmup后2048→10048窗口 **12.5489条/s**，比旧1.4406快 **8.71倍**；含检查点保存。8000条对应8001次更新（消耗1份已有credit），无drop，580次实际环境重置。15条/s目标尚未达到，其余验收条件通过。400k／1M外推 **8.85／22.14小时**，不等于已跑完；更大replay保存、启动及网络变化会增加时间。历史电梯400k7.43h、1M15.16–19.81h，且电梯每chunk最多7动作，PAP32动作。
+- 当前耗时：仿真step+reset38.2%，encode整条RPC35.7%，decode22.9%；SAC更新与等待重叠。旧权重备份共享网络，经85秒恢复watchdog保护，仅暂停接收rsync10.87秒做A/B，encode中位1.841→1.718→恢复1.827秒；备份已恢复写入，15次特征完全一致。不能把这项短测当整体训练达标。
+- 正确性：原生640的64环境专家回放64/64成功；64个真实初始布局、三种噪声的full_attention与原batch64 BF16特征/动作样本精确一致（不代表BF16 batch1等价）；CPU回归295+电梯Python3.11回归7，共302通过，Wall前缀另14通过。完整checkpoint audit通过，保留10048回放/8018更新与46未消费credit，参数确有更新且全部有限。训练SR不等于独立评估。
+- 训练及仿真进程已退出，H200 GPU2推理服务也已停止释放GPU；未启动新的400k正式训练。SSH端口转发仍可复用。部署H200时必须 `CUDA_VISIBLE_DEVICES=2` 配合配置内`cuda:0`，不要占用他人的GPU0任务。默认示例W&B关闭，本次验证显式开启并已finished：[W&B](https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/1781eecaceed49f08508cd3f1b8a301c)。
+- 完整说明、命令与限制：[PAP提速](pap_dsrl_pipeline_optimization.md)；可跟踪结果 `docs/results/pap_dsrl_pipeline_optimization_20261104.json`。原始证据在 `outputs/pap_dsrl_optimization_20261104/`，渲染在 `outputs/pap_dsrl_optimize_20261104/`。本轮未commit/push。
+
+## 2026-11-04 PAP DSRL 正式训练已启动
+
+- 用户确认使用 H200 BF16 推理；北京时间 **22:08:57** 已从头启动 **400,000 chunk transitions**，无 resume。运行目录 `outputs/pap_dsrl_h200_bf16_64env_400k_20261104/`；参数、命令、实时状态和安全停机说明见该目录 `README.md`。正式 `train/` 与短预检 `preflight/` 独立。不要根据本段重复启动；先读 `train/status.json` 并核对进程 receipt。
+- H200 GPU0：冻结 Wall-OSS，原生 batch64、BF16、10 步 flow、cache256；服务 PID 历史记录 **3106521**，已替代下节旧 PID 3084098。SSH 转发 `ws://127.0.0.1:18130`；本机 GPU0：64 PAP 环境、128 路原生 640×480 相机、48 次 reset 渲染；本机 GPU1：DSRL SAC（`zprl` Conda，Torch 2.7.0+cu128）。各进程 PID/start_ticks/命令见 `inference_process.json`、`simulation_process.json`、`training_process.json`，源码及 SHA 已冻结保存。
+- 固定红色方块、绿色标记长轴围成的矩形内随机位置，20 秒 episode；不加动作平滑，执行绝对关节/夹爪动作并显式裁剪至物理边界。SAC 观测 2062 维、噪声动作 `32×20`、scale1.5、warmup2000、minibatch256、UTD1、replay100k；gamma0.995按30Hz实际控制时间折扣。只训练噪声策略，不更新 Wall-OSS 参数，不叠加动作残差。每10k保存，保留2份含回放、优化器和 RNG 的完整检查点。
+- 为保留完整 batch64，本次 WS 客户端和服务端消息上限显式设置 **192 MiB**；接口默认仍64MiB，HTTP旧请求限制不变。无需降低相机分辨率或拆批。可选 W&B 使用独立上传子进程，不阻塞采样/学习；训练退出有界清理、父进程意外死亡检测、失败回退本地日志，上传配置不包含端点 URL 或 token。
+- 真实短预检完成 **256 transitions / 211 SAC updates**；保存检查点所有数值有限、actor相对初始参数最大变化0.00988，actor/critic优化器和完整回放可读，清理后推理cache0、仿真run已释放。此短测没有完整episode，不能作为成功率或收敛证据。审计见 `preflight_audit.json`；本次logger/transport/端到端相关测试通过，最终logger父进程退出回归也通过。
+- 正式运行的 [W&B](https://wandb.ai/penggq2025-southern-university-of-science-technology/pressb-online-rl/runs/2cd7fd1fcd9f4b00b2b1e3c5a11bc295) 已由远端 API 核验收到真实指标（`wandb_remote_check.json`）。以 `train/status.json`、`metrics.jsonl`、`episodes.jsonl` 为本地完整证据；`wandb_status.json` 给出连接状态及 URL。recent SR 是训练探索期间最近100个完成episode的成功率，不是独立评测。以下“尚未正式训练”段落为此前阶段记录。本次未 commit/push。
+- **22:29 启动验收：** 正式运行达到2,048 transitions / 50次SAC更新，actor和critic均实际更新，所有最后更新指标有限、dropped_update_credit=0；154个已完成episode中122成功，recent100 SR=68%。这是几乎全部来自warmup的探索统计，不能作为RL提升结论。`startup_verified.json`保存随后22:30的验收快照（2,112 transitions / 116 updates），后续进度读取实时status。此时累计端到端仅约1.68 transition/s，主要累计耗时为reset615.8秒、encode整条RPC376.0秒；完整400k按早期速度约66小时，未达到小时级目标。encode包含PNG处理/网络/模型，不能全归为GPU计算；reset全场48帧与终止时截图是后续优化点，未为提速而更改本次图像契约。不要将此前16.11 chunks/s的纯模型基准当成训练采样吞吐。
+
+## 2026-11-04 H200 Wall-OSS 真正 batch 推理
+
+- 已部署到 H200 `/home/pengguanqi/Worksapce/Research/PressB-walloss`，使用独立 `.venv` 覆盖依赖，继承现有 PyTorch 2.6.0+cu124；原训练环境未改。PAP 权重位于持久目录 `/home/pengguanqi/Models/piper_pap_20260606`（实体在 data 分区），文件 SHA256 与本机一致；无优化器文件上传。只清理了可重建的包管理缓存，未删除既有训练权重。未 commit/push。
+- 推理 policy、预处理、模型、缓存拆分/重组和 PressB adapter 均支持 native batch；不同长度语言指令左 padding，并修正多模态 RoPE offset。每条缓存独立持有 embeddings/位置编码与基线噪声，支持重排、子集和重复引用；并非 Transformer KV cache。视觉按观测总 token 宽度分组，保留内部图像/窗口 mask，避免所有图像拼接后的平方级 attention。B1 旧路径及原 RTC 接口保留。
+- 修复 `ref/wall-x/csrc/window_index.cu` 超过 256 窗口时的跨 CUDA block 前缀和竞争；H200 已用 CUDA 12.8、sm90 重新编译。**其他机器部署也必须重新编译 extension，不能仅同步 Python；本机旧 extension 尚未重编。** GPU 窗口索引测试 200 次通过（含 B64、混合尺寸、默认/非默认 stream；不代表所有模型 CUDA 算子均支持任意 stream）。Wall batch/flow CPU 测试 23 项通过，PressB 相关测试 30 项通过；本轮较早的完整 PressB 回归 1,521 passed / 13 skipped。
+- 完整权重 BF16 实测 B1→B64：2.54→16.11 observation chunks/s（6.35×），B64 编码 1.657s、10 步 flow 解码 2.315s，峰值 allocated/reserved 11.64/13.42 GiB。forward hooks 证明 1 次视觉调用含 128 图像、10 次 Transformer 调用均 B64；缓存解码不再编码图像。基准使用 3 组真实 Isaac 观测循环扩展、4 种长度指令和独立外部噪声，不是 64 个独立布局的策略评测，不含网络/仿真/学习。
+- **精度限制：** BF16 B64 对同噪声逐条基线，最大关节差 0.135263 rad（7.75°）、夹爪差 8.125mm；RMS 分别 0.004083 rad / 0.620mm。没有将这些误差判为可接受，也不能保证闭环 SR 不变。几何/索引对照完全一致；FP32 同精度 B64 对逐条最大误差 3.74e-5rad / 2.25e-6m，但仅 3.11 chunks/s。关闭 BF16 reduced-precision reduction 未解决偏差，未更改 production 默认。FP32 也不等价于原 BF16 单条基线。
+- 配置 `configs/rl_nodes/pap_walloss_h200_inference.json` 当前 BF16、batch64、cache256、TTL600。H200 GPU0 服务及本机 SSH 转发保持运行，可访问 `ws://127.0.0.1:18130`；本次启动 PID H200=3084098、本机 tunnel=2272260，仅作记录，操作前核对 receipt 中 start_ticks。网络64条 encode/decode/infer/release 通过，重复 decode 与同 batch cached-vs-infer exact0，缓存释放后0。encode6.235s、decode2.445s、infer8.203s；最大请求29.00MiB，仅代表此3组观测样本，不覆盖原生64环境最坏消息尺寸。尚未开始64环境正式DSRL训练或批量策略成功率评估。
+- [部署与性能说明](walloss_batch_inference.md)、[可跟踪结果](results/walloss_batch_h200_20261104.json)；原始证据、日志、配置、精度诊断和进程 receipt 在 `outputs/walloss_batch_h200_20261104/`。以下段落的 microbatch=1 是先前阶段记录，已被本节更新。此前63.12MiB是仿真reset响应的直接JSON序列化尺寸；HTTP64MiB限制接收请求，WS限制双向接收，不能把该数值直接当成已经超限的网络请求。
+
+## 2026-11-04 PAP 64 环境共享 World 验证
+
+- 用户要求尝试 PAP 64 并行；新增 `src/pressb/rl_nodes/pap_vector.py`、`configs/rl_nodes/pap_vector_simulation.json` 和 `scripts/benchmark_pap_parallel.py`。旧进程式后端保留。共享单 Isaac World、CPU PhysX tensor 批量读写及 128 路 tiled RGB，相机保留原生 640×480 标定；不宣称 GPU 原生物理或 Wall-OSS batch64 推理。
+- 真实 64 环境容量测试完成 640 transitions、320 条超时 episode、10 次独立 reset 隔离检查；64 个随机物体位置和 128 路有效相机均已核对。显存监测峰值 15.07 GiB、进程 RSS 12.46 GiB。测试设置 reset_render_frames=8，纯 step 35.82 transition/s，包含高频两秒超时重置后 9.27/s；8 次渲染仍可见原物体位置的灰色残影，默认配置保持 48 次，不作为正式图像配置推荐。
+- 使用历史 `wallx_pap_eval_20261023/run/episodes/red_000` 中已经平滑的绝对动作，不再次平滑，在 64 环境以默认 48 次 reset 渲染重放，**64/64 物理成功**。双指接触、抬升、入盒、释放和稳定落底均通过；这是同一记录动作的物理验证，不是策略成功率。监测峰值显存 15.10 GiB、RSS 12.65 GiB。
+- 新 reset 在启动时统一稳定后缓存关节，随后按索引零物理 tick 恢复，任务指纹与旧进程后端不同；每次 step 要求全部活跃环境且前缀等长。终止观测在准确 tick 缓存；已结束物体随后可能继续自然沉降，不再产生 transition。当前仅支持每个服务一种配置物体几何，位置和颜色可随机。
+- 修复了 USD 角度／PhysX 弧度的运行时 PD gains 对齐，并读回核对。服务新增等长前缀的提前校验，不因无效请求污染健康状态。回归 **1,508 passed／13 skipped**。详细命令、报告和限制见 [PAP 并行容量](pap_parallel_capacity.md)，原始证据位于 `outputs/pap_parallel_capacity_20261104/`。本轮未启动正式 DSRL 长训练，未 commit/push。
+- 最后默认 48 次渲染的随机位置测试也通过：128 transitions／64 次超时、两次独立 reset，128 路图像无前述灰色残影。初次 reset 26.90 秒，纯 step 39.10 transition/s，包含人为高频且拆成两次的 reset 后 2.27/s；不外推正常 20 秒任务。最大 JSON 响应 **63.12 MiB**，距现有 64 MiB 上限不足 1 MiB；仅做了直接序列化尺寸检查，尚未验证 64 路网络＋推理＋训练，正式训练前需处理通信余量和逐样本推理瓶颈。所有本轮 GPU 测试进程均已退出。
+
+## 2026-11-04 可配置三端 RL 框架
+
+- 新包 `src/pressb/rl_nodes`：schema-v2 能力协商、HTTP／Wall-X 风格 MessagePack WS 通信、推理上下文缓存、带身份和幂等保护的仿真服务、通用 SAC 调度。保留所有旧电梯实验入口。
+- 入口：`serve_inference_node.py`、`serve_simulation_node.py`、`run_rl_training.py`；8 份配置在 `configs/rl_nodes`，完整职责、API、跨机器部署和限制见 [可配置三端说明](configurable_rl_nodes.md)。公开方法名 `dsrl` 对应底层旧 `initial_noise`，支持动作残差和原模型评估。
+- PAP Wall-OSS：外部噪声 `32×20`、最终绝对关节／夹爪动作 `32×7`，新通信边界统一 rad/m；使用 checkpoint 自带归一化。缓存多模态 embeddings/RoPE，非 Transformer KV；当前真实模型 microbatch=1，不宣称 Wall-OSS 已批量加速。`ref/wall-x` 独立仓库内的模型／policy／flow_context 改动必须与 PressB 一起保留；尚未 commit/push。
+- PAP 仿真：每个环境一个 Isaac 进程，支持并发命令、独立 reset、真实物理成功判定、位置／颜色／物体随机化和可选 joint EMA。此方案每环境独占渲染器，显存成本高于电梯 tensor-vectorized 方案；仍在请求批次内等待所选 workers，非完全异步环境调度。
+- 训练端：维度、单位、相机／控制率启动校验；真实 terminal next_obs 入 replay；按实际 tick 时长折扣；RPC 等待期间 SAC 更新；checkpoint 数量限制和完整 replay/optimizer/RNG 恢复。resume 重新 reset 仿真，不承诺 Isaac 状态逐位续接。显式 action_bounds=clip 时，执行端与残差 critic 使用一致边界，记录裁剪统计。
+- 验证覆盖 CPU 真实 HTTP／跨 Conda WS、独立子进程 IPC、两种动作／噪声几何、实际 SAC 更新和恢复。完整 Wall-OSS 权重＋真实 Isaac 图像的缓存／原生解码最大误差为 0，改变噪声会改变动作，特征保持不变。随后使用两个真实 PAP Isaac worker，在 GPU0 运行模型及仿真、GPU1 运行学习，DSRL 与动作残差各完成 **24 条 transition／22 次 SAC 更新／2 条超时 episode**，保存检查点。测试人为将 episode 限制为 2 秒，仅验证功能，未进行 PAP 长程训练或成功率评估。报告、配置、日志及权重见 `outputs/rl_nodes_smoke_20261104`。H200 原监督训练未干预。
+- 电梯兼容 adapter 连接一个全新、未被占用的旧 fast simulation 服务，保留全 7 步／全部活跃环境 step 约束；中途关闭活跃 episode 后需重启旧仿真和通用 simulation 节点。桌面按键 joint6 尚无新 schema-v2 adapter，原功能不变。
+- 最终 PressB 回归 **1,491 passed／13 skipped**，Wall-X flow 测试 **3 passed**。短测结束后检查缓存为空、仿真所有权释放，再正常关闭本次推理／仿真服务及两个 worker；`service_cleanup.json` 已确认进程均退出。
+
+## 2026-11-03 新三色路径多任务模型：H200 训练队列已启动
+
+- 用户要求用刚合并的 `piper_table_buttons_target_relative_multitask_3000_20261103` 近／中／远三份数据各训练一个模型。新监督入口为 `outputs/table_buttons_target_relative_multitask_joint6_3000_20261103`；**当前记录时正在传数据，尚未进入正式 GPU 训练**。以后读 `workflow_status.json`、`storage/transfer_status.json` 和 `preparation_worker_status.json` 判断实时状态，不要重复启动。
+- 三卡各一个模型，近／中／远 GPU0／1／2；官方预训练独立初始化、不 resume，state7/action6、夹爪固定；3 epochs、batch64、905 warmup，更新数 **18,096／18,096／18,093**。每档 900／100 布局→2,700／300 episodes，三色同布局不跨集合；验证各色500 anchors，以三色等权六关节首步MAE选best。此处MAE不是任务成功率。
+- 数据传输、真实三组reader检查＋batch64三步GPU短测、配额核验及正式训练监督四个后台进程已启动；`startup_receipt.json` 记录身份。全部前置检查通过后自动训练、验证best推理并将原精度best/last归档到本机 `/home/pengguanqi/Models/VLA-JEPA/table_buttons_target_relative_multitask_joint6_3000_20261103`。只保存best/final，不保存optimizer/RNG，无法精确续训。
+- 新数据H200公开路径与本机同名，实体在 `/home/pengguanqi/persistent_datasets/piper_table_buttons_target_relative_multitask_3000_20261103`；模型近／中放home下 `vlajepa_target_relative_multitask_joint6_3000_20261103/runs`，远放data下 `VLA-JEPA-target-relative-multitask-joint6-3000-20261103/runs`。均为持久目录，不放 `/tmp`。
+- 用户已明确授权删除**旧20261027多任务**六个best/last远端model.pt；两端原精度SHA与归档回执匹配后已执行，释放约57.38GiB。本机完整备份及两端配置／日志保留，回执在 `storage/checkpoint_cleanup_receipt.json`。另清理约9.05GiB可再建pip缓存与遗留uv安装临时目录。原始单任务／多任务数据保留。
+- 三个训练配置及独立新监督脚本已准备，8项本机监督回归通过；GPU短测颜色记录使用实际 `train.jsonl` 的 `batch_color_counts`（旧trainer的probe contract没有该字段），不能据缺失字段误判短测失败。详细路径、自动流程和日志见 [本轮训练记录](../outputs/table_buttons_target_relative_multitask_joint6_3000_20261103/README.md)。
+
+## 2026-11-03 新三色路径数据：三档各 3,000 条多任务合并完成
+
+- 使用最新 `target_relative_v2` 九份单任务数据 `/home/pengguanqi/Datasets/piper_table_buttons_target_relative_1000_20261030`，按近／中／远分别合并红黄蓝各 1,000 条。新目录为 `/home/pengguanqi/Datasets/piper_table_buttons_target_relative_multitask_3000_20261103/{near,medium,far}_multitask`；原九份数据及旧版多任务数据均保留。
+- 三档各 **3,000 episodes**，帧数依次为 **428,893／428,885／428,813**，合计 **9,000 episodes、1,286,591 帧**。保持 LeRobot v3、30 Hz、双相机 640×480、原 joint7 状态／动作及单位；六关节输出仍应在训练端选择。任务指令保持 `Press the red/yellow/blue button.`，跨间距一致。
+- 全量数值逐行比对、索引／任务映射、视频原字节复制、原数据未改动检查通过；官方 reader 抽查源／合并图像一致。独立核对全部 9,000 条 episode 的源模板／位置／时序元数据，三个最终发布路径均可用官方 reader 读取。
+- 各档恰好 1,000 个布局、每布局三种任务；后续训练／验证按 `layout_group_id` 分组，避免同布局跨集合。入口 `merge_summary.json` 与每组 `meta/audit.json` 均 success=true；命令、日志及独立验收见 [本轮合并记录](../outputs/table_buttons_target_relative_multitask_3000_20261103/README.md)。本轮仅合并，未启动训练或传往 H200。
+
+## 2026-11-03 新三色路径数据的全量轨迹相似度
+
+- 已分析 `piper_table_buttons_target_relative_1000_20261030` 全部 9,000 条／1,286,591 帧；每档 1,000 个同布局三色组，共 3,000 布局、9,000 对。排除固定夹爪与开头 0.4 秒静止，六关节实测状态减初始值，活动段按进度对齐 101 点。近／中／远总体关节位移余弦 **0.87064／0.80064／0.60576**，FK 末端平均距离 **7.592／10.159／15.455 cm**，六关节 RMSE **10.214／12.968／19.127°**。余弦不是相似百分比。
+- 新数据三对红黄／红蓝／黄蓝余弦：近 **0.83054／0.86092／0.92048**，中 **0.75656／0.79009／0.85527**，远 **0.58484／0.56846／0.66398**。近距黄蓝仍最相似；新路径差异主要发生在接近阶段（0.4–4.0秒），共同下压从4.0秒起。不得沿用旧2.2／3.1秒阶段边界。
+- 旧新布局完全相同子集为近965／中943／远917。关节余弦旧→新为 **0.95991→0.87468／0.89031→0.80734／0.70283→0.60696**；末端距离变化 **+33.05%／+2.77%／−8.63%**。因此不能声称所有档位的空间分离都增加。同布局对照仍同时改变路径、时序及部分可行接近姿态；再限定所有三色接近姿态与IK目标一致的880／841／750布局后，距离变化仍为+33.22%／+2.61%／−8.64%，结论不变。
+- 27条原始／导出数据对照与独立XML/Rodrigues FK的135条配对阶段记录复算均通过；七项指标最大差1.07e−14。全部逐配对CSV共54,000行；CI按布局bootstrap 2,000次，seed42。公共物理时钟敏感性结论一致。未重跑仿真、未修改数据或训练模型。
+- 报告、全量指标、同布局对照、独立核验及三套PNG/SVG/PDF图在 [本轮分析](../outputs/table_buttons_target_relative_similarity_20261103/README.md)。包括预先指定seed42的三档实际三色末端轨迹。上述是示范轨迹差异，不是模型语言敏感性或闭环成功率。
+
 ## 2026-11-03 核验：三色朝目标模板九组全新 1,000 条已全部完成
 
 - 本轮已于北京时间 **2026-11-01 05:22:49** 完成：`run/suite_status.json` 为 complete，`run/completion_summary.json` success=true。九组各 **1,000 条，共全新 9,000 条、1,286,591 帧**，九份 LeRobot 导出及全量物理／动作／视频审核全部通过，无错误；3,000 个三色配对布局核对无差异。监督器已无活动子进程，无需重新启动。

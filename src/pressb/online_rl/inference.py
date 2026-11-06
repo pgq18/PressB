@@ -1,4 +1,4 @@
-"""Frozen VLA-JEPA inference addon, without modifying the training repository.
+"""Frozen VLA-JEPA inference using the bundled model source by default.
 
 Only this module needs the H200 model environment. Encoder contexts remain on
 the inference device; the learner receives pooled features and sends explicit
@@ -16,13 +16,14 @@ import math
 from pathlib import Path
 import re
 import subprocess
-import sys
 import time
 import uuid
 
 import numpy as np
 from PIL import Image
 import torch
+
+from pressb.model_sources import activate_source, builtin_source_root, source_tree_sha256
 
 
 @dataclass(frozen=True)
@@ -84,14 +85,24 @@ def _source_identity(repo):
         "starVLA/model/modules/vlm/QWen3.py",
     )
     identities = {name: hashlib.sha256((repo / name).read_bytes()).hexdigest() for name in files}
-    try:
-        commit = subprocess.check_output(
-            ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL,
-        ).strip()
-    except (OSError, subprocess.CalledProcessError):
-        commit = None
-    return dict(vla_repo=str(repo), git_commit=commit, source_sha256=identities,
-                addon_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+    bundled = repo.resolve() == builtin_source_root("vlajepa").resolve()
+    commit = None
+    if not bundled:
+        try:
+            commit = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL,
+            ).strip()
+        except (OSError, subprocess.CalledProcessError):
+            pass
+    identity = dict(vla_repo=str(repo), git_commit=commit, source_sha256=identities,
+                    addon_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+    if bundled:
+        # A bundled tree belongs to PressB's Git checkout. Its parent HEAD is
+        # not an upstream VLA-JEPA revision and must never be reported as one.
+        identity.update(source_distribution="pressb_builtin",
+                        vendored_manifest_sha256=hashlib.sha256((repo / "source_manifest.json").read_bytes()).hexdigest(),
+                        bundled_model_source_sha256=source_tree_sha256("vlajepa", repo))
+    return identity
 
 
 class FrozenPiperBackend:
@@ -134,12 +145,11 @@ class FrozenPiperBackend:
             raise RuntimeError("The inference model must be completely frozen")
 
     @classmethod
-    def load(cls, vla_repo, checkpoint, *, device="cuda:0", image_preprocess_device="cpu",
+    def load(cls, vla_repo=None, checkpoint=None, *, device="cuda:0", image_preprocess_device="cpu",
              base_vlm=None, base_encoder=None):
-        repo = Path(vla_repo).expanduser().resolve(strict=True)
-        if not (repo / "starVLA/inference/piper_policy.py").is_file():
-            raise ValueError("vla_repo must contain starVLA/inference/piper_policy.py")
-        sys.path.insert(0, str(repo))
+        if checkpoint is None:
+            raise ValueError("checkpoint is required")
+        repo = activate_source("vlajepa", vla_repo)
         module = importlib.import_module("starVLA.inference.piper_policy")
         if not Path(module.__file__).resolve().is_relative_to(repo):
             raise RuntimeError("A different starVLA repository is already imported")

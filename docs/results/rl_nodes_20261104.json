@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-04",
+  "purpose": "Configurable inference, simulation and training integration validation",
+  "test_suites": {
+    "pressb": {
+      "passed": 1491,
+      "skipped": 13
+    },
+    "wall_x_native_flow": {
+      "passed": 3
+    }
+  },
+  "real_integration": {
+    "inference_model": "PAP Wall-OSS full checkpoint",
+    "simulation": "2 independent Isaac PAP worker processes",
+    "gpu_layout": {
+      "inference": 0,
+      "simulation": 0,
+      "learner": 1
+    },
+    "episode_limit_seconds": 2,
+    "execution_prefix_control_steps": 8,
+    "action_shape": [
+      32,
+      7
+    ],
+    "noise_shape": [
+      32,
+      20
+    ],
+    "feature_shape": [
+      2048
+    ],
+    "cached_vs_native_max_absolute_error": 0.0,
+    "repeated_baseline_max_absolute_error": 0.0,
+    "feature_change_across_noise_seed": 0.0,
+    "external_vs_zero_noise_max_action_change": 0.4461497664451599,
+    "runs": {
+      "dsrl": {
+        "state": "completed",
+        "transitions": 24,
+        "updates": 22,
+        "episodes": 2,
+        "replay_size": 24,
+        "elapsed_seconds": 11.744510562974028
+      },
+      "action_residual": {
+        "state": "completed",
+        "transitions": 24,
+        "updates": 22,
+        "episodes": 2,
+        "replay_size": 24,
+        "elapsed_seconds": 13.244782263995148
+      }
+    }
+  },
+  "all_checkpoint_checks_passed": true,
+  "all_smoke_services_stopped": true,
+  "artifacts_root": "outputs/rl_nodes_smoke_20261104",
+  "limitations": [
+    "Short integration runs only; not a task success-rate or convergence evaluation.",
+    "Wall-OSS model microbatch size is 1; observation encoding cache is not a Transformer KV cache.",
+    "PAP uses one Isaac renderer/process per environment; request batches wait for the selected workers.",
+    "Tabletop-buttons joint6 has no schema-v2 adapter yet; its existing workflow remains available."
+  ]
+}

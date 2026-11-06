@@ -1,0 +1,353 @@
+{
+  "date": "2026-11-06",
+  "status": "passed",
+  "architecture": {
+    "runtime": "src/pressb/runtime",
+    "task_plugins": "src/pressb/tasks",
+    "model_adapters": "src/pressb/models",
+    "experiments": "configs/experiments",
+    "entrypoint": "scripts/run_experiment.py",
+    "commands": [
+      "list",
+      "validate",
+      "prepare",
+      "inference",
+      "simulation",
+      "train",
+      "eval",
+      "collect"
+    ]
+  },
+  "cpu_tests": {
+    "full_suite": {
+      "passed": 1977,
+      "skipped_missing_dependencies": 13,
+      "failed": 0
+    },
+    "dependency_specific_supplements": {
+      "usd_and_collision_passed": 71,
+      "official_lerobot_writer_reader_passed": 1,
+      "remaining_skips": 0
+    },
+    "unique_passed_total": 2049
+  },
+  "physical_replay": {
+    "pap": {
+      "successes": 2,
+      "episodes": 2
+    },
+    "table_buttons": {
+      "successes": 9,
+      "episodes": 9,
+      "profiles": [
+        "near",
+        "medium",
+        "far"
+      ],
+      "colors": [
+        "red",
+        "yellow",
+        "blue"
+      ],
+      "wrong_target_and_timeout": "passed",
+      "joint7_gripper": "passed",
+      "randomization_seed_reproducibility": "passed"
+    },
+    "elevator": {
+      "successes": 2,
+      "episodes": 2,
+      "target_floor": 33,
+      "ticks_to_success": [
+        148,
+        148
+      ],
+      "indexed_reset_and_timeout": "passed"
+    }
+  },
+  "real_model_checks": {
+    "vlajepa_joint6": {
+      "batch": 2,
+      "max_abs_difference_vs_original_policy_si": 0.0
+    },
+    "vlajepa_joint7": {
+      "batch": 2,
+      "max_abs_difference_vs_original_policy_si": 0.0
+    },
+    "external_noise_and_encode_decode_equivalence": "passed"
+  },
+  "three_node_checks": {
+    "pap_walloss": [
+      "base_eval",
+      "fresh_dsrl_train",
+      "full_checkpoint_resume",
+      "frozen_dsrl_residual_train",
+      "residual_eval",
+      "generic_collection"
+    ],
+    "small_dsrl_transitions": 40,
+    "resumed_dsrl_transitions": 48,
+    "small_residual_transitions": 40,
+    "recorded_episodes": 2,
+    "recorded_transitions": 33,
+    "decoded_recorded_pngs": 132,
+    "frozen_actor_unchanged": true
+  },
+  "capacity_function_check": {
+    "status": "passed",
+    "scope": "Short functional regression only; not a throughput benchmark or learning-effectiveness evaluation",
+    "num_envs": 64,
+    "render_resolution": [
+      640,
+      480
+    ],
+    "transmitted_resolution": [
+      256,
+      192
+    ],
+    "max_episode_seconds": 20,
+    "independent_reset": {
+      "unique_world_positions": 64,
+      "unique_local_positions": 64,
+      "unique_up_images": 64,
+      "unique_wrist_images": 64,
+      "verified_png_files": 128,
+      "indexed_reset_preserved_other_63_envs": true
+    },
+    "native_model_batches": {
+      "encode": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "decode": [
+        64,
+        64,
+        64
+      ],
+      "noise_shapes": [
+        [
+          64,
+          32,
+          20
+        ],
+        [
+          64,
+          32,
+          20
+        ],
+        [
+          64,
+          32,
+          20
+        ]
+      ]
+    },
+    "training": {
+      "transitions": 192,
+      "updates": 39,
+      "episodes": 0,
+      "physics_chunk_requests": 3,
+      "fused_step_and_reset_requests": 3,
+      "terminal_fused_resets_exercised": false,
+      "terminal_note": "Three 32-action chunks span 3.2 simulated seconds, below the unchanged 20-second episode limit; terminal fused resets were exercised in the separate 2-env full pipeline test",
+      "replay_capacity": 128,
+      "replay_rows": 128,
+      "optimizer_actor_entries": 16,
+      "full_checkpoints": [
+        "step_000000000064.pt",
+        "step_000000000128.pt",
+        "step_000000000192.pt"
+      ]
+    },
+    "resources": {
+      "min_sampled_available_host_bytes": 30445387776,
+      "swap_out_bytes_during_sampling": 396062720,
+      "swap_in_bytes_during_sampling": 3047424,
+      "note": "Pre-existing swap usage and additional swap-out during model loading are recorded; no zero-swap performance claim"
+    },
+    "services_exit_zero_and_ports_released": true,
+    "telemetry_entry_sha256": "b5b655c60934343dc4f117962fc9e1432dacac1452e0e93eee8d8eb879bc9f88",
+    "actual_nvml_gpu_and_process_evidence": {
+      "source": "nvidia-smi actual NVML queries observed during training and verified after shutdown",
+      "during_training": [
+        {
+          "pid": 2881581,
+          "role": "WallOSS inference",
+          "gpu_uuid": "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9",
+          "nvml_index": 1,
+          "observed_used_memory_mib": 14232
+        },
+        {
+          "pid": 2882140,
+          "role": "PAP64 simulation renderer",
+          "gpu_uuid": "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9",
+          "nvml_index": 1,
+          "observed_used_memory_mib": 15088
+        },
+        {
+          "pid": 2882140,
+          "role": "PAP64 additional CUDA context",
+          "gpu_uuid": "GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199",
+          "nvml_index": 0,
+          "observed_used_memory_mib": 276
+        }
+      ],
+      "sample_note": "These are observed in-run process allocations, not measured peak allocations.",
+      "shutdown_checked_unix": 1793950939.4982142,
+      "shutdown_gpu_query": [
+        "0, GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199, NVIDIA GeForce RTX 5090, 488 MiB",
+        "1, GPU-31b897fc-548e-cd82-0c37-474535b5d5d9, NVIDIA GeForce RTX 5090, 17 MiB"
+      ],
+      "shutdown_compute_processes": [],
+      "owned_pids_absent": {
+        "2881581": true,
+        "2882140": true
+      },
+      "shutdown_ports_released": {
+        "19101": true,
+        "19131": true
+      }
+    },
+    "declared_gpu_index": 1
+  },
+  "compatibility": {
+    "old_imports_and_cli": "retained",
+    "old_per_node_factory_configs": "supported",
+    "elevator_remote_http_bridge": "retained",
+    "old_expert_frame_aligned_collection_and_lerobot_export": "retained",
+    "checkpoint_default": "every 100000, keep all, save on graceful stop",
+    "table_buttons_vectorization": "num_envs=1 only; no parallel capacity claim",
+    "common_collection_format": "pressb.chunk_trajectory.v1, not synthetic frame-level LeRobot"
+  },
+  "paused_training": {
+    "directory": "outputs/pap_residual_on_dsrl100k_200k_20261106",
+    "state": "stopped",
+    "transitions": 16704,
+    "updates": 14673,
+    "checkpoint": "train/checkpoints/step_000000016704.pt",
+    "automatically_resumed": false
+  },
+  "limitations": [
+    "Physical expert replay is not learned-policy success-rate evaluation.",
+    "Short SAC checks validate functionality, not learning effectiveness or throughput.",
+    "The 64-env run covers three 32-action chunks; terminal resets are checked separately.",
+    "Old checkpoints require explicit audited source revision migration, without relaxing ordinary resume guards."
+  ],
+  "evidence": {
+    "full_suite_final.log": {
+      "path": "outputs/framework_refactor_20261106/full_suite_final.log",
+      "sha256": "715500d31da701dc2bf3b2cfe8dd637082913521858203c06eeb789286c00efc"
+    },
+    "full_suite_final.xml": {
+      "path": "outputs/framework_refactor_20261106/full_suite_final.xml",
+      "sha256": "a13f6db51eb3ae9258a242bbaac903ca40c31de6223cf139bcfef31f1776972e"
+    },
+    "cpu_usd_collision.log": {
+      "path": "outputs/framework_refactor_20261106/cpu_usd_collision.log",
+      "sha256": "677a36a1c5f9949210059a8b38140f48136299b750ae31c08512fcba494f9350"
+    },
+    "cpu_lerobot_export.log": {
+      "path": "outputs/framework_refactor_20261106/cpu_lerobot_export.log",
+      "sha256": "636eb5e392c232127fcc06f5809ec66b2a7f5a92da50b98f4f57de21299dcd58"
+    },
+    "pap_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/pap_smoke.json",
+      "sha256": "f52b4d8629106a8be5b8a86c5ff434d1826e4173fb1ae3623ea5e6aa86e9e637"
+    },
+    "elevator_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/elevator_smoke.json",
+      "sha256": "8a8f4a5821935d4f78576323f6b46287da39e1fbdda8016446a88649a19395c3"
+    },
+    "table_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/table_smoke.json",
+      "sha256": "1e7059d1d4d1bee44d66d4e63911385b4c3739ff80c114d5ddcf5d431459d506"
+    },
+    "table_joint7_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/table_joint7_smoke.json",
+      "sha256": "fbd69487a4c53ebb5041c8a6dd7f16d82bcdd0b3dc0de976214f60a4c80de6f3"
+    },
+    "table_sampling_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/table_sampling_smoke.json",
+      "sha256": "054d61a4d1d39905cef40b9db0030eece876c9fd6edf30d8d7ac2eb704f4f40b"
+    },
+    "model_joint_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/model_joint_smoke.json",
+      "sha256": "10313add37335e34ce4e06807e76789eb91639467a9a0a0333717b14206979c0"
+    },
+    "model_joint7_smoke.json": {
+      "path": "outputs/framework_refactor_20261106/model_joint7_smoke.json",
+      "sha256": "984c1eac1f17e1ec5ca06ae177edff6648207353f7dff8e3e68d3c9a8b9299f5"
+    },
+    "table_template_contract.json": {
+      "path": "outputs/framework_refactor_20261106/table_template_contract.json",
+      "sha256": "b028b030086b4d18d4404debfe31baeafc296900dfb8cb8ed2fb14f5d63ddcfc"
+    },
+    "real_pipeline_smoke/receipt.json": {
+      "path": "outputs/framework_refactor_20261106/real_pipeline_smoke/receipt.json",
+      "sha256": "9d1012b52ed5339fb3cf296504322d815dace742c09a18d1806c3cf4acf1820f"
+    },
+    "real_pipeline_smoke/audit.json": {
+      "path": "outputs/framework_refactor_20261106/real_pipeline_smoke/audit.json",
+      "sha256": "1c71f3bf07f8bd7b93842424085e6a4e906bd0982457048ec8b0f2379a7819a5"
+    },
+    "real_pipeline_64_smoke/audit.json": {
+      "path": "outputs/framework_refactor_20261106/real_pipeline_64_smoke/audit.json",
+      "sha256": "f4bad38ab6675eafee4793ccd1de47a7dcb2ce9839294bad008f4ae39096f0f8"
+    },
+    "cpu_regression_summary.json": {
+      "path": "outputs/framework_refactor_20261106/cpu_regression_summary.json",
+      "sha256": "768ac14c69ea2680a36392bf96bf8474a20f28b0572261babbf2ce27c64a24ca"
+    },
+    "migrated_checkpoints/verification.json": {
+      "path": "outputs/framework_refactor_20261106/migrated_checkpoints/verification.json",
+      "sha256": "dafaa1fe0a2bf0ca99aca51453942e87b709f705c4d4ea957d7f829af6e34667"
+    },
+    "migrated_checkpoints/resume_experiment.json": {
+      "path": "outputs/framework_refactor_20261106/migrated_checkpoints/resume_experiment.json",
+      "sha256": "3a2272df9733545508ac367f0f31aa8748e018212a470bbfe55a6f5fe1a4cc18"
+    },
+    "migrated_checkpoints/resume_experiment_validation.json": {
+      "path": "outputs/framework_refactor_20261106/migrated_checkpoints/resume_experiment_validation.json",
+      "sha256": "0aa2a9c49ad914cdb01273ba1384aa03e7370cd34e101d2a7ba5176299f2f202"
+    },
+    "migrated_checkpoints/residual_resume_patch.json": {
+      "path": "outputs/framework_refactor_20261106/migrated_checkpoints/residual_resume_patch.json",
+      "sha256": "f67cba67dc44fa35d6771bebc08548b13c67550b3ad9ff50617b0439c9bf734c"
+    }
+  },
+  "checkpoint_migration": {
+    "status": "passed",
+    "original_checkpoints_unchanged": true,
+    "old_checkpoints_still_rejected_by_new_source_identity": true,
+    "model_optimizer_replay_rng_exact": true,
+    "ordinary_resume_guards_unchanged": true,
+    "noise": {
+      "checkpoint": {
+        "path": "/mnt/data/pengguanqi/Data/PressB/outputs/framework_refactor_20261106/migrated_checkpoints/dsrl_step_000000100022.pt",
+        "sha256": "3227215bde0306ce5b7708640114efe0aa1cdf00985753ef214ac171317938fe",
+        "bytes": 2878718631
+      },
+      "transitions": 100022,
+      "updates": 98001,
+      "replay_rows": 100000,
+      "actor_sha256": "aaaf59ebb33287876bcb52ae144b09071e3719361caa0819d62a5cae32074050"
+    },
+    "residual": {
+      "checkpoint": {
+        "path": "/mnt/data/pengguanqi/Data/PressB/outputs/framework_refactor_20261106/migrated_checkpoints/residual_step_000000016704.pt",
+        "sha256": "e99c5a7e38cd8c70bfbbe7cd00a741cbf948ed407fa3a282135411ffb68d80b1",
+        "bytes": 495759201
+      },
+      "transitions": 16704,
+      "updates": 14673,
+      "replay_rows": 16704,
+      "actor_sha256": "d99996395d480270b2ee04b2897b1fbcd4b58991f64e5c39e8d525ce825a1059"
+    },
+    "verification_scope": "Actual strict frozen-policy and trainer load on CPU using recorded real service health; no physics requests, GPU access or training updates.",
+    "resume_experiment": "outputs/framework_refactor_20261106/migrated_checkpoints/resume_experiment.json",
+    "resume_experiment_validated": true,
+    "resume_experiment_started": false,
+    "resume_total_budget": 200000
+  }
+}

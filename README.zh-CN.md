@@ -4,9 +4,19 @@
 
 PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学习改善冻结的视觉语言动作模型。项目连接物理仿真、模型推理与策略训练，记录相机观测，并依据真实接触和物体运动判定任务结果。
 
-**更新于 2026-11-03：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
+**更新于 2026-11-06：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
 
 [任务](#任务概览) · [结果](#当前结果) · [视频](#演示视频) · [运行](#运行三个任务) · [三节点 RL](#在线强化学习独立三节点) · [工作交接](docs/HANDOVER.md)
+
+## 通用运行核心与插件
+
+**2026-11-06 框架重构：** 新实验采用 **通用运行核心＋任务插件＋模型适配器＋实验配置**。DSRL、动作残差、固定 DSRL 后训练残差、评估和 chunk 轨迹记录共用执行流程；机械臂／相机装配和 PhysX 控制复用，场景、随机化、奖励和成功条件由任务插件定义。旧命令和导入路径保留兼容。
+
+入口为 `python scripts/run_experiment.py`，提供 `list / validate / inference / simulation / train / eval / collect`。参见[框架说明](docs/project_framework.md)和[实验配置](configs/experiments)。PAP 保留 64 环境配置；桌面按键新插件目前每个节点运行 1 个环境。原逐帧对齐的示范采集和 LeRobot 导出流程仍保留。
+
+[重构验收](docs/results/framework_refactor_20261106.json)：2,049 项回归测试通过，并完成真实 Isaac 回放、三端训练／恢复／评估／记录验证，包括 PAP64 与 Wall-OSS 原生 batch64。这些是功能验证，不是新的策略成功率评估。
+
+**模型代码已内置：** Wall-OSS 和 VLA-JEPA 的推理、数据读取与监督训练已纳入 PressB；统一训练入口和来源说明见[模型指南](docs/bundled_models.md)。[内化验收](docs/results/model_internalization_20261106.json)覆盖主项目在所需环境中的 2,106 项测试，以及真实权重对照：Wall-OSS batch 2／8、VLA-JEPA pose9／joint6／joint7 在所测输入下与原实现输出一致。
 
 ## 任务概览
 
@@ -16,7 +26,7 @@ PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学
 | [桌面抓取入盒（PAP）](docs/piper_pick_place.md) | 对齐数据集的绿色工作台、纸盒、自由方块及双相机 | 真机轨迹回放、原生 Wall-X 闭环推理、可选关节平滑、配对的位置／颜色随机评估 |
 | [桌面彩色按键](docs/table_buttons.md) | PAP 工作台上的红／黄／蓝弹簧按键 | 近／中／远随机布局、三色不同路径的 IK 示范、LeRobot 采集／合并、VLA-JEPA 训练与闭环评估 |
 
-三个任务使用独立配置。PAP 依据 `piper_pap_20260606_offset` 中的关节、相机图像及实拍照片复刻，包含光滑方块、较粗糙纸盒／桌面和柔和光照，已有红、蓝正方体回放配置；数据集内其他物体还需各自的几何模型。PAP 保留对齐数据集的相机；桌面按键的腕部相机**内参和光心位姿**与电梯任务一致，固定相机沿用 PAP。桌面按键已接入学习策略推理与带物理审核的闭环评估。在线 RL 目前用于电梯任务；PAP 和桌面按键尚未开展在线 RL 训练。桌面按键训练及专用 HTTP 推理服务位于独立 VLA-JEPA 工作区，本仓库包含仿真客户端与评估工具；复现这些模型实验前请查阅[服务依赖与部署范围](docs/table_buttons_policy_eval.md)。
+三个任务使用独立配置。PAP 依据 `piper_pap_20260606_offset` 中的关节、相机图像及实拍照片复刻，包含光滑方块、较粗糙纸盒／桌面和柔和光照，已有红、蓝正方体回放配置；数据集内其他物体还需各自的几何模型。PAP 保留对齐数据集的相机；桌面按键的腕部相机**内参和光心位姿**与电梯任务一致，固定相机沿用 PAP。桌面按键已接入学习策略推理与带物理审核的闭环评估。电梯和 PAP／Wall-OSS 均已完成在线 RL 训练，PAP 训练日志与评估证据见交接文档；训练 recent SR 与独立评估分开统计。桌面按键已接入通用任务／模型接口并完成功能验证，尚未开展长程在线 RL 训练。桌面按键监督训练与模型推理已内置于 PressB；[历史 HTTP 评估说明](docs/table_buttons_policy_eval.md)保留原实验命令。
 
 后续可用于 **real2sim2real**：利用 AI agent 复刻真机场景，在仿真中增强策略鲁棒性，再迁移到真机做适配和验证。目前实验验证的是仿真中的算法可行性；real2sim2real 迁移，以及直接在真机上验证 RL 策略，均尚未开展。
 
@@ -85,25 +95,20 @@ PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学
 
 ## 仓库分工与复现范围
 
-| 仓库 | 职责 | 本地位置 |
+| 组件 | 职责 | 位置 |
 |---|---|---|
-| [PressB](https://github.com/pgq18/PressB) | Isaac 场景、三节点服务、SAC 适配、实验、评估与视频审计 | 本仓库；RL 实现在 `src/pressb/online_rl/` |
-| [VLA-JEPA](https://github.com/pgq18/VLA-JEPA/tree/base) | 视觉／状态／语言编码与 flow-matching 模型、PiPER 微调和推理 | 独立仓库 `src/VLA-JEPA/` |
-| [Wall-X](https://github.com/pgq18/wall-x/tree/base) | PAP 原生模型推理，兼容旧接口的 PressB 通信扩展 | 独立仓库 `ref/wall-x/`，使用单独 Conda 环境 |
-| [ZPRL-PressB](https://github.com/pgq18/ZPRL-PressB) | 残差 SAC、初始噪声方法及采样调度的参考实现 | 可选独立仓库 `src/ZPRL/`，运行 PressB 不需要导入它 |
+| PressB 运行核心 | Isaac 服务、在线 RL、实验、评估和记录 | `src/pressb/runtime`、`tasks`、`models`、`experiments` |
+| VLA-JEPA | 模型、pose9／joint6／joint7 推理、单任务／多任务监督训练 | 已内置于 `src/pressb/model_sources/vlajepa` |
+| Wall-OSS | 模型、原生 batch、噪声／缓存接口、监督训练、数据读取和 CUDA 核心 | 已内置于 `src/pressb/model_sources/walloss` |
+| [ZPRL-PressB](https://github.com/pgq18/ZPRL-PressB) | 残差 SAC／初始噪声方法参考 | 可选 `src/ZPRL`；PressB 使用自己的适配实现 |
 
-这些都是独立克隆，被 PressB 忽略，不是 Git submodule；版本和用途记录在[仓库版本清单](repos.lock.json)。已训练 RL checkpoint 绑定推理来源，现有 VLA-JEPA RL 权重要求运行版本 `9c9dc71c8e199c7428b25d103ab666395832c001`：
+**所需模型代码已纳入 PressB。** 新实验无需额外 clone Wall-X 或 VLA-JEPA。
+环境、CUDA 构建及 `scripts/train_model.py` 用法见[内置模型与监督训练](docs/bundled_models.md)。
+来源版本与逐文件摘要保存在内置源码清单和[仓库版本记录](repos.lock.json)；权重、数据集和第三方软件依赖仍单独配置。
 
-```bash
-git clone --branch base https://github.com/pgq18/VLA-JEPA.git src/VLA-JEPA
-git -C src/VLA-JEPA checkout --detach 9c9dc71c8e199c7428b25d103ab666395832c001
-
-# PAP 策略推理；按 repos.lock.json 选择记录的 Wall-X commit。
-git clone --branch base https://github.com/pgq18/wall-x.git ref/wall-x
-
-# 可选：阅读原始 RL 方法。实际训练代码已在 PressB 内。
-git clone https://github.com/pgq18/ZPRL-PressB.git src/ZPRL
-```
+历史 `src/VLA-JEPA`、`ref/wall-x` 克隆保留为显式源码覆盖选项，被 Git 忽略且不是子模块。
+未迁移的电梯 RL 权重仍绑定原 VLA-JEPA 运行版本 `9c9dc71c8e199c7428b25d103ab666395832c001`；
+切换实现需经过验证的检查点迁移，不能绕过身份校验。
 
 干净克隆包含源码、精选媒体和统计摘要，**不包含** VLA／RL 权重、场景快照、采集元数据和模型缓存。通用三个节点可显式配置路径；`run_residual_on_noise_experiment.py`、平滑和视频实验 supervisor 则是本工作区的复现入口，依赖文档记录的既有 `outputs/` 资产及身份清单，不能在空目录直接启动。部署方式见 [高吞吐运行说明](docs/online_rl_fast.md) 和 [5090 环境](docs/rtx5090_setup.md)。
 
@@ -154,7 +159,9 @@ bash scripts/run.sh --headless --gpu 0 --video --output outputs/edge_feedback
 
 生成的 `outputs/edge_feedback/scene.usda` 和同目录 `wrist_camera/intrinsics.json`、`global_camera/intrinsics.json` 是后续采集的输入，干净克隆中尚不存在。`--gpu` 是 Isaac/Vulkan 设备编号，请选择有可用显存的设备。演示默认 10 Hz 图像、120 Hz 物理；批量采集通过 `--fps` 独立指定采样频率。
 
-### PAP：部署 Wall-X 并运行闭环推理
+### PAP：历史 Wall-X 服务与闭环推理
+
+新部署请使用[内置模型说明](docs/bundled_models.md)和统一实验入口。下面保留独立克隆部署的原命令，用于复现历史结果。
 
 先在本地准备真机数据集和已训练权重，并从数据集提取初始关节状态。policy 模式的后续动作来自模型；`--mode replay` 则重放录制轨迹。CUDA 12.8 要求、模型／配置路径覆盖及与 checkpoint 一致的归一化文件说明见 [Wall-X 部署文档](https://github.com/pgq18/wall-x/blob/base/inference/README_rtx5090.md)。
 
@@ -281,9 +288,19 @@ PYTHONPATH=src .conda/envs/pressb/bin/python -m pressb.press_prefix \
 
 ## 在线强化学习：独立三节点
 
+**检查点保存策略（2026-11-05）：** 后续 RL 默认每 **100,000 transitions 保存一次，并保留全部编号权重**。通用训练端使用 `checkpoint.interval=100000`、`checkpoint.keep=null`，正常结束时也保存最终状态。旧 fast runner 保留100k阶段权重及单独滚动覆盖的`last.pt`。详见[检查点与日志配置](docs/configurable_rl_nodes.md)。
+
+**可配置接口（2026-11-04）：** 新增[三端说明](docs/configurable_rl_nodes.md)与 [JSON 配置示例](configs/rl_nodes/)，将模型能力、任务执行和训练逻辑分开。现已加入 Wall-OSS 外部初始噪声／编码缓存接口、PAP 多进程并行 `reset/step`，以及根据维度协商的 DSRL／动作残差 SAC、异步更新、经验回放、检查点保留、可选平滑与动作裁剪。启动时检查状态／动作单位、相机和独立噪声维度。CPU 端口、进程及学习测试通过；完整 Wall-OSS 权重与两个真实 Isaac 环境的 GPU 联调也已通过，两种 RL 方法各完成 24 条 transition 和 22 次 SAC 更新。这些短测尚不能说明 PAP RL 成功率。下方历史电梯实验入口保留。
+
+PAP 新增[共享 World 仿真后端](docs/pap_parallel_capacity.md)：单张 RTX 5090 已通过 **64 环境、128 路原生 640×480 相机**容量测试，64 个环境也全部完成了已录制抓取入盒轨迹的物理重放。[Wall-OSS 现已在 H200 上实现真正的 batch-64 推理](docs/walloss_batch_inference.md)：实测 **16.11 条观测动作 chunk/秒**，为逐条推理的 **6.35 倍**，PyTorch 分配显存峰值 **11.64 GiB**；跨机器 WebSocket 编码、解码和一次性推理检查也已通过。BF16 输出随 batch 大小存在差异，文档列出了实测动作误差和较慢的 FP32 选项。最初的 [400k预算 PAP DSRL 训练](outputs/pap_dsrl_h200_bf16_64env_400k_20261104/README.md) 已按用户要求停止于3,520条transition、1,532次更新，完整检查点与W&B历史保留。随后[优化后的 PAP 流程](docs/pap_dsrl_pipeline_optimization.md) 已完成10,048条transition验证，保留原生640×480相机、10步flow与UTD1。warmup后实测吞吐 **1.44→12.55 transition/s（8.71倍）**；400k／1M预计 **8.85／22.14小时**，不是长程训练完成时间。尚未达到15条/s的性能目标。这是正式训练前的验证；后续已完成的本机训练见下方。强化学习效果仍需独立评估。
+
 [在线 RL 运行说明](docs/online_rl.md)为电梯任务提供仿真、冻结 VLA-JEPA 推理和 SAC 训练三个节点，可部署在三台机器。[高吞吐版本](docs/online_rl_fast.md)增加独立 episode 重置、批量推理、采样与梯度更新重叠；支持本机 GPU 1 共置仿真与推理、GPU 0 训练，也保留 H200 推理的跨节点配置。
 
-推理默认使用 **WebSocket/MessagePack**，在 Wall-X 已有的 WebSocket 通信上加入兼容旧接口的扩展。PressB 提供 VLA-JEPA 所需的 `encode`、指定初始噪声的 `decode`、`release` 和 `health` 操作。仿真仍为 **HTTP**；旧 HTTP 推理可通过服务端 `--transport http` 和客户端 `http://` 地址选择。PAP 则使用普通 Wall-X 观测／动作预测；通信扩展本身不会让原生 Wall-X 模型具备拆分推理或 RL 能力。详见 [PressB 协议](docs/online_rl_protocol.md)和 [Wall-X 接口说明](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md)。
+**本机推理对照（2026-11-05）：** Wall-OSS 已部署到 RTX 5090，两种 GPU 分配各完成 10,048 条 transition。推理与 SAC 共用 GPU1 实测 **12.91 条/s**；仿真与推理共用 GPU0、SAC 独占 GPU1 实测 **13.34 条/s**，比优化后的 H200 推理方案快 **6.33%**。400k／1M 外推约 **8.33／20.82 小时**，仍未达到 15 条/s。两轮检查点与回放核验通过；相关服务现已在11月6日重构验收后全部停止。两端 BF16 输出存在差异，任务成功率需另行评估。详见[本机部署与耗时报告](docs/pap_dsrl_local_inference.md)。
+
+**训练状态（2026-11-06）：** 本机 PAP DSRL 和后续固定 DSRL 的动作残差均已完成 **400,000 transitions**。从头重训的100k预算 DSRL 用 **2小时05分**完成 **100,022 transitions**（最后完整并行批次多22条）。随后200k预算的残差训练按要求停在 **16,704 transitions**，完整检查点和冻结源均保留。已验证兼容副本并准备恢复配置，但没有恢复训练。详见[交接文档](docs/HANDOVER.md)与[迁移验收](docs/results/framework_refactor_20261106.json)。训练 recent SR 不作为独立评估结果。
+
+推理默认使用 **WebSocket/MessagePack**，在 Wall-X 已有的 WebSocket 通信上加入兼容旧接口的扩展。PressB 提供 VLA-JEPA 所需的 `encode`、指定初始噪声的 `decode`、`release` 和 `health` 操作。仿真仍为 **HTTP**；旧 HTTP 推理可通过服务端 `--transport http` 和客户端 `http://` 地址选择。原 PAP 客户端继续使用普通 Wall-X 观测／动作预测；新的可配置路径增加了专用 Wall-OSS 模型适配器，通信扩展本身并不足够。详见 [PressB 协议](docs/online_rl_protocol.md)和 [Wall-X 接口说明](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md)。
 
 ```mermaid
 flowchart LR

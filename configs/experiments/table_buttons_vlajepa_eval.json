@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "table_buttons_vlajepa_eval",
+  "task": {
+    "plugin": "table_buttons",
+    "config": {
+      "scene_config": "${project_root}/configs/piper_table_buttons.json",
+      "num_envs": 1,
+      "action_dim": 6,
+      "horizon": 7,
+      "gpu": 0,
+      "max_episode_seconds": 10,
+      "smoothing": {
+        "mode": "none",
+        "alpha": 0.8
+      },
+      "randomization": {
+        "profiles": [
+          "medium"
+        ],
+        "colors": [
+          "red",
+          "yellow",
+          "blue"
+        ],
+        "positions": true
+      }
+    }
+  },
+  "model": {
+    "plugin": "vlajepa_joint",
+    "config": {
+      "run": "/home/pengguanqi/Models/VLA-JEPA/table_buttons_target_relative_multitask_joint6_3000_20261103/medium_multitask_joint6_3000",
+      "device": "cuda:1",
+      "base_vlm": "${project_root}/.cache/vlajepa/Qwen3-VL-2B-Instruct",
+      "base_encoder": "${project_root}/.cache/vlajepa/vjepa2-vitl-fpc64-256"
+    }
+  },
+  "nodes": {
+    "inference": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18231,
+        "transport": "ws"
+      },
+      "service": {
+        "cache_size": 32,
+        "batch_size": 1
+      }
+    },
+    "simulation": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18201,
+        "transport": "http"
+      }
+    }
+  },
+  "run": {
+    "method": "base",
+    "mode": "eval",
+    "device": "cpu",
+    "seed": 42,
+    "rollout": {
+      "max_transitions": 10000,
+      "eval_episodes": 100,
+      "execution_horizon": 7,
+      "action_bounds": "clip"
+    },
+    "output_dir": "${project_root}/outputs/table_buttons_vlajepa_eval/run"
+  }
+}
