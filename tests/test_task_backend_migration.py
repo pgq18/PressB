@@ -1,4 +1,4 @@
-"""CPU checks for task-module compatibility and implementation provenance."""
+"""CPU checks for canonical task modules and implementation provenance."""
 import hashlib
 import importlib
 import os
@@ -12,25 +12,22 @@ import pytest
 from pressb.tasks.pap import backend, vector
 
 
-@pytest.mark.parametrize("old,new", [
-    ("pap", "pap.backend"),
-    ("pap_vector", "pap.vector"),
-    ("pap_worker", "pap.worker"),
-    ("pap_recording", "pap.recording"),
-    ("elevator", "elevator.backend"),
+@pytest.mark.parametrize("module,symbol", [
+    ("pap.backend", "PAPParallelBackend"),
+    ("pap.vector", "PAPVectorBackend"),
+    ("pap.worker", "PAPEnvironment"),
+    ("pap.recording", "PAPStateRecorder"),
+    ("elevator.backend", "ElevatorBackend"),
 ])
-def test_legacy_task_import_is_the_implementation_module(old, new, monkeypatch):
-    legacy = importlib.import_module("pressb.rl_nodes." + old)
-    implementation = importlib.import_module("pressb.tasks." + new)
-    assert legacy is implementation
-    # Older tools patch module attributes; their patches must reach new callers.
-    marker = object()
-    monkeypatch.setattr(legacy, "migration_probe", marker, raising=False)
-    assert implementation.migration_probe is marker
+def test_task_symbols_belong_to_the_canonical_implementation(module, symbol):
+    implementation = importlib.import_module("pressb.tasks." + module)
+    assert getattr(implementation, symbol).__module__ == implementation.__name__
+    assert Path(implementation.__file__) == (
+        backend.ROOT / "src/pressb/tasks" / (module.replace(".", "/") + ".py"))
 
 
-@pytest.mark.parametrize("module", ["pressb.rl_nodes.pap_worker", "pressb.tasks.pap.worker"])
-def test_worker_module_help_does_not_initialize_isaac(module):
+def test_worker_module_help_does_not_initialize_isaac():
+    module = "pressb.tasks.pap.worker"
     env = dict(os.environ, PYTHONPATH=str(backend.ROOT / "src"))
     result = subprocess.run([sys.executable, "-m", module, "--help"],
                             capture_output=True, text=True, env=env, timeout=20)
@@ -39,10 +36,10 @@ def test_worker_module_help_does_not_initialize_isaac(module):
 
 
 def test_pap_uses_the_shared_calibrated_camera_builders():
-    from pressb.runtime import isaac
+    from pressb.sensors import camera
     from pressb.tasks.pap import worker
-    assert worker._intrinsics is isaac.set_intrinsics
-    assert worker._camera is isaac.make_camera
+    assert worker._intrinsics is camera.set_intrinsics
+    assert worker._camera is camera.make_camera
 
 
 @pytest.fixture
@@ -59,13 +56,16 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
     instance = vector.PAPVectorBackend(cpu_vector_config)
     try:
         sources = instance.identity["source_identity"]
-        assert not any(name.startswith(("pick_place/", "table_buttons/")) for name in sources)
+        assert not any(name.startswith(("pick_place/", "table_buttons/", "rl_nodes/", "online_rl/"))
+                       for name in sources)
         for name in ("tasks/pap/backend.py", "tasks/pap/worker.py", "tasks/pap/vector.py",
                      "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
                      "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
-                     "runtime/physics.py", "runtime/image_transport.py", "runtime/isaac.py",
-                     "rl_nodes/pap.py", "rl_nodes/pap_worker.py", "rl_nodes/pap_vector.py"):
+                     "runtime/physics.py", "runtime/image_transport.py",
+                     "robots/piper/wrist_camera.py", "robots/piper/kinematics.py",
+                     "control/joint_actions.py", "sensors/camera.py", "sensors/tiled.py"):
             assert name in sources
+        assert "robots/piper/isaac.py" not in sources
         for name, identity in sources.items():
             contents = (backend.ROOT / "src/pressb" / name).read_bytes()
             assert identity == {"sha256": hashlib.sha256(contents).hexdigest(),
@@ -76,7 +76,9 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
 
 @pytest.mark.parametrize("changed_source", [
     "tasks/pap/backend.py", "tasks/pap/worker.py", "tasks/pap/vector.py",
-    "runtime/physics.py", "runtime/image_transport.py", "runtime/isaac.py", "rl_nodes/pap_vector.py",
+    "runtime/physics.py", "runtime/image_transport.py",
+    "robots/piper/wrist_camera.py", "robots/piper/kinematics.py", "control/joint_actions.py",
+    "sensors/camera.py", "sensors/tiled.py",
     "runtime/scene.py", "runtime/workbench.py", "tasks/pap/scene.py",
     "tasks/pap/task.py", "tasks/pap/evaluation.py", "tasks/pap/initialization.py",
 ])

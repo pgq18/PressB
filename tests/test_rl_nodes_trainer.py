@@ -12,8 +12,8 @@ import numpy as np
 import pytest
 import torch
 
-import pressb.rl_nodes.trainer as trainer_module
-from pressb.rl_nodes.trainer import GenericTrainer, TrainerConfig, _wandb_payload, _wandb_worker
+import pressb.runtime.trainer as trainer_module
+from pressb.runtime.trainer import GenericTrainer, TrainerConfig, _wandb_payload, _wandb_worker
 
 
 @pytest.fixture(autouse=True)
@@ -309,7 +309,7 @@ def test_uploader_exits_when_trainer_dies_during_sdk_initialization(tmp_path):
     code = """from dataclasses import asdict
 from pathlib import Path
 import sys
-from pressb.rl_nodes.trainer import TrainerConfig, _WandbMonitor
+from pressb.runtime.trainer import TrainerConfig, _WandbMonitor
 output = Path(sys.argv[1])
 cfg = TrainerConfig(wandb={"enabled": True})
 monitor = _WandbMonitor(output, cfg.wandb, asdict(cfg), "orphan-test")
@@ -393,7 +393,7 @@ def test_real_sac_variable_geometry_terminal_observation_and_indexed_reset(tmp_p
 
 
 def SACLearner_load(path):
-    from pressb.online_rl.learner import SACLearner
+    from pressb.runtime.learner import SACLearner
     return SACLearner.load(path, device="cpu")
 
 

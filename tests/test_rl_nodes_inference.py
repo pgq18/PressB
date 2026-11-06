@@ -5,8 +5,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.rl_nodes.contract import encode_image
-from pressb.rl_nodes.inference import InferenceService
+from pressb.runtime.contract import encode_image
+from pressb.runtime.inference import InferenceService
 
 
 class Backend:
@@ -181,7 +181,7 @@ def test_health_returns_independent_metadata_copies():
 
 def test_vlajepa_adapter_retains_seeded_sampler_draw_and_raw8_contract():
     torch = pytest.importorskip("torch")
-    from pressb.rl_nodes.vlajepa import VLAJEPABackend
+    from pressb.models.vlajepa import VLAJEPABackend
 
     class Frozen:
         action_horizon, action_dim, feature_dim = 7, 9, 3

@@ -5,11 +5,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pressb.kinematics import PiperKinematics
-from pressb.panel_randomization import (
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.tasks.elevator.panel_randomization import (
     panel_camera_coverage, panel_randomization_settings, sample_panel_layout, validate_panel_layout,
 )
-from pressb.planning import button_centers
+from pressb.tasks.elevator.planning import button_centers
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -70,7 +70,7 @@ def test_sampling_is_deterministic_separate_from_motion_rng_and_bounded(monkeypa
         checked.append((cfg["panel_offset_x_m"], cfg["panel_offset_y_m"], margin_px))
         return {"all_buttons_reachable": True, "reachable_floors": list(range(24, 36))}
 
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", safe_layout)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", safe_layout)
     cfg = randomized_cfg()
     first, evidence = sample_panel_layout(None, cfg, 29, 179)
     repeat, same = sample_panel_layout(None, cfg, 29, 179)
@@ -94,7 +94,7 @@ def test_rejection_sampling_has_finite_attempts_and_records_reasons(monkeypatch)
             raise ValueError("deliberate unreachable floor 35")
         return {"all_buttons_reachable": True}
 
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", unsafe_then_safe)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", unsafe_then_safe)
     _, proof = sample_panel_layout(None, randomized_cfg(max_attempts=2), 24, 99)
     assert proof["attempts"] == 2
     assert len(proof["rejected_candidates"]) == 1
@@ -122,7 +122,7 @@ def test_disabled_layout_does_not_invoke_new_planning(monkeypatch):
     def unexpected(*args, **kwargs):
         raise AssertionError("legacy centered scene must not invoke layout sampling")
 
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", unexpected)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", unexpected)
     cfg = dict(CFG, panel_randomization={"enabled": False})
     layout, proof = sample_panel_layout(None, cfg, 24, 0)
     assert layout == cfg

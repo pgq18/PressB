@@ -6,10 +6,10 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.action_postprocessing import (
+from pressb.compat.elevator_rl.action_postprocessing import (
     CausalActionPostprocessor, SmoothedResidualOnNoiseRunner, quaternion_slerp,
 )
-from pressb.online_rl.residual_on_noise import ResidualOnNoiseRunner, actor_sha256
+from pressb.compat.elevator_rl.residual_on_noise import ResidualOnNoiseRunner, actor_sha256
 from test_fast_online_rl_runner import BatchInference, IndexedSimulation, config
 from test_online_rl_runner import TOKEN, serve
 from test_residual_on_noise import noise_checkpoint

@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from pressb.kinematics import PiperKinematics
-from pressb.press_prefix import crop_press_prefix_arrays, inspect_press_prefix_arrays, tcp_transforms
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.tasks.elevator.press_prefix import crop_press_prefix_arrays, inspect_press_prefix_arrays, tcp_transforms
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -86,7 +86,7 @@ def test_batched_fk_matches_independent_urdf_kinematics(source):
 
 def test_schema11_cut_preserves_layout_without_changing_pose_or_terminal_policy(source):
     from test_panel_metadata import panel_fixture
-    from pressb.panel_metadata import episode_panel_context
+    from pressb.tasks.elevator.panel_metadata import episode_panel_context
     baseline = inspect(source)
     frames, physics, meta, collection = copy.deepcopy(source)
     panel_collection, panel_meta = panel_fixture()

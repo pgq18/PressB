@@ -8,9 +8,9 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.learner import LearnerConfig, SACLearner
-from pressb.online_rl.protocol import pose9_to_pose8
-from pressb.online_rl.residual_on_noise import ResidualOnNoiseRunner, file_sha256
+from pressb.runtime.learner import LearnerConfig, SACLearner
+from pressb.control.pose_protocol import pose9_to_pose8
+from pressb.compat.elevator_rl.residual_on_noise import ResidualOnNoiseRunner, file_sha256
 from test_fast_online_rl_runner import BatchInference, config
 from test_online_rl_runner import TOKEN, serve
 from test_residual_on_noise import (
@@ -103,7 +103,7 @@ def test_half_scale_matches_between_critic_and_executed_actions_without_scaling_
     actions, replay_actions = runner._actions(prepared)
     base = np.stack([prepared[eid][1]["base_actions_pose9"] for eid in sorted(prepared)])
     expected = base + normalized.reshape(2, 7, 9) * np.asarray(HALF_SCALE)
-    np.testing.assert_allclose([row["actions_pose8"] for row in actions], pose9_to_pose8(expected),
+    np.testing.assert_allclose([row["actions_pose8"] for row in actions], pose9_to_pose8(expected, gripper_width_m=.008),
                                atol=1e-12)
     critic = runner.learner._critic_action(torch.from_numpy(normalized),
                                           torch.as_tensor(base.reshape(2, 63), dtype=torch.float32))

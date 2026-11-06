@@ -1,4 +1,4 @@
-"""CPU contracts for shared PhysX adapters and their legacy import aliases."""
+"""CPU contracts for shared PhysX adapters and their task consumers."""
 
 from pathlib import Path
 import subprocess
@@ -24,7 +24,7 @@ import importlib.abc
 import sys
 
 sys.path.insert(0, sys.argv[1])
-blocked = ("isaacsim", "omni", "pxr", "carb", "pressb.online_rl", "pressb.rl_nodes")
+blocked = ("isaacsim", "omni", "pxr", "carb", "pressb.tasks", "pressb.models", "pressb.compat")
 
 class RejectSimulationImports(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
@@ -46,8 +46,8 @@ assert all(value is not None for value in (
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_legacy_fast_simulation_names_are_shared_component_aliases():
-    from pressb.online_rl import fast_simulation
+def test_elevator_simulation_uses_shared_physics_components():
+    from pressb.tasks.elevator import fast_simulation
 
     assert fast_simulation.PhysXErrorGuard is PhysXErrorGuard
     assert fast_simulation._TensorArms is TensorArms

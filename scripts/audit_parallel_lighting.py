@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -87,7 +86,9 @@ def render(args):
         raise ValueError("Output report already exists; choose a new diagnostic directory")
     cfg = json.loads(args.config.read_text())
     inputs = [args.config, args.snapshot, args.source_episode / "frames.npz",
-              args.source_episode / "physics.npz", ROOT / "src/pressb/dataset_scene.py"]
+              args.source_episode / "physics.npz", ROOT / "src/pressb/tasks/elevator/dataset_scene.py",
+              ROOT / "src/pressb/tasks/elevator/scene.py", ROOT / "src/pressb/sensors/tiled.py",
+              ROOT / "src/pressb/tasks/elevator/collection.py"]
     identities = [identity(path) for path in inputs]
     calibration = {}
     for view in ("wrist", "global"):
@@ -103,9 +104,7 @@ def render(args):
         physics_index = int(frames["physics_index"][source_frame])
     with np.load(args.source_episode / "physics.npz", allow_pickle=False) as physics:
         press_travel = physics["button_travel"][physics_index].copy()
-    spec = importlib.util.spec_from_file_location("lighting_collection_settings", ROOT / "scripts/collect_dataset.py")
-    collection = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(collection)
+    from pressb.tasks.elevator import collection
     os.environ.setdefault("OMNI_KIT_ACCEPT_EULA", "YES")
     from isaacsim import SimulationApp
     app = SimulationApp({"headless": True, "create_new_stage": False,
@@ -122,7 +121,8 @@ def render(args):
         from pxr import Usd, UsdGeom, UsdLux
         from isaacsim.core.api import World
         from isaacsim.core.utils.types import ArticulationAction
-        from pressb.dataset_scene import create_envs, build_tiled_rgb, set_light
+        from pressb.tasks.elevator.dataset_scene import create_envs, set_light
+        from pressb.sensors.tiled import build_tiled_rgb
 
         world = World(stage_units_in_meters=1., physics_dt=1/120, rendering_dt=.1,
                       backend="numpy", device="cpu")

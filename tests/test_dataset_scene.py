@@ -40,7 +40,7 @@ else:
 pytest.importorskip("pxr.Usd", reason="CPU USD package is required for scene composition checks")
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdLux, UsdPhysics
 
-from pressb.dataset_scene import create_envs, set_panel_offset, validate_panel_layout
+from pressb.tasks.elevator.dataset_scene import create_envs, set_panel_offset, validate_panel_layout
 
 
 CONFIG = json.loads((ROOT / "configs/scene.json").read_text())
@@ -240,7 +240,7 @@ def test_nonfinite_panel_move_is_rejected_before_scene_mutation(usd_world, offse
 
 
 def test_xy_moves_keep_back_wall_attached_without_moving_side_wall_or_table(usd_world):
-    from pressb.scene import BACK_WALL_COMPONENTS
+    from pressb.tasks.elevator.scene import BACK_WALL_COMPONENTS
     env = create_envs(usd_world, SNAPSHOT, 1, cfg=CONFIG)[0]
     wall_original = {name: _matrix(usd_world.stage, env.prefix + "/Environment/" + name)
                      for name in BACK_WALL_COMPONENTS}
@@ -263,7 +263,7 @@ def test_xy_moves_keep_back_wall_attached_without_moving_side_wall_or_table(usd_
 
 
 def test_nonzero_static_snapshot_offsets_are_not_applied_twice(usd_world, tmp_path):
-    from pressb.scene import set_back_wall_offset
+    from pressb.tasks.elevator.scene import set_back_wall_offset
     snapshot = tmp_path / "offset_source.usda"
     source = Usd.Stage.CreateNew(str(snapshot))
     UsdGeom.Xform.Define(source, "/World").GetPrim().GetReferences().AddReference(str(SNAPSHOT), "/World")
@@ -296,7 +296,7 @@ def test_nonzero_static_snapshot_offsets_are_not_applied_twice(usd_world, tmp_pa
 
 
 def test_scene_builder_static_xy_offset_matches_button_metadata_and_world_anchors(monkeypatch):
-    from pressb import scene
+    from pressb.tasks.elevator import scene
     monkeypatch.setattr(scene, "_table", lambda *args: {})
     # Avoid touching the generated label files during CPU geometry tests.
     monkeypatch.setattr(scene, "_label", lambda *args: None)

@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 import pytest
 
-from pressb.online_rl.simulation import SimulationService, control_state
+from pressb.tasks.elevator.simulation import SimulationService, control_state
 
 
 def _rgb_png():

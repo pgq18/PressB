@@ -11,7 +11,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from pressb.panel_metadata import validate_episode_panel_metadata
+from pressb.tasks.elevator.panel_metadata import validate_episode_panel_metadata
 
 
 def sampling_parameters(collection, metadata=None):

@@ -3,8 +3,8 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from pressb.rl_nodes.contract import negotiate, validate_metadata
-from pressb.rl_nodes.simulation import SimulationService
+from pressb.runtime.contract import negotiate, validate_metadata
+from pressb.runtime.simulation import SimulationService
 
 
 def metadata(kind="simulation"):
@@ -321,7 +321,7 @@ def test_binary_png_and_rgb_validation_preserve_pixels():
     import base64
     from io import BytesIO
     from PIL import Image
-    from pressb.rl_nodes.contract import decode_image, encode_image, validate_observation
+    from pressb.runtime.contract import decode_image, encode_image, validate_observation
     pixels = np.arange(8 * 7 * 3, dtype=np.uint8).reshape(8, 7, 3)
     legacy = encode_image(pixels)
     binary = {"encoding": "png_bytes", "data": base64.b64decode(legacy["data"])}

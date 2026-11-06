@@ -102,7 +102,7 @@ def build_cells(episodes, endpoint_host="127.0.0.1", first_port=18110):
 
 def prepare_profile(arguments):
     profile, config, output_string, count, seed_start = arguments
-    from pressb.kinematics import PiperKinematics
+    from pressb.robots.piper.kinematics import PiperKinematics
     from pressb.tasks.table_buttons.collection import LayoutPlanner
     output = Path(output_string)
     state_path = output / "preparation" / f"{profile}.json"

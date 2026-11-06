@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from pressb.policy_layouts import (LAYOUT_FIELDS, evaluation_panel_layouts, evaluation_schedule,
+from pressb.tasks.elevator.policy_layouts import (LAYOUT_FIELDS, evaluation_panel_layouts, evaluation_schedule,
                                    reposition_evaluation_panels, evaluation_layout_evidence)
 
 
@@ -100,7 +100,7 @@ def test_invalid_schedule_rejected(floors, repeats):
 
 
 def test_panel_reset_uses_absolute_xy_and_never_steps_or_touches_inactive_env(monkeypatch):
-    from pressb import dataset_scene
+    from pressb.tasks.elevator import dataset_scene
 
     calls = []
     world = object()  # No step or render API exists: this helper must only edit.
@@ -120,7 +120,7 @@ def test_panel_reset_uses_absolute_xy_and_never_steps_or_touches_inactive_env(mo
 
 @pytest.mark.parametrize("bad_axis", [None, "x", "y"])
 def test_live_layout_proof_rejects_stale_offsets_before_capture(monkeypatch, bad_axis):
-    from pressb import dataset_scene
+    from pressb.tasks.elevator import dataset_scene
 
     episode = evaluation_panel_layouts(CFG, "center_corners")[4]
     proof = dict(panel_offset_x_m=.01, panel_offset_y_m=.025, fixed_rig_unchanged=True,

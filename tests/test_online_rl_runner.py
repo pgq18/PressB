@@ -8,9 +8,9 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.protocol import pose8_to_pose9, pose9_to_pose8
-from pressb.online_rl.rpc import RPCClient, RPCServer
-from pressb.online_rl.runner import OnlineRunner, RunConfig
+from pressb.control.pose_protocol import pose8_to_pose9, pose9_to_pose8
+from pressb.runtime.rpc import RPCClient, RPCServer
+from pressb.compat.elevator_rl.runner import OnlineRunner, RunConfig
 
 
 TOKEN = "runner-integration-test"
@@ -151,7 +151,7 @@ class SyntheticInference:
                 base = np.tile(state9, (7, 1))
                 base[:, 1] += np.random.default_rng(seed).normal(0, .001, 7)
                 item.update(base_actions_pose9=base.tolist(),
-                            base_actions_pose8=pose9_to_pose8(base).tolist())
+                            base_actions_pose8=pose9_to_pose8(base, gripper_width_m=.008).tolist())
                 if self.round_wire_actions:
                     item["base_actions_pose8"] = np.asarray(item["base_actions_pose8"], dtype=np.float32).tolist()
             self.contexts[context_id] = deepcopy(item)
@@ -173,7 +173,7 @@ class SyntheticInference:
             actions[:, :3] += .001 * noise[:, :3]
             result.append(dict(context_id=item["context_id"],
                                actions_pose9=actions.tolist(),
-                               actions_pose8=pose9_to_pose8(actions).tolist()))
+                               actions_pose8=pose9_to_pose8(actions, gripper_width_m=.008).tolist()))
             self.decoded.append(deepcopy(item))
         return {"items": result}
 

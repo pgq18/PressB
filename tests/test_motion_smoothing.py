@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pressb.kinematics import PiperKinematics
-from pressb.motion_smoothing import JointCommandSmoother, smoothing_settings, validate_smoothing_window
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.control.joint_smoothing import JointCommandSmoother, smoothing_settings, validate_smoothing_window
 
 
 ROOT = Path(__file__).resolve().parents[1]

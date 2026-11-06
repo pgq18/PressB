@@ -54,7 +54,7 @@ bash scripts/run.sh --headless --gpu 4 --video --output outputs/edge_feedback
 
 `outputs/lighting_ablation/summary.json`（本地产物：`outputs/lighting_ablation/summary.json`） 的三环境对照保持场景和灯光强度相同，仅停用重复 Dome。初始位姿的腕部/全局平均亮度分别从 **18.77/45.37** 恢复到 **85.11/142.47**（0–255）；35 层按压位姿从 **26.13/37.73** 恢复到 **78.44/129.54**。这些是固定对照帧的统计，不代表所有 episode 的平均亮度。两个对照报告确认源配置和快照文件未变。
 
-`src/pressb/dataset_scene.py` 已改为对环境 1 及之后的重复 Dome 调用 **`SetActive(False)`**，并校验整个 Stage 只有环境 0 的一个活动 Dome。各环境的局部 RectLight、机器人、按钮和相机保留。CPU USD 回归测试覆盖 1/2/3 个环境、13 个世界关节锚点、源快照不变和额外全局 Dome 的拒绝。**维持 `lighting_intensity_scale=1.3`，不再调高强度**；Dome/顶灯/补光仍为 845/2470/1430。schema 9 将灯光克隆策略及相关源码哈希纳入采集指纹，防止与旧暗图像混用。旧视频不会因代码修复而自动变亮，必须另行采集。
+`src/pressb/dataset_scene.py`（现为 `src/pressb/tasks/elevator/dataset_scene.py`）当时已改为对环境 1 及之后的重复 Dome 调用 **`SetActive(False)`**，并校验整个 Stage 只有环境 0 的一个活动 Dome。各环境的局部 RectLight、机器人、按钮和相机保留。CPU USD 回归测试覆盖 1/2/3 个环境、13 个世界关节锚点、源快照不变和额外全局 Dome 的拒绝。**维持 `lighting_intensity_scale=1.3`，不再调高强度**；Dome/顶灯/补光仍为 845/2470/1430。schema 9 将灯光克隆策略及相关源码哈希纳入采集指纹，防止与旧暗图像混用。旧视频不会因代码修复而自动变亮，必须另行采集。
 
 ### 静态对照与生产首帧的区别
 

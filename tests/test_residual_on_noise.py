@@ -9,11 +9,11 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.fast_runner import FastOnlineRunner, FastRunConfig
-from pressb.online_rl.learner import (CHECKPOINT_VERSION, SOURCE_COMMIT,
+from pressb.compat.elevator_rl.fast_runner import FastOnlineRunner, FastRunConfig
+from pressb.runtime.learner import (CHECKPOINT_VERSION, SOURCE_COMMIT,
                                     LearnerConfig, SACLearner, _Actor)
-from pressb.online_rl.protocol import pose8_to_pose9, pose9_to_pose8
-from pressb.online_rl.residual_on_noise import (
+from pressb.control.pose_protocol import pose8_to_pose9, pose9_to_pose8
+from pressb.compat.elevator_rl.residual_on_noise import (
     BudgetReplayBuffer, FrozenNoisePolicy, ResidualOnNoiseRunner, actor_sha256,
     file_sha256,
 )
@@ -240,7 +240,7 @@ class DecoderSpy:
             # Non-orthonormal raw rotation6D and rounded wire quaternions catch
             # inadvertent pose8 roundtrips and zero-residual re-projection.
             raw = np.tile([.25 + serial * .01, -.04, .18, 2., .3, 0., .4, 1.5, .1], (7, 1))
-            wire = pose9_to_pose8(raw).astype(np.float32).tolist()
+            wire = pose9_to_pose8(raw, gripper_width_m=.008).astype(np.float32).tolist()
             row = dict(context_id=item["context_id"], actions_pose9=raw.tolist(), actions_pose8=wire)
             self.responses[item["context_id"]] = deepcopy(row)
             rows.append(row)
@@ -303,7 +303,7 @@ def test_cached_next_base_is_next_actual_residual_condition_without_resampling(p
     residual = np.zeros((2, 7, 9))
     residual[:, :, 0], residual[:, :, 2] = .5, -.25
     np.testing.assert_allclose([row["actions_pose8"] for row in actions],
-        pose9_to_pose8(base + residual * runner.learner.config.residual_scale), atol=1e-12)
+        pose9_to_pose8(base + residual * runner.learner.config.residual_scale, gripper_width_m=.008), atol=1e-12)
     assert [name for name, _ in decoder.requests] == ["/encode", "/decode", "/encode", "/decode"]
     assert len(runner.noise_policy.calls) == 2
     assert runner.noise_policy.calls[1][1] == [42 + 2 * 10000 + 1, 42 + 9 * 10000 + 1]
@@ -339,7 +339,7 @@ def test_400k_budget_clamps_crossing_batch_credit_to_398k(monkeypatch):
     runner.noise_policy = SimpleNamespace(verify_frozen=lambda: "frozen-hash")
     events, flushes = [], []
     runner._append = lambda name, row: events.append(row)
-    monkeypatch.setattr("pressb.online_rl.residual_on_noise.actor_sha256", lambda _: "residual-hash")
+    monkeypatch.setattr("pressb.compat.elevator_rl.residual_on_noise.actor_sha256", lambda _: "residual-hash")
 
     def flush():
         flushes.append(runner.update_credit)
@@ -445,7 +445,7 @@ def test_real_cpu_updates_change_only_fresh_residual_and_honor_budget(tmp_path, 
         np.testing.assert_array_equal(arrays["next_base_action"][1], arrays["base_action"][3])
     np.testing.assert_array_equal(arrays["action"][:2], 0.)
     for eid, row in enumerate(simulation.steps[0]["actions"]):
-        expected = pose9_to_pose8(arrays["base_action"][eid].reshape(7, 9))
+        expected = pose9_to_pose8(arrays["base_action"][eid].reshape(7, 9), gripper_width_m=.008)
         np.testing.assert_allclose(row["actions_pose8"], expected, atol=1e-7)
     verification = json.loads((runner.output / "freeze_verification.json").read_text())
     assert verification["noise_checkpoint_unchanged"] and verification["residual_updates"] == budget - 2

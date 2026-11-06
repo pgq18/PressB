@@ -4,7 +4,7 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-from pressb.online_rl.learner import LearnerConfig, ReplayBuffer, SACLearner
+from pressb.runtime.learner import LearnerConfig, ReplayBuffer, SACLearner
 
 
 @pytest.fixture(autouse=True, scope="module")

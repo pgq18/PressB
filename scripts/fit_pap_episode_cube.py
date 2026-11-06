@@ -20,7 +20,7 @@ from scipy.spatial.transform import Rotation
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.kinematics import PiperKinematics
+from pressb.robots.piper.kinematics import PiperKinematics
 
 # Episode 461, frame zero: four top corners (--),(-+),(++),(+-), then
 # two bottom corners on the visible front face of each respective camera.

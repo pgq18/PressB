@@ -7,7 +7,7 @@ import pytest
 torch = pytest.importorskip("torch")
 from torch import nn
 
-from pressb.online_rl.learner import LearnerConfig, ReplayBuffer, SACLearner
+from pressb.runtime.learner import LearnerConfig, ReplayBuffer, SACLearner
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -98,7 +98,7 @@ def test_residual_warmup_and_progressive_exploration_execute_whole_chunks():
 def test_noise_warmup_returns_the_actual_clipped_normalized_noise():
     learner = make_learner("initial_noise", noise_steps=7)
     draw = torch.linspace(-3., 3., 63).reshape(1, 63)
-    with patch("pressb.online_rl.learner.torch.randn", return_value=draw):
+    with patch("pressb.runtime.learner.torch.randn", return_value=draw):
         action = learner.act(np.zeros((1, 4), np.float32), warmup=True)
     expected_noise = np.clip(draw.numpy(), -1.5, 1.5)
     np.testing.assert_array_equal(action * 1.5, expected_noise)

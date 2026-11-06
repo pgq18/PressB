@@ -135,7 +135,7 @@ class VLAJEPABackend:
 
 def create_backend(config):
     """Load a frozen elevator checkpoint from explicit configuration paths."""
-    from pressb.online_rl.inference import FrozenPiperBackend
+    from .vlajepa_backend import FrozenPiperBackend
 
     allowed = {"vla_repo", "checkpoint", "device", "image_preprocess_device", "base_vlm", "base_encoder"}
     if not isinstance(config, dict) or set(config) - allowed:

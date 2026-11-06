@@ -19,7 +19,8 @@ import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from collect_dataset import RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS, write_json
+from pressb.tasks.elevator.collection import RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS
+from collect_dataset import write_json
 
 
 def simulate(app, args, cfg, status):
@@ -32,11 +33,12 @@ def simulate(app, args, cfg, status):
     import omni.usd
     from isaacsim.core.api import World
     from isaacsim.core.utils.types import ArticulationAction
-    from pressb.dataset_scene import create_envs, build_tiled_rgb, set_panel_offset, validate_panel_layout
-    from pressb.kinematics import PiperKinematics
-    from pressb.planning import make_plan
-    from pressb.panel_randomization import validate_panel_layout as validate_plan_layout
-    from pressb.scene import set_button_light
+    from pressb.tasks.elevator.dataset_scene import create_envs, set_panel_offset, validate_panel_layout
+    from pressb.sensors.tiled import build_tiled_rgb
+    from pressb.robots.piper.kinematics import PiperKinematics
+    from pressb.tasks.elevator.planning import make_plan
+    from pressb.tasks.elevator.panel_randomization import validate_panel_layout as validate_plan_layout
+    from pressb.tasks.elevator.scene import set_button_light
 
     dt = float(cfg["physics_dt"])
     kin = PiperKinematics(ROOT / cfg["robot_urdf"], tip_offset=cfg["tip_offset"])

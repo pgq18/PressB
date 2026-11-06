@@ -24,7 +24,7 @@ except ImportError:
             sys.path.append(str(directory))
             break
     import pyarrow.parquet as pq
-from pressb.kinematics import PiperKinematics
+from pressb.robots.piper.kinematics import PiperKinematics
 
 
 def quantiles(values):

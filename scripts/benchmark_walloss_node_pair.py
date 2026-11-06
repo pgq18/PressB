@@ -11,7 +11,7 @@ import traceback
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from pressb.rl_nodes.client import NodeClient
+from pressb.runtime.client import NodeClient
 from benchmark_walloss_batch import write_json
 
 

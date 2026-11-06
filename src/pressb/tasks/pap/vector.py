@@ -33,9 +33,8 @@ from pressb.runtime.image_transport import encode_preprocessed_image, validate_i
 
 RESET_CONTRACT = "indexed_zero_tick_cached_settled_arm_and_supported_object_v1"
 _VECTOR_SOURCE_FILES = (
-    "tasks/pap/vector.py", "rl_nodes/pap_vector.py", "dataset_scene.py",
+    "tasks/pap/vector.py", "sensors/tiled.py",
     "runtime/physics.py", "runtime/image_transport.py", "runtime/contract.py",
-    "rl_nodes/image_transport.py", "rl_nodes/contract.py", "online_rl/fast_simulation.py",
 )
 
 
@@ -167,9 +166,9 @@ class PAPVectorBackend:
         from isaacsim.core.utils.prims import get_articulation_root_api_prim_path
         import omni.physx
         import omni.replicator.core as rep
-        from pressb.action_postprocessing import JointActionPostprocessor
-        from pressb.dataset_scene import build_tiled_rgb
-        from pressb.kinematics import PiperKinematics
+        from pressb.control.joint_actions import JointActionPostprocessor
+        from pressb.sensors.tiled import build_tiled_rgb
+        from pressb.robots.piper.kinematics import PiperKinematics
         from pressb.runtime.physics import TensorArms, TensorRigidBodies, PhysXErrorGuard
         from pressb.tasks.pap.initialization import load_policy_initial
         from .worker import _build

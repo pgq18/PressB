@@ -19,7 +19,7 @@ from scipy.spatial.transform import Rotation
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.kinematics import PiperKinematics
+from pressb.robots.piper.kinematics import PiperKinematics
 
 # Manually inspected 640 x 480 pixels. Names below are metadata-relative frame
 # numbers; physical packed-video frame index is one greater (see docstring).

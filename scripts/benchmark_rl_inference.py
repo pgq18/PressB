@@ -24,7 +24,8 @@ import numpy as np
 from PIL import Image
 import torch
 
-from pressb.online_rl.inference import FrozenPiperBackend, InferenceApplication
+from pressb.models.vlajepa_backend import FrozenPiperBackend
+from pressb.compat.elevator_rl.inference import InferenceApplication
 
 
 def compare(actual, expected):

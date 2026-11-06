@@ -1,1 +1,1 @@
-"""Piper elevator manipulation: planning, simulation, and auditable records."""
+"""PressB: shared robotics runtime, task plugins, and model adapters."""

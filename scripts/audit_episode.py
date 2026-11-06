@@ -20,7 +20,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.kinematics import PiperKinematics
+from pressb.robots.piper.kinematics import PiperKinematics
 
 
 def audit_gripper(data: dict, target_positions, urdf_path: Path, count: int) -> dict:

@@ -160,7 +160,7 @@ class Experiment:
 
     def preflight(self):
         required = [PYTHON, INFERENCE_PYTHON, self.noise_checkpoint,
-                    ROOT / "scripts/run_residual_on_noise.py", ROOT / "src/pressb/online_rl/residual_on_noise.py",
+                    ROOT / "scripts/run_residual_on_noise.py", ROOT / "src/pressb/compat/elevator_rl/residual_on_noise.py",
                     SERVICE_SOURCE / "scripts/serve_rl_fast_simulation.py",
                     SERVICE_SOURCE / "scripts/serve_rl_inference.py",
                     self.config_path, DEFAULT_CONFIG, OLD / "run_plan.json",

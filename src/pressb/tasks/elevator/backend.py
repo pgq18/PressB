@@ -13,7 +13,8 @@ import uuid
 
 import numpy as np
 
-from pressb.online_rl.protocol import pose8_to_pose9, pose9_to_pose8, task_floor
+from pressb.control.pose_protocol import pose8_to_pose9, pose9_to_pose8
+from .semantics import task_floor
 from pressb.runtime.rpc import RPCClient
 from pressb.runtime.contract import finite_array, fingerprint, validate_actions, validate_metadata, validate_observation
 
@@ -249,7 +250,7 @@ class ElevatorBackend:
         actions = []
         for item in items:
             pose9 = validate_actions(item.get("actions"), self._metadata["action"])
-            pose8 = pose9_to_pose8(pose9)
+            pose8 = pose9_to_pose8(pose9, gripper_width_m=.008)
             if np.any(np.linalg.norm(pose8[:, :3], axis=1) > 1.5):
                 raise ValueError("Elevator pose target exceeds 1.5 m from the robot base")
             actions.append(dict(env_id=item["env_id"], actions_pose8=pose8.tolist()))

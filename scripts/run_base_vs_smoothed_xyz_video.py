@@ -16,7 +16,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.online_rl.rpc import RPCClient
+from pressb.runtime.rpc import RPCClient
 
 PYTHON = ROOT / ".conda/envs/pressb/bin/python"
 OLD = ROOT / "outputs/online_rl_fast_20261003"
@@ -112,7 +112,7 @@ def main():
                 playback="Both tasks simultaneously at 1x simulation time; each terminal frame held and labeled",
                 source_sha256={name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in (
                     "scripts/run_base_vs_smoothed_xyz_video.py", "scripts/eval_smoothed_residual.py",
-                    "src/pressb/online_rl/action_postprocessing.py")})
+                    "src/pressb/compat/elevator_rl/action_postprocessing.py")})
     try:
         save("plan.json", plan)
         base_config = read(OLD / "online_rl_fast_action_residual.json")

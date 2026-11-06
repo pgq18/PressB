@@ -9,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pressb.online_rl.batched_control import BatchedPoseController
+from pressb.robots.piper.batched_control import BatchedPoseController
 
 ROOT = Path(__file__).resolve().parents[1]
 URDF = ROOT / json.loads((ROOT / "configs/scene.json").read_text())["robot_urdf"]

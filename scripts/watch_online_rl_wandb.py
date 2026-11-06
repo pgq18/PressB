@@ -22,7 +22,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.online_rl.log_monitor import TrainingLogReader
+from pressb.compat.elevator_rl.log_monitor import TrainingLogReader
 
 
 def read_json(path, default=None):

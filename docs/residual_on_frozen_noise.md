@@ -97,7 +97,7 @@ env -u PYTHONPATH PYTHONPATH=src PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
 
 ## 冻结 XYZ 策略后的动作平滑评估
 
-`src/pressb/online_rl/action_postprocessing.py` 在冻结噪声策略和 XYZ 残差完成动作合成后，
+`src/pressb/compat/elevator_rl/action_postprocessing.py` 在冻结噪声策略和 XYZ 残差完成动作合成后，
 对发送给仿真的绝对目标 pose8 做推理后处理。VLA、噪声 actor、XYZ 残差 actor 和 critic 的
 权重全部保持不变，XYZ 残差 scale 仍为 `[0.02,0.02,0.02]`；不重新训练，不修改 replay，
 不调整原仿真的关节平滑窗口（仍为 3）。新增后处理器只允许评估 XYZ checkpoint。

@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.fast_runner import FastOnlineRunner, FastRunConfig
-from pressb.online_rl.protocol import pose8_to_pose9, pose9_to_pose8
+from pressb.compat.elevator_rl.fast_runner import FastOnlineRunner, FastRunConfig
+from pressb.control.pose_protocol import pose8_to_pose9, pose9_to_pose8
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts/eval_combined_online_rl.py"
@@ -57,7 +57,7 @@ def composition_fixture(monkeypatch, *, zero_residual=False, mismatched_context=
     decoded = []
     for index, eid in enumerate([2, 9]):
         # Deliberate float32 wire rounding must survive a zero residual exactly.
-        wire = pose9_to_pose8(raw[index]).astype(np.float32).tolist()
+        wire = pose9_to_pose8(raw[index], gripper_width_m=.008).astype(np.float32).tolist()
         decoded.append(dict(context_id=f"ctx-{eid}", actions_pose9=raw[index].tolist(),
                             actions_pose8=wire))
     if mismatched_context:
@@ -103,7 +103,7 @@ def test_noise_raw_pose9_conditions_residual_and_is_addition_origin(monkeypatch)
     assert not np.allclose(conditioned_base[:, :, 3:], roundtripped[:, :, 3:])
     expected = raw + residual * np.asarray(runner.residual_learner.config.residual_scale)
     np.testing.assert_allclose(np.asarray([row["actions_pose8"] for row in rows]),
-                               pose9_to_pose8(expected), rtol=0, atol=1e-12)
+                               pose9_to_pose8(expected, gripper_width_m=.008), rtol=0, atol=1e-12)
     np.testing.assert_allclose(expected[:, :, :3] - raw[:, :, :3],
                                np.broadcast_to([.015, 0., -.0075], (2, 7, 3)), atol=1e-12)
     assert all(call[1] is False for call in runner.learner.calls)
@@ -123,7 +123,7 @@ def test_zero_residual_preserves_noise_wire_pose8_exactly(monkeypatch):
     rows, _ = runner._actions(active)
     for index, row in enumerate(rows):
         np.testing.assert_array_equal(row["actions_pose8"], decoded[index]["actions_pose8"])
-    assert not np.array_equal(np.asarray(rows[0]["actions_pose8"]), pose9_to_pose8(raw[0]))
+    assert not np.array_equal(np.asarray(rows[0]["actions_pose8"]), pose9_to_pose8(raw[0], gripper_width_m=.008))
 
 
 def test_mismatched_decode_contexts_rejected_before_residual_actor(monkeypatch):

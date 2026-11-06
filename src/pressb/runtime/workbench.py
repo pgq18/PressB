@@ -346,7 +346,7 @@ def build_tripod(stage, eye_world, target_world, tabletop_z=.76,
 
     import numpy as np
 
-    from ..wrist_camera import (
+    from pressb.robots.piper.wrist_camera import (
         ROOT, ASSEMBLY_URDF, ASSEMBLY_SHA256, ASSEMBLY_COMMIT,
         _origin, _set_transform, _require_mesh,
     )

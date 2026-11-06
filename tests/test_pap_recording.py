@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.rl_nodes.pap_recording import PAPStateRecorder, PAPRecordingVectorBackend
+from pressb.tasks.pap.recording import PAPStateRecorder, PAPRecordingVectorBackend
 
 
 class Backend:
@@ -138,8 +138,8 @@ def test_physx_float32_clock_is_validated_without_changing_playback_dt():
 
 
 def test_replay_reconstructs_raw_objects_without_nested_geometry(tmp_path):
-    from pressb.rl_nodes.pap import ROOT, task_identity
-    from pressb.rl_nodes.pap_vector import load_config
+    from pressb.tasks.pap.backend import ROOT, task_identity
+    from pressb.tasks.pap.vector import load_config
     raw = json.loads((ROOT/"configs/rl_nodes/pap_simulation.json").read_text())["backend"]["config"]
     recorded = load_config({**raw, "num_envs": 64, "gpu_ids": [0]})
     reconstruct = replay_loader().__globals__["replay_config"]

@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--step', type=float, default=.01)
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
-    from pressb.kinematics import PiperKinematics
+    from pressb.robots.piper.kinematics import PiperKinematics
     from pressb.tasks.table_buttons.placement import ReachablePlacement
     placement = ReachablePlacement(PiperKinematics(ROOT/cfg['robot_urdf'], tip_offset=.1358), cfg)
     start = time.monotonic()

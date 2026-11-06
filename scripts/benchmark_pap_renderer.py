@@ -69,7 +69,7 @@ def main():
     for key, value in {"PYTHONNOUSERSITE": "1", "PXR_WORK_THREAD_LIMIT": "8",
                        "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"}.items():
         os.environ.setdefault(key, value)
-    from pressb.rl_nodes.pap_vector import PAPVectorBackend
+    from pressb.tasks.pap.vector import PAPVectorBackend
     cfg = json.loads(args.config.read_text())["backend"]["config"]
     cfg.update(num_envs=args.num_envs, gpu_ids=[args.gpu], renderer_profile=args.profile,
                render_resolution=[args.width, args.width * 3 // 4], reset_render_frames=args.reset_frames,

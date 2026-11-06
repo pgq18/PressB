@@ -1,6 +1,8 @@
 # Configurable inference, simulation and RL nodes
 
-**2026-11-06:** canonical implementations now live in `runtime`, `tasks` and `models`; `rl_nodes` paths below remain compatibility imports. New experiments use [the unified configuration/entry point](project_framework.md). Table buttons now has a native joint6/joint7 model adapter and a single-environment task backend.
+**2026-11-07 ownership update:** service and learning code lives in `runtime`, task implementations in `tasks/{elevator,pap,table_buttons}`, and model integration in `models`. PiPER hardware/control, generic filters and sensors live in `robots/piper`, `control` and `sensors`. The `pressb.rl_nodes` and `pressb.online_rl` packages are removed without aliases; `configs/rl_nodes/` remains the per-node template directory. New experiments use [the unified configuration/entry point and path map](project_framework.md). Historical elevator orchestration lives in `compat/elevator_rl`.
+
+The current ownership refactor has passed 2,210 unique tests, installed-package checks, physical replay for all three tasks, the two-environment Wall train/resume/eval/collect pipeline and native batch64 checks. See the [current verification summary](results/component_ownership_20261107.json) for scope and evidence. Strict checkpoint migration passed; the local resume configuration at `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json` is validated but unlaunched, retaining 64 environments, batch64 and the original 200,000 total budget (183,296 remaining). Formal PAP residual training remains paused at 16,704 transitions. Earlier test and GPU results below retain their original dates and scope.
 
 This interface separates frozen model inference, physical environment execution
 and online learning. Public `method="dsrl"` means learning the flow model's
@@ -14,9 +16,9 @@ negotiated image preprocessing, terminal state-only handling, and atomic
 `step_and_reset` without changing the default `reset`/`step` interfaces.
 
 The implementation includes a Wall-OSS adapter and a PAP Isaac worker backend.
-CPU tests cover real sockets, independent worker processes, actual SAC updates,
+The original 2026-11-04 validation described below includes CPU tests for real sockets, independent worker processes, actual SAC updates,
 checkpoint resume, and the Wall-OSS flow code's cached/uncached equivalence.
-GPU integration also passed with the full PAP Wall-OSS checkpoint and two real
+That validation also passed GPU integration with the full PAP Wall-OSS checkpoint and two real
 Isaac worker processes. Both DSRL and action-residual runs collected 24 chunk
 transitions and performed 22 SAC updates, including timeout/reset and checkpoint
 saving. These short runs used a two-second episode limit to exercise lifecycle
@@ -358,7 +360,8 @@ not push the next save beyond the 200k boundary. Filenames contain the actual
 transition count. Backends requiring all active environments can slightly
 exceed the final budget; `transition_budget_overshoot` records that difference.
 
-The older `online_rl` runner and its generic templates also default to 100,000
+The historical elevator runner in `compat/elevator_rl` and its templates also
+default to 100,000
 transitions and retain their numbered checkpoints. The older fast runner keeps
 its existing 100,000-transition permanent checkpoints plus a separately
 overwritten `last.pt` every 10,000 transitions for recovery; updating `last.pt`
@@ -403,8 +406,13 @@ finished. Endpoint URLs and the RPC token are excluded from uploaded configurati
 
 ## Existing elevator and new adapters
 
-`elevator_inference.json` wraps the existing frozen VLA-JEPA backend.
-`elevator_simulation.json` connects to an already launched, unowned
+The `elevator` experiment plugin selects the native task engine at
+`pressb.tasks.elevator.native:create_backend`. The separate `elevator_remote`
+plugin selects `pressb.tasks.elevator.backend:create_backend` for historical
+service bridging. `elevator_inference.json` selects the canonical
+`pressb.models.vlajepa:create_backend` adapter; its explicit source override, if
+present, selects a historical model checkout instead of the bundled default.
+The per-node `elevator_simulation.json` template connects to an already launched, unowned
 [`serve_rl_fast_simulation.py`](../scripts/serve_rl_fast_simulation.py) service;
 its endpoint must match that service's port. This compatibility adapter retains
 the old simulation's requirements: full 7-action chunks, all active slots per
@@ -416,12 +424,16 @@ entry points; the new runner requires its negotiated schema fingerprint.
 To add another task/model, implement a factory `module:function(config)` and
 select it in JSON. Model backends provide `describe`, `encode_batch`,
 `decode_batch`; environment backends provide `describe`, `reset`, `step`,
-`close`. See [`contract.py`](../src/pressb/rl_nodes/contract.py),
-[`walloss.py`](../src/pressb/rl_nodes/walloss.py) and
-[`pap.py`](../src/pressb/rl_nodes/pap.py). Metadata cannot supply missing physics
+`close`. See [`contract.py`](../src/pressb/runtime/contract.py),
+[`walloss.py`](../src/pressb/models/walloss.py) and
+[`backend.py`](../src/pressb/tasks/pap/backend.py). Metadata cannot supply missing physics
 or model decoding logic: a new task still needs its success/reward/reset adapter.
 The tabletop-buttons six-joint checkpoint now uses the `vlajepa_joint` model
-adapter and the `table_buttons` task plugin. Historical workflows remain compatible.
+adapter and the `table_buttons` task plugin. Historical commands retain their
+explicit implementations in `compat`; removed import paths are not supported.
+Keep task defaults and reward/success rules in the task package. Shared runtime,
+control, robot and sensor helpers must not import concrete tasks, `models`,
+`model_sources` or legacy applications; model-source loading belongs to adapters.
 
 ## Wire reference
 

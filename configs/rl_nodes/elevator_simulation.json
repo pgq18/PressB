@@ -2,7 +2,7 @@
   "server": {"host": "127.0.0.1", "port": 8101, "transport": "http"},
   "service": {"request_cache_size": 8},
   "backend": {
-    "factory": "pressb.rl_nodes.elevator:create_backend",
+    "factory": "pressb.tasks.elevator.backend:create_backend",
     "config": {"endpoint": "http://127.0.0.1:19780", "timeout": 180, "panel_randomization": true}
   }
 }

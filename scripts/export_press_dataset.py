@@ -69,7 +69,7 @@ def plan_records(plan: dict) -> dict[int, dict]:
 
 def validate_plan_source(plan: dict, raw: Path, collection: dict, collection_record: dict):
     """Bind even a selected pilot subset to the complete original collection."""
-    from pressb.press_prefix import CUT_POLICY, TERMINAL_ACTION_POLICY
+    from pressb.tasks.elevator.press_prefix import CUT_POLICY, TERMINAL_ACTION_POLICY
     expected = {"schema_version": 1, "kind": "press_prefix_cut_plan", "success": True,
                 "raw_root": str(raw), "source_collection_metadata_sha256": collection_record["sha256"],
                 "source_collection_fingerprint": collection["collection_fingerprint"],
@@ -93,7 +93,7 @@ def transformation_record(plan_path: Path) -> dict:
 
 
 def verify_plan_record(directory: Path, collection: dict, expected: dict):
-    from pressb.press_prefix import inspect_press_prefix
+    from pressb.tasks.elevator.press_prefix import inspect_press_prefix
     actual = inspect_press_prefix(directory, collection, project_root=ROOT)
     if actual != expected:
         raise ValueError(f"Raw episode no longer matches immutable cut plan: {directory}")
@@ -180,7 +180,7 @@ def write_part(records: list[dict], destination: Path, raw: Path, plan_path: Pat
     configure_runtime()
     from lerobot.configs.video import RGBEncoderConfig
     from lerobot.datasets.lerobot_dataset import LeRobotDataset
-    from pressb.press_prefix import crop_press_prefix_arrays
+    from pressb.tasks.elevator.press_prefix import crop_press_prefix_arrays
 
     _, collection, collection_record = collection_snapshot(raw)
     fps = collection_timing(collection)["fps"]
@@ -416,7 +416,8 @@ def main():
                 "lerobot_version": LEROBOT_VERSION,
                 "source_code_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in (
                     Path(__file__), ROOT / "scripts/export_lerobot.py",
-                    ROOT / "scripts/audit_press_dataset.py", ROOT / "src/pressb/press_prefix.py")}}
+                    ROOT / "scripts/audit_press_dataset.py", ROOT / "src/pressb/tasks/elevator/press_prefix.py",
+                    ROOT / "src/pressb/tasks/elevator/panel_metadata.py")}}
     batches = [records[i:i + args.part_size] for i in range(0, len(records), args.part_size)]
     output.parent.mkdir(parents=True, exist_ok=True)
     with export_lock(parts_root, output):

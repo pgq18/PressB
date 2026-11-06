@@ -285,7 +285,7 @@ class JointVLAJEPABackend:
         import torch
         # This numeric sampler is deliberately retained in its historical
         # module so old elevator imports and provenance remain meaningful.
-        from pressb.online_rl.inference import flow_from_context
+        from .vlajepa_backend import flow_from_context
 
         if len(contexts) != len(initial_noises):
             raise ValueError("Expected one optional noise entry per context")
@@ -354,11 +354,11 @@ def create_backend(config):
     helpers.disable_unused_qwen_cache(model)
     model.to(device).requires_grad_(False).eval()
     cfg.framework.qwenvl.device_map = str(device)
-    from pressb.online_rl import inference as legacy_inference
+    from . import vlajepa_backend
     sources = {name: _sha256(repo / name) for name in (
         "starVLA/inference/piper_policy.py", "starVLA/model/framework/VLA_JEPA.py",
         "starVLA/model/modules/action_model/GR00T_ActionHeader.py", "starVLA/model/modules/vlm/QWen3.py")}
-    sources.update(adapter=_sha256(__file__), sampler=_sha256(legacy_inference.__file__),
+    sources.update(adapter=_sha256(__file__), sampler=_sha256(vlajepa_backend.__file__),
                    runtime_contract=_sha256(runtime_contract.__file__), image_transport=_sha256(image_transport.__file__))
     if repo == builtin_source_root("vlajepa").resolve():
         sources["bundled_model_source"] = source_tree_sha256("vlajepa", repo)

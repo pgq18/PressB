@@ -13,8 +13,8 @@ import threading
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from pressb.online_rl.rpc import RPCServer
-from pressb.online_rl.runner import OnlineRunner, RunConfig
+from pressb.runtime.rpc import RPCServer
+from pressb.compat.elevator_rl.runner import OnlineRunner, RunConfig
 
 
 def main():

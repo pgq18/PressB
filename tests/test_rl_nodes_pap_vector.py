@@ -6,11 +6,11 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.action_postprocessing import JointActionPostprocessor
-from pressb.rl_nodes.pap import ROOT
-from pressb.rl_nodes.pap_vector import PAPVectorBackend, _path_rows, load_config, renderer_profile, _encode_png
-from pressb.rl_nodes.image_transport import walloss_resize_spec, resize_for_transport
-from pressb.rl_nodes.contract import decode_image
+from pressb.control.joint_actions import JointActionPostprocessor
+from pressb.tasks.pap.backend import ROOT
+from pressb.tasks.pap.vector import PAPVectorBackend, _path_rows, load_config, renderer_profile, _encode_png
+from pressb.runtime.image_transport import walloss_resize_spec, resize_for_transport
+from pressb.runtime.contract import decode_image
 
 
 def base_config():

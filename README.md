@@ -4,17 +4,21 @@
 
 PressB builds Isaac environments for evaluating robot policies and improving frozen vision-language-action models through online residual reinforcement learning. It connects physical simulation, model inference and policy training, with recorded camera observations and contact-based task outcomes.
 
-**Updated 2026-11-06:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation; PAP Wall-X evaluations achieved **65/100** for red cubes and **54/100** for five colors. Tabletop buttons now support single-/multi-task VLA-JEPA evaluation and have completed a new [9,000-episode collection with color-specific approaches](docs/results/table_buttons_target_relative_20261030/README.md), separate from the earlier shared-motion datasets.
+**Updated 2026-11-07:** three PiPER tasks are available. Elevator residual RL reached **119/120 (99.17%)** in a fixed evaluation; PAP Wall-X evaluations achieved **65/100** for red cubes and **54/100** for five colors. Tabletop buttons now support single-/multi-task VLA-JEPA evaluation and have completed a new [9,000-episode collection with color-specific approaches](docs/results/table_buttons_target_relative_20261030/README.md), separate from the earlier shared-motion datasets.
 
 [Tasks](#tasks) · [Results](#current-results) · [Videos](#demo-videos) · [Run](#run-the-tasks) · [Three-node RL](#online-reinforcement-learning-three-independent-nodes) · [Handover](docs/HANDOVER.md)
 
 ## Shared runtime and plugins
 
-**2026-11-06 framework refactor:** new experiments use **one runtime + task plugins + model adapters + experiment configurations**. The same rollout supports DSRL, action residuals, fixed DSRL with a new residual, evaluation and chunk trajectory recording. Robot/camera setup and PhysX controls are shared; task physics and rewards remain explicit plugins. Existing commands and imports remain compatible.
+**2026-11-07 code ownership:** new experiments use **one runtime + task plugins + model adapters + experiment configurations**. The same rollout supports DSRL, action residuals, fixed DSRL with a new residual, evaluation and chunk trajectory recording. Robot/camera setup and PhysX controls are shared; task physics and rewards remain explicit plugins. Task-specific code lives under `tasks/{elevator,pap,table_buttons}`; shared infrastructure lives under `runtime`, `control`, `sensors` and `robots/piper`. Historical commands remain available, while removed Python import paths have no alias stubs.
+
+The package root contains only `__init__.py` and `registry.py` as Python files. Tasks and model adapters use shared contracts; shared packages do not import concrete tasks, model implementations, upstream model bundles or legacy workflows. `models` integrates the preserved upstream bundles in `model_sources`; `compat` owns historical clients and elevator RL orchestration. See the [ownership and import migration map](docs/project_framework.md#code-ownership) before extending the framework or updating an external script. `configs/rl_nodes/` remains a configuration-template directory; the old `pressb.rl_nodes` and `pressb.online_rl` packages are removed.
+
+**Ownership refactor verified:** 2,210 unique tests with no unresolved skips, 68 installed-package imports, 50 CLI/config checks, all three tasks’ physical replay, the full two-environment Wall pipeline and native batch64 checks passed. All 169 bundled model/training files remain unchanged. The [verification summary](docs/results/component_ownership_20261107.json) records the functional scope and source identities; these checks are not new policy success-rate or throughput estimates. Strict checkpoint migration passed, and the local resume configuration at `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json` is validated but unlaunched. Formal PAP residual training remains paused at 16,704 transitions.
 
 Start with [the framework guide](docs/project_framework.md) and [`configs/experiments`](configs/experiments). Use `python scripts/run_experiment.py list` to inspect plugins, then `validate`, `inference`, `simulation`, `train`, `eval` or `collect` with one experiment JSON. PAP supports the 64-environment profile; table buttons currently runs one environment per node. Historical frame-aligned LeRobot collection remains available.
 
-[Refactor verification](docs/results/framework_refactor_20261106.json): 2,049 regression tests passed, plus real Isaac replay and three-node training/resume/evaluation/recording checks, including PAP64 with Wall-OSS native batch64. These are functional checks, not new policy success-rate estimates.
+[Earlier framework-refactor verification](docs/results/framework_refactor_20261106.json): 2,049 regression tests passed, plus real Isaac replay and three-node training/resume/evaluation/recording checks, including PAP64 with Wall-OSS native batch64. These are functional checks, not new policy success-rate estimates.
 
 **Models are now bundled:** Wall-OSS and VLA-JEPA inference, data readers and supervised training live in PressB. The [model guide](docs/bundled_models.md) covers the new common training launcher and source provenance. [Integration verification](docs/results/model_internalization_20261106.json) includes 2,106 main-project tests across the required environments and real-weight comparisons: Wall-OSS batch 2/8 and VLA-JEPA pose9/joint6/joint7 match their original implementations on the tested inputs.
 
@@ -302,7 +306,7 @@ The [online RL run guide](docs/online_rl.md) provides three elevator-task nodes 
 
 **Local inference comparison (2026-11-05):** Wall-OSS is now also deployed on RTX 5090. Two complete 10,048-transition trials measured **12.91 transitions/s** with inference and SAC sharing GPU 1, and **13.34/s** with simulation and inference sharing GPU 0 while SAC uses GPU 1. The latter is **6.33% faster** than the optimized H200 deployment; projected 400k/1M durations are **8.33/20.82 hours**. The 15/s target is still unmet. Both runs passed checkpoint/replay audits. All associated services are now stopped following the November 6 refactor checks. Cross-deployment BF16 outputs differ, so task success still needs separate evaluation. See the [deployment and timing report](docs/pap_dsrl_local_inference.md).
 
-**Training status (2026-11-06):** local PAP DSRL and the subsequent frozen-DSRL action residual each completed **400,000 transitions**. A fresh DSRL run with a 100k budget completed **100,022 transitions in 2h 05m** (the final parallel batch exceeded the budget by 22). The subsequent 200k-budget residual run was paused by request at **16,704 transitions** for the refactor; its full checkpoint and source DSRL are preserved. Verified compatibility copies and a validated resume configuration are ready, but training has not resumed. See the [handover](docs/HANDOVER.md) and [migration verification](docs/results/framework_refactor_20261106.json). Training recent SR is not an independent evaluation result.
+**Training status (2026-11-06):** local PAP DSRL and the subsequent frozen-DSRL action residual each completed **400,000 transitions**. A fresh DSRL run with a 100k budget completed **100,022 transitions in 2h 05m** (the final parallel batch exceeded the budget by 22). The subsequent 200k-budget residual run was paused by request at **16,704 transitions** for the refactor; its full checkpoint and source DSRL are preserved. The current ownership refactor has verified derived checkpoints and a validated, unlaunched local resume configuration at `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json`: 64 environments, batch64 and the original 200,000 total budget (183,296 remaining). Training has not resumed. See the [handover](docs/HANDOVER.md) and [migration verification](docs/results/component_ownership_20261107.json). Training recent SR is not an independent evaluation result.
 
 Inference defaults to **WebSocket/MessagePack**, using a backward-compatible extension to Wall-X's existing WebSocket transport. PressB supplies the VLA-JEPA-specific `encode`, explicit-noise `decode`, `release` and `health` operations needed by RL. Simulation remains **HTTP**; legacy HTTP inference is selectable with `--transport http` and an `http://` client URL. The original PAP client continues to use ordinary Wall-X observation/action prediction. The new configurable path adds a dedicated Wall-OSS model adapter; the transport extension alone is insufficient. See the [PressB protocol](docs/online_rl_protocol.md) and [Wall-X interface notes](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md).
 
@@ -346,15 +350,17 @@ A clone without a scene snapshot skips USD integration tests that require one; e
 
 | Directory | Contents |
 |---|---|
-| `src/pressb/` | Scene, robot kinematics, planning, cameras, data semantics, and policy control |
-| `src/pressb/runtime/` | Common services, rollout/SAC/replay, checkpoints, robot/camera assembly and shared USD workbench components |
-| `src/pressb/tasks/` | Task plugins and their scene, outcomes, sampling, planning, collection and evaluation implementations |
-| `src/pressb/models/`, `src/pressb/model_sources/` | Model adapters and bundled Wall-OSS/VLA-JEPA inference, data and supervised-training sources |
+| `src/pressb/` | Package metadata and lazy plugin registry; implementation lives in the packages below |
+| `src/pressb/runtime/` | Common services, rollout/SAC/replay, checkpoints, PhysX, portable assets and shared USD workbench components |
+| `src/pressb/control/`, `src/pressb/sensors/` | Task-independent filters, pose conversions, camera calibration, RGB-D recording and tiled RGB |
+| `src/pressb/robots/piper/` | PiPER kinematics, controllers, articulation setup and D435 hardware |
+| `src/pressb/tasks/{elevator,pap,table_buttons}/` | Task scenes, defaults, physical outcomes, sampling, planning, collection and evaluation |
+| `src/pressb/models/` | Frozen-model adapters and loading/inference wrappers |
+| `src/pressb/model_sources/` | Preserved upstream Wall-OSS/VLA-JEPA model, data and supervised-training code with provenance |
 | `src/pressb/experiments/`, `src/pressb/training/` | Experiment commands/configuration and supervised-training launcher |
-| `src/pressb/compat/` | Historical Wall-X WebSocket and table-button HTTP policy clients |
-| `src/pressb/online_rl/`, `src/pressb/rl_nodes/` | Historical entrypoints and remaining elevator helpers; generic modules forward to the common runtime |
+| `src/pressb/compat/` | Historical elevator RL workflows, fixed-gripper protocol, Wall-X and table-button clients |
 | `scripts/` | Entry points for setup, asset preparation, collection, conversion, replay, evaluation, and audits |
-| `configs/` | Configurations for fixed scenes, randomized positions, and 1,200-episode stratified collection |
+| `configs/` | Scenes, collection, model training and experiments; `rl_nodes/` retains per-node JSON templates |
 | `tests/` | CPU unit tests and optional USD scene integration tests |
 | `assets/*.json` | Pinned asset sources, checksums, and installation alignment metadata |
 | `docs/` | Current workflow guides and historical experiment records with their scope identified |
@@ -363,9 +369,10 @@ A clone without a scene snapshot skips USD integration tests that require one; e
 | `vendor/`, `assets/generated/`, `assets/isaac/` | Locally downloaded or generated dependencies and assets (ignored) |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | Local data, results, environments, and caches (ignored) |
 
-PAP and table-button code lives only in `src/pressb/tasks/pap/` and
-`src/pressb/tasks/table_buttons/`. The former top-level task packages have been
-removed; see the [import and checkpoint migration notes](docs/project_framework.md#task-package-paths)
-when updating an older script or resuming an older RL run.
+All three task implementations have explicit owners under `src/pressb/tasks/`.
+The former top-level helpers and the `online_rl`, `rl_nodes`, `pick_place` and
+`table_buttons` packages are removed. Use the [canonical import and checkpoint
+migration notes](docs/project_framework.md#task-package-paths) when updating an
+older script or preparing an older RL run for resume.
 
 Further reading: [30 Hz data](docs/dataset_30hz.md) · [First-light trimming](docs/dataset_press_only.md) · [Position randomization](docs/dataset_panel_randomization.md) · [Stratified coverage records](docs/dataset_panel_stratified.md).

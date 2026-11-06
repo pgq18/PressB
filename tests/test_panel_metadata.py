@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import pytest
 
-from pressb.panel_metadata import episode_panel_context, validate_episode_panel_metadata
+from pressb.tasks.elevator.panel_metadata import episode_panel_context, validate_episode_panel_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))

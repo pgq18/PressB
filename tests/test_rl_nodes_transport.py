@@ -12,12 +12,12 @@ import time
 import numpy as np
 import pytest
 
-from pressb.online_rl.inference_transport import _pack, _unpack
-from pressb.online_rl.rpc import MAX_BODY_BYTES, RPCError, RPCServer
-from pressb.rl_nodes.client import NodeClient
-from pressb.rl_nodes.contract import encode_image
-from pressb.rl_nodes.server import run_service, serve_websocket
-from pressb.rl_nodes.simulation import SimulationService
+from pressb.runtime.inference_transport import _pack, _unpack
+from pressb.runtime.rpc import MAX_BODY_BYTES, RPCError, RPCServer
+from pressb.runtime.client import NodeClient
+from pressb.runtime.contract import encode_image
+from pressb.runtime.server import run_service, serve_websocket
+from pressb.runtime.simulation import SimulationService
 
 
 class SimBackend:
@@ -99,8 +99,8 @@ def test_http_auth_and_failure_close_the_client_without_retry():
 _WS_PROCESS = r'''
 import asyncio, json, sys
 import numpy as np
-from pressb.rl_nodes.inference import InferenceService
-from pressb.rl_nodes.server import serve_websocket
+from pressb.runtime.inference import InferenceService
+from pressb.runtime.server import serve_websocket
 
 class Backend:
     def describe(self):
@@ -119,7 +119,7 @@ class Backend:
 port,token,unsupported,max_message_bytes,metadata_padding,image_optimizations=json.loads(sys.argv[1])
 service=InferenceService(Backend(),cache_size=4,batch_size=2)
 if image_optimizations:
-    from pressb.rl_nodes.image_transport import walloss_resize_spec
+    from pressb.runtime.image_transport import walloss_resize_spec
     service.metadata.update(image_encodings=["png_base64", "png_bytes"], image_mode="RGB",
                             image_preprocessing=walloss_resize_spec(256))
 if unsupported:
@@ -223,7 +223,7 @@ def test_websocket_unsupported_schema_is_rejected_before_request(tmp_path):
 
 @pytest.mark.parametrize("limit", [0, -1, True, False, 1.5, "1024", None])
 def test_message_limit_requires_positive_integer_before_backend_loading(tmp_path, monkeypatch, limit):
-    from pressb.rl_nodes import server
+    from pressb.runtime import server
     with pytest.raises(ValueError, match="max_message_bytes must be a positive integer"):
         NodeClient("ws://127.0.0.1:1", max_message_bytes=limit)
     with pytest.raises(ValueError, match="max_message_bytes must be a positive integer"):
@@ -239,7 +239,7 @@ def test_message_limit_requires_positive_integer_before_backend_loading(tmp_path
 
 @pytest.mark.parametrize("configured", [None, 192 * 1024 * 1024])
 def test_node_config_passes_websocket_message_limit(tmp_path, monkeypatch, configured):
-    from pressb.rl_nodes import server
+    from pressb.runtime import server
     server_config = {"transport": "ws", "host": "127.0.0.1", "port": 8101}
     if configured is not None:
         server_config["max_message_bytes"] = configured

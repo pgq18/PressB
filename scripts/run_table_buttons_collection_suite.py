@@ -78,8 +78,10 @@ def frozen_paths():
                "run_table_buttons_collection_suite.py"]
     paths = [ROOT / "scripts" / name for name in scripts]
     paths += [ROOT / "src/pressb" / name for name in (
-        "__init__.py", "kinematics.py", "wrist_camera.py", "action_postprocessing.py",
-        "tasks/__init__.py", "runtime/__init__.py", "runtime/isaac.py",
+        "__init__.py", "robots/__init__.py", "robots/piper/__init__.py",
+        "robots/piper/kinematics.py", "robots/piper/wrist_camera.py", "robots/piper/isaac.py",
+        "control/__init__.py", "control/joint_actions.py", "sensors/__init__.py", "sensors/camera.py",
+        "tasks/__init__.py", "runtime/__init__.py",
         "runtime/physics.py", "runtime/recording.py", "runtime/scene.py", "runtime/workbench.py",
     )]
     # Archive the real implementations, rather than only historical import aliases.

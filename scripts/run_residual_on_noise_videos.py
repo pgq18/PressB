@@ -16,7 +16,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.online_rl.rpc import RPCClient
+from pressb.runtime.rpc import RPCClient
 
 OLD = ROOT / "outputs/online_rl_fast_20261003"
 DEFAULT_TRAIN = ROOT / "outputs/online_rl_residual_on_noise_400k_20261006"

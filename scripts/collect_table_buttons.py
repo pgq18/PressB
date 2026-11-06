@@ -25,7 +25,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'src'))
 
 from pressb.runtime.recording import Video, write
-from pressb.runtime.isaac import build_piper_runtime, close_piper_runtime, make_camera, set_intrinsics
+from pressb.robots.piper.isaac import build_piper_runtime, close_piper_runtime
+from pressb.sensors.camera import make_camera, set_intrinsics
 
 from pressb.tasks.table_buttons.execution import (
     contact_limited_command, in_press_window, press_phase_times,
@@ -317,7 +318,7 @@ def main():
     signal.signal(signal.SIGTERM, lambda *_: stop_after_episode.__setitem__(0,True))
     status_path=args.output/'status.json'
     write(status_path,status)
-    from pressb.kinematics import PiperKinematics
+    from pressb.robots.piper.kinematics import PiperKinematics
     from pressb.tasks.table_buttons.collection import LayoutPlanner
     planner=LayoutPlanner(PiperKinematics(ROOT/cfg['robot_urdf'],tip_offset=.1358),cfg)
     # Import hpp-fcl/Assimp before Kit loads its own Assimp build. Reversing

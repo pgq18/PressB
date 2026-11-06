@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from pressb.kinematics import PiperKinematics
+from pressb.robots.piper.kinematics import PiperKinematics
 
 
 ROOT = Path(__file__).resolve().parents[1]

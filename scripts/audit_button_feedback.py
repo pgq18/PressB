@@ -25,7 +25,7 @@ import numpy as np
 
 import audit_camera_sync as original
 from audit_raw_dataset import sampling_parameters
-from pressb.panel_metadata import validate_episode_panel_metadata
+from pressb.tasks.elevator.panel_metadata import validate_episode_panel_metadata
 
 
 ROOT = Path(__file__).resolve().parents[1]

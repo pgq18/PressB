@@ -1,5 +1,17 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-07 任务／共享／历史实现归属整理完成，验收与迁移通过
+
+- 本轮继续按用户要求拆清代码归属：电梯场景、规划、楼层语义、采集与仿真移入 `tasks/elevator`；PAP／桌面按键仍由各自任务包负责。共享服务与学习流程在 `runtime`，通用滤波／位姿转换在 `control`，标定／RGB-D 记录／图像拼接在 `sensors`，PiPER 运动学、控制与硬件在 `robots/piper`。根目录 Python 文件只保留 `__init__.py`、`registry.py`。
+- `online_rl`、`rl_nodes` 以及原顶层任务／辅助模块不再保留转发占位。历史电梯 runner、专用推理桥接和日志在 `compat/elevator_rl`；冻结 VLA-JEPA 后端归入 `models/vlajepa_backend.py`。`configs/rl_nodes/` 仍是配置模板目录，不是旧 Python 包。规范路径和扩展规则见 [project_framework.md](project_framework.md#code-ownership)。
+- 混合模块按实际假设拆分：通用 RGB-D 写入与电梯楼层／阶段预览分离；D435 硬件与电梯相机默认位置分离；通用有界 IK 与固定 8 mm 夹爪的历史 HTTP 协议分离。 `control/pose_protocol.py` 仅保留有限数组校验与位姿数学，`pose9_to_pose8` 要求显式传入 `gripper_width_m`；固定 640×480 PNG 辅助函数归入 `tasks/elevator/wire_protocol.py`。共享层不得反向依赖具体任务、`models`、`compat` 或 `model_sources`；模型集成由 `models` 负责，上游模型／训练源码与来源记录保留。
+- 最终源码快照 `627ce9acdae9a6bf8fc27eeebe610728a58f71ef3d079939f5cd4cbeba6f96f6` 的 **2,210 项独立测试通过，无未解决跳过**：主环境 2,135、USD／碰撞 71、LeRobot 1、VLA 4，其中 1 项重复计数已扣除。干净安装包通过 **68 项规范导入和 50 项 CLI／配置检查**；旧包不存在，169 个内置模型／训练文件逐字保持。25 种场景的完整 USD 与元信息、29 个 RGB-D 输出文件完全一致；持久化位姿／图像协议对照覆盖 163 个位姿和 3 组 PNG，显式 0.008 m 时保持旧输出一致。
+- 真实物理专家重放已通过：PAP **2/2**，桌面按键近／中／远×三色 **9/9**，电梯最终重跑 **2/2**；误触、超时及 joint7 夹爪检查也通过。已确认范围见本地 `outputs/component_ownership_20261107/validation_ready.json`。这些是功能回归，尚不代表新的策略成功率。
+- 真实 Wall 两环境完整流程通过：DSRL40→恢复48、冻结 DSRL 后残差40、基础／残差评估及 2 个完整 episode 采集（26 transitions／104 PNG）；最终源码检查确认 112 个记录依赖不变。原生 **batch64** 新实测通过 **192 transitions／39 updates**，实际 encode 为 4×64、decode 为 3×64；64 个独立物体位置、128 张相机图像及单环境重置后其余 63 环境不变均已核验。64 环境仅覆盖 3.2 秒仿真，终止流程由两环境完整 episode 覆盖；各服务退出码 0、端口释放，不作新吞吐或学习效果结论。
+- **最新恢复入口：** `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json`（本地产物），已验证、未启动，仍为 64 环境／batch64／总预算 200000，剩余 183296。DSRL100022 与残差16704 的新副本通过严格 CPU 恢复，参数、优化器、回放和 RNG 精确保持；旧身份仍被严格拒绝。原件及历次派生文件不变，没有正式训练更新。验证报告 SHA `497ca28fed78bd3558e93894f71f74869e9966fabdad1834d10fac2eb6350ae1`。
+- 新 DSRL SHA `f4fa61b544fd41ac6c7303a2578983607e08813a9db0c18c45bef5eefdea56c0`；新残差 SHA `08bbe6d04a90c32eff00b90411fcee606095afdc931b8dcdae16c830cf962188`。**正式 PAP 残差继续暂停在 16,704 transitions／14,673 updates，未恢复。**
+- 本轮完整证据在 `outputs/component_ownership_20261107/`；便携摘要 [results/component_ownership_20261107.json](results/component_ownership_20261107.json)，SHA `73fd39b4c123d95c2e3b0d64fe44dcfb770585dd4ab7b44217a663b1cee5648e`。下方历史交接、报告和 SHA 记录保持原样，恢复配置以本节为准。
+
 ## 2026-11-07 顶层旧任务目录彻底移除
 
 - 用户确认彻底归并目录结构。已删除 `src/pressb/pick_place/`、`src/pressb/table_buttons/` 的全部 20 个兼容文件及残留字节码目录；PAP／桌面按键唯一实现位于 `tasks/pap`、`tasks/table_buttons`。历史策略客户端继续放在 `compat`。旧 Python 导入不再支持，外部脚本按 [路径迁移表](project_framework.md#task-package-paths) 更新；含旧任务类路径的自定义 pickle 需在旧版本中转换。数据 schema 字符串保持不变。

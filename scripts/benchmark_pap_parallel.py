@@ -3,7 +3,7 @@
 
 Example (use the Isaac Python environment):
   python scripts/benchmark_pap_parallel.py --num-envs 64 \
-    --factory pressb.rl_nodes.pap_vector:create_backend --gpu-id 0 \
+    --factory pressb.tasks.pap.vector:create_backend --gpu-id 0 \
     --output-dir outputs/pap_capacity_64
 
 The parent never imports Isaac. A fresh child process owns the entire simulator,
@@ -45,7 +45,7 @@ def write_json(path, value):
 
 def json_payload_evidence(request, response):
     """Measure HTTP-compatible JSON envelopes against the shared 64 MiB budget."""
-    from pressb.online_rl.rpc import MAX_BODY_BYTES
+    from pressb.runtime.rpc import MAX_BODY_BYTES
     begin = time.monotonic()
     # Match RPCClient's request formatting and RPCServer's compact responses.
     request_bytes = len(json.dumps({**request, "protocol_version": 1}, allow_nan=False).encode())
@@ -418,8 +418,8 @@ def replay_probe(service, request, initial, commands, args, config, results):
 
 def run_child(args):
     import numpy as np
-    from pressb.rl_nodes.server import load_backend
-    from pressb.rl_nodes.simulation import SimulationService
+    from pressb.runtime.server import load_backend
+    from pressb.runtime.simulation import SimulationService
     config = json.loads(Path(args.config).read_text())
     output = args.output_dir / "simulation_results.json"
     results = {"state": "starting", "scope": "simulation_only_no_inference_or_learner",

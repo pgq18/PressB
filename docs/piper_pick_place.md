@@ -145,7 +145,7 @@ snapshot mode and expert replay remain available.
 ### Optional execution smoothing
 
 The execution layer includes the shared
-[`JointActionPostprocessor`](../src/pressb/action_postprocessing.py), reusable
+[`JointActionPostprocessor`](../src/pressb/control/joint_actions.py), reusable
 by tasks with six absolute arm-joint targets and one full gripper-width target.
 PAP policy mode supports both task configuration and command-line overrides:
 

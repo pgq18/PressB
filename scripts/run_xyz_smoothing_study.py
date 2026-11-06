@@ -16,7 +16,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.online_rl.rpc import RPCClient
+from pressb.runtime.rpc import RPCClient
 
 PYTHON = ROOT / ".conda/envs/pressb/bin/python"
 OLD = ROOT / "outputs/online_rl_fast_20261003"
@@ -123,7 +123,7 @@ def main():
              candidate_selection="Screen requires success count >= concurrent unfiltered baseline and >=119/120; compare measured joint jerk on common successful cases, then confirm on a different predeclared seed",
              confirmation_seed=(args.seed if args.phase == "confirm" else None),
              source_files={name: identity(ROOT / name) for name in (
-                 "src/pressb/online_rl/action_postprocessing.py", "scripts/eval_smoothed_residual.py",
+                 "src/pressb/compat/elevator_rl/action_postprocessing.py", "scripts/eval_smoothed_residual.py",
                  "scripts/run_xyz_smoothing_study.py")}))
         status("startup")
         # Archived inference source predates the WebSocket transport; preserve

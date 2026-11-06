@@ -23,8 +23,8 @@ from multiprocessing.connection import Listener
 
 import numpy as np
 
-from pressb.action_postprocessing import JointActionPostprocessor
-from pressb.kinematics import PiperKinematics
+from pressb.control.joint_actions import JointActionPostprocessor
+from pressb.robots.piper.kinematics import PiperKinematics
 from pressb.tasks.pap.evaluation import COLORS, placement_region, sample_polygon
 from pressb.tasks.pap.task import object_geometry
 
@@ -35,10 +35,10 @@ UNITS = ["rad"] * 6 + ["m"]
 _MAX_MESSAGE = 64 * 1024 * 1024
 _TASK_SOURCE_FILES = (
     "tasks/pap/backend.py", "tasks/pap/worker.py",
-    "rl_nodes/pap.py", "rl_nodes/pap_worker.py",
     "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
     "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
-    "wrist_camera.py", "action_postprocessing.py", "kinematics.py", "runtime/isaac.py",
+    "robots/piper/wrist_camera.py", "robots/piper/kinematics.py",
+    "control/joint_actions.py", "sensors/camera.py",
 )
 
 

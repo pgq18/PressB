@@ -39,8 +39,10 @@ def main():
     log_dir = ROOT / "logs" / f"collection_{run_id}"
     log_dir.mkdir()
     sources = ["scripts/collect_parallel.py", "scripts/collect_dataset.py", "scripts/collect_dataset.sh",
-               "src/pressb/dataset_planning.py", "src/pressb/dataset_scene.py", "src/pressb/scene.py",
-               "src/pressb/planning.py", "src/pressb/panel_randomization.py", "src/pressb/panel_metadata.py",
+               "src/pressb/tasks/elevator/dataset_planning.py", "src/pressb/tasks/elevator/dataset_scene.py", "src/pressb/tasks/elevator/scene.py",
+               "src/pressb/tasks/elevator/planning.py", "src/pressb/tasks/elevator/panel_randomization.py", "src/pressb/tasks/elevator/panel_metadata.py",
+               "src/pressb/tasks/elevator/collection.py", "src/pressb/sensors/tiled.py",
+               "src/pressb/robots/piper/kinematics.py",
                "configs/dataset_panel_randomized.json"]
     manifest = dict(started_at=run_id, requested_episodes=12 * args.episodes_per_task,
                     episodes_per_task=args.episodes_per_task, seed=args.seed, raw=str(args.output), fps=args.fps,

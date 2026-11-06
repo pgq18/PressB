@@ -10,8 +10,8 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.fast_runner import FastOnlineRunner, FastRunConfig, RESET_MODE
-from pressb.online_rl.rpc import RPCClient
+from pressb.compat.elevator_rl.fast_runner import FastOnlineRunner, FastRunConfig, RESET_MODE
+from pressb.runtime.rpc import RPCClient
 from test_online_rl_runner import (CHECKPOINT_SHA, TOKEN, SyntheticInference,
                                   SyntheticSimulation, serve, three_nodes as legacy_nodes,
                                   config as legacy_config)
@@ -39,7 +39,7 @@ class IndexedSimulation(SyntheticSimulation):
         self.layouts = {}
         self.delay = 0.
         self.image_resolution = [224, 224]
-        self.sources = {"src/pressb/online_rl/batched_control.py":
+        self.sources = {"src/pressb/robots/piper/batched_control.py":
                         dict(path="/old-host/batched_control.py", bytes=100, sha256="b" * 64)}
 
     def health(self, payload):
@@ -357,7 +357,7 @@ def test_source_hash_resume_contract_ignores_host_paths_but_rejects_changed_code
         runner.run()
     with nodes(tmp_path / "resume", config(max_transitions=12), checkpoint=tmp_path / "initial/last.pt",
                resume=True) as (runner, simulation, _, _):
-        source = simulation.sources["src/pressb/online_rl/batched_control.py"]
+        source = simulation.sources["src/pressb/robots/piper/batched_control.py"]
         source["path"] = "/other-host/project/batched_control.py"
         source["bytes"] = 200
         if changed_hash:

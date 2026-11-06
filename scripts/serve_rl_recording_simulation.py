@@ -17,8 +17,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 
 def main():
-    from pressb.online_rl import fast_simulation
-    from pressb.online_rl.trajectory_recording import RecordingFastIsaacVectorBackend
+    from pressb.tasks.elevator import fast_simulation
+    from pressb.tasks.elevator.trajectory_recording import RecordingFastIsaacVectorBackend
     from serve_rl_fast_simulation import main as serve
 
     # The original launcher imports this factory only after SimulationApp

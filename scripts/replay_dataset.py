@@ -18,11 +18,8 @@ import traceback
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from collect_dataset import (
-    DATASET_ANTI_ALIASING, LIGHT_SETTLE_CAPTURES, LIGHT_SETTLE_SUBFRAMES,
-    RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS, VideoPipe,
-    capture_stride_for, file_identity, validate_encoded_video, write_json,
-)
+from pressb.tasks.elevator.collection import DATASET_ANTI_ALIASING, LIGHT_SETTLE_CAPTURES, LIGHT_SETTLE_SUBFRAMES, RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS, capture_stride_for
+from collect_dataset import VideoPipe, file_identity, validate_encoded_video, write_json
 from prepare_replay import FULL_CYCLE_END, PRESS_ONLY_END, episode_end_policy
 
 
@@ -40,7 +37,7 @@ def terminal_condition_met(episode_end, floor, presses, releases, lit, final_hom
 
 def prepare_controls(args, cfg):
     import numpy as np
-    from pressb.replay_control import solve_action_trajectory
+    from pressb.robots.piper.pose_control import solve_action_trajectory
 
     manifest = json.loads((args.input / "manifest.json").read_text())
     collection_path = args.dataset / "meta/collection_metadata.json"
@@ -135,8 +132,9 @@ def prepare_controls(args, cfg):
         "recorded_joint_targets_used_for_control": False, "recorded_light_events_used": False,
         "source_episode_ids": [item["id"] for item in trajectories],
         "source_code_sha256": {name: file_identity(ROOT / name)["sha256"] for name in (
-            "scripts/replay_dataset.py", "scripts/prepare_replay.py", "src/pressb/replay_control.py",
-            "src/pressb/dataset_scene.py", "src/pressb/kinematics.py", "src/pressb/scene.py")},
+            "scripts/replay_dataset.py", "scripts/prepare_replay.py", "src/pressb/robots/piper/pose_control.py",
+            "src/pressb/tasks/elevator/dataset_scene.py", "src/pressb/robots/piper/kinematics.py", "src/pressb/tasks/elevator/scene.py",
+            "src/pressb/tasks/elevator/collection.py", "src/pressb/sensors/tiled.py", "scripts/collect_dataset.py")},
         "prepared_manifest": manifest,
     })
     return trajectories, fps, stride
@@ -153,8 +151,9 @@ def simulate(app, args, cfg, items, fps, stride, status):
     import omni.usd
     from isaacsim.core.api import World
     from isaacsim.core.utils.types import ArticulationAction
-    from pressb.dataset_scene import create_envs, build_tiled_rgb, set_light, set_panel_offset, validate_panel_layout
-    from pressb.kinematics import PiperKinematics
+    from pressb.tasks.elevator.dataset_scene import create_envs, set_light, set_panel_offset, validate_panel_layout
+    from pressb.sensors.tiled import build_tiled_rgb
+    from pressb.robots.piper.kinematics import PiperKinematics
 
     dt = float(cfg["physics_dt"])
     home = np.asarray(cfg["home_q"])

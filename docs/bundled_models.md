@@ -23,6 +23,14 @@ In particular, the VLA-JEPA bundle includes the previously H200-local joint and
 multi-task training modules. Original source notices are retained; see
 [THIRD_PARTY.md](../THIRD_PARTY.md). No model or dataset is included in Git.
 
+The ownership refactor keeps these upstream bundles separate from framework
+integration. Frozen pose-model loading and cached flow execution now live in
+`models/vlajepa_backend.py`; `models/vlajepa.py` implements the generic node
+adapter. The historical elevator application and Wall-X hosting bridge belong
+to `compat/elevator_rl`. Shared runtime, robot, control and sensor helpers do not
+import concrete `models` implementations or `model_sources`. Keep new model adapters in `models` and supervised
+launcher configuration in `training`, without moving task rules into model code.
+
 The source loader rejects a model family already imported from another tree.
 Use separate processes/environments for Wall-OSS and VLA-JEPA. An explicit
 `model.config.repo` (Wall-OSS), `model.config.vla_repo` (VLA-JEPA), or supervised

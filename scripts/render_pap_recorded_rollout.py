@@ -55,7 +55,7 @@ def replay_config(manifest, output, gpu):
     feeding its normalized output back into it would nest another geometry and
     silently change the task identity. Require exact normalized-object equality.
     """
-    from pressb.rl_nodes.pap_vector import load_config
+    from pressb.tasks.pap.vector import load_config
     config = copy.deepcopy(manifest["config"])
     original_objects = copy.deepcopy(config["objects"])
     raw_objects = []
@@ -217,7 +217,7 @@ def main():
     if any(entry[1] != manifest for entry in entries):
         raise ValueError("All episodes must share the same recording manifest")
     config = replay_config(manifest, args.output, args.gpu)
-    from pressb.rl_nodes.pap_vector import PAPVectorBackend
+    from pressb.tasks.pap.vector import PAPVectorBackend
     backend = PAPVectorBackend(config)
     try:
         if backend.identity["task_config_sha256"] != manifest["task_identity"]["task_config_sha256"]:

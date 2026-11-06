@@ -8,9 +8,9 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.learner import LearnerConfig, SACLearner
-from pressb.online_rl.protocol import residual_actions
-from pressb.online_rl.residual_on_noise import (
+from pressb.runtime.learner import LearnerConfig, SACLearner
+from pressb.compat.elevator_rl.protocol import residual_actions
+from pressb.compat.elevator_rl.residual_on_noise import (
     ResidualOnNoiseRunner, actor_sha256, file_sha256,
 )
 from test_fast_online_rl_runner import BatchInference, config

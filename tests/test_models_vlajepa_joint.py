@@ -234,11 +234,10 @@ def test_checkpoint_metadata_binds_schema_normalization_and_training_config(tmp_
         read_checkpoint_metadata(run)
 
 
-def test_legacy_imports_alias_actual_implementation_and_pose_rejects_joints():
+def test_model_adapters_have_canonical_ownership_and_pose_rejects_joints():
     from pressb.models import vlajepa, walloss
-    from pressb.rl_nodes import vlajepa as legacy_vlajepa, walloss as legacy_walloss
-    assert legacy_vlajepa is vlajepa
-    assert legacy_walloss is walloss
+    assert vlajepa.VLAJEPABackend.__module__ == "pressb.models.vlajepa"
+    assert walloss.WallOSSBackend.__module__ == "pressb.models.walloss"
     with pytest.raises(ValueError, match="nine-dimensional"):
         vlajepa.VLAJEPABackend(SimpleNamespace(action_dim=7, action_horizon=7), contract_profile="pose9")
 

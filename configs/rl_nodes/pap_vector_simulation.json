@@ -2,7 +2,7 @@
   "server": {"host": "127.0.0.1", "port": 8101, "transport": "http"},
   "service": {"request_cache_size": 2},
   "backend": {
-    "factory": "pressb.rl_nodes.pap_vector:create_backend",
+    "factory": "pressb.tasks.pap.vector:create_backend",
     "config": {
       "scene_config": "configs/piper_pick_place.json",
       "trajectory": "outputs/piper_pap_reconstruction_20261022/dataset_audit/episode_000000.npz",

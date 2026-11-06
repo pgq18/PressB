@@ -1,7 +1,7 @@
 """MessagePack wire primitives and the version-1 inference transport.
 
 The NumPy encoding is interoperable with OpenPI. Application-specific legacy
-policy adapters live in :mod:`pressb.online_rl.inference_transport`.
+policy adapters live in :mod:`pressb.compat.elevator_rl.inference_transport`.
 """
 from __future__ import annotations
 

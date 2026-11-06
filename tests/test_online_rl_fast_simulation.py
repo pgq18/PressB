@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 import pytest
 
-from pressb.online_rl.fast_simulation import (
+from pressb.tasks.elevator.fast_simulation import (
     RESET_MODE,
     IndexedSimulationService,
     encode_fast_image,
@@ -302,7 +302,7 @@ def test_fast_image_rejects_wrong_dtype_resolution_and_channel_count(rgb):
 
 def test_parallel_image_encoding_preserves_environment_and_camera_order():
     from concurrent.futures import ThreadPoolExecutor
-    from pressb.online_rl.fast_simulation import FastIsaacVectorBackend
+    from pressb.tasks.elevator.fast_simulation import FastIsaacVectorBackend
     backend = object.__new__(FastIsaacVectorBackend)
     backend.timing = {"encode_seconds": 0.}
     tiles = [np.full((224, 224, 3), index, dtype=np.uint8) for index in range(6)]
@@ -316,7 +316,7 @@ def test_parallel_image_encoding_preserves_environment_and_camera_order():
 
 
 def test_raw_tensor_arm_setter_preserves_unselected_rows():
-    from pressb.online_rl.fast_simulation import _TensorArms
+    from pressb.tasks.elevator.fast_simulation import _TensorArms
     class View:
         def __init__(self):
             self.positions = np.arange(18, dtype=np.float32).reshape(3, 6)
@@ -336,7 +336,7 @@ def test_raw_tensor_arm_setter_preserves_unselected_rows():
 
 
 def test_raw_button_pose_setter_uses_xyzw_and_preserves_peer():
-    from pressb.online_rl.fast_simulation import _TensorButtons
+    from pressb.tasks.elevator.fast_simulation import _TensorButtons
     class View:
         def __init__(self):
             self.poses = np.array([[1., 2., 3., 0., 0., 0., 1.], [4., 5., 6., 0., 0., 0., 1.]])
@@ -368,7 +368,7 @@ def test_raw_button_pose_setter_uses_xyzw_and_preserves_peer():
 ])
 def test_contact_classification_preserves_physical_allowlists(actors, colliders, button_pair, reasons):
     from types import SimpleNamespace
-    from pressb.online_rl.fast_simulation import FastIsaacVectorBackend
+    from pressb.tasks.elevator.fast_simulation import FastIsaacVectorBackend
     backend = object.__new__(FastIsaacVectorBackend)
     prefix = "/World/envs/env_0/Piper"
     button = "/World/envs/env_0/Panel/Floor24/Cap"
@@ -382,7 +382,7 @@ def test_contact_classification_preserves_physical_allowlists(actors, colliders,
 
 @pytest.mark.parametrize("count", [1, 2, 64, 128, 1024])
 def test_gpu_capacity_plan_has_explicit_headroom_and_scales(count):
-    from pressb.online_rl.simulation import gpu_dynamics_memory_config
+    from pressb.tasks.elevator.simulation import gpu_dynamics_memory_config
     config = gpu_dynamics_memory_config(count)
     assert config["found_lost_aggregate_pairs_capacity"] >= max(65536, count * 256)
     assert config["max_rigid_contact_count"] >= count * 16384
@@ -392,7 +392,7 @@ def test_gpu_capacity_plan_has_explicit_headroom_and_scales(count):
 
 
 def _physics_guard(tmp_path):
-    from pressb.online_rl.fast_simulation import PhysXErrorGuard
+    from pressb.tasks.elevator.fast_simulation import PhysXErrorGuard
     path = tmp_path / "native.kit.log"
     path.write_text("")
     def append(message):

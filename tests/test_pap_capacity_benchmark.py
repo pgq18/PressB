@@ -92,7 +92,7 @@ class FakePAP:
 
 @pytest.mark.parametrize("leak", [False, True])
 def test_child_measures_chunk_transitions_and_detects_reset_leak(tmp_path, monkeypatch, leak):
-    from pressb.rl_nodes import server
+    from pressb.runtime import server
     plant = FakePAP(leak=leak)
     monkeypatch.setattr(server, "load_backend", lambda config: plant)
     config = tmp_path / "config.json"
@@ -166,7 +166,7 @@ def test_replay_requires_constant_applied_command_per_control_interval(tmp_path)
 
 
 def test_replay_records_physical_outcomes_without_policy_success_claim(tmp_path, monkeypatch):
-    from pressb.rl_nodes import server
+    from pressb.runtime import server
     episode, _ = replay_fixture(tmp_path)
     plant = FakePAP()
     monkeypatch.setattr(server, "load_backend", lambda config: plant)

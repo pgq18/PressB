@@ -9,7 +9,7 @@ from scipy.spatial.transform import Rotation
 pin = pytest.importorskip("pinocchio")
 pytest.importorskip("hppfcl")
 
-from pressb.kinematics import PiperKinematics
+from pressb.robots.piper.kinematics import PiperKinematics
 from pressb.tasks.table_buttons.collision import RobotClearance
 
 

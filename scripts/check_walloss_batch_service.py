@@ -9,8 +9,8 @@ import time
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from pressb.online_rl.inference_transport import _pack
-from pressb.rl_nodes.client import NodeClient
+from pressb.runtime.inference_transport import _pack
+from pressb.runtime.client import NodeClient
 from benchmark_walloss_batch import load_observations, make_observations, write_json
 
 

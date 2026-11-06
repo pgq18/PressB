@@ -34,9 +34,11 @@ def resolve(value, root):
     return (path if path.is_absolute() else root / path).resolve(strict=True)
 
 
-def write(root, stage, record):
+def write(root, stage, record, *, source_root=ROOT):
     record.update(created_at=datetime.now(timezone.utc).isoformat(),
                   auditor_sha256=sha(__file__),
+                  verified_source_root=str(source_root),
+                  verified_source_scope="current_checkout" if source_root == ROOT else "explicit_source_snapshot",
                   audit_dependencies={path.name: sha(path) for path in
                     (Path(common.__file__), ROOT / "scripts/analyze_rl_smoothing.py")})
     path = root / f"{stage}_qa.json"
@@ -48,17 +50,41 @@ def write(root, stage, record):
                     ensure_ascii=False), flush=True)
 
 
-def verify_sources(manifest):
+def source_path(name, source_root=ROOT, *, runner=False):
+    """Resolve source bytes without substituting current code for archived code."""
+    name = Path(name)
+    source_root = Path(source_root).resolve(strict=True)
+    if name.is_absolute():
+        # A copied PressB tree keeps the original manifest's absolute paths.
+        # External VLA source paths retain their explicit manifest location.
+        if name.is_relative_to(ROOT):
+            name = name.relative_to(ROOT)
+        else:
+            return name
+    if runner and len(name.parts) == 1:
+        owner = Path("src/pressb/compat/elevator_rl")
+        if not (source_root / owner).is_dir():
+            owner = Path("src/pressb/online_rl")  # Explicit historical source snapshots only.
+        name = owner / name
+    path = (source_root / name).resolve()
+    require(path.is_relative_to(source_root), f"Source path escapes selected source tree: {name}")
+    return path
+
+
+def verify_sources(manifest, source_root=ROOT):
     for name, digest in manifest["sources"].items():
-        require(sha(ROOT / "src/pressb/online_rl" / name) == digest,
+        require(sha(source_path(name, source_root, runner=True)) == digest,
                 f"Runner source changed: {name}")
     for name, digest in manifest["identities"]["simulation"]["source_sha256"].items():
-        require(sha(ROOT / name) == digest, f"Simulation source changed: {name}")
+        require(sha(source_path(name, source_root)) == digest, f"Simulation source changed: {name}")
     inference = manifest["identities"]["inference"]["source_identity"]
-    require(sha(ROOT / "src/pressb/online_rl/inference.py") == inference["addon_sha256"],
+    model_adapter = source_path("src/pressb/models/vlajepa_backend.py", source_root)
+    if not model_adapter.is_file():
+        model_adapter = source_path("src/pressb/online_rl/inference.py", source_root)
+    require(sha(model_adapter) == inference["addon_sha256"],
             "Runtime inference adapter differs from audited source")
     for name, digest in inference["source_sha256"].items():
-        require(sha(Path(inference["vla_repo"]) / name) == digest,
+        require(sha(source_path(Path(inference["vla_repo"]) / name, source_root)) == digest,
                 f"VLA source changed: {name}")
 
 
@@ -75,7 +101,7 @@ def checkpoint_actor(path):
     return payload, digest.hexdigest()
 
 
-def trajectories(root):
+def trajectories(root, source_root=ROOT):
     plan = read(root / "video_plan.json")
     declared = read(root / "plan.json")
     require(all(plan[name] == value for name, value in declared.items()),
@@ -85,7 +111,7 @@ def trajectories(root):
             declared["smoothing_mode"] == "xyz_ema" and declared["smoothing_alpha"] == .8,
             "Recording plan changed requested buttons or policy setup")
     for name, digest in declared["source_sha256"].items():
-        require(sha(ROOT / name) == digest, f"Recording orchestration source changed: {name}")
+        require(sha(source_path(name, source_root)) == digest, f"Recording orchestration source changed: {name}")
     selected = plan["selected_trajectories"]
     require(len(selected) == 4 and {(row["method"], row["floor"]) for row in selected} == EXPECTED,
             "Selection must contain the four requested method/button pairs")
@@ -107,7 +133,7 @@ def trajectories(root):
                 "Fresh evaluation schedule differs")
         require(manifest["base_parameters_updated"] is False, "VLA parameters changed")
         require(summary["run_id"] == manifest["run_id"], "Run identity differs")
-        verify_sources(manifest)
+        verify_sources(manifest, source_root)
         for row in rows:
             require(row["layout"]["offset_x_m"] == row["layout"]["offset_y_m"] == 0,
                     "A source task is not centered")
@@ -166,7 +192,7 @@ def trajectories(root):
             Path(post["residual_checkpoint"]).resolve() == Path(manifest["checkpoint"]).resolve(),
             "Postprocessing checkpoint binding differs")
     for name, digest in post["source_sha256"].items():
-        require(sha(ROOT / "src/pressb/online_rl" / name) == digest, "Postprocessing source changed")
+        require(sha(source_path(name, source_root, runner=True)) == digest, "Postprocessing source changed")
     action_rows = lines(source / "action_postprocessing.jsonl")
     action_qa = audit_action_records(action_rows, expected_mode="xyz_ema", expected_alpha=.8)
     require(action_qa["episodes"] == action_qa["resets"] == 12 and
@@ -195,7 +221,7 @@ def trajectories(root):
                     recording["policy_observation_render_cadence"] == "unchanged_chunk_boundary_and_exact_terminal",
                     "Recording changed policy or physics cadence")
             for value in recording["extensions"].values():
-                require(sha(value["path"]) == value["sha256"], "Recording extension changed")
+                require(sha(source_path(value["path"], source_root)) == value["sha256"], "Recording extension changed")
             indexes[recording_root] = lines(recording_root / "index.jsonl")
         entries = [item for item in indexes[recording_root] if item["run_id"] == meta["run_id"]]
         require(len(entries) == 12 and all(item["status"] == "complete" for item in entries) and
@@ -255,10 +281,10 @@ def trajectories(root):
         all_source_successes={method: summaries[method]["successes"] for method in METHODS},
         selected_successes={method: sum(row["success"] for (name, _), row in records.items() if name == method)
                             for method in METHODS},
-        trajectories=[records[key] for key in sorted(records)]))
+        trajectories=[records[key] for key in sorted(records)]), source_root=source_root)
 
 
-def renders(root):
+def renders(root, source_root=ROOT):
     manifest = read(root / "renders/render_manifest.json")
     source_qa = read(root / "trajectory_qa.json")
     require(source_qa["status"] == "pass" and source_qa["video_plan_sha256"] == sha(root / "video_plan.json"),
@@ -269,7 +295,8 @@ def renders(root):
     require(manifest["physics_steps_during_replay"] == 0 and
             manifest["renderer_initial_world_time"] == manifest["renderer_final_world_time"], "Replay stepped physics")
     require(manifest["fps"] == 30 and manifest["source_physics_hz"] == 120, "Wrong render cadence")
-    require(sha(manifest["source_script"]["path"]) == manifest["source_script"]["sha256"], "Renderer source changed")
+    require(sha(source_path(manifest["source_script"]["path"], source_root)) ==
+            manifest["source_script"]["sha256"], "Renderer source changed")
     seen, videos, maxima = set(), [], {}
     for row in manifest["episodes"]:
         key = (row["method"], row["floor"])
@@ -306,10 +333,10 @@ def renders(root):
     require(seen == EXPECTED and len(videos) == 8, "Missing rendered camera video")
     write(root, "render", dict(status="pass", episodes=4, videos=8, physics_steps_during_replay=0,
         render_manifest_sha256=sha(root / "renders/render_manifest.json"), restoration_max_errors=maxima,
-        all_exact_terminal_frames_retained=True, video_files=videos))
+        all_exact_terminal_frames_retained=True, video_files=videos), source_root=source_root)
 
 
-def composition(root):
+def composition(root, source_root=ROOT):
     from PIL import Image
 
     manifest_path = root / "renders/render_manifest.json"
@@ -323,8 +350,9 @@ def composition(root):
                          ("source_script", ROOT / "scripts/compose_two_button_comparison.py"),
                          ("shared_reader_script", ROOT / "scripts/compose_rl_comparison_videos.py")):
         source = record[field]
-        require(Path(source["path"]).resolve() == path.resolve() and source["sha256"] == sha(path) and
-                source["bytes"] == path.stat().st_size, f"Composition dependency changed: {field}")
+        verified_path = path if field == "source_manifest" else source_path(path, source_root)
+        require(Path(source["path"]).resolve() == path.resolve() and source["sha256"] == sha(verified_path) and
+                source["bytes"] == verified_path.stat().st_size, f"Composition dependency changed: {field}")
     require(record["dimensions"] == [1920, 1080] and record["fps"] == 30 and record["playback_speed"] == 1,
             "Composition geometry or playback speed changed")
     require(record["floors_top_to_bottom"] == list(FLOORS) and
@@ -419,17 +447,20 @@ def composition(root):
         floors_top_to_bottom=list(FLOORS), methods_left_to_right=list(METHODS),
         same_simulation_time_playback=True, speed_multiplier=1, exact_terminal_states_held=True,
         all_four_trajectories_simultaneous=True, source_frame_mappings_verified=True,
-        physical_time_pixel_checks=checks, full_decode_exit_code=0, terminal_frames=endpoints))
+        physical_time_pixel_checks=checks, full_decode_exit_code=0, terminal_frames=endpoints), source_root=source_root)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", type=Path, required=True)
+    parser.add_argument("--source-root", type=Path, default=ROOT,
+                        help="Exact PressB source tree to verify; use the preserved tree for historical runs")
     parser.add_argument("--stage", choices=("trajectories", "renders", "composition", "all"), default="all")
     args = parser.parse_args()
     root = args.run.resolve(strict=True)
+    source_root = args.source_root.resolve(strict=True)
     for stage in ("trajectories", "renders", "composition") if args.stage == "all" else (args.stage,):
-        globals()[stage](root)
+        globals()[stage](root, source_root)
 
 
 if __name__ == "__main__":

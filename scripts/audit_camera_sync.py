@@ -32,7 +32,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.panel_metadata import validate_episode_panel_metadata
+from pressb.tasks.elevator.panel_metadata import validate_episode_panel_metadata
 LAGS = (-2, -1, 0, 1, 2)
 LIGHT_PIXEL_CLASSIFIER = {
     "version": "amber_orange_hsv_v2",

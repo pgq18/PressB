@@ -1,5 +1,11 @@
 # VLA-JEPA 在线残差强化学习
 
+当前实现位置：历史电梯编排在 `pressb.compat.elevator_rl`，仿真在
+`pressb.tasks.elevator`，冻结模型后端在 `pressb.models.vlajepa_backend`，
+通用 SAC 与传输在 `pressb.runtime`。原 `pressb.online_rl` 包已经移除，
+下方脚本入口保留，历史命令中的显式源码路径仍表示原版本覆盖。
+新实验参见[统一框架与规范路径](project_framework.md)。
+
 PressB 提供三个独立 HTTP 节点。仿真端只运行 Isaac，推理端只运行冻结 VLA-JEPA，训练端只训练 SAC actor、critics 与温度参数。三者可以分别放在三台机器。本文记录早期跨节点版本：仿真位于 5090 GPU 1、训练位于 GPU 0，冻结推理位于 H200 GPU 0。
 
 当前高吞吐入口见 [online_rl_fast.md](online_rl_fast.md)：64 环境独立 episode 重置、批量控制与推理、SAC 更新和网络等待重叠；训练在本机 GPU 0，仿真和冻结推理共用 GPU 1。本文原命令保留为旧控制器与图像约定的复现实例；下文“整组重置”的限制仅适用于 `run_online_rl.py` / `serve_rl_simulation.py`。截至 2026-10-09 的训练和评估结论见 [中文 README](../README.zh-CN.md#当前结果)。

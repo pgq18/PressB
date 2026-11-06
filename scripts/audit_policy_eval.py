@@ -88,7 +88,7 @@ def scene_identity(manifest, collection):
         import sys
         if str(ROOT / 'src') not in sys.path:
             sys.path.insert(0, str(ROOT / 'src'))
-        from pressb.scene_portability import verify_runtime_snapshot
+        from pressb.runtime.assets import verify_runtime_snapshot
         relocation = manifest['scene_relocation']
         verified = verify_runtime_snapshot(Path(manifest['arguments']['snapshot']), Path(relocation['report_path']))
         require(verified == relocation, 'Runtime scene relocation differs from its recorded evidence')

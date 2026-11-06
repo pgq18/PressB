@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.online_rl.fast_simulation import IndexedSimulationService
-from pressb.online_rl.protocol import pose8_to_pose9
+from pressb.tasks.elevator.fast_simulation import IndexedSimulationService
+from pressb.control.pose_protocol import pose8_to_pose9
 from pressb.tasks.elevator.backend import ElevatorBackend
 from test_rl_nodes_elevator import LocalClient, PhysicsFixture, STATE
 

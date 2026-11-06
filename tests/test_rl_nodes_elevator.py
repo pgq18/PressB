@@ -4,11 +4,11 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from pressb.online_rl.fast_simulation import IndexedSimulationService
-from pressb.online_rl.protocol import pose8_to_pose9
-from pressb.rl_nodes.contract import encode_image, negotiate, validate_metadata
-from pressb.rl_nodes.elevator import ElevatorBackend
-from pressb.rl_nodes.simulation import SimulationService
+from pressb.tasks.elevator.fast_simulation import IndexedSimulationService
+from pressb.control.pose_protocol import pose8_to_pose9
+from pressb.runtime.contract import encode_image, negotiate, validate_metadata
+from pressb.tasks.elevator.backend import ElevatorBackend
+from pressb.runtime.simulation import SimulationService
 
 
 PNG = encode_image(np.zeros((8, 8, 3), np.uint8))["data"]

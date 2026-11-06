@@ -21,14 +21,10 @@ from urllib.request import urlopen
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from collect_dataset import (
-    DATASET_ANTI_ALIASING, LIGHT_SETTLE_CAPTURES, LIGHT_SETTLE_SUBFRAMES,
-    RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS, VideoPipe,
-    capture_stride_for, file_identity, validate_encoded_video, write_json,
-)
-from pressb.motion_smoothing import DEFAULT_SMOOTHING_WINDOW, smoothing_settings
-from pressb.policy_layouts import (LAYOUT_FIELDS, evaluation_panel_layouts, evaluation_schedule,
-                                   reposition_evaluation_panels, evaluation_layout_evidence)
+from pressb.tasks.elevator.collection import DATASET_ANTI_ALIASING, LIGHT_SETTLE_CAPTURES, LIGHT_SETTLE_SUBFRAMES, RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS, capture_stride_for
+from collect_dataset import VideoPipe, file_identity, validate_encoded_video, write_json
+from pressb.control.joint_smoothing import DEFAULT_SMOOTHING_WINDOW, smoothing_settings
+from pressb.tasks.elevator.policy_layouts import LAYOUT_FIELDS, evaluation_panel_layouts, evaluation_schedule, reposition_evaluation_panels, evaluation_layout_evidence
 
 
 def run(app, args, cfg, status):
@@ -42,11 +38,13 @@ def run(app, args, cfg, status):
     import omni.usd
     from isaacsim.core.api import World
     from isaacsim.core.utils.types import ArticulationAction
-    from pressb.dataset_scene import create_envs, build_tiled_rgb, set_light
-    from pressb.kinematics import PiperKinematics
-    from pressb.policy_eval import PolicyClient, PolicyPoseController, InvalidPolicyAction, validate_policy_reply
-    from pressb.motion_smoothing import JointCommandSmoother
-    from pressb.replay_control import action_pose
+    from pressb.tasks.elevator.dataset_scene import create_envs, set_light
+    from pressb.sensors.tiled import build_tiled_rgb
+    from pressb.robots.piper.kinematics import PiperKinematics
+    from pressb.compat.elevator_policy import PolicyClient, InvalidPolicyAction, validate_policy_reply
+    from pressb.robots.piper.policy_control import PolicyPoseController
+    from pressb.control.joint_smoothing import JointCommandSmoother
+    from pressb.robots.piper.pose_control import action_pose
 
     fps, dt = 30, float(cfg["physics_dt"])
     stride = capture_stride_for(fps, dt)
@@ -64,7 +62,7 @@ def run(app, args, cfg, status):
     schedule = evaluation_schedule(args.floors, args.episodes_per_floor, layouts)
     snapshot = args.snapshot
     if args.asset_bundle is not None:
-        from pressb.scene_portability import prepare_runtime_snapshot
+        from pressb.runtime.assets import prepare_runtime_snapshot
         relocation = prepare_runtime_snapshot(args.snapshot, args.asset_bundle, args.output)
         manifest_path = args.output / "eval_manifest.json"
         manifest = json.loads(manifest_path.read_text())
@@ -497,11 +495,14 @@ def main():
     import importlib.metadata
     runtime_versions = {name: importlib.metadata.version(name) for name in
                         ("isaacsim", "torch", "numpy", "scipy", "Pillow")}
-    source_names = ["scripts/eval_policy.py", "src/pressb/policy_eval.py", "src/pressb/replay_control.py",
-                    "src/pressb/dataset_scene.py", "src/pressb/motion_smoothing.py", "src/pressb/policy_layouts.py",
+    source_names = ["scripts/eval_policy.py", "src/pressb/compat/elevator_policy.py", "src/pressb/robots/piper/pose_control.py",
+                    "src/pressb/tasks/elevator/dataset_scene.py", "src/pressb/control/joint_smoothing.py", "src/pressb/tasks/elevator/policy_layouts.py",
+                    "src/pressb/robots/piper/policy_control.py", "src/pressb/robots/piper/kinematics.py",
+                    "src/pressb/tasks/elevator/scene.py", "src/pressb/tasks/elevator/collection.py",
+                    "src/pressb/sensors/tiled.py",
                     "scripts/collect_dataset.py"]
     if args.asset_bundle is not None:
-        source_names.append("src/pressb/scene_portability.py")
+        source_names.append("src/pressb/runtime/assets.py")
     write_json(args.output / "eval_manifest.json", dict(
         started_at=datetime.now(timezone.utc).isoformat(), arguments={key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()},
         config=cfg, scene_sha256=collection["scene_sha256"], collection_fingerprint=collection["collection_fingerprint"],

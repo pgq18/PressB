@@ -21,46 +21,11 @@ import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-RAW_SCHEMA_VERSION = 11
-LIGHTING_POLICY = {
-    "global_dome": "deactivate_duplicate_dome_prims",
-    "active_dome_count": 1,
-    "shared_dome_environment": 0,
-    "local_rect_lights_per_environment": 2,
-}
-DATASET_ANTI_ALIASING = 2  # FXAA: no temporal anti-aliasing history across samples.
-LIGHT_SETTLE_SUBFRAMES = 16
-# Kit 107 needs additional captures to drain visible edge-light history.
-# All settling captures keep physics frozen and are recorded in the manifest.
-LIGHT_SETTLE_CAPTURES = 16
-RENDER_EXPOSURE_CONTROLS = {
-    "/rtx/post/histogram/enabled": False,
-    "/rtx/post/tonemap/filmIso": 100.,
-    "/rtx/post/tonemap/exposureTime": .02,
-    "/rtx/post/tonemap/fNumber": 5.,
-    "/rtx/post/tonemap/op": 6,
-}
-# NRD 3.2.3 permits zero history. Keep spatial denoising, but do not mix a
-# previous illuminated frame into the current unlit observation.
-RENDER_HISTORY_CONTROLS = {
-    "/rtx/indirectDiffuse/denoiser/temporal/enabled": False,
-    "/rtx/directLighting/sampledLighting/ris/enableSpatioTemporalRis": False,
-    **{f"/rtx/lightspeed/NRD_Reblur{channel}/{key}": 0
-       for channel in ("Diffuse", "Specular")
-       for key in ("maxAccumulatedFrameNum", "maxFastAccumulatedFrameNum")},
-    **{f"/rtx/lightspeed/NRD_ReLAX/{key}": 0 for key in
-       ("diffuseHistoryFrames", "diffuseFastHistoryFrames", "specularHistoryFrames", "specularFastHistoryFrames")},
-}
-SOURCE_NAMES = ("frames.npz", "physics.npz", "wrist.mp4", "global.mp4")
-START_SPEED_TOLERANCE_RAD_S = .02
-
-
-def capture_stride_for(fps, physics_dt=1 / 120):
-    """Keep every RGB/state sample on an exact 120 Hz physics boundary."""
-    if (type(fps) is not int or fps <= 0 or 120 % fps
-            or not math.isfinite(physics_dt) or abs(physics_dt - 1 / 120) > 1e-12):
-        raise ValueError("Require integer FPS dividing 120 and physics_dt=1/120 seconds")
-    return 120 // fps
+from pressb.tasks.elevator.collection import (
+    DATASET_ANTI_ALIASING, LIGHTING_POLICY, LIGHT_SETTLE_CAPTURES, LIGHT_SETTLE_SUBFRAMES,
+    RAW_SCHEMA_VERSION, RENDER_EXPOSURE_CONTROLS, RENDER_HISTORY_CONTROLS, SOURCE_NAMES,
+    START_SPEED_TOLERANCE_RAD_S, capture_stride_for,
+)
 
 
 def write_json(path, value):
@@ -97,9 +62,10 @@ def prepare_collection_manifest(args, cfg):
         "raw_schema_version": RAW_SCHEMA_VERSION, "config": cfg,
         "scene_sha256": file_identity(args.snapshot)["sha256"], "seed": args.seed,
         "collection_code_sha256": {name: file_identity(ROOT / name)["sha256"] for name in (
-            "scripts/collect_dataset.py", "src/pressb/dataset_scene.py", "src/pressb/dataset_planning.py",
-            "src/pressb/scene.py", "src/pressb/planning.py", "src/pressb/panel_randomization.py",
-            "src/pressb/panel_metadata.py")},
+            "scripts/collect_dataset.py", "src/pressb/tasks/elevator/dataset_scene.py", "src/pressb/tasks/elevator/dataset_planning.py",
+            "src/pressb/tasks/elevator/scene.py", "src/pressb/tasks/elevator/planning.py", "src/pressb/tasks/elevator/panel_randomization.py",
+            "src/pressb/tasks/elevator/panel_metadata.py", "src/pressb/tasks/elevator/collection.py",
+            "src/pressb/sensors/tiled.py", "src/pressb/robots/piper/kinematics.py")},
         "lighting_policy": LIGHTING_POLICY,
         "fps": args.fps, "physics_hz": 120, "capture_stride": stride,
         "action_horizon_s": 1 / args.fps,
@@ -191,7 +157,7 @@ def validate_source_arrays(directory, metadata):
 
 
 def validate_committed_episode(directory, episode_id, args, manifest):
-    from pressb.panel_metadata import validate_episode_panel_metadata
+    from pressb.tasks.elevator.panel_metadata import validate_episode_panel_metadata
     metadata = json.loads((directory / "metadata.json").read_text())
     validate_episode_panel_metadata(manifest, metadata)
     floor = 24 + episode_id % 12
@@ -299,7 +265,7 @@ def main():
     args.snapshot, args.config = args.snapshot.resolve(), args.config.resolve()
     cfg = json.loads(args.config.read_text())
     if cfg.get("panel_randomization", {}).get("sampling_mode") == "stratified_grid":
-        from pressb.panel_randomization import panel_randomization_settings
+        from pressb.tasks.elevator.panel_randomization import panel_randomization_settings
         settings = panel_randomization_settings(cfg)
         if math.prod(settings["grid_shape"]) != args.episodes_per_task:
             parser.error("Stratified collection requires one episode per grid cell for each floor")
@@ -357,10 +323,11 @@ def run(app, args, cfg, status, status_path, manifest, todo):
     import omni.replicator.core as rep
     from isaacsim.core.api import World
     from isaacsim.core.utils.types import ArticulationAction
-    from pressb.dataset_scene import create_envs, build_tiled_rgb, set_panel_offset, validate_panel_layout
-    from pressb.dataset_planning import make_episode_plan, sample_state_action
-    from pressb.kinematics import PiperKinematics
-    from pressb.scene import set_button_light
+    from pressb.tasks.elevator.dataset_scene import create_envs, set_panel_offset, validate_panel_layout
+    from pressb.sensors.tiled import build_tiled_rgb
+    from pressb.tasks.elevator.dataset_planning import make_episode_plan, sample_state_action
+    from pressb.robots.piper.kinematics import PiperKinematics
+    from pressb.tasks.elevator.scene import set_button_light
 
     kin = PiperKinematics(ROOT / cfg["robot_urdf"], tip_offset=cfg["tip_offset"])
     fps, dt = args.fps, float(cfg["physics_dt"])
@@ -674,7 +641,7 @@ def run(app, args, cfg, status, status_path, manifest, todo):
                 panel_layout=item["panel_layout"],
                 max_button_lateral_error_m=item["max_button_lateral_error"],
                 unexpected_collisions=unexpected[eid], variation=item["plan"].metadata)
-            from pressb.panel_metadata import validate_episode_panel_metadata
+            from pressb.tasks.elevator.panel_metadata import validate_episode_panel_metadata
             validate_episode_panel_metadata(manifest, metadata)
             validate_source_arrays(item["directory"], metadata)
             for view in ("wrist", "global"):

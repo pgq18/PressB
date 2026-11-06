@@ -1,4 +1,4 @@
-"""CPU-only compatibility and dependency boundaries for the runtime migration."""
+"""CPU-only canonical ownership and dependency boundaries for the runtime."""
 import ast
 import importlib
 import json
@@ -13,52 +13,49 @@ from types import ModuleType
 import pytest
 
 
-MODULE_ALIASES = [
-    ("pressb.rl_nodes.contract", "contract", "negotiate"),
-    ("pressb.rl_nodes.client", "client", "NodeClient"),
-    ("pressb.rl_nodes.inference", "inference", "InferenceService"),
-    ("pressb.rl_nodes.simulation", "simulation", "SimulationService"),
-    ("pressb.rl_nodes.trainer", "trainer", "GenericTrainer"),
-    ("pressb.rl_nodes.server", "server", "load_backend"),
-    ("pressb.rl_nodes.image_transport", "image_transport", "ValidatedObservation"),
-    ("pressb.online_rl.learner", "learner", "SACLearner"),
-    ("pressb.online_rl.rpc", "rpc", "RPCClient"),
+RUNTIME_SYMBOLS = [
+    ("contract", "negotiate"),
+    ("client", "NodeClient"),
+    ("inference", "InferenceService"),
+    ("simulation", "SimulationService"),
+    ("trainer", "GenericTrainer"),
+    ("server", "load_backend"),
+    ("image_transport", "ValidatedObservation"),
+    ("learner", "SACLearner"),
+    ("rpc", "RPCClient"),
 ]
 
 
-@pytest.mark.parametrize("legacy_path,runtime_name,symbol", MODULE_ALIASES)
-def test_legacy_module_alias_preserves_identity(legacy_path, runtime_name, symbol):
-    legacy = importlib.import_module(legacy_path)
+@pytest.mark.parametrize("runtime_name,symbol", RUNTIME_SYMBOLS)
+def test_runtime_symbols_belong_to_the_canonical_implementation(runtime_name, symbol):
     runtime = importlib.import_module(f"pressb.runtime.{runtime_name}")
-    assert legacy is runtime
-    assert sys.modules[legacy_path] is sys.modules[runtime.__name__]
-    assert getattr(legacy, symbol) is getattr(runtime, symbol)
     assert getattr(runtime, symbol).__module__ == f"pressb.runtime.{runtime_name}"
-    assert Path(runtime.__file__).parent.name == "runtime"
+    assert Path(runtime.__file__) == (
+        Path(__file__).resolve().parents[1] / "src/pressb/runtime" / (runtime_name + ".py"))
 
 
-def test_runtime_and_legacy_schema_version_agree():
-    from pressb import rl_nodes, runtime
+def test_runtime_wire_schema_version_is_unchanged():
+    from pressb import runtime
     from pressb.runtime import contract
 
-    assert runtime.SCHEMA_VERSION == rl_nodes.SCHEMA_VERSION == contract.SCHEMA_VERSION == 2
+    assert runtime.SCHEMA_VERSION == contract.SCHEMA_VERSION == 2
 
 
-def test_legacy_inference_transport_reexports_runtime_transport():
-    from pressb.online_rl import inference_transport as legacy
+def test_transport_primitives_and_legacy_model_adapters_have_separate_owners():
+    from pressb.compat.elevator_rl import inference_transport as adapter
     from pressb.runtime import inference_transport as runtime
 
     for symbol in ("_pack", "_unpack", "_pack_array", "_unpack_array",
                    "_wire_payload", "InferenceClient", "OPERATIONS", "NAMESPACE"):
-        assert getattr(legacy, symbol) is getattr(runtime, symbol)
+        assert hasattr(runtime, symbol)
+        assert not hasattr(adapter, symbol)
     assert runtime.InferenceClient.__module__ == "pressb.runtime.inference_transport"
     for symbol in ("IdentityDataProcessor", "InferencePolicyAdapter", "load_wallx_server"):
-        assert getattr(legacy, symbol).__module__ == "pressb.online_rl.inference_transport"
+        assert getattr(adapter, symbol).__module__ == "pressb.compat.elevator_rl.inference_transport"
         assert not hasattr(runtime, symbol)
 
 
-def test_legacy_client_monkeypatch_reaches_runtime_constructor(monkeypatch):
-    from pressb.rl_nodes import client as legacy
+def test_runtime_client_uses_the_shared_rpc_dependency(monkeypatch):
     from pressb.runtime import client as runtime
 
     created = []
@@ -70,7 +67,7 @@ def test_legacy_client_monkeypatch_reaches_runtime_constructor(monkeypatch):
         def call(self, path, payload):
             return {"path": path, "payload": payload}
 
-    monkeypatch.setattr(legacy, "RPCClient", FakeRPCClient)
+    monkeypatch.setattr(runtime, "RPCClient", FakeRPCClient)
     client = runtime.NodeClient("http://runtime.test", timeout=3, token="fixture")
     try:
         assert isinstance(client._http, FakeRPCClient)
@@ -82,25 +79,19 @@ def test_legacy_client_monkeypatch_reaches_runtime_constructor(monkeypatch):
         client.close()
 
 
-@pytest.mark.parametrize("legacy_path,runtime_name,symbol,args", [
-    ("pressb.rl_nodes.trainer", "trainer", "EndpointConfig", ()),
-    ("pressb.online_rl.learner", "learner", "LearnerConfig", ("initial_noise", 4)),
-    ("pressb.online_rl.rpc", "rpc", "RPCError", ("saved failure",)),
-    ("pressb.rl_nodes.image_transport", "image_transport", "ValidatedObservation",
+@pytest.mark.parametrize("runtime_name,symbol,args", [
+    ("trainer", "EndpointConfig", ()),
+    ("learner", "LearnerConfig", ("initial_noise", 4)),
+    ("rpc", "RPCError", ("saved failure",)),
+    ("image_transport", "ValidatedObservation",
      ({"state": [1., 2.], "images": {}}, {})),
 ])
-def test_instances_pickled_with_old_class_paths_still_load(
-        monkeypatch, legacy_path, runtime_name, symbol, args):
-    legacy = importlib.import_module(legacy_path)
+def test_runtime_instances_roundtrip_with_canonical_pickle_paths(runtime_name, symbol, args):
     runtime = importlib.import_module(f"pressb.runtime.{runtime_name}")
-    cls = getattr(legacy, symbol)
+    cls = getattr(runtime, symbol)
     original = cls(*args)
-    # Emulate a checkpoint produced before the move, then restore the real
-    # class metadata before loading it through the legacy import path.
-    with monkeypatch.context() as patch:
-        patch.setattr(cls, "__module__", legacy_path)
-        saved = pickle.dumps(original, protocol=4)
-    assert legacy_path.encode() in saved
+    saved = pickle.dumps(original, protocol=4)
+    assert runtime.__name__.encode() in saved
     restored = pickle.loads(saved)
     assert type(restored) is getattr(runtime, symbol)
     assert vars(restored) == vars(original)
@@ -124,9 +115,8 @@ def test_runtime_trainer_imports_without_task_model_or_simulator_dependencies():
         torch.cuda._lazy_init = no_cuda
 
         forbidden = (
-            "pressb.tasks", "pressb.models", "pressb.pick_place",
-            "pressb.rl_nodes", "pressb.online_rl.protocol",
-            "pressb.online_rl.inference", "pressb.online_rl.fast_simulation",
+            "pressb.tasks", "pressb.models", "pressb.model_sources", "pressb.compat",
+            "pressb.pick_place", "pressb.rl_nodes", "pressb.online_rl",
             "isaacsim", "omni", "pxr", "transformers",
         )
         class RejectAdapterImports(importlib.abc.MetaPathFinder):
@@ -156,7 +146,8 @@ def test_runtime_trainer_has_no_deferred_task_or_model_imports():
     from pressb.runtime import trainer
 
     tree = ast.parse(Path(trainer.__file__).read_text())
-    forbidden = ("pressb.tasks", "pressb.models", "pressb.pick_place", "pressb.rl_nodes")
+    forbidden = ("pressb.tasks", "pressb.models", "pressb.model_sources", "pressb.compat",
+                 "pressb.pick_place", "pressb.rl_nodes")
     imported = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):

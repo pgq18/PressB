@@ -170,7 +170,7 @@ def test_config_keeps_pap_workbench_and_fixed_cameras_with_default_wrist_optics(
 
 
 def test_default_and_workspace_corner_approaches_have_bounded_ik():
-    from pressb.kinematics import PiperKinematics
+    from pressb.robots.piper.kinematics import PiperKinematics
     cfg = config()
     kin = PiperKinematics(ROOT / cfg["robot_urdf"], tip_offset=.1358)
     seed = cfg["initial_joint_positions_rad"]

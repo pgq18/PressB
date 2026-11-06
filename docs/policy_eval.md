@@ -253,7 +253,7 @@ import json
 from pathlib import Path
 import numpy as np
 from PIL import Image
-from pressb.policy_eval import PolicyClient, validate_policy_reply
+from pressb.compat.elevator_policy import PolicyClient, validate_policy_reply
 
 root = Path('outputs/rtx5090_eval_comparison')
 client = PolicyClient('http://127.0.0.1:19765/predict', timeout=120)

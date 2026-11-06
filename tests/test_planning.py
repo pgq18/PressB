@@ -7,8 +7,8 @@ import unittest
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from pressb.kinematics import PiperKinematics
-from pressb.planning import base_position, button_centers, make_plan
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.tasks.elevator.planning import base_position, button_centers, make_plan
 
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from pressb.action_postprocessing import JointActionPostprocessor
+from pressb.control.joint_actions import JointActionPostprocessor
 
 
 def test_first_action_starts_from_measured_state_and_gripper_is_unfiltered():

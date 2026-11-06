@@ -4,17 +4,21 @@
 
 PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学习改善冻结的视觉语言动作模型。项目连接物理仿真、模型推理与策略训练，记录相机观测，并依据真实接触和物体运动判定任务结果。
 
-**更新于 2026-11-06：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
+**更新于 2026-11-07：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
 
 [任务](#任务概览) · [结果](#当前结果) · [视频](#演示视频) · [运行](#运行三个任务) · [三节点 RL](#在线强化学习独立三节点) · [工作交接](docs/HANDOVER.md)
 
 ## 通用运行核心与插件
 
-**2026-11-06 框架重构：** 新实验采用 **通用运行核心＋任务插件＋模型适配器＋实验配置**。DSRL、动作残差、固定 DSRL 后训练残差、评估和 chunk 轨迹记录共用执行流程；机械臂／相机装配和 PhysX 控制复用，场景、随机化、奖励和成功条件由任务插件定义。旧命令和导入路径保留兼容。
+**2026-11-07 代码归属整理：** 新实验采用 **通用运行核心＋任务插件＋模型适配器＋实验配置**。DSRL、动作残差、固定 DSRL 后训练残差、评估和 chunk 轨迹记录共用执行流程；机械臂／相机装配和 PhysX 控制复用，场景、随机化、奖励和成功条件由任务插件定义。任务专用实现归入 `tasks/{elevator,pap,table_buttons}`，共享能力归入 `runtime`、`control`、`sensors` 和 `robots/piper`。历史命令保留，已删除的 Python 路径不再设置别名占位。
+
+包根目录的 Python 文件只有 `__init__.py` 和 `registry.py`。任务与模型适配器使用共享契约，共享层不反向导入具体任务、模型实现、上游模型源码或历史流程；`models` 负责接入保留上游结构与来源的 `model_sources`，`compat` 负责历史客户端及电梯 RL 编排。扩展框架或更新外部脚本时，参见[代码归属与路径迁移表](docs/project_framework.md#code-ownership)。`configs/rl_nodes/` 仍保存配置模板，但 `pressb.rl_nodes`、`pressb.online_rl` 两个 Python 包已经移除。
+
+**本轮归属整理已验收：** 2,210 项独立测试全部通过且无未解决跳过，安装包的 68 项规范导入、50 项 CLI／配置检查、三个任务的物理重放、真实 Wall 两环境完整流程和原生 batch64 联调均通过；169 个内置模型／训练文件保持不变。[验收摘要](docs/results/component_ownership_20261107.json)记录功能范围与源码身份，不将短测作为新的策略成功率或吞吐结论。检查点迁移及严格恢复通过，当前恢复配置（本地产物 `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json`）已验证但未启动，正式 PAP 残差仍暂停在 16,704 transitions。
 
 入口为 `python scripts/run_experiment.py`，提供 `list / validate / inference / simulation / train / eval / collect`。参见[框架说明](docs/project_framework.md)和[实验配置](configs/experiments)。PAP 保留 64 环境配置；桌面按键新插件目前每个节点运行 1 个环境。原逐帧对齐的示范采集和 LeRobot 导出流程仍保留。
 
-[重构验收](docs/results/framework_refactor_20261106.json)：2,049 项回归测试通过，并完成真实 Isaac 回放、三端训练／恢复／评估／记录验证，包括 PAP64 与 Wall-OSS 原生 batch64。这些是功能验证，不是新的策略成功率评估。
+[此前框架重构验收](docs/results/framework_refactor_20261106.json)：2,049 项回归测试通过，并完成真实 Isaac 回放、三端训练／恢复／评估／记录验证，包括 PAP64 与 Wall-OSS 原生 batch64。这些是功能验证，不是新的策略成功率评估。
 
 **模型代码已内置：** Wall-OSS 和 VLA-JEPA 的推理、数据读取与监督训练已纳入 PressB；统一训练入口和来源说明见[模型指南](docs/bundled_models.md)。[内化验收](docs/results/model_internalization_20261106.json)覆盖主项目在所需环境中的 2,106 项测试，以及真实权重对照：Wall-OSS batch 2／8、VLA-JEPA pose9／joint6／joint7 在所测输入下与原实现输出一致。
 
@@ -298,7 +302,7 @@ PAP 新增[共享 World 仿真后端](docs/pap_parallel_capacity.md)：单张 RT
 
 **本机推理对照（2026-11-05）：** Wall-OSS 已部署到 RTX 5090，两种 GPU 分配各完成 10,048 条 transition。推理与 SAC 共用 GPU1 实测 **12.91 条/s**；仿真与推理共用 GPU0、SAC 独占 GPU1 实测 **13.34 条/s**，比优化后的 H200 推理方案快 **6.33%**。400k／1M 外推约 **8.33／20.82 小时**，仍未达到 15 条/s。两轮检查点与回放核验通过；相关服务现已在11月6日重构验收后全部停止。两端 BF16 输出存在差异，任务成功率需另行评估。详见[本机部署与耗时报告](docs/pap_dsrl_local_inference.md)。
 
-**训练状态（2026-11-06）：** 本机 PAP DSRL 和后续固定 DSRL 的动作残差均已完成 **400,000 transitions**。从头重训的100k预算 DSRL 用 **2小时05分**完成 **100,022 transitions**（最后完整并行批次多22条）。随后200k预算的残差训练按要求停在 **16,704 transitions**，完整检查点和冻结源均保留。已验证兼容副本并准备恢复配置，但没有恢复训练。详见[交接文档](docs/HANDOVER.md)与[迁移验收](docs/results/framework_refactor_20261106.json)。训练 recent SR 不作为独立评估结果。
+**训练状态（2026-11-06）：** 本机 PAP DSRL 和后续固定 DSRL 的动作残差均已完成 **400,000 transitions**。从头重训的100k预算 DSRL 用 **2小时05分**完成 **100,022 transitions**（最后完整并行批次多22条）。随后200k预算的残差训练按要求停在 **16,704 transitions**，完整检查点和冻结源均保留。本轮归属调整已生成通过严格恢复的派生检查点；当前恢复配置（本地产物 `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json`）已验证但未启动，仍为 64 环境／batch64／总预算 200,000（剩余 183,296），没有恢复正式训练。详见[交接文档](docs/HANDOVER.md)与[迁移验收](docs/results/component_ownership_20261107.json)。训练 recent SR 不作为独立评估结果。
 
 推理默认使用 **WebSocket/MessagePack**，在 Wall-X 已有的 WebSocket 通信上加入兼容旧接口的扩展。PressB 提供 VLA-JEPA 所需的 `encode`、指定初始噪声的 `decode`、`release` 和 `health` 操作。仿真仍为 **HTTP**；旧 HTTP 推理可通过服务端 `--transport http` 和客户端 `http://` 地址选择。原 PAP 客户端继续使用普通 Wall-X 观测／动作预测；新的可配置路径增加了专用 Wall-OSS 模型适配器，通信扩展本身并不足够。详见 [PressB 协议](docs/online_rl_protocol.md)和 [Wall-X 接口说明](https://github.com/pgq18/wall-x/blob/base/inference/README_pressb.md)。
 
@@ -342,15 +346,17 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 
 | 目录 | 内容 |
 |---|---|
-| `src/pressb/` | 场景、机器人运动学、规划、相机、数据语义与策略控制 |
-| `src/pressb/runtime/` | 公共服务、采样／SAC／回放、检查点、机器人／相机组装及共享 USD 桌面组件 |
-| `src/pressb/tasks/` | 任务插件及其场景、结果判定、采样、规划、采集和评估实现 |
-| `src/pressb/models/`, `src/pressb/model_sources/` | 模型适配器和内置 Wall-OSS／VLA-JEPA 推理、数据读取及监督训练源码 |
+| `src/pressb/` | 包元信息与惰性插件注册表，实现归入下列包 |
+| `src/pressb/runtime/` | 公共服务、采样／SAC／回放、检查点、PhysX、资产迁移及共享 USD 桌面组件 |
+| `src/pressb/control/`、`src/pressb/sensors/` | 通用滤波、位姿转换、相机标定、RGB-D 记录和图像拼接 |
+| `src/pressb/robots/piper/` | PiPER 运动学、控制器、关节装配和 D435 硬件 |
+| `src/pressb/tasks/{elevator,pap,table_buttons}/` | 各任务的场景、默认配置、物理结果判定、采样、规划、采集和评估 |
+| `src/pressb/models/` | 冻结模型适配器、加载与推理封装 |
+| `src/pressb/model_sources/` | 保留上游结构及来源的 Wall-OSS／VLA-JEPA 模型、数据与监督训练源码 |
 | `src/pressb/experiments/`, `src/pressb/training/` | 实验命令／配置与监督训练入口 |
-| `src/pressb/compat/` | 历史 Wall-X WebSocket 和桌面按键 HTTP 策略客户端 |
-| `src/pressb/online_rl/`, `src/pressb/rl_nodes/` | 历史入口与保留的电梯辅助代码，通用模块转发至公共运行核心 |
+| `src/pressb/compat/` | 历史电梯 RL 编排、固定夹爪协议、Wall-X 和桌面按键客户端 |
 | `scripts/` | 安装、资产准备、采集、转换、回放、评估和审计入口 |
-| `configs/` | 固定场景、随机位置和 1,200 条分层采集配置 |
+| `configs/` | 场景、采集、模型训练与实验配置；`rl_nodes/` 保留各节点 JSON 模板 |
 | `tests/` | CPU 单元测试与可选 USD 场景集成测试 |
 | `assets/*.json` | 固定资产来源、校验和与安装配准元数据 |
 | `docs/` | 当前流程说明及注明范围的历史实验记录 |
@@ -359,6 +365,6 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 | `vendor/`, `assets/generated/`, `assets/isaac/` | 本地下载或生成的依赖与素材（忽略） |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | 本地数据、结果、环境与缓存（忽略） |
 
-PAP 与桌面按键代码统一位于 `src/pressb/tasks/pap/` 和 `src/pressb/tasks/table_buttons/`，原顶层任务目录已删除。旧脚本导入和旧 RL 检查点的处理方式见[路径与检查点迁移说明](docs/project_framework.md#task-package-paths)。
+三个任务都归入 `src/pressb/tasks/` 下的独立包。原顶层辅助模块以及 `online_rl`、`rl_nodes`、`pick_place`、`table_buttons` 包已删除；旧脚本导入和旧 RL 检查点的处理方式见[规范路径与检查点迁移说明](docs/project_framework.md#task-package-paths)。
 
 更多说明：[30 Hz 数据](docs/dataset_30hz.md) · [首次亮灯裁剪](docs/dataset_press_only.md) · [位置随机化](docs/dataset_panel_randomization.md) · [分层覆盖记录](docs/dataset_panel_stratified.md)。

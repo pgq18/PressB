@@ -122,7 +122,7 @@ def fake_backend(torch, mutate=False):
 
 def test_incremental_report_checks_real_hooks_native_reference_and_cache(tmp_path, monkeypatch):
     torch = pytest.importorskip("torch")
-    from pressb.rl_nodes import server
+    from pressb.runtime import server
     backend = fake_backend(torch)
     monkeypatch.setattr(server, "load_backend", lambda config: backend)
     config = tmp_path / "config.json"

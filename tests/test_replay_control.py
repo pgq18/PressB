@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from pressb.kinematics import PiperKinematics
-from pressb.replay_control import ContinuousPoseIK, ReplayIKError, action_pose, solve_action_trajectory
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.robots.piper.pose_control import ContinuousPoseIK, ReplayIKError, action_pose, solve_action_trajectory
 
 
 ROOT = Path(__file__).resolve().parents[1]

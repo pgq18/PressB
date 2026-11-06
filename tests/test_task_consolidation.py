@@ -3,16 +3,32 @@ import ast
 import hashlib
 import importlib
 import json
+from itertools import permutations
 from pathlib import Path
 
 import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REMOVED_PACKAGES = ("pressb.pick_place", "pressb.table_buttons")
+REMOVED_PACKAGES = ("pressb.pick_place", "pressb.table_buttons", "pressb.online_rl", "pressb.rl_nodes")
+REMOVED_MODULES = tuple("pressb." + name for name in (
+    "scene", "planning", "dataset_planning", "panel_metadata", "panel_randomization",
+    "policy_layouts", "press_prefix", "recording", "dataset_scene", "kinematics",
+    "replay_control", "wrist_camera", "action_postprocessing", "motion_smoothing",
+    "scene_portability", "policy_eval", "camera_recording", "fixed_camera",
+))
+# This audit deliberately reconstructs a recorded run using that run's frozen
+# source tree. Its imports identify historical files whose hashes it verifies.
+HISTORICAL_ARCHIVE_IMPORTS = {
+    ("scripts/audit_xyz_residual_startup.py", name) for name in (
+        "pressb.online_rl", "pressb.online_rl.learner",
+        "pressb.online_rl.learner.LearnerConfig", "pressb.online_rl.learner.SACLearner",
+        "pressb.online_rl.residual_on_noise", "pressb.online_rl.residual_on_noise.BudgetReplayBuffer",
+    )
+}
 
 
-@pytest.mark.parametrize("module", REMOVED_PACKAGES)
+@pytest.mark.parametrize("module", REMOVED_PACKAGES + REMOVED_MODULES)
 def test_removed_task_packages_have_no_directory_or_import(module):
     path = ROOT / "src" / module.replace(".", "/")
     assert not path.exists()
@@ -23,6 +39,12 @@ def test_removed_task_packages_have_no_directory_or_import(module):
     assert error.value.name == module
 
 
+def test_top_level_package_contains_only_package_metadata_and_registry():
+    assert {path.name for path in ROOT.joinpath("src/pressb").glob("*.py")} == {
+        "__init__.py", "registry.py",
+    }
+
+
 @pytest.mark.parametrize("module,name", [
     ("pressb.tasks.pap.task", "PickPlaceOutcome"),
     ("pressb.tasks.pap.initialization", "load_policy_initial"),
@@ -31,6 +53,19 @@ def test_removed_task_packages_have_no_directory_or_import(module):
     ("pressb.compat.wallx", "WallXClient"),
     ("pressb.compat.table_buttons_policy", "HTTPJointPolicy"),
     ("pressb.compat.table_buttons_policy", "HTTPJoint6Policy"),
+    ("pressb.robots.piper.kinematics", "PiperKinematics"),
+    ("pressb.robots.piper.pose_control", "ContinuousPoseIK"),
+    ("pressb.robots.piper.policy_control", "PolicyPoseController"),
+    ("pressb.robots.piper.batched_control", "BatchedPoseController"),
+    ("pressb.control.joint_actions", "JointActionPostprocessor"),
+    ("pressb.control.joint_smoothing", "JointCommandSmoother"),
+    ("pressb.sensors.recording", "RGBDCameraRecorder"),
+    ("pressb.sensors.tiled", "split_tiled_rgb"),
+    ("pressb.sensors.camera", "make_camera"),
+    ("pressb.tasks.elevator.planning", "make_plan"),
+    ("pressb.tasks.elevator.camera_recording", "WristCameraRecorder"),
+    ("pressb.compat.elevator_policy", "InvalidPolicyAction"),
+    ("pressb.models.vlajepa_backend", "FrozenPiperBackend"),
 ])
 def test_public_task_and_client_symbols_belong_to_canonical_files(module, name):
     implementation = importlib.import_module(module)
@@ -73,22 +108,34 @@ def _absolute_imports(path):
                     yield argument.value
 
 
-def test_sources_scripts_and_tests_do_not_import_removed_task_packages():
+def test_sources_scripts_and_tests_do_not_import_removed_namespaces():
     paths = [path for directory in ("src", "scripts", "tests")
              for path in ROOT.joinpath(directory).rglob("*.py")]
     leaks = [(str(path.relative_to(ROOT)), name) for path in paths for name in _absolute_imports(path)
-             if any(name == prefix or name.startswith(prefix + ".") for prefix in REMOVED_PACKAGES)]
+             if any(name == prefix or name.startswith(prefix + ".")
+                    for prefix in REMOVED_PACKAGES + REMOVED_MODULES)]
+    assert not set(leaks) - HISTORICAL_ARCHIVE_IMPORTS
+
+
+@pytest.mark.parametrize("package", ["runtime", "control", "sensors", "robots"])
+def test_shared_packages_do_not_import_concrete_tasks_models_or_compatibility(package):
+    forbidden = ("pressb.tasks", "pressb.models", "pressb.model_sources", "pressb.compat")
+    paths = list(ROOT.joinpath("src/pressb", package).rglob("*.py"))
+    assert paths
+    leaks = [(str(path.relative_to(ROOT)), name) for path in paths for name in _absolute_imports(path)
+             if any(name == prefix or name.startswith(prefix + ".") for prefix in forbidden)]
     assert not leaks
 
 
-def test_shared_scene_has_no_task_implementation_dependency():
-    shared = [ROOT / "src/pressb/runtime" / name for name in ("scene.py", "workbench.py")]
-    for path in shared:
-        assert not any(name == "pressb.tasks" or name.startswith("pressb.tasks.")
-                       for name in _absolute_imports(path))
+def test_model_adapters_do_not_import_task_or_compatibility_implementations():
+    forbidden = ("pressb.tasks", "pressb.compat")
+    paths = ROOT.joinpath("src/pressb/models").rglob("*.py")
+    leaks = [(str(path.relative_to(ROOT)), name) for path in paths for name in _absolute_imports(path)
+             if any(name == prefix or name.startswith(prefix + ".") for prefix in forbidden)]
+    assert not leaks
 
 
-@pytest.mark.parametrize("task,other", [("pap", "table_buttons"), ("table_buttons", "pap")])
+@pytest.mark.parametrize("task,other", list(permutations(("pap", "table_buttons", "elevator"), 2)))
 def test_task_implementations_do_not_depend_on_each_other(task, other):
     prefix = "pressb.tasks." + other
     paths = ROOT.joinpath("src/pressb/tasks", task).rglob("*.py")
@@ -105,11 +152,14 @@ def test_collector_archives_canonical_scene_and_physics_dependencies(tmp_path):
     paths = {str(p.relative_to(ROOT)) for p in module.frozen_paths()}
     for source in ("tasks/table_buttons/scene.py", "tasks/table_buttons/task.py",
                    "tasks/table_buttons/target_relative_motion.py", "runtime/scene.py",
-                   "runtime/workbench.py", "runtime/isaac.py", "runtime/recording.py"):
+                   "runtime/workbench.py", "runtime/recording.py",
+                   "robots/piper/isaac.py", "robots/piper/kinematics.py",
+                   "sensors/camera.py", "control/joint_actions.py"):
         assert "src/pressb/" + source in paths
     assert {str(path.relative_to(ROOT))
             for path in ROOT.joinpath("src/pressb/tasks/table_buttons").glob("*.py")} <= paths
-    assert not any(path.startswith(("src/pressb/pick_place/", "src/pressb/table_buttons/"))
+    assert not any(path.startswith(("src/pressb/pick_place/", "src/pressb/table_buttons/",
+                                    "src/pressb/rl_nodes/", "src/pressb/online_rl/"))
                    for path in paths)
     module.freeze_code(tmp_path)
     manifest = json.loads((tmp_path / "source_archive/manifest.json").read_text())

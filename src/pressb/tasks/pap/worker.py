@@ -18,7 +18,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from pressb.runtime.isaac import set_intrinsics as _intrinsics, make_camera as _camera
+from pressb.sensors.camera import set_intrinsics as _intrinsics, make_camera as _camera
 
 
 def _build(config, *, initialize=True):
@@ -31,7 +31,7 @@ def _build(config, *, initialize=True):
     from pressb.tasks.pap.scene import build_scene
     from pressb.runtime.workbench import build_tripod
     from pressb.runtime.scene import _bind, _cube, _material, _material_settings
-    from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
+    from pressb.robots.piper.wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
     cfg = copy.deepcopy(config["scene"])
@@ -182,9 +182,9 @@ def _build(config, *, initialize=True):
 class PAPEnvironment:
     """A single episode state machine; no simulator import until construction."""
     def __init__(self, config):
-        from pressb.action_postprocessing import JointActionPostprocessor
+        from pressb.control.joint_actions import JointActionPostprocessor
         from pressb.tasks.pap.initialization import load_policy_initial
-        from pressb.kinematics import PiperKinematics
+        from pressb.robots.piper.kinematics import PiperKinematics
         from pxr import PhysicsSchemaTools
         import omni.physx
 

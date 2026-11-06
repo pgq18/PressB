@@ -236,7 +236,8 @@ def test_physics_error_latches_fault_and_is_never_retried(monkeypatch):
 def test_camera_calibration_and_source_identity_are_bound_to_run():
     node = backend()
     assert "wrist_camera" not in node.config["scene"]  # Elevator registration remains the default.
-    assert "runtime/isaac.py" in node.identity["source_identity"]
+    assert "robots/piper/isaac.py" in node.identity["source_identity"]
+    assert "sensors/camera.py" in node.identity["source_identity"]
     for path in ("tasks/table_buttons/task.py", "tasks/table_buttons/scene.py",
                  "tasks/table_buttons/collision_policy.py", "runtime/scene.py", "runtime/workbench.py"):
         assert path in node.identity["source_identity"]
@@ -247,7 +248,7 @@ def test_camera_calibration_and_source_identity_are_bound_to_run():
 def test_shared_camera_helpers_and_old_cli_reexports_load_without_isaac():
     import importlib.util
     from pathlib import Path
-    from pressb.runtime.isaac import make_camera, set_intrinsics
+    from pressb.sensors.camera import make_camera, set_intrinsics
     from pressb.runtime.recording import Video, write
     root = Path(__file__).resolve().parents[1]
     for script in ("collect_table_buttons", "eval_table_buttons_policy"):

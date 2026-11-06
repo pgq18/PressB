@@ -71,7 +71,7 @@ def main(argv=None):
     native_log_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Fail on identity/configuration errors before opening Kit or a GPU context.
-    from pressb.online_rl.simulation import _file_identity
+    from pressb.tasks.elevator.simulation import _file_identity
     config = json.loads(args.config.read_text())
     collection = json.loads((args.dataset / "meta/collection_metadata.json").read_text())
     if config != collection["config"] or _file_identity(args.snapshot)["sha256"] != collection["scene_sha256"]:
@@ -95,7 +95,7 @@ def main(argv=None):
     signal.signal(signal.SIGINT, interrupted)
     try:
         from isaacsim import SimulationApp
-        from collect_dataset import DATASET_ANTI_ALIASING
+        from pressb.tasks.elevator.collection import DATASET_ANTI_ALIASING
         app = SimulationApp(dict(headless=True, create_new_stage=False, width=640, height=480,
             active_gpu=args.gpu, physics_gpu=args.gpu, multi_gpu=False,
             disable_viewport_updates=True, limit_cpu_threads=args.cpu_threads,
@@ -105,8 +105,8 @@ def main(argv=None):
                 "--/log/async=false",
                 "--/plugins/carb.tasking.plugin/threadCount=8", "--/plugins/omni.tbb.globalcontrol/maxThreadCount=8",
                 "--/persistent/physics/numThreads=4", "--/validate/p2p/enabled=false", "--/validate/iommu/enabled=false"]))
-        from pressb.online_rl.rpc import RPCServer
-        from pressb.online_rl.fast_simulation import FastIsaacVectorBackend, IndexedSimulationService
+        from pressb.runtime.rpc import RPCServer
+        from pressb.tasks.elevator.fast_simulation import FastIsaacVectorBackend, IndexedSimulationService
         backend = FastIsaacVectorBackend(app, project_root=ROOT, config=args.config, snapshot=args.snapshot,
             dataset=args.dataset, output=args.output, num_envs=args.num_envs, max_seconds=args.max_seconds,
             smoothing_window=args.smoothing_window, asset_bundle=args.asset_bundle, gpu=args.gpu,

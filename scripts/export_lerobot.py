@@ -26,8 +26,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.panel_metadata import (PANEL_EPISODE_CONTEXT, episode_panel_context,
-                                  validate_episode_panel_metadata)
+from pressb.tasks.elevator.panel_metadata import PANEL_EPISODE_CONTEXT, episode_panel_context, validate_episode_panel_metadata
 LEROBOT_VERSION = "0.6.1"
 FPS = 10
 PHYSICS_HZ = 120

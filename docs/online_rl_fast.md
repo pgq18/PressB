@@ -26,7 +26,7 @@ env -u PYTHONPATH .conda/envs/vlajepa-inference/bin/python -m pip install -e '.[
 
 新建独立 learner 环境可安装 `.[online-rl]`；如果与 Isaac 共用环境，同时遵守 Isaac 的 `websockets==12.0` 约束。WebSocket 客户端支持上述版本范围，与独立服务端使用相同的消息协议。
 
-默认参考仓库路径为 `ref/wall-x`，可用 `serve_rl_inference.py --wall-x-repo <路径>` 指定其他含兼容 serving 扩展的 Wall-X checkout。模型仍从 `--vla-repo` 与 `--checkpoint` 指定的 VLA-JEPA 加载。
+默认服务端和模型代码来自内置 `model_sources/walloss`、`model_sources/vlajepa`；`--checkpoint` 仍指定独立权重。可显式传 `--wall-x-repo <路径>` 或 `--vla-repo <路径>` 使用历史外部源码。旧入口的应用编排已归入 `compat/elevator_rl`，仿真在 `tasks/elevator`，原 `pressb.online_rl` 包不再提供导入别名。
 
 ```bash
 env -u PYTHONPATH OMNI_KIT_ACCEPT_EULA=YES OMP_NUM_THREADS=1 \
@@ -36,13 +36,12 @@ env -u PYTHONPATH OMNI_KIT_ACCEPT_EULA=YES OMP_NUM_THREADS=1 \
   --output outputs/online_rl/fast_sim_new
 ```
 
-本机推理使用独立的 `.conda/envs/vlajepa-inference`，VLA-JEPA 克隆在 `src/VLA-JEPA`。依赖、最小权重文件及目录要求见该仓库的 `docs/piper_rtx5090_inference.md`（提交 `9c9dc71`）。该环境复用 Torch 2.7/cu128，单独安装与 H200 匹配的 Transformers 4.57 等模型依赖，不修改 Isaac 环境。
+本机推理使用独立的 `.conda/envs/vlajepa-inference`，默认使用内置 VLA-JEPA 源码。当前部署见[内置模型说明](bundled_models.md)；历史外部克隆 `src/VLA-JEPA` 的依赖、权重与目录要求保留在其 `docs/piper_rtx5090_inference.md`（提交 `9c9dc71`）。该环境复用 Torch 2.7/cu128，单独安装与 H200 匹配的 Transformers 4.57 等模型依赖，不修改 Isaac 环境。
 
 ```bash
 CUDA_VISIBLE_DEVICES=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
   OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
   .conda/envs/vlajepa-inference/bin/python scripts/serve_rl_inference.py \
-  --vla-repo src/VLA-JEPA \
   --checkpoint .cache/vlajepa/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600 \
   --base-vlm .cache/vlajepa/Qwen3-VL-2B-Instruct \
   --base-encoder .cache/vlajepa/vjepa2-vitl-fpc64-256 \
@@ -50,7 +49,7 @@ CUDA_VISIBLE_DEVICES=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
   --image-preprocess-device cuda --cache-size 512 --cache-ttl 3600
 ```
 
-这里 GPU1 由独立的 Isaac 和推理进程共享，GPU0 只运行 learner；容量与吞吐验证须包含两者同时运行的情况。若使用 H200，用 `scripts/sync_rl_inference.py --remote-root <独立目录>` 同步 addon，远端服务及 SSH 转发使用 19881，并将训练端 URL 改回对应端口。三个模块的 API 与跨机器能力保留。
+这里 GPU1 由独立的 Isaac 和推理进程共享，GPU0 只运行 learner；容量与吞吐验证须包含两者同时运行的情况。若使用 H200，用 `scripts/sync_rl_inference.py --remote-root <独立目录>` 同步包含内置模型代码的 PressB 服务源码，远端服务及 SSH 转发使用 19881，并将训练端 URL 改回对应端口。三个模块的 API 与跨机器能力保留。
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \

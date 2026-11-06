@@ -30,9 +30,9 @@ def main():
     for key in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
         os.environ.setdefault(key, "1")
     from benchmark_pap_parallel import load_replay
-    from pressb.rl_nodes.pap_vector import PAPVectorBackend
-    from pressb.rl_nodes.contract import decode_image
-    from pressb.rl_nodes.image_transport import resize_for_transport
+    from pressb.tasks.pap.vector import PAPVectorBackend
+    from pressb.runtime.contract import decode_image
+    from pressb.runtime.image_transport import resize_for_transport
     cfg = json.loads(args.config.read_text())["backend"]["config"]
     cfg.update(num_envs=args.num_envs, gpu_ids=[0], scene_config=str(args.replay_episode / "config.json"),
                smoothing={"mode": "none", "alpha": .8}, randomization={"position": "fixed", "colors": ["red"]},

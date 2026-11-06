@@ -8,7 +8,7 @@ import pytest
 pytest.importorskip("pxr.UsdUtils")
 from pxr import Sdf
 
-from pressb.scene_portability import prepare_runtime_snapshot, verify_runtime_snapshot
+from pressb.runtime.assets import prepare_runtime_snapshot, verify_runtime_snapshot
 
 
 def identity(path):

@@ -49,12 +49,11 @@ def main():
         parser.error("torch-threads must be positive")
     import torch
     torch.set_num_threads(args.torch_threads)
-    from pressb.online_rl.inference import FrozenPiperBackend, InferenceApplication
-    from pressb.online_rl.rpc import RPCServer
+    from pressb.models.vlajepa_backend import FrozenPiperBackend
+    from pressb.compat.elevator_rl.inference import InferenceApplication
+    from pressb.runtime.rpc import RPCServer
     if args.transport == "websocket":
-        from pressb.online_rl.inference_transport import (
-            IdentityDataProcessor, InferencePolicyAdapter, load_wallx_server,
-        )
+        from pressb.compat.elevator_rl.inference_transport import IdentityDataProcessor, InferencePolicyAdapter, load_wallx_server
         websocket_server = load_wallx_server(args.wall_x_repo)
     backend = FrozenPiperBackend.load(args.vla_repo, args.checkpoint, device=args.device,
                                       image_preprocess_device=args.image_preprocess_device,

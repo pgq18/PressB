@@ -4,7 +4,8 @@ import json
 import numpy as np
 import pytest
 
-from pressb.camera_recording import WristCameraRecorder
+from pressb.tasks.elevator.camera_recording import WristCameraRecorder
+from pressb.sensors.recording import RGBDCameraRecorder
 
 
 class FakeCamera:
@@ -94,3 +95,35 @@ def test_capture_rejects_nonpositive_reference_denominator(tmp_path, denominator
         recording.capture(1., 24, "approach")
     assert (recording.output / "timestamps.jsonl").read_text() == ""
     assert recording.rows == []
+
+
+def test_shared_recorder_accepts_task_metadata_without_inventing_elevator_fields(tmp_path):
+    recording = RGBDCameraRecorder(
+        tmp_path, FakeCamera(np.int64(19)), {"name": "inspection"},
+        capture_stride=1, expected_steps=2, output_subdir="inspection_camera",
+    )
+    recording.capture(0.)
+    recording.capture(.1, metadata={"object_id": "block-a", "phase": "grasp"},
+                      preview_stems=("grasp",))
+    first, second = [json.loads(row) for row in (recording.output / "timestamps.jsonl").read_text().splitlines()]
+    assert "floor" not in first and "phase" not in first
+    assert "floor" not in second
+    assert second["object_id"] == "block-a" and second["phase"] == "grasp"
+    assert first["rendering_frame"] == second["rendering_frame"] == 19
+    assert [first["frame"], second["frame"]] == [0, 1]
+    assert (recording.output / "grasp.png").is_file()
+    assert (recording.output / "initial_depth.png").is_file()
+    assert recording.finish()["success"] is True
+
+
+def test_elevator_recorder_preserves_floor_and_phase_preview_names(tmp_path):
+    recording = WristCameraRecorder(
+        tmp_path, FakeCamera(19), {"model": "D435"}, capture_stride=1, expected_steps=2,
+    )
+    assert isinstance(recording, RGBDCameraRecorder)
+    recording.capture(0., 24, "approach panel")
+    recording.capture(.1, 24, "hold")
+    for name in ("initial", "phase_approach_panel", "floor_24", "phase_hold"):
+        assert (recording.output / (name + ".png")).is_file()
+        assert (recording.output / (name + "_depth.png")).is_file()
+    assert recording.finish()["success"] is True

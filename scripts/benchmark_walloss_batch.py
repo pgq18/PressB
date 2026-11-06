@@ -275,7 +275,7 @@ def run(args):
     backend = evidence = None
     try:
         import torch
-        from pressb.rl_nodes.server import load_backend
+        from pressb.runtime.server import load_backend
         sources, identities = load_observations(args.observation)
         observations = make_observations(sources, max(args.batch_sizes), args.mixed_prompts)
         report.update(observation_files=identities, supplied_observation_count=len(sources),

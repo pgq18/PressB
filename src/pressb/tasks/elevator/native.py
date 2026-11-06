@@ -12,7 +12,6 @@ import json
 import math
 import os
 from pathlib import Path
-import sys
 import threading
 
 from pressb.runtime.contract import fingerprint
@@ -137,8 +136,8 @@ class NativeElevatorBackend(ElevatorBackend):
                 gpu=self.settings["gpu"], simulator_thread="caller_main_thread")
             sources = copy.deepcopy(self._engine.manifest.get("sources", {}))
             for name in ("src/pressb/tasks/elevator/native.py", "src/pressb/tasks/elevator/backend.py",
-                         "src/pressb/rl_nodes/elevator.py", "src/pressb/runtime/contract.py",
-                         "src/pressb/online_rl/protocol.py"):
+                         "src/pressb/runtime/contract.py", "src/pressb/control/pose_protocol.py",
+                         "src/pressb/tasks/elevator/semantics.py", "src/pressb/tasks/elevator/collection.py"):
                 contents = (ROOT / name).read_bytes()
                 sources[name] = {"sha256": hashlib.sha256(contents).hexdigest(), "bytes": len(contents)}
             self._metadata["source_identity"] = sources
@@ -158,11 +157,8 @@ class NativeElevatorBackend(ElevatorBackend):
         cache_tmp = ROOT / ".cache/tmp"
         cache_tmp.mkdir(parents=True, exist_ok=True)
         os.environ.setdefault("TMPDIR", str(cache_tmp))
-        script_root = str(ROOT / "scripts")
-        if script_root not in sys.path:
-            sys.path.insert(0, script_root)
         from isaacsim import SimulationApp
-        from collect_dataset import DATASET_ANTI_ALIASING
+        from .collection import DATASET_ANTI_ALIASING
         self._app = SimulationApp(dict(headless=True, create_new_stage=False, width=640, height=480,
             active_gpu=cfg["gpu"], physics_gpu=cfg["gpu"], multi_gpu=False,
             disable_viewport_updates=True, limit_cpu_threads=cfg["cpu_threads"],
@@ -172,7 +168,7 @@ class NativeElevatorBackend(ElevatorBackend):
                 "--/log/async=false", "--/plugins/carb.tasking.plugin/threadCount=8",
                 "--/plugins/omni.tbb.globalcontrol/maxThreadCount=8", "--/persistent/physics/numThreads=4",
                 "--/validate/p2p/enabled=false", "--/validate/iommu/enabled=false"]))
-        from pressb.online_rl.fast_simulation import FastIsaacVectorBackend, IndexedSimulationService
+        from .fast_simulation import FastIsaacVectorBackend, IndexedSimulationService
         engine_keys = set(_DEFAULTS) - {"response_cache_size"}
         engine = {key: cfg[key] for key in engine_keys}
         engine.update({key: cfg[key] for key in (*_PATHS, "output", "native_log_path")})

@@ -1,0 +1,407 @@
+{
+  "status": "passed",
+  "date": "2026-11-07",
+  "base_commit": "c244fc17b66af5ceca8aa98fbf2932c2a42600ec",
+  "scope": "Task/shared component ownership refactor; functional regression, not a new model success-rate or throughput evaluation.",
+  "layout": {
+    "src/pressb": [
+      "__init__.py",
+      "registry.py"
+    ],
+    "tasks": [
+      "elevator",
+      "pap",
+      "table_buttons"
+    ],
+    "shared": [
+      "runtime",
+      "control",
+      "sensors",
+      "robots/piper"
+    ],
+    "models": [
+      "models",
+      "model_sources"
+    ],
+    "entrypoints": [
+      "experiments",
+      "training"
+    ],
+    "historical_workflows": [
+      "compat"
+    ],
+    "removed_alias_packages": [
+      "online_rl",
+      "rl_nodes",
+      "pick_place",
+      "table_buttons"
+    ]
+  },
+  "boundaries": {
+    "shared_imports_no_concrete_tasks_models_or_compat": true,
+    "tasks_do_not_import_other_tasks": true,
+    "model_adapters_do_not_import_tasks_or_compat": true,
+    "generic_pose_conversion_requires_explicit_gripper_width": true,
+    "legacy_fixed_resolution_rgb_protocol_owned_by_elevator": true
+  },
+  "tests": {
+    "unique_passed": 2210,
+    "main": {
+      "tests": 2151,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 16,
+      "time": 66.08,
+      "passed": 2135
+    },
+    "usd_collision": {
+      "tests": 71,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.327,
+      "passed": 71
+    },
+    "lerobot": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 1.966,
+      "passed": 1
+    },
+    "vla": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 5.557,
+      "passed": 4
+    },
+    "unresolved_main_skips": []
+  },
+  "preservation": {
+    "scene_cases_byte_identical": 25,
+    "recording_files_byte_identical": 29,
+    "pose_samples_bitwise_identical_at_elevator_width": 163,
+    "png_cases_byte_identical": 3,
+    "bundled_model_training_files_unchanged": 169
+  },
+  "packaging": {
+    "canonical_imports": 68,
+    "cli_config_checks": 50,
+    "python_sources_matched": 233,
+    "wheel_members": 281,
+    "removed_aliases_absent": true
+  },
+  "physics": {
+    "pap": {
+      "hold_timeout_and_fused_reset": true,
+      "grasp_replay_successes": 2,
+      "producer_image_cases": 4,
+      "producer_pixels_exact": true
+    },
+    "elevator": {
+      "success_replay_episodes": 2,
+      "success_physics_steps": 148,
+      "hold_timeout_episodes": 2,
+      "hold_timeout_physics_steps": 240,
+      "indexed_reset_isolation": true,
+      "camera_images": 16
+    },
+    "table_buttons": {
+      "expert_replay_successes": 9,
+      "wrong_target_rejected": true,
+      "hold_timed_out": true,
+      "joint7_measured_open_width_m": 0.029999895952641964,
+      "joint7_measured_closed_width_m": 0.0019999260548502207,
+      "image_count": 22,
+      "image_size": [
+        640,
+        480
+      ]
+    }
+  },
+  "real_wall_pipeline_2": {
+    "dsrl_transitions_updates": [
+      40,
+      40
+    ],
+    "dsrl_resumed_transitions_updates": [
+      48,
+      48
+    ],
+    "frozen_dsrl_residual_transitions_updates": [
+      40,
+      40
+    ],
+    "collection": {
+      "episodes": 2,
+      "complete_episodes": 2,
+      "transitions": 26,
+      "verified_png_images": 104,
+      "early_terminated_action_prefixes": 2,
+      "requested_action_shape": [
+        32,
+        7
+      ],
+      "measured_elapsed_steps_preserved": true
+    },
+    "frozen_actor_unchanged": true,
+    "services_released": true,
+    "final_source_unchanged_proof": {
+      "path": "outputs/component_ownership_20261107/verification/real_pipeline_smoke/final_source_validation.json",
+      "sha256": "3ae995d08914873185cdcfcb97275afc6a8384c6412e8347529af8bef6d6291c"
+    }
+  },
+  "real_wall_pipeline_64": {
+    "scope": "Short functional regression only; not a throughput benchmark or learning-effectiveness evaluation",
+    "num_envs": 64,
+    "independent_reset": {
+      "unique_world_positions": 64,
+      "unique_local_positions": 64,
+      "unique_up_images": 64,
+      "unique_wrist_images": 64,
+      "verified_png_files": 128,
+      "indexed_reset_preserved_other_63_envs": true
+    },
+    "native_model_batches": {
+      "encode": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "decode": [
+        64,
+        64,
+        64
+      ],
+      "noise_shapes": [
+        [
+          64,
+          32,
+          20
+        ],
+        [
+          64,
+          32,
+          20
+        ],
+        [
+          64,
+          32,
+          20
+        ]
+      ]
+    },
+    "training": {
+      "transitions": 192,
+      "updates": 39,
+      "episodes": 0,
+      "physics_chunk_requests": 3,
+      "fused_step_and_reset_requests": 3,
+      "terminal_fused_resets_exercised": false,
+      "terminal_note": "Three 32-action chunks span 3.2 simulated seconds, below the unchanged 20-second episode limit; terminal fused resets were exercised in the separate 2-env full pipeline test",
+      "replay_capacity": 128,
+      "replay_rows": 128,
+      "optimizer_actor_entries": 16,
+      "full_checkpoints": [
+        "step_000000000064.pt",
+        "step_000000000128.pt",
+        "step_000000000192.pt"
+      ]
+    },
+    "services_exit_zero_and_ports_released": true
+  },
+  "checkpoint_migration": {
+    "verification": {
+      "path": "outputs/component_ownership_20261107/checkpoint_migration/verification.json",
+      "sha256": "497ca28fed78bd3558e93894f71f74869e9966fabdad1834d10fac2eb6350ae1"
+    },
+    "noise": {
+      "path": "/mnt/data/pengguanqi/Data/PressB/outputs/component_ownership_20261107/checkpoint_migration/dsrl_step_000000100022.pt",
+      "sha256": "f4fa61b544fd41ac6c7303a2578983607e08813a9db0c18c45bef5eefdea56c0",
+      "bytes": 2878755367
+    },
+    "residual": {
+      "path": "/mnt/data/pengguanqi/Data/PressB/outputs/component_ownership_20261107/checkpoint_migration/residual_step_000000016704.pt",
+      "sha256": "08bbe6d04a90c32eff00b90411fcee606095afdc931b8dcdae16c830cf962188",
+      "bytes": 495810593
+    },
+    "exact_learning_state_preserved": true,
+    "originals_and_prior_copies_unchanged": true,
+    "resume": {
+      "prepared_only": true,
+      "launched": false,
+      "total_transition_budget": 200000,
+      "current_transitions": 16704,
+      "remaining_transition_budget": 183296,
+      "configured_num_envs": 64,
+      "actual_new_health_num_envs": 64,
+      "ordinary_fingerprint_num_envs_normalization_verified": true,
+      "checkpoint_and_frozen_paths_match_verified_chain": true,
+      "config": {
+        "path": "/mnt/data/pengguanqi/Data/PressB/outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json",
+        "sha256": "a6e37fb56f2ca460fcfb95af22c71beee159c6421dfe12714afe3e8354232b6a",
+        "bytes": 5584
+      },
+      "validation": {
+        "path": "/mnt/data/pengguanqi/Data/PressB/outputs/component_ownership_20261107/checkpoint_migration/resume_experiment_validation.json",
+        "sha256": "94641b67c71ff09510b9b657e652f7ce0aaa9dbdd2725b9042894260fba60185",
+        "bytes": 6270
+      },
+      "differences_from_prior_prepared_config": [
+        {
+          "path": [
+            "description"
+          ],
+          "old": "Prepared only. Continue the paused 16704-transition residual to its original 200000 total budget using audited legacy-directory-cleanup checkpoints; no automatic resume.",
+          "new": "Prepared only. Continue the paused 16704-transition residual to its original 200000 total budget using audited component-ownership checkpoints; no automatic resume.",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "old": "pap_residual_on_dsrl100k_200k_resume_directory_cleanup",
+          "new": "pap_residual_on_dsrl100k_200k_resume_component_ownership",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "run",
+            "checkpoint",
+            "resume"
+          ],
+          "old": "/mnt/data/pengguanqi/Data/PressB/outputs/task_directory_cleanup_20261106/checkpoint_migration/residual_step_000000016704.pt",
+          "new": "/mnt/data/pengguanqi/Data/PressB/outputs/component_ownership_20261107/checkpoint_migration/residual_step_000000016704.pt",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "run",
+            "frozen_dsrl",
+            "checkpoint"
+          ],
+          "old": "/mnt/data/pengguanqi/Data/PressB/outputs/task_directory_cleanup_20261106/checkpoint_migration/dsrl_step_000000100022.pt",
+          "new": "/mnt/data/pengguanqi/Data/PressB/outputs/component_ownership_20261107/checkpoint_migration/dsrl_step_000000100022.pt",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "run",
+            "frozen_dsrl",
+            "checkpoint_sha256"
+          ],
+          "old": "1bac6cb0ab21486cc1f265280890b038090ae55e6c1824439d19de1c473ac78d",
+          "new": "f4fa61b544fd41ac6c7303a2578983607e08813a9db0c18c45bef5eefdea56c0",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "run",
+            "output_dir"
+          ],
+          "old": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_residual_on_dsrl100k_200k_directory_cleanup/train",
+          "new": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_residual_on_dsrl100k_200k_component_ownership_20261107/train",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "run",
+            "wandb",
+            "name"
+          ],
+          "old": "pap-residual-on-dsrl100k-resume-directory-cleanup-20261106",
+          "new": "pap-residual-on-dsrl100k-resume-component-ownership-20261107",
+          "old_present": true,
+          "new_present": true
+        },
+        {
+          "path": [
+            "task",
+            "config",
+            "log_dir"
+          ],
+          "old": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_residual_on_dsrl100k_200k_directory_cleanup/simulation_workers",
+          "new": "/home/pengguanqi/Workspace/Research/PressB/outputs/pap_residual_on_dsrl100k_200k_component_ownership_20261107/simulation_workers",
+          "old_present": true,
+          "new_present": true
+        }
+      ]
+    }
+  },
+  "formal_training": {
+    "resumed": false,
+    "paused_transitions": 16704,
+    "paused_updates": 14673,
+    "total_transition_budget": 200000
+  },
+  "evidence": [
+    {
+      "path": "outputs/component_ownership_20261107/source_snapshot.json",
+      "sha256": "627ce9acdae9a6bf8fc27eeebe610728a58f71ef3d079939f5cd4cbeba6f96f6"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/freeze_revision.json",
+      "sha256": "ad80d790a11ec94701520f477cdefbceb104715af6fd467d91f24bd09922f3f1"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/validation_ready.json",
+      "sha256": "083f7588acd12f4aa8a39d291bc166c8ea7e2e028aeaec2c9dcfb4ad358f7d62"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/tests_final/summary.json",
+      "sha256": "52bed54cd0f99d3f41ecad8884605435934dc45cf5bbed1e85c89112b9e3f46d"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/tests_final/run_manifest.json",
+      "sha256": "2e7b4aa9df8a727504d8f7fedf9c412bddd6067fbe790bf74e572b86d7499920"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/packaging_final/verification.json",
+      "sha256": "214dbf7628f54c3c2feb5bf1d5abd4e1557712a9e17c68727eca8678e9a858b3"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/preservation_verification_final.json",
+      "sha256": "6b744fedafdc9fce1cbd1c21dfb843ce70afcfb4c08522f5595290d3ef65048a"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/scenes_final/comparison.json",
+      "sha256": "d399957b03459f6a2a64c8d165f6de8daeaed3e5828f9e9c8c0f2cfe066c6bae"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/pose_wire_comparison_final.json",
+      "sha256": "91faf6b3cbc4183effb997684318136d8020614a654707fcb5c0a84efff2cd70"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/verification/physical_audit.json",
+      "sha256": "7e751c6f6dd1412e24b789b4311bf81c21f584dfc05366b7152ebef8ec9d927d"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/verification/real_pipeline_smoke/audit.json",
+      "sha256": "05d88705d86a6d19f816900078e42f57972ced35bdc73cfa4c2c65ad24e44071"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/verification/real_pipeline_64_smoke/audit.json",
+      "sha256": "417c914feabfda7cc05e91609ed49d0599cc25f960059b378e98d545918976d9"
+    },
+    {
+      "path": "outputs/component_ownership_20261107/checkpoint_migration/verification.json",
+      "sha256": "497ca28fed78bd3558e93894f71f74869e9966fabdad1834d10fac2eb6350ae1"
+    }
+  ],
+  "validation_notes": [
+    "Initial snapshot and evidence are preserved. Final tests/wheel/scene comparison and elevator physics were rerun after the explicit-width/wire-protocol split.",
+    "PAP and table physics plus the 2-environment Wall run use unchanged-dependency proofs to bind initial successful executions to final sources.",
+    "The initial 64-env audit compared dynamic health counters as immutable fields. Its failed log is preserved; the corrected auditor verifies the counters and protocol separately, with no product changes.",
+    "The 64-env run covers 3.2 simulated seconds; terminal transitions are covered by the separate completed 2-env episodes."
+  ]
+}

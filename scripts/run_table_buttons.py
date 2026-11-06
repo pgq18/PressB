@@ -93,7 +93,7 @@ def run(app, args, cfg):
     from pressb.tasks.table_buttons.scene import build_scene
     from pressb.runtime.workbench import build_tripod
     from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
-    from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
+    from pressb.robots.piper.wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
     # Extra render samples never advance the physical trajectory or video time.
@@ -116,7 +116,7 @@ def run(app, args, cfg):
             if type(value) is not int or value not in (1, 2, 4, 8):
                 raise ValueError(f"rendering.{key} must be 1, 2, 4 or 8")
             renderer_settings.set_int(setting, value)
-    from pressb.kinematics import PiperKinematics
+    from pressb.robots.piper.kinematics import PiperKinematics
 
     kin = PiperKinematics(ROOT / cfg["robot_urdf"], tip_offset=.1358)
     initial_state = np.r_[cfg["initial_joint_positions_rad"], cfg["initial_gripper_width_m"]]
@@ -417,7 +417,7 @@ def main():
     top=geometry['base_height_m']+geometry['cap_height_m']
     if cfg.get('position_sampling', {}).get('domain') == 'camera_reachable':
         import numpy as np
-        from pressb.kinematics import PiperKinematics
+        from pressb.robots.piper.kinematics import PiperKinematics
         from pressb.tasks.table_buttons.placement import ReachablePlacement
         placement = ReachablePlacement(PiperKinematics(ROOT/cfg['robot_urdf'], tip_offset=.1358), cfg)
         if args.seed is not None:

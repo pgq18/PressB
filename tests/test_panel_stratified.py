@@ -7,10 +7,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pressb.dataset_planning import make_episode_plan
-from pressb.kinematics import PiperKinematics
-from pressb.panel_metadata import validate_episode_panel_metadata
-from pressb.panel_randomization import panel_randomization_settings, sample_panel_layout
+from pressb.tasks.elevator.dataset_planning import make_episode_plan
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.tasks.elevator.panel_metadata import validate_episode_panel_metadata
+from pressb.tasks.elevator.panel_randomization import panel_randomization_settings, sample_panel_layout
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +36,7 @@ def test_every_floor_covers_all_100_cells_and_four_exact_corners(monkeypatch):
     # Stub expensive safety checks here: this test measures the layout design,
     # while separate trajectory tests and runtime validation exercise physics.
     calls = []
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout",
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout",
                         lambda *a, **kw: calls.append(1) or safe_layout())
     cfg = config()
     bounds = cfg["panel_randomization"]
@@ -70,7 +70,7 @@ def test_every_floor_covers_all_100_cells_and_four_exact_corners(monkeypatch):
 
 
 def test_safety_retries_never_leave_the_assigned_cell_and_exhaustion_fails(monkeypatch):
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", safe_layout)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", safe_layout)
     cfg = config(max_attempts=3)
     index = next(i for i in range(100) if not sample(cfg, 24, i)[1]["boundary_corner"])
     _, reference = sample(cfg, 24, index)
@@ -82,7 +82,7 @@ def test_safety_retries_never_leave_the_assigned_cell_and_exhaustion_fails(monke
             raise ValueError("deliberate rejected trajectory")
         return safe_layout()
 
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", third_pass)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", third_pass)
     result, proof = sample(cfg, 24, index)
     assert proof["grid_cell_index_xy"] == reference["grid_cell_index_xy"]
     assert proof["attempts"] == 3 and len(proof["rejected_candidates"]) == 2
@@ -96,7 +96,7 @@ def test_safety_retries_never_leave_the_assigned_cell_and_exhaustion_fails(monke
 
 
 def test_unsafe_required_corner_is_not_replaced_by_an_interior_sample(monkeypatch):
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", safe_layout)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", safe_layout)
     cfg = config()
     index = next(i for i in range(100) if sample(cfg, 24, i)[1]["boundary_corner"])
     calls = []
@@ -105,14 +105,14 @@ def test_unsafe_required_corner_is_not_replaced_by_an_interior_sample(monkeypatc
         calls.append(1)
         raise ValueError("corner unreachable")
 
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", unsafe)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", unsafe)
     with pytest.raises(ValueError, match="Required panel corner"):
         sample(cfg, 24, index)
     assert len(calls) == 1
 
 
 def test_legacy_uniform_draws_and_metadata_remain_identical(monkeypatch):
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", safe_layout)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", safe_layout)
     for floor, seed in [(24, 0), (29, 134), (35, 20262129)]:
         layout, proof = sample_panel_layout(None, BASE, floor, seed)
         explicit = dict(BASE, panel_randomization={**BASE["panel_randomization"], "sampling_mode": "uniform"})
@@ -142,7 +142,7 @@ def test_invalid_grid_settings_rejected(changes):
 
 
 def metadata_fixture(monkeypatch, corner=False):
-    monkeypatch.setattr("pressb.panel_randomization.validate_panel_layout", safe_layout)
+    monkeypatch.setattr("pressb.tasks.elevator.panel_randomization.validate_panel_layout", safe_layout)
     cfg = config()
     ordinal = next(i for i in range(100) if sample(cfg, 24, i)[1]["boundary_corner"] is corner)
     layout_cfg, proof = sample(cfg, 24, ordinal)

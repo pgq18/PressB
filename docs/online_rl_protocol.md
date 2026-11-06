@@ -1,6 +1,15 @@
 # PressB online RL wire contract (v1)
 
-Three independent processes: simulation owns Isaac and physical state; inference owns a frozen VLA-JEPA; learner owns SAC, replay and rollout scheduling. The learner connects to both services; simulation and inference do not call each other. Simulation and learner status use JSON over HTTP. Frozen inference defaults to the actual Wall-X WebSocket server in `ref/wall-x/packages/openpi_client/websocket_policy_server.py`, with MessagePack and native NumPy arrays. An explicit `--transport http` retains the historical inference API. Model inference and network waits do not advance simulation time. This is continuous online collection, not a guarantee of real-time wall-clock control.
+This is the historical elevator wire contract. Its application adapters live in
+`pressb.compat.elevator_rl`, and its simulator lives in `pressb.tasks.elevator`.
+Generic clients and MessagePack primitives live in `pressb.runtime`. Fixed-640×480
+PNG helpers live in `pressb.tasks.elevator.wire_protocol`; generic pose conversion
+lives in `pressb.control.pose_protocol`, where `pose9_to_pose8` requires an
+explicit `gripper_width_m`. The legacy caller supplies 0.008 m. The removed
+`pressb.online_rl` import path has no alias. New task/model experiments use the
+[common schema-v2 node interface](configurable_rl_nodes.md).
+
+Three independent processes: simulation owns Isaac and physical state; inference owns a frozen VLA-JEPA; learner owns SAC, replay and rollout scheduling. The learner connects to both services; simulation and inference do not call each other. Simulation and learner status use JSON over HTTP. Frozen inference defaults to the bundled Wall-X WebSocket server in `src/pressb/model_sources/walloss/packages/openpi_client/websocket_policy_server.py`, with MessagePack and native NumPy arrays. An explicit `--transport http` retains the historical inference API. Model inference and network waits do not advance simulation time. This is continuous online collection, not a guarantee of real-time wall-clock control.
 
 All successful RPC responses include `protocol_version: 1`. HTTP GET `/health` reports `service` (`simulation`, `inference`, `learner`) and `ready`; POST handlers take a JSON object. Over WebSocket, inference health is an RPC operation after the metadata handshake, rather than an HTTP GET on `/health`. Clients never automatically retry state-mutating requests. Optional authentication uses `PRESSB_RL_TOKEN`: `Bearer` on HTTP, `Api-Key` on the WebSocket upgrade. Default bind is loopback. SSH forwarding or a private network connects separate hosts.
 
@@ -17,7 +26,7 @@ The server also preserves the ordinary Wall-X observation-to-`policy.infer` path
 The server's HTTP `/healthz` is a liveness check only; it does not replace checkpoint/capability verification through inference RPC. Use the client to inspect the model service:
 
 ```python
-from pressb.online_rl.inference_transport import InferenceClient
+from pressb.runtime.inference_transport import InferenceClient
 
 client = InferenceClient("ws://127.0.0.1:19891")
 try:
@@ -26,7 +35,7 @@ finally:
     client.close()
 ```
 
-The learner's `online-rl` extra supports `websockets>=12,<16` and `msgpack>=1,<2`; the separate model service needs the `inference-server` extra with `websockets>=14,<16`. Keep the Isaac/learner environment's `websockets==12.0` pin required by `isaacsim-kernel==5.0.0`; install the newer server dependency only in the inference environment. See [the launch instructions](online_rl_fast.md#启动). The server is loaded from the reference Wall-X checkout, not a second copied server implementation inside `pressb`; `sync_rl_inference.py` transfers the required reference serving files alongside the addon for a separate inference host.
+The learner's `online-rl` extra supports `websockets>=12,<16` and `msgpack>=1,<2`; the separate model service needs the `inference-server` extra with `websockets>=14,<16`. Keep the Isaac/learner environment's `websockets==12.0` pin required by `isaacsim-kernel==5.0.0`; install the newer server dependency only in the inference environment. See [the launch instructions](online_rl_fast.md#启动). The default server is loaded from the preserved Wall-X bundle; an explicit `--wall-x-repo` selects an external checkout. `sync_rl_inference.py` deploys the required PressB source, including bundled model code, for a separate inference host. Historical validation below used its recorded source revision.
 
 Validation on 2026-10-22: 209 targeted tests passed, including 21 real-socket WebSocket contracts and complete CPU rollout/learner loops. The actual step-10600 checkpoint was also served on two RTX 5090s through HTTP and WebSocket with identical preprocessing and batch size 2. For two saved observations, pooled features, state, base actions and explicit-noise decoded actions were exactly equal; the original Wall-X client also returned an exactly matching single-observation action. The client used the Isaac environment's WebSockets 12.0 against the isolated server's 15.0.1. Reports are in `outputs/wallx_interface_validation_20261022/gpu_report.json` and `pytest.log`. These checks validate the interface and sampled numerical equivalence; they do not measure new training throughput or task success rates.
 

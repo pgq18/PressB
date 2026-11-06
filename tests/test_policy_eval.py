@@ -6,8 +6,9 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
-from pressb.kinematics import PiperKinematics
-from pressb.policy_eval import InvalidPolicyAction, PolicyPoseController, validate_policy_reply
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.compat.elevator_policy import InvalidPolicyAction, validate_policy_reply
+from pressb.robots.piper.policy_control import PolicyPoseController
 
 ROOT = Path(__file__).resolve().parents[1]
 CFG = json.loads((ROOT / "configs/scene.json").read_text())

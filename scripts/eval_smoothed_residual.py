@@ -13,9 +13,9 @@ import threading
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from pressb.online_rl.action_postprocessing import MODES, SmoothedResidualOnNoiseRunner
-from pressb.online_rl.fast_runner import FastRunConfig
-from pressb.online_rl.rpc import RPCServer
+from pressb.compat.elevator_rl.action_postprocessing import MODES, SmoothedResidualOnNoiseRunner
+from pressb.compat.elevator_rl.fast_runner import FastRunConfig
+from pressb.runtime.rpc import RPCServer
 
 
 def main():

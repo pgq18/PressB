@@ -7,8 +7,8 @@ import numpy as np
 from PIL import Image
 import pytest
 
-from pressb.rl_nodes.contract import decode_image, encode_image
-from pressb.rl_nodes.image_transport import (
+from pressb.runtime.contract import decode_image, encode_image
+from pressb.runtime.image_transport import (
     encode_preprocessed_image, prepare_wire_payload, resize_for_transport,
     validate_image_preprocessing, validate_preprocessing_marker, walloss_resize_spec,
 )
@@ -30,7 +30,7 @@ def test_binary_png_removes_only_base64_without_decode(monkeypatch):
     original = deepcopy(value)
     def unexpected(*args, **kwargs):
         pytest.fail("Binary-only negotiation must not decode or re-encode PNG")
-    monkeypatch.setattr("pressb.rl_nodes.image_transport.decode_image", unexpected)
+    monkeypatch.setattr("pressb.runtime.image_transport.decode_image", unexpected)
     result = prepare_wire_payload("/encode", value, metadata(), image_transport="auto")
     image = result["observations"][0]["images"]["up"]
     assert image["encoding"] == "png_bytes"
@@ -142,9 +142,9 @@ def test_presized_forwarding_only_inspects_header_server_keeps_full_validation(m
     encoded["data"] = bytes(corrupt)
     def unexpected(*args, **kwargs):
         pytest.fail("Forwarding a producer-resized PNG must not fully decode it")
-    monkeypatch.setattr("pressb.rl_nodes.image_transport.decode_image", unexpected)
+    monkeypatch.setattr("pressb.runtime.image_transport.decode_image", unexpected)
     from test_rl_nodes_inference import Backend, observation
-    from pressb.rl_nodes.inference import InferenceService
+    from pressb.runtime.inference import InferenceService
     backend = Backend()
     service = InferenceService(backend, batch_size=1)
     service.metadata["image_preprocessing"] = walloss_resize_spec(256)
@@ -185,7 +185,7 @@ def test_producer_consumer_resize_mismatch_rejected_before_reset(tmp_path, consu
 
 def test_resize_contract_legacy_null_and_matching_specs():
     from test_rl_nodes_contract_simulation import metadata as contract_metadata
-    from pressb.rl_nodes.contract import negotiate
+    from pressb.runtime.contract import negotiate
     inference, simulation = contract_metadata("inference"), contract_metadata()
     prior = negotiate(inference, simulation, "dsrl")
     simulation["image_preprocessing"] = None

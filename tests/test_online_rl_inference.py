@@ -9,8 +9,10 @@ import pytest
 torch = pytest.importorskip("torch")
 from torch import nn
 
-from pressb.online_rl.inference import FrozenPiperBackend, InferenceApplication, flow_from_context
-from pressb.online_rl.protocol import encode_image, pose8_to_pose9
+from pressb.models.vlajepa_backend import FrozenPiperBackend, flow_from_context
+from pressb.compat.elevator_rl.inference import InferenceApplication
+from pressb.tasks.elevator.wire_protocol import encode_image
+from pressb.control.pose_protocol import pose8_to_pose9
 
 
 class TinyActionEncoder(nn.Module):
@@ -388,7 +390,7 @@ def test_bad_feature_encoding_is_rejected_before_any_encoder_or_release(backend)
 
 @pytest.mark.parametrize("relocated", [False, True])
 def test_loader_forwards_backbone_paths_without_rewriting_run_config(backend, monkeypatch, tmp_path, relocated):
-    import pressb.online_rl.inference as inference
+    import pressb.models.vlajepa_backend as inference
 
     repo = tmp_path / "VLA-JEPA"
     source = repo / "starVLA/inference/piper_policy.py"
@@ -414,3 +416,13 @@ def test_loader_forwards_backbone_paths_without_rewriting_run_config(backend, mo
                                       base_encoder=kwargs.get("base_encoder")))]
     assert loaded.feature_dim == 2048 and loaded.token_count == 32
     assert all(not parameter.requires_grad for parameter in loaded.model.parameters())
+
+
+def test_model_pose_fallback_uses_its_controller_gripper_contract(backend):
+    backend.policy.controller_gripper_width_m = .035
+    adapter = FrozenPiperBackend(backend.policy, state_preparer=prepare_state)
+    actions = np.array([[.2, .1, .4, 1., 0., 0., 0., 1., 0.]])
+    converted = adapter.pose_converter(actions)
+    assert converted[0, 7] == .035
+    np.testing.assert_array_equal(converted[0, :3], actions[0, :3])
+    np.testing.assert_array_equal(converted[0, 3:7], [1., 0., 0., 0.])

@@ -14,8 +14,8 @@ from pathlib import Path
 
 import numpy as np
 
-from pressb.action_postprocessing import JointActionPostprocessor
-from pressb.kinematics import PiperKinematics
+from pressb.control.joint_actions import JointActionPostprocessor
+from pressb.robots.piper.kinematics import PiperKinematics
 from pressb.runtime.contract import (encode_image, finite_array, fingerprint,
                                      validate_actions, validate_metadata)
 from .collision_policy import (
@@ -30,12 +30,12 @@ ROOT = Path(__file__).resolve().parents[4]
 STATE_NAMES = [f"joint{i}" for i in range(1, 7)] + ["gripper_width"]
 STATE_UNITS = ["rad"] * 6 + ["m"]
 SOURCE_FILES = (
-    "tasks/table_buttons/backend.py", "runtime/isaac.py", "runtime/scene.py", "runtime/workbench.py",
+    "tasks/table_buttons/backend.py", "robots/piper/isaac.py", "sensors/camera.py", "runtime/scene.py", "runtime/workbench.py",
     "tasks/table_buttons/task.py", "tasks/table_buttons/scene.py", "tasks/table_buttons/placement.py",
     "tasks/table_buttons/spacing.py", "tasks/table_buttons/camera_domain.py", "tasks/table_buttons/collision.py",
     "tasks/table_buttons/workspace.py", "tasks/table_buttons/motion.py", "tasks/table_buttons/motion_templates.py",
     "tasks/table_buttons/target_relative_motion.py", "tasks/table_buttons/collision_policy.py",
-    "tasks/table_buttons/collection.py", "wrist_camera.py", "kinematics.py", "action_postprocessing.py",
+    "tasks/table_buttons/collection.py", "robots/piper/wrist_camera.py", "robots/piper/kinematics.py", "control/joint_actions.py",
 )
 
 
@@ -419,7 +419,7 @@ class IsaacTableButtonsEnvironment:
         from isaacsim.core.api import World
         from isaacsim.core.prims import SingleRigidPrim
         from isaacsim.core.utils.stage import create_new_stage
-        from pressb.runtime.isaac import build_piper_runtime, close_piper_runtime
+        from pressb.robots.piper.isaac import build_piper_runtime, close_piper_runtime
         from pressb.runtime.workbench import build_tripod
         from pressb.tasks.table_buttons.scene import build_scene
         import omni.physx
@@ -497,7 +497,7 @@ class IsaacTableButtonsEnvironment:
         try:
             self.subscription = None
             if self.runtime is not None:
-                from pressb.runtime.isaac import close_piper_runtime
+                from pressb.robots.piper.isaac import close_piper_runtime
                 close_piper_runtime(self.runtime)
                 self.runtime = None
         finally:

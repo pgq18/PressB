@@ -15,10 +15,11 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from pressb.online_rl.fast_runner import FastOnlineRunner, FastRunConfig
-from pressb.online_rl.learner import SACLearner
-from pressb.online_rl.protocol import finite_array, pose9_to_pose8, residual_actions
-from pressb.online_rl.runner import write_json
+from pressb.compat.elevator_rl.fast_runner import FastOnlineRunner, FastRunConfig
+from pressb.runtime.learner import SACLearner
+from pressb.control.pose_protocol import finite_array, pose9_to_pose8
+from pressb.compat.elevator_rl.protocol import residual_actions
+from pressb.compat.elevator_rl.runner import write_json
 
 
 def file_sha256(path):
@@ -100,7 +101,7 @@ class CombinedEvaluationRunner(FastOnlineRunner):
                 raise ValueError("Noise action environment ordering changed")
             combined = residual_actions(action, residual, self.residual_learner.config.residual_scale)
             pose8 = (np.asarray(noise_row["actions_pose8"]) if not np.any(residual)
-                     else pose9_to_pose8(combined))
+                     else pose9_to_pose8(combined, gripper_width_m=.008))
             rows.append(dict(env_id=eid, actions_pose8=pose8.tolist()))
             item, encoded, _ = active[eid]
             self._append("policy_actions.jsonl", dict(

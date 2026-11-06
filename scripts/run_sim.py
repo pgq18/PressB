@@ -67,13 +67,13 @@ def run(app, args, cfg):
     from isaacsim.core.utils.stage import add_reference_to_stage
     from isaacsim.core.utils.types import ArticulationAction
     from isaacsim.sensors.camera import Camera
-    from pressb.kinematics import PiperKinematics
-    from pressb.planning import make_plan
-    from pressb.scene import build_scene, set_button_light
-    from pressb.recording import Recorder
-    from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
-    from pressb.fixed_camera import build_global_camera
-    from pressb.camera_recording import WristCameraRecorder
+    from pressb.robots.piper.kinematics import PiperKinematics
+    from pressb.tasks.elevator.planning import make_plan
+    from pressb.tasks.elevator.scene import build_scene, set_button_light
+    from pressb.tasks.elevator.recording import Recorder
+    from pressb.robots.piper.wrist_camera import apply_black_materials, attach_wrist_camera
+    from pressb.tasks.elevator.cameras import build_global_camera
+    from pressb.tasks.elevator.camera_recording import WristCameraRecorder
 
     kin = PiperKinematics(ROOT / cfg["robot_urdf"], tip_offset=cfg["tip_offset"])
     plan = make_plan(kin, cfg)
@@ -362,7 +362,7 @@ def run(app, args, cfg):
         Image.fromarray(home_rgba[..., :3].astype(np.uint8)).save(args.output / "home_side.png")
     # An actual RTX close-up exposes the reused bracket geometry and mounting
     # interface; the wrist camera cannot photograph its own assembly.
-    from pressb.scene import _camera
+    from pressb.tasks.elevator.scene import _camera
     wrist_matrix = UsdGeom.Xformable(link6).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
     mount_target = np.array(wrist_matrix.Transform(Gf.Vec3d(-.04, 0, .06)))
     mount_view_path = _camera(stage, "/World/WristAssemblyCamera",

@@ -17,7 +17,7 @@ def run(args):
     write_json(args.output, report)
     try:
         import torch
-        from pressb.rl_nodes.server import load_backend
+        from pressb.runtime.server import load_backend
         torch.cuda.set_device(torch.device(args.device))
         config = json.loads(args.config.read_text())
         spec = copy.deepcopy(config.get("backend", config))

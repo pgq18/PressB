@@ -12,7 +12,8 @@ import pytest
 pytest.importorskip("torch")
 
 from pressb.models import vlajepa, vlajepa_joint, walloss
-from pressb.online_rl import inference, inference_transport
+from pressb.models import vlajepa_backend as inference
+from pressb.compat.elevator_rl import inference_transport
 
 
 class SourceSelected(Exception):

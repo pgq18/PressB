@@ -14,11 +14,11 @@ from types import ModuleType, SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.action_postprocessing import JointActionPostprocessor
-from pressb.rl_nodes.pap import PAPParallelBackend, load_config, sample_reset, task_identity
-from pressb.rl_nodes.pap_worker import PAPEnvironment
+from pressb.control.joint_actions import JointActionPostprocessor
+from pressb.tasks.pap.backend import PAPParallelBackend, load_config, sample_reset, task_identity
+from pressb.tasks.pap.worker import PAPEnvironment
 from pressb.tasks.pap.task import PickPlaceOutcome
-from pressb.rl_nodes import pap
+from pressb.tasks.pap import backend as pap
 
 
 @pytest.fixture

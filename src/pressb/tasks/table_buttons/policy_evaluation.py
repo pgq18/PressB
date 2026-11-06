@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pressb.action_postprocessing import JointActionPostprocessor
+from pressb.control.joint_actions import JointActionPostprocessor
 from .collection import validate_raw_arrays
 from .task import COLORS, task_instruction
 from .collision_policy import (

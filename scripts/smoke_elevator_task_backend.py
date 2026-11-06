@@ -118,7 +118,7 @@ def save_images(rows, directory):
 
 def run(args, *, backend_factory=None):
     import numpy as np
-    from pressb.online_rl.protocol import pose8_to_pose9
+    from pressb.control.pose_protocol import pose8_to_pose9
     from pressb.runtime.simulation import SimulationService
 
     if args.output_dir is None:

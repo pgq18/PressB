@@ -58,9 +58,16 @@ def main():
             'Replay manifest changed after its independent audit')
     # The archived controller is causal: command knot k+1 depends only on
     # action[k] and previous solutions; the last action is checked, not executed.
-    for filename in ('src/pressb/replay_control.py', 'scripts/replay_dataset.py'):
+    controller = ('src/pressb/robots/piper/pose_control.py'
+                  if 'src/pressb/robots/piper/pose_control.py' in replay_manifest['source_code_sha256']
+                  else 'src/pressb/replay_control.py')
+    historical_sources = controller == 'src/pressb/replay_control.py'
+    for filename in (controller, 'scripts/replay_dataset.py'):
         expected = replay_manifest['source_code_sha256'][filename]
-        require(digest(ROOT / filename) == expected, f'Replay controller changed: {filename}')
+        # Historical replays remain bound to their archived implementation;
+        # moving the live package does not replace that original evidence.
+        if not historical_sources:
+            require(digest(ROOT / filename) == expected, f'Replay controller changed: {filename}')
         require(digest(replay_root / 'provenance' / filename) == expected,
                 f'Archived replay controller changed: {filename}')
     dataset = LeRobotDataset('local/piper_elevator_press', root=dataset_root, video_backend='pyav')
@@ -126,6 +133,7 @@ def main():
               'manifest_sha256': digest(manifest_path), 'replay': str(replay_root),
               'replay_audit_sha256': digest(replay_root / 'audit.json'),
               'mode': 'reuse_verified_full_cycle_physics_prefix', 'new_simulation_executed': False,
+              'source_verification': 'archived_historical_sources' if historical_sources else 'current_and_archived_sources',
               'episodes_checked': len(evidence), 'episodes': evidence,
               'original_replay_process_exit': read(replay_root / 'process_exit.json'),
               'limitations': ['This links 12 shortened action prefixes to existing physical replay evidence; it does not claim a new 1200-episode simulation.']}

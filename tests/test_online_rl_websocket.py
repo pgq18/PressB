@@ -21,13 +21,10 @@ pytest.importorskip("websockets.sync.client")
 pytest.importorskip("msgpack")
 pytest.importorskip("torch")
 
-from pressb.online_rl.inference import InferenceApplication
-from pressb.online_rl.inference_transport import (
-    InferenceClient,
-    InferencePolicyAdapter,
-    load_wallx_server,
-)
-from pressb.online_rl.rpc import RPCError, RPCServer
+from pressb.compat.elevator_rl.inference import InferenceApplication
+from pressb.runtime.inference_transport import InferenceClient
+from pressb.compat.elevator_rl.inference_transport import InferencePolicyAdapter, load_wallx_server
+from pressb.runtime.rpc import RPCError, RPCServer
 
 # Share the real, CPU-only encoder/flow implementation used by adapter tests.
 from test_online_rl_inference import backend, decode_request, encode_request, observation
@@ -38,7 +35,7 @@ from test_fast_online_rl_runner import (
     small_cpu_workload,
 )
 from test_online_rl_runner import TOKEN, serve
-from pressb.online_rl.fast_runner import FastOnlineRunner
+from pressb.compat.elevator_rl.fast_runner import FastOnlineRunner
 
 
 class RecordingProcessor:

@@ -51,7 +51,7 @@ def run(args):
     backend = None
     try:
         import torch
-        from pressb.rl_nodes.server import load_backend
+        from pressb.runtime.server import load_backend
         torch.cuda.set_device(torch.device(args.device))
         sources, files = load_observations([args.observation])
         observations = make_observations(sources, 128, True)

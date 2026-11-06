@@ -24,7 +24,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 # These helpers do not create a world or generate any scripted robot motion.
 from pressb.runtime.recording import Video, write
-from pressb.runtime.isaac import build_piper_runtime, close_piper_runtime, make_camera, set_intrinsics
+from pressb.robots.piper.isaac import build_piper_runtime, close_piper_runtime
+from pressb.sensors.camera import make_camera, set_intrinsics
 
 
 def now():
@@ -359,7 +360,7 @@ def main():
         smoothing['mode'] = args.smoothing
     if args.smoothing_alpha is not None:
         smoothing['alpha'] = args.smoothing_alpha
-    from pressb.action_postprocessing import JointActionPostprocessor
+    from pressb.control.joint_actions import JointActionPostprocessor
     JointActionPostprocessor(smoothing['mode'], smoothing['alpha'])
     timeout_s = float(defaults['timeout_s'])
     if timeout_s <= 0 or abs(timeout_s * 30 - round(timeout_s * 30)) > 1e-8:

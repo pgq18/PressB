@@ -8,7 +8,7 @@ from PIL import Image
 import pytest
 import torch
 
-from pressb.rl_nodes.walloss import WallOSSBackend, PIPER_NAMES, PIPER_UNITS, _configure_cuda_budget, _flow_prefix_option, _flow_prefix_mode
+from pressb.models.walloss import WallOSSBackend, PIPER_NAMES, PIPER_UNITS, _configure_cuda_budget, _flow_prefix_option, _flow_prefix_mode
 
 
 def png():
@@ -116,7 +116,7 @@ def test_invalid_dimensions_and_unknown_model_inputs_fail(backend):
 
 
 def test_wall_backend_through_generic_service(backend):
-    from pressb.rl_nodes.inference import InferenceService
+    from pressb.runtime.inference import InferenceService
     service = InferenceService(backend, batch_size=2)
     health = service.health()
     assert health["noise"]["shape"] == [32, 20]
@@ -134,7 +134,7 @@ def test_wall_backend_through_generic_service(backend):
 
 
 def test_native_batch_calls_follow_service_microbatch_size(backend):
-    from pressb.rl_nodes.inference import InferenceService
+    from pressb.runtime.inference import InferenceService
     service = InferenceService(backend, batch_size=2)
     observations = [observation() for _ in range(5)]
     for index, obs in enumerate(observations):
@@ -189,7 +189,7 @@ def test_invalid_later_row_fails_before_any_native_batch_call(backend):
 
 
 def test_invalid_native_batch_shape_does_not_commit_service_cache(backend):
-    from pressb.rl_nodes.inference import InferenceService
+    from pressb.runtime.inference import InferenceService
     service = InferenceService(backend, batch_size=2)
     backend.policy.decode_batch = lambda *args, **kwargs: {"action": np.zeros((1, 32, 7))}
     with pytest.raises(ValueError, match="invalid batched actions"):
@@ -244,7 +244,7 @@ def test_prefix_runtime_is_opt_in_and_separate_from_observation_cache(backend):
 
 
 def test_service_decodes_each_png_once_and_reuses_all_backend_preparation(backend, monkeypatch):
-    from pressb.rl_nodes import inference
+    from pressb.runtime import inference
     original_decode = inference.decode_image
     decoded = []
     prepared = []
@@ -260,7 +260,7 @@ def test_service_decodes_each_png_once_and_reuses_all_backend_preparation(backen
     monkeypatch.setattr(backend, "_prepare_observation", counted_prepare)
     def no_second_decode(value):
         pytest.fail("Validated image must be reused during backend preflight and encode")
-    monkeypatch.setattr("pressb.rl_nodes.walloss._image", no_second_decode)
+    monkeypatch.setattr("pressb.models.walloss._image", no_second_decode)
     service = inference.InferenceService(backend, batch_size=1, collect_timing=True)
     result = service.encode({"observations": [observation(), observation()], "seeds": [1, 2]})
     assert len(decoded) == 4  # two cameras for each observation, exactly once
@@ -272,7 +272,7 @@ def test_service_decodes_each_png_once_and_reuses_all_backend_preparation(backen
 
 
 def test_bad_last_binary_png_does_not_reach_any_gpu_batch_or_commit(backend):
-    from pressb.rl_nodes.inference import InferenceService
+    from pressb.runtime.inference import InferenceService
     service = InferenceService(backend, batch_size=1)
     bad = observation()
     bad["images"]["wrist"] = {"encoding": "png_bytes", "data": b"not a PNG"}
@@ -283,8 +283,8 @@ def test_bad_last_binary_png_does_not_reach_any_gpu_batch_or_commit(backend):
 
 
 def test_binary_preprocessed_pixels_preserve_noise_and_features(backend):
-    from pressb.rl_nodes.inference import InferenceService
-    from pressb.rl_nodes.image_transport import prepare_wire_payload, walloss_resize_spec
+    from pressb.runtime.inference import InferenceService
+    from pressb.runtime.image_transport import prepare_wire_payload, walloss_resize_spec
     backend.image_preprocessing = walloss_resize_spec(256)
     service = InferenceService(backend, batch_size=2)
     payload = {"observations": [observation(), observation()], "seeds": [1, 2], "include_base_actions": True}

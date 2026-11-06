@@ -6,9 +6,9 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.dataset_planning import ee_pose_base, make_episode_plan, sample_state_action, validate_episode_plan
-from pressb.kinematics import PiperKinematics
-from pressb.planning import make_plan
+from pressb.tasks.elevator.dataset_planning import ee_pose_base, make_episode_plan, sample_state_action, validate_episode_plan
+from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.tasks.elevator.planning import make_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 CFG = json.loads((ROOT / "configs/scene.json").read_text())

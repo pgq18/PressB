@@ -108,7 +108,7 @@ def video_probe(path):
 def render_episode(backend, episode, output):
     from PIL import Image
     from collect_dataset import VideoPipe, validate_encoded_video
-    from pressb.dataset_scene import set_light, set_panel_offset
+    from pressb.tasks.elevator.dataset_scene import set_light, set_panel_offset
 
     meta, method = episode["metadata"], episode["method"]
     reset, info = meta["reset_episode"], meta["info"]
@@ -283,7 +283,7 @@ def main(argv=None):
     signal.signal(signal.SIGINT, interrupted)
     try:
         from isaacsim import SimulationApp
-        from collect_dataset import DATASET_ANTI_ALIASING
+        from pressb.tasks.elevator.collection import DATASET_ANTI_ALIASING
         app = SimulationApp(dict(headless=True, create_new_stage=False, width=640, height=480,
             active_gpu=args.gpu, physics_gpu=args.gpu, multi_gpu=False, disable_viewport_updates=True,
             limit_cpu_threads=args.cpu_threads, renderer="RayTracedLighting", anti_aliasing=DATASET_ANTI_ALIASING,
@@ -292,7 +292,7 @@ def main(argv=None):
                 "--/log/async=false", "--/plugins/carb.tasking.plugin/threadCount=8",
                 "--/plugins/omni.tbb.globalcontrol/maxThreadCount=8", "--/persistent/physics/numThreads=4",
                 "--/validate/p2p/enabled=false", "--/validate/iommu/enabled=false"]))
-        from pressb.online_rl.fast_simulation import FastIsaacVectorBackend
+        from pressb.tasks.elevator.fast_simulation import FastIsaacVectorBackend
         backend = FastIsaacVectorBackend(app, project_root=ROOT, config=args.config.resolve(),
             snapshot=args.snapshot.resolve(), dataset=args.dataset.resolve(), output=args.output / "renderer",
             num_envs=1, max_seconds=15., smoothing_window=3, asset_bundle=args.asset_bundle.resolve(),

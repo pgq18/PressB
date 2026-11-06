@@ -92,7 +92,7 @@ def run(app, args, cfg, trajectory, policy_client=None):
     from pressb.tasks.pap.scene import build_scene
     from pressb.runtime.workbench import build_tripod
     from pressb.tasks.pap.task import PickPlaceOutcome
-    from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
+    from pressb.robots.piper.wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
     # Extra render samples never advance the physical trajectory or video time.
@@ -115,7 +115,7 @@ def run(app, args, cfg, trajectory, policy_client=None):
             if type(value) is not int or value not in (1, 2, 4, 8):
                 raise ValueError(f"rendering.{key} must be 1, 2, 4 or 8")
             renderer_settings.set_int(setting, value)
-    from pressb.kinematics import PiperKinematics
+    from pressb.robots.piper.kinematics import PiperKinematics
 
     kin = PiperKinematics(ROOT / cfg["robot_urdf"], tip_offset=.1358)
     for q in (trajectory["initial"][:6], *trajectory["commands"][:, :6]):
@@ -352,7 +352,7 @@ def run(app, args, cfg, trajectory, policy_client=None):
         policy, postprocessor = None, None
         if args.mode == "policy":
             from pressb.compat.wallx import WallXChunkPolicy
-            from pressb.action_postprocessing import JointActionPostprocessor
+            from pressb.control.joint_actions import JointActionPostprocessor
             if policy_client is None or fps != 30 or abs(dt-1/120) > 1e-9:
                 raise ValueError("Piper Wall-X evaluation requires a connected policy and 30 Hz control / 120 Hz physics")
             policy = WallXChunkPolicy(policy_client, kin, cfg, output,
@@ -592,7 +592,7 @@ def main():
         parser.error("Policy requires 1..32 executed actions per request and at least 1/30 s duration")
     cfg = json.loads(args.config.read_text())
     if args.mode == "policy":
-        from pressb.action_postprocessing import JointActionPostprocessor
+        from pressb.control.joint_actions import JointActionPostprocessor
         try:
             smoothing = cfg.get("policy_execution", {}).get("smoothing", {})
             if args.policy_smoothing is None:

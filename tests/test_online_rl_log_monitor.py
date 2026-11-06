@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from pressb.online_rl.log_monitor import LogConsistencyError, TrainingLogReader
+from pressb.compat.elevator_rl.log_monitor import LogConsistencyError, TrainingLogReader
 
 
 def episode(index):

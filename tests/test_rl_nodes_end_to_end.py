@@ -6,10 +6,10 @@ import numpy as np
 import pytest
 import torch
 
-from pressb.online_rl.rpc import RPCServer
-from pressb.rl_nodes.inference import InferenceService
-from pressb.rl_nodes.simulation import SimulationService
-from pressb.rl_nodes.trainer import GenericTrainer
+from pressb.runtime.rpc import RPCServer
+from pressb.runtime.inference import InferenceService
+from pressb.runtime.simulation import SimulationService
+from pressb.runtime.trainer import GenericTrainer
 
 
 def schemas(horizon, action_dim, noise_dim, kind):
