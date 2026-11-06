@@ -36,16 +36,16 @@ def run_episode(app, args, cfg, policy):
     policy_description = ('remote VLA-JEPA joint6 policy with fixed gripper'
                           if policy.model.get('native_action_dim') == 6
                           else 'remote VLA-JEPA joint7 policy')
-    from pressb.table_buttons.policy_evaluation import is_allowed_finger_closure
+    from pressb.tasks.table_buttons.policy_evaluation import is_allowed_finger_closure
     import numpy as np
     from PIL import Image
     from pxr import UsdGeom, UsdPhysics, PhysicsSchemaTools
     import omni.physx
     from isaacsim.core.prims import SingleRigidPrim
     from isaacsim.core.utils.types import ArticulationAction
-    from pressb.pick_place.scene import build_tripod
-    from pressb.table_buttons.scene import build_scene
-    from pressb.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
+    from pressb.runtime.workbench import build_tripod
+    from pressb.tasks.table_buttons.scene import build_scene
+    from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
 
     runtime = build_piper_runtime(cfg, build_scene, asset_root=ROOT, camera_hardware_builder=build_tripod)
     world = runtime.world
@@ -129,8 +129,8 @@ def run_episode(app, args, cfg, policy):
     report['button_pixels_up'] = {color: dict(xy=projected[i].tolist(), depth_m=float(depth[i])) for i,color in enumerate(COLORS)}
     report['neutral_travel_m'] = {color: float(scene['buttons'][color]['cap_rest_world'][2]-cap.get_world_pose()[0][2]) for color,cap in caps.items()}
 
-    from pressb.table_buttons.collection import measured_state
-    from pressb.table_buttons.policy_evaluation import (InvalidPolicyAction, JointPolicyCommands,
+    from pressb.tasks.table_buttons.collection import measured_state
+    from pressb.tasks.table_buttons.policy_evaluation import (InvalidPolicyAction, JointPolicyCommands,
         command_limits, to_policy_units, validate_execution_arrays, canonical_sha, strict_outcome)
     # The world and sensors above deliberately use the collector's exact setup.
     # Reset all contact history after its 24 physical settling ticks and renders.
@@ -348,7 +348,8 @@ def main():
     args = parser.parse_args()
     if args.max_new_episodes < 0 or args.record_video_first < 0 or args.request_timeout <= 0:
         parser.error('Invalid episode/video quota or request timeout')
-    from pressb.table_buttons.policy_evaluation import (HTTPJointPolicy, canonical_sha, file_sha, load_cell,
+    from pressb.compat.table_buttons_policy import HTTPJointPolicy
+    from pressb.tasks.table_buttons.policy_evaluation import (canonical_sha, file_sha, load_cell,
                                                        episode_config, summarize, collision_settings)
     plan, cell = load_cell(args.plan, args.cell)
     defaults = plan['defaults']
@@ -392,7 +393,7 @@ def main():
         # No layout planner or scripted motion is called by this evaluator.
         # Plans already contain independently checked frozen scene configs.
         if plan.get('evaluation_scope', {}).get('kind') in ('joint6_single_model', 'joint6_multitask_model'):
-            from pressb.table_buttons.policy_evaluation_joint6 import HTTPJoint6Policy
+            from pressb.compat.table_buttons_policy import HTTPJoint6Policy
             policy = HTTPJoint6Policy(endpoint, cell['model_id'], timeout=args.request_timeout,
                                       model_contract=cell['model_contract'])
         else:

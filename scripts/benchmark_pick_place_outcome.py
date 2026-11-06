@@ -19,7 +19,7 @@ import numpy as np
 import scipy
 from scipy.spatial.transform import Rotation
 
-from pressb.pick_place.task import PickPlaceOutcome, _half_extent, object_geometry, object_inside_box
+from pressb.tasks.pap.task import PickPlaceOutcome, _half_extent, object_geometry, object_inside_box
 
 
 class ReferencePickPlaceOutcome:
@@ -101,7 +101,7 @@ def benchmark(envs=64, ticks=128, repeats=5, seed=42):
             exact_matching_outputs=len(actual), seconds=samples, median_seconds=medians,
             speedup=medians["reference"]/medians["optimized"],
             saved_seconds_per_chunk=medians["reference"]-medians["optimized"]))
-    source = Path(__file__).resolve().parents[1] / "src/pressb/pick_place/task.py"
+    source = Path(__file__).resolve().parents[1] / "src/pressb/tasks/pap/task.py"
     return dict(scope="CPU outcome calculation only; not end-to-end training throughput",
                 envs=envs, ticks=ticks, repeats=repeats, seed=seed, measurements=rows,
                 runtime=dict(python=platform.python_version(), numpy=np.__version__, scipy=scipy.__version__,

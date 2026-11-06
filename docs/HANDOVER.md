@@ -1,5 +1,15 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-06 PAP／桌面按键任务目录归并与完整回归
+
+- 用户要求归并 `src/pressb/pick_place`、`src/pressb/table_buttons` 并测试。PAP 场景、物理结果、采样／统计已归入 `tasks/pap`；桌面按键场景、布局、运动模板、碰撞、采集和评估已归入 `tasks/table_buttons`。原两个目录的 20 个文件仅保留说明或模块别名，不再有函数／类实现；旧导入、monkeypatch 和历史 pickle 类路径仍兼容。
+- 共用 USD 几何／材质在 `runtime/scene.py`，桌面／房间／夹具／灯光／三脚架在 `runtime/workbench.py`。桌面按键场景不再依赖 PAP 场景。历史 Wall-X WebSocket 和桌面按键 HTTP 客户端移至 `compat`；现代任务后端不加载它们。PAP 从观测加载初始姿态独立为 `tasks/pap/initialization.py`。
+- 采集／评估脚本已改为规范导入；采集源码归档和任务 source fingerprint 绑定真实实现及共享依赖。数据 schema、动作单位、相机、随机化、成功判定和轨迹时序不变。内置模型及监督训练源码未修改。
+- 主环境 2,060 项通过，18 个依赖跳过在对应环境补齐：USD／碰撞 73、LeRobot 1、VLA flow 3，合计 **2,137 项独立测试通过**。与上一提交比较 17 种场景／三脚架配置，完整 USD 文本及元信息逐字一致。安装包验证、18 组旧／新别名、5 个实验配置与 14 个脚本入口通过。
+- Isaac 实测：PAP 专家抓放 2/2，桌面按键远中近×红黄蓝 9/9、误触／超时／请求幂等／joint7 夹爪开闭通过，电梯专家重放 2/2。实际内置 Wall 两环境完成基础评估、DSRL40→恢复48、固定 DSRL 后残差40、评估和2个完整episode采集；64环境完成原生batch64、192 transitions／39 updates、单环境重置隔离及检查点验证。均是功能回归，不是学习效果或吞吐评测；服务已退出。
+- 原暂停训练仍是 **16,704 transitions**，没有恢复。最新兼容派生权重及已校验、未启动的恢复配置在 `outputs/task_consolidation_20261106/checkpoint_migration/`。优先使用此处 `resume_experiment.json`；前两轮迁移配置仅对应历史源码身份。仅更新仿真源码身份，模型／优化器／回放／RNG 精确保持；原始和先前派生权重均未修改，普通检查点校验没有放宽。
+- 完整证据：`outputs/task_consolidation_20261106/`；便携摘要：`docs/results/task_consolidation_20261106.json`。Isaac fast shutdown 的部分原有报告在 `operations_status=passed` 后停留 `status=closing`，另已核对进程退出码0；桌面验证日志保留了按既有环境配置补齐 EULA 变量后重跑的记录，以及此前已有的 Warp 启动诊断。
+
 ## 2026-11-06 模型推理与监督训练代码内化，统一提交版本
 
 - 用户在要求整理 commit/push 后追加“将 wall-x 和 vla-jepa 中框架需要的推理和训练代码内化”。默认推理现在使用 `src/pressb/model_sources/walloss` 与 `vlajepa`，不依赖原独立源码克隆；保留显式 `repo/vla_repo` 旧源覆盖。旧克隆未删除。模型权重、数据集、基础模型文件、Conda 依赖和 CUDA toolkit 仍是外部输入。

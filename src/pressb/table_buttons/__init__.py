@@ -1,1 +1,1 @@
-"""Independent PiPER language-conditioned tabletop button task."""
+"""Legacy import paths; task implementations live in pressb.tasks.table_buttons."""

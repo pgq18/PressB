@@ -16,8 +16,8 @@ import numpy as np
 
 WORKSPACE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKSPACE / "src"))
-from pressb.pick_place.task import PickPlaceOutcome
-from pressb.pick_place.wallx import unpack
+from pressb.tasks.pap.task import PickPlaceOutcome
+from pressb.compat.wallx import unpack
 
 
 def read(path):

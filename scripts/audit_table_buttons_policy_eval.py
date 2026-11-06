@@ -24,8 +24,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 from audit_table_buttons_dataset import arm_limits, audit_arrays, audit_video, close, require
-from pressb.table_buttons.spacing import resolve_spacing
-from pressb.table_buttons.task import button_in_camera
+from pressb.tasks.table_buttons.spacing import resolve_spacing
+from pressb.tasks.table_buttons.task import button_in_camera
 
 COLORS = ("red", "yellow", "blue")
 PROFILES = ("near", "medium", "far")

@@ -18,23 +18,24 @@ from pressb.action_postprocessing import JointActionPostprocessor
 from pressb.kinematics import PiperKinematics
 from pressb.runtime.contract import (encode_image, finite_array, fingerprint,
                                      validate_actions, validate_metadata)
-from pressb.table_buttons.policy_evaluation import (
+from .collision_policy import (
     DUAL_COLLISION_POLICY, STRICT_COLLISION_POLICY, collision_settings,
     is_allowed_finger_closure, strict_outcome,
 )
-from pressb.table_buttons.spacing import SPACING_PROFILES, resolve_spacing
-from pressb.table_buttons.task import COLORS, TableButtonOutcome, button_in_camera, task_instruction
+from pressb.tasks.table_buttons.spacing import SPACING_PROFILES, resolve_spacing
+from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome, button_in_camera, task_instruction
 
 
 ROOT = Path(__file__).resolve().parents[4]
 STATE_NAMES = [f"joint{i}" for i in range(1, 7)] + ["gripper_width"]
 STATE_UNITS = ["rad"] * 6 + ["m"]
 SOURCE_FILES = (
-    "tasks/table_buttons/backend.py", "runtime/isaac.py", "table_buttons/task.py",
-    "table_buttons/scene.py", "table_buttons/placement.py", "table_buttons/spacing.py",
-    "table_buttons/camera_domain.py", "table_buttons/collision.py", "table_buttons/workspace.py",
-    "table_buttons/motion.py", "table_buttons/motion_templates.py", "table_buttons/policy_evaluation.py",
-    "pick_place/scene.py", "wrist_camera.py", "kinematics.py", "action_postprocessing.py",
+    "tasks/table_buttons/backend.py", "runtime/isaac.py", "runtime/scene.py", "runtime/workbench.py",
+    "tasks/table_buttons/task.py", "tasks/table_buttons/scene.py", "tasks/table_buttons/placement.py",
+    "tasks/table_buttons/spacing.py", "tasks/table_buttons/camera_domain.py", "tasks/table_buttons/collision.py",
+    "tasks/table_buttons/workspace.py", "tasks/table_buttons/motion.py", "tasks/table_buttons/motion_templates.py",
+    "tasks/table_buttons/target_relative_motion.py", "tasks/table_buttons/collision_policy.py",
+    "tasks/table_buttons/collection.py", "wrist_camera.py", "kinematics.py", "action_postprocessing.py",
 )
 
 
@@ -227,7 +228,7 @@ class TableButtonsBackend:
     def _sample(self, profile, seed):
         if self._layout_sampler is not None:
             return self._layout_sampler(profile, seed)
-        from pressb.table_buttons.placement import ReachablePlacement
+        from pressb.tasks.table_buttons.placement import ReachablePlacement
         if profile not in self._placements:
             cfg = deepcopy(self.config["scene"])
             cfg["position_sampling"]["spacing_profile"] = profile
@@ -419,8 +420,8 @@ class IsaacTableButtonsEnvironment:
         from isaacsim.core.prims import SingleRigidPrim
         from isaacsim.core.utils.stage import create_new_stage
         from pressb.runtime.isaac import build_piper_runtime, close_piper_runtime
-        from pressb.pick_place.scene import build_tripod
-        from pressb.table_buttons.scene import build_scene
+        from pressb.runtime.workbench import build_tripod
+        from pressb.tasks.table_buttons.scene import build_scene
         import omni.physx
         if self.runtime is not None:
             self.subscription = None
@@ -471,7 +472,7 @@ class IsaacTableButtonsEnvironment:
                     self.blocking_contacts.append({"actors": actors, "force_n": force})
 
     def state(self):
-        from pressb.table_buttons.collection import measured_state
+        from pressb.tasks.table_buttons.collection import measured_state
         return measured_state(self.runtime.robot.get_joint_positions()[self.runtime.indices])
 
     def images(self):

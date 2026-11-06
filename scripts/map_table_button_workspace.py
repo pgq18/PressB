@@ -24,7 +24,7 @@ def main():
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
     from pressb.kinematics import PiperKinematics
-    from pressb.table_buttons.placement import ReachablePlacement
+    from pressb.tasks.table_buttons.placement import ReachablePlacement
     placement = ReachablePlacement(PiperKinematics(ROOT/cfg['robot_urdf'], tip_offset=.1358), cfg)
     start = time.monotonic()
     grid = placement.grid(args.step)
@@ -70,7 +70,7 @@ def draw(cfg, pts, visible, feasible, step, report, image_path, output):
     from matplotlib.font_manager import FontProperties, fontManager
     from matplotlib.patches import Polygon, Patch
     from PIL import Image
-    from pressb.table_buttons.task import project_base_points
+    from pressb.tasks.table_buttons.task import project_base_points
 
     font = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
     if Path(font).exists():

@@ -25,7 +25,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.table_buttons.task import COLORS, task_instruction
+from pressb.tasks.table_buttons.task import COLORS, task_instruction
 
 FPS = 30
 LEROBOT_VERSION = "0.6.1"

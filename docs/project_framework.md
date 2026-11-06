@@ -19,12 +19,13 @@ src/pressb/
     simulation.py          # reset/step identities, ordering, validation, retries
     trainer.py, learner.py  # Shared rollout, replay, SAC, evaluation, checkpoints
     physics.py, isaac.py    # PhysX tensors, PiPER/camera assembly
+    scene.py, workbench.py # Shared USD primitives, materials, workbench and tripod
     recording.py           # Original-time camera video utilities
     trajectory.py          # Validated chunk transition recorder
   tasks/
     base.py                # Structural TaskPlugin interface
-    pap/                   # Vector/process simulation, reset, reward, recording
-    table_buttons/         # Physical cap/contact/dwell task and randomization
+    pap/                   # Scene, outcomes, sampling, vector/process simulation and recording
+    table_buttons/         # Scene, outcomes, placement, motion, expert collection and evaluation
     elevator/              # Native simulator and legacy HTTP compatibility
   models/
     base.py                # Structural ModelAdapter interface
@@ -35,17 +36,30 @@ src/pressb/
     walloss/               # Wall-X modules, native training and CUDA sources
     vlajepa/               # Shared model plus pose/joint and multi-task trainers
   training/                # Common supervised-training launcher
+  compat/                  # Historical Wall-X and table-button policy clients
   experiments/
     config.py, cli.py      # Inheritance, resolved configs and common commands
   registry.py              # Lazy built-in plugin names; no weights loaded
 ```
 
-The older `pick_place`, `table_buttons` and elevator scene/planner modules remain
-reused domain libraries. A task-specific scene, expert planner or success test
-is expected; it does not require another training framework. Historical scripts
-and `rl_nodes` imports remain compatibility entry points. The old table-button
-collector and evaluator now use shared robot/camera/video assembly, while
-preserving their original frame-aligned demonstrations and LeRobot exporter.
+PAP and table-button domain implementations now live entirely under their task
+packages: scene props, measured success rules, placement, expert motion and
+evaluation helpers. Both scenes use `runtime.scene` and `runtime.workbench` for
+the shared table, room, mounting hardware, materials, lighting and camera tripod.
+The table-button scene does not import the PAP scene. A task-specific planner or
+success test is part of the plugin, not another training framework.
+
+The older `pick_place` and `table_buttons` packages contain only compatibility
+aliases. Old and canonical module imports share the same module objects so old
+imports, monkeypatches and saved class paths continue to resolve. Historical
+Wall-X WebSocket and table-button HTTP clients live in `compat`; normal task
+backends do not depend on them. PAP observation-only initialization is separate
+from the historical client. Existing collection/evaluation scripts now import
+canonical task and shared-runtime modules, while retaining their original
+frame alignment, dataset schema strings and LeRobot export commands. Collection
+source archives and task fingerprints cover the moved implementations and shared
+dependencies, not just forwarding files. Elevator scene/planner libraries and
+`rl_nodes` aliases retain their earlier compatibility roles.
 
 ## One configuration, three processes
 
@@ -195,9 +209,19 @@ writing to a new output directory. The original checkpoints remain unchanged.
 
 The subsequent model-source integration creates another verified set at
 `outputs/model_internalization_20261106/migrated_checkpoints/`. Its
-`resume_experiment.json` is the current prepared configuration for the bundled
-model default; the earlier refactor-only configuration records the earlier
-source identity. Neither configuration has been launched automatically.
+`resume_experiment.json` records the prepared configuration at that stage; the
+earlier refactor-only configuration records its earlier source identity. Neither
+configuration has been launched automatically.
+
+After the task-directory consolidation, the current prepared resume configuration
+is `outputs/task_consolidation_20261106/checkpoint_migration/resume_experiment.json`.
+Its derived DSRL (100,022 transitions) and residual (16,704 transitions) checkpoints
+bind the real, newly verified PAP64 service identity. Only the simulation source
+revision changes; model, task semantics, learning settings, optimizer, replay and
+RNG values are preserved. Original and earlier derived files remain untouched.
+Strict CPU loading accepts the new copies and rejects the stale identities.
+The resume configuration continues toward the original 200k total budget in a
+new output directory; validation does not start or resume training.
 
 ## Verification
 
@@ -212,3 +236,16 @@ and recording, including a short PAP64 / Wall-OSS native batch64 run.
 The later [model integration report](results/model_internalization_20261106.json)
 records 2,106 main-project tests across the required environments, additional
 bundled-source tests, installed-wheel checks and real-weight comparisons.
+
+The [task consolidation report](results/task_consolidation_20261106.json) records
+2,137 main-project tests across the required environments and 17 exact comparisons
+of complete USD scene serialization and returned metadata against the prior
+implementation. Fresh physical tests cover PAP grasp/place (2/2), tabletop-button
+expert replay (9/9 across all spacing/color combinations), wrong contacts,
+timeouts, gripper motion, and elevator replay (2/2). New builtin-Wall tests cover
+the complete two-environment train/resume/eval/collect workflow and native batch64
+with 64 distinct environments and indexed reset isolation. An isolated installed
+wheel resolves old and canonical imports, all plugins and model sources; five
+experiment configurations and 14 modified script entrypoints also pass checks.
+These are regression and short functional runs, not a new long training campaign
+or learned-policy success-rate comparison. Formal PAP training remains paused.

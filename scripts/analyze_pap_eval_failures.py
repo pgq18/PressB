@@ -17,7 +17,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from pressb.pick_place.task import object_geometry, object_inside_box
+from pressb.tasks.pap.task import object_geometry, object_inside_box
 
 
 def write(path, value):

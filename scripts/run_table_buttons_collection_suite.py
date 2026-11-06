@@ -77,9 +77,13 @@ def frozen_paths():
     scripts = ["collect_table_buttons.py", "export_table_buttons.py", "audit_table_buttons_dataset.py",
                "run_table_buttons_collection_suite.py"]
     paths = [ROOT / "scripts" / name for name in scripts]
-    paths += [ROOT / "src/pressb" / name for name in ("__init__.py", "kinematics.py", "wrist_camera.py")]
-    paths += sorted((ROOT / "src/pressb/table_buttons").glob("*.py"))
-    paths += [ROOT / "src/pressb/pick_place" / name for name in ("__init__.py", "scene.py")]
+    paths += [ROOT / "src/pressb" / name for name in (
+        "__init__.py", "kinematics.py", "wrist_camera.py", "action_postprocessing.py",
+        "tasks/__init__.py", "runtime/__init__.py", "runtime/isaac.py",
+        "runtime/physics.py", "runtime/recording.py", "runtime/scene.py", "runtime/workbench.py",
+    )]
+    # Archive the real implementations, rather than only historical import aliases.
+    paths += sorted((ROOT / "src/pressb/tasks/table_buttons").glob("*.py"))
     return sorted(set(path for path in paths if path.is_file()))
 
 

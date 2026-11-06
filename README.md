@@ -347,15 +347,20 @@ A clone without a scene snapshot skips USD integration tests that require one; e
 | Directory | Contents |
 |---|---|
 | `src/pressb/` | Scene, robot kinematics, planning, cameras, data semantics, and policy control |
-| `src/pressb/online_rl/` | Three-node protocol, batched simulation/inference, SAC, frozen-policy composition, and smoothing evaluation |
-| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | Independent task geometry, physical outcomes, policy execution/evaluation, tabletop sampling and motion templates |
+| `src/pressb/runtime/` | Common services, rollout/SAC/replay, checkpoints, robot/camera assembly and shared USD workbench components |
+| `src/pressb/tasks/` | Task plugins and their scene, outcomes, sampling, planning, collection and evaluation implementations |
+| `src/pressb/models/`, `src/pressb/model_sources/` | Model adapters and bundled Wall-OSS/VLA-JEPA inference, data and supervised-training sources |
+| `src/pressb/experiments/`, `src/pressb/training/` | Experiment commands/configuration and supervised-training launcher |
+| `src/pressb/compat/` | Historical Wall-X WebSocket and table-button HTTP policy clients |
+| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | Thin compatibility aliases to canonical task implementations; no second copy of task logic |
+| `src/pressb/online_rl/`, `src/pressb/rl_nodes/` | Historical entrypoints and remaining elevator helpers; generic modules forward to the common runtime |
 | `scripts/` | Entry points for setup, asset preparation, collection, conversion, replay, evaluation, and audits |
 | `configs/` | Configurations for fixed scenes, randomized positions, and 1,200-episode stratified collection |
 | `tests/` | CPU unit tests and optional USD scene integration tests |
 | `assets/*.json` | Pinned asset sources, checksums, and installation alignment metadata |
 | `docs/` | Current workflow guides and historical experiment records with their scope identified |
 | `docs/results/`, `docs/media/` | Small result summaries and selected compressed videos distributed with the repository |
-| `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | Separately cloned dependency/reference repositories; versions in `repos.lock.json` (ignored here) |
+| `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | Optional historical/reference clones; default model inference and training use bundled sources (ignored here) |
 | `vendor/`, `assets/generated/`, `assets/isaac/` | Locally downloaded or generated dependencies and assets (ignored) |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | Local data, results, environments, and caches (ignored) |
 

@@ -28,7 +28,9 @@ def _build(config, *, initialize=True):
     from isaacsim.core.prims import SingleArticulation, SingleRigidPrim
     from isaacsim.core.utils.stage import add_reference_to_stage
     from isaacsim.sensors.camera import Camera
-    from pressb.pick_place.scene import build_scene, build_tripod, _bind, _cube, _material, _material_settings
+    from pressb.tasks.pap.scene import build_scene
+    from pressb.runtime.workbench import build_tripod
+    from pressb.runtime.scene import _bind, _cube, _material, _material_settings
     from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
@@ -181,7 +183,7 @@ class PAPEnvironment:
     """A single episode state machine; no simulator import until construction."""
     def __init__(self, config):
         from pressb.action_postprocessing import JointActionPostprocessor
-        from pressb.pick_place.wallx import load_policy_initial
+        from pressb.tasks.pap.initialization import load_policy_initial
         from pressb.kinematics import PiperKinematics
         from pxr import PhysicsSchemaTools
         import omni.physx
@@ -250,7 +252,7 @@ class PAPEnvironment:
     def reset(self, spec):
         from pxr import Gf, UsdGeom, UsdShade
         from isaacsim.core.utils.types import ArticulationAction
-        from pressb.pick_place.task import PickPlaceOutcome
+        from pressb.tasks.pap.task import PickPlaceOutcome
         rt = self.runtime
         self.ready = False
         self.active_object = spec["object_index"]

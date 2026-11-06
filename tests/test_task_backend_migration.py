@@ -72,6 +72,8 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
 @pytest.mark.parametrize("changed_source", [
     "tasks/pap/backend.py", "tasks/pap/worker.py", "tasks/pap/vector.py",
     "runtime/physics.py", "runtime/image_transport.py", "runtime/isaac.py", "rl_nodes/pap_vector.py",
+    "runtime/scene.py", "runtime/workbench.py", "tasks/pap/scene.py",
+    "tasks/pap/task.py", "tasks/pap/evaluation.py", "tasks/pap/initialization.py",
 ])
 def test_source_revision_detects_implementation_and_shared_dependency_changes(
         cpu_vector_config, monkeypatch, changed_source):

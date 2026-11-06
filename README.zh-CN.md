@@ -343,15 +343,20 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 | 目录 | 内容 |
 |---|---|
 | `src/pressb/` | 场景、机器人运动学、规划、相机、数据语义与策略控制 |
-| `src/pressb/online_rl/` | 三节点协议、批量仿真／推理、SAC、冻结策略组合与平滑评估 |
-| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | 独立任务几何、物理结果、策略执行／评估、桌面按键采样与运动模板 |
+| `src/pressb/runtime/` | 公共服务、采样／SAC／回放、检查点、机器人／相机组装及共享 USD 桌面组件 |
+| `src/pressb/tasks/` | 任务插件及其场景、结果判定、采样、规划、采集和评估实现 |
+| `src/pressb/models/`, `src/pressb/model_sources/` | 模型适配器和内置 Wall-OSS／VLA-JEPA 推理、数据读取及监督训练源码 |
+| `src/pressb/experiments/`, `src/pressb/training/` | 实验命令／配置与监督训练入口 |
+| `src/pressb/compat/` | 历史 Wall-X WebSocket 和桌面按键 HTTP 策略客户端 |
+| `src/pressb/pick_place/`, `src/pressb/table_buttons/` | 指向规范任务实现的薄兼容别名，不再保留第二份任务逻辑 |
+| `src/pressb/online_rl/`, `src/pressb/rl_nodes/` | 历史入口与保留的电梯辅助代码，通用模块转发至公共运行核心 |
 | `scripts/` | 安装、资产准备、采集、转换、回放、评估和审计入口 |
 | `configs/` | 固定场景、随机位置和 1,200 条分层采集配置 |
 | `tests/` | CPU 单元测试与可选 USD 场景集成测试 |
 | `assets/*.json` | 固定资产来源、校验和与安装配准元数据 |
 | `docs/` | 当前流程说明及注明范围的历史实验记录 |
 | `docs/results/`, `docs/media/` | 随仓库发布的小型结果摘要和精选压缩视频 |
-| `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | 独立克隆的依赖／参考仓库，版本见 `repos.lock.json`（本仓库忽略） |
+| `src/VLA-JEPA/`, `src/ZPRL/`, `ref/wall-x/` | 可选历史／参考仓库，默认模型推理与训练使用内置源码（本仓库忽略） |
 | `vendor/`, `assets/generated/`, `assets/isaac/` | 本地下载或生成的依赖与素材（忽略） |
 | `datasets/`, `outputs/`, `logs/`, `.conda/`, `.cache/` | 本地数据、结果、环境与缓存（忽略） |
 

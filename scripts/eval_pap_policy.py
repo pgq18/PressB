@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/"src"))
-from pressb.pick_place.evaluation import effective_config, make_plan, plot_plan, write_json, write_summary
+from pressb.tasks.pap.evaluation import effective_config, make_plan, plot_plan, write_json, write_summary
 
 
 def main():

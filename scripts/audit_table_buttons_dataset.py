@@ -22,8 +22,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from pressb.table_buttons.spacing import resolve_spacing
-from pressb.table_buttons.task import COLORS, TableButtonOutcome, button_in_camera, task_instruction
+from pressb.tasks.table_buttons.spacing import resolve_spacing
+from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome, button_in_camera, task_instruction
 
 PROFILES = ("near", "medium", "far")
 GROUPS = tuple(f"{profile}_{color}" for profile in PROFILES for color in COLORS)

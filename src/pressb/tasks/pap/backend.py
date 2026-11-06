@@ -25,8 +25,8 @@ import numpy as np
 
 from pressb.action_postprocessing import JointActionPostprocessor
 from pressb.kinematics import PiperKinematics
-from pressb.pick_place.evaluation import COLORS, placement_region, sample_polygon
-from pressb.pick_place.task import object_geometry
+from pressb.tasks.pap.evaluation import COLORS, placement_region, sample_polygon
+from pressb.tasks.pap.task import object_geometry
 
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -36,9 +36,10 @@ _MAX_MESSAGE = 64 * 1024 * 1024
 _TASK_SOURCE_FILES = (
     "tasks/pap/backend.py", "tasks/pap/worker.py",
     "rl_nodes/pap.py", "rl_nodes/pap_worker.py",
+    "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
+    "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
     "pick_place/task.py", "pick_place/scene.py", "pick_place/evaluation.py",
-    "pick_place/wallx.py", "wrist_camera.py", "action_postprocessing.py", "kinematics.py",
-    "runtime/isaac.py",
+    "wrist_camera.py", "action_postprocessing.py", "kinematics.py", "runtime/isaac.py",
 )
 
 
@@ -196,7 +197,7 @@ def load_config(config):
 
 def task_identity(config):
     """Fingerprint transition semantics without process placement/log paths."""
-    from pressb.pick_place.wallx import load_policy_initial
+    from pressb.tasks.pap.initialization import load_policy_initial
     scene = copy.deepcopy(config["scene"])
     assets = {}
     for key in ("robot_urdf", "robot_usd"):

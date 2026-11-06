@@ -171,7 +171,7 @@ class PAPVectorBackend:
         from pressb.dataset_scene import build_tiled_rgb
         from pressb.kinematics import PiperKinematics
         from pressb.runtime.physics import TensorArms, TensorRigidBodies, PhysXErrorGuard
-        from pressb.pick_place.wallx import load_policy_initial
+        from pressb.tasks.pap.initialization import load_policy_initial
         from .worker import _build
 
         template = _build(cfg, initialize=False)
@@ -471,7 +471,7 @@ class PAPVectorBackend:
 
     def _reset(self, env_ids, specs, *, capture_images=True):
         from pxr import Gf, UsdShade
-        from pressb.pick_place.task import PickPlaceOutcome
+        from pressb.tasks.pap.task import PickPlaceOutcome
         start = time.perf_counter()
         peers = [i for i in range(self.num_envs) if i not in env_ids]
         before = self.snapshot(peers) if peers else None

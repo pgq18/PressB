@@ -237,7 +237,9 @@ def test_camera_calibration_and_source_identity_are_bound_to_run():
     node = backend()
     assert "wrist_camera" not in node.config["scene"]  # Elevator registration remains the default.
     assert "runtime/isaac.py" in node.identity["source_identity"]
-    assert "table_buttons/task.py" in node.identity["source_identity"]
+    for path in ("tasks/table_buttons/task.py", "tasks/table_buttons/scene.py",
+                 "tasks/table_buttons/collision_policy.py", "runtime/scene.py", "runtime/workbench.py"):
+        assert path in node.identity["source_identity"]
     changed = backend(scene_overrides={"up_camera": {"fx": 600.}})
     assert changed.identity["task_config_sha256"] != node.identity["task_config_sha256"]
 

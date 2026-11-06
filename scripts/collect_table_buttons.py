@@ -27,7 +27,7 @@ sys.path.insert(0, str(ROOT/'src'))
 from pressb.runtime.recording import Video, write
 from pressb.runtime.isaac import build_piper_runtime, close_piper_runtime, make_camera, set_intrinsics
 
-from pressb.table_buttons.execution import (
+from pressb.tasks.table_buttons.execution import (
     contact_limited_command, in_press_window, press_phase_times,
 )
 
@@ -44,9 +44,9 @@ def collect_episode(app, args, cfg, path_times, path_commands, plan_report):
     import omni.physx
     from isaacsim.core.prims import SingleRigidPrim
     from isaacsim.core.utils.types import ArticulationAction
-    from pressb.pick_place.scene import build_tripod
-    from pressb.table_buttons.scene import build_scene
-    from pressb.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
+    from pressb.runtime.workbench import build_tripod
+    from pressb.tasks.table_buttons.scene import build_scene
+    from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
 
     phase_times = press_phase_times(plan_report)
     runtime = build_piper_runtime(cfg, build_scene, asset_root=ROOT, camera_hardware_builder=build_tripod)
@@ -125,7 +125,7 @@ def collect_episode(app, args, cfg, path_times, path_commands, plan_report):
     report['button_pixels_up'] = {color: dict(xy=projected[i].tolist(), depth_m=float(depth[i])) for i,color in enumerate(COLORS)}
     report['neutral_travel_m'] = {color: float(scene['buttons'][color]['cap_rest_world'][2]-cap.get_world_pose()[0][2]) for color,cap in caps.items()}
 
-    from pressb.table_buttons.collection import measured_state, validate_raw_arrays
+    from pressb.tasks.table_buttons.collection import measured_state, validate_raw_arrays
     # Static settling and rendering are excluded from the demonstration timeline.
     contact_events.clear()
     unexpected_contacts.clear()
@@ -318,7 +318,7 @@ def main():
     status_path=args.output/'status.json'
     write(status_path,status)
     from pressb.kinematics import PiperKinematics
-    from pressb.table_buttons.collection import LayoutPlanner
+    from pressb.tasks.table_buttons.collection import LayoutPlanner
     planner=LayoutPlanner(PiperKinematics(ROOT/cfg['robot_urdf'],tip_offset=.1358),cfg)
     # Import hpp-fcl/Assimp before Kit loads its own Assimp build. Reversing
     # this order resolves hpp-fcl against an incompatible shared library.

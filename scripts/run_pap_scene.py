@@ -89,8 +89,9 @@ def run(app, args, cfg, trajectory, policy_client=None):
     from isaacsim.core.utils.stage import add_reference_to_stage
     from isaacsim.core.utils.types import ArticulationAction
     from isaacsim.sensors.camera import Camera
-    from pressb.pick_place.scene import build_scene, build_tripod
-    from pressb.pick_place.task import PickPlaceOutcome
+    from pressb.tasks.pap.scene import build_scene
+    from pressb.runtime.workbench import build_tripod
+    from pressb.tasks.pap.task import PickPlaceOutcome
     from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
@@ -350,7 +351,7 @@ def run(app, args, cfg, trajectory, policy_client=None):
         times, commands = trajectory["times"], trajectory["commands"]
         policy, postprocessor = None, None
         if args.mode == "policy":
-            from pressb.pick_place.wallx import WallXChunkPolicy
+            from pressb.compat.wallx import WallXChunkPolicy
             from pressb.action_postprocessing import JointActionPostprocessor
             if policy_client is None or fps != 30 or abs(dt-1/120) > 1e-9:
                 raise ValueError("Piper Wall-X evaluation requires a connected policy and 30 Hz control / 120 Hz physics")
@@ -614,10 +615,10 @@ def main():
     if expected_episode is not None and args.trajectory.stem != f"episode_{int(expected_episode):06d}":
         parser.error("Episode-specific scene and trajectory differ; use the matching episode configuration")
     if args.mode == "policy":
-        from pressb.pick_place.wallx import load_policy_initial
+        from pressb.tasks.pap.initialization import load_policy_initial
         trajectory = load_policy_initial(args.trajectory, cfg["gripper_max_width_m"])
     else:
-        from pressb.pick_place.task import load_trajectory
+        from pressb.tasks.pap.task import load_trajectory
         trajectory = load_trajectory(args.trajectory, args.source, cfg["gripper_max_width_m"])
     args.output = args.output.resolve()
     identity = dict(config=cfg, plan=args.evaluation_data, trajectory=str(args.trajectory.resolve()),
@@ -640,7 +641,7 @@ def main():
     app, policy_client = None, None
     try:
         if args.mode == "policy":
-            from pressb.pick_place.wallx import WallXClient
+            from pressb.compat.wallx import WallXClient
             policy_client = WallXClient(args.policy_endpoint, timeout=args.policy_timeout,
                 token=os.environ.get(args.policy_token_env))
             write(args.output/"policy_server_metadata.json", policy_client.connect())

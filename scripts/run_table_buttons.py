@@ -19,7 +19,7 @@ import traceback
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from pressb.table_buttons.execution import (
+from pressb.tasks.table_buttons.execution import (
     contact_limited_command, in_press_window, press_phase_times,
 )
 
@@ -90,9 +90,9 @@ def run(app, args, cfg):
     from isaacsim.core.utils.stage import add_reference_to_stage
     from isaacsim.core.utils.types import ArticulationAction
     from isaacsim.sensors.camera import Camera
-    from pressb.table_buttons.scene import build_scene
-    from pressb.pick_place.scene import build_tripod
-    from pressb.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
+    from pressb.tasks.table_buttons.scene import build_scene
+    from pressb.runtime.workbench import build_tripod
+    from pressb.tasks.table_buttons.task import COLORS, TableButtonOutcome, task_instruction, project_base_points
     from pressb.wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
@@ -378,7 +378,7 @@ def run(app, args, cfg):
 
 
 def plan_press(kin, initial, top, *, fps=30, approach=None):
-    from pressb.table_buttons.motion import plan_press as build_plan
+    from pressb.tasks.table_buttons.motion import plan_press as build_plan
     return build_plan(kin, initial, top, fps=fps, approach=approach)
 
 
@@ -404,7 +404,7 @@ def main():
         parser.error('Color motion templates require camera_reachable path screening')
     if args.spacing is not None:
         cfg.setdefault('position_sampling', {})['spacing_profile'] = args.spacing
-    from pressb.table_buttons.task import parse_instruction,button_in_camera
+    from pressb.tasks.table_buttons.task import parse_instruction,button_in_camera
     if args.instruction:
         color=parse_instruction(args.instruction)
         if args.target is not None and args.target!=color:
@@ -418,7 +418,7 @@ def main():
     if cfg.get('position_sampling', {}).get('domain') == 'camera_reachable':
         import numpy as np
         from pressb.kinematics import PiperKinematics
-        from pressb.table_buttons.placement import ReachablePlacement
+        from pressb.tasks.table_buttons.placement import ReachablePlacement
         placement = ReachablePlacement(PiperKinematics(ROOT/cfg['robot_urdf'], tip_offset=.1358), cfg)
         if args.seed is not None:
             layout = placement.sample(args.seed)
@@ -449,7 +449,7 @@ def main():
         if args.mode == 'demo':
             # Check the actual interpolated command path, in addition to the
             # lighter candidate screening used during rejection sampling.
-            from pressb.table_buttons.motion import plan_press as build_plan
+            from pressb.tasks.table_buttons.motion import plan_press as build_plan
             initial_state = np.r_[cfg['initial_joint_positions_rad'], cfg['initial_gripper_width_m']]
             positions = {color: spec['center_xy'] for color, spec in cfg['buttons'].items()}
             for color in (list(positions) if args.target == 'all' else [args.target]):
@@ -468,7 +468,7 @@ def main():
         cfg['sampling_domain'] = serializable(layout['domain'] if args.seed is not None else placement.domain)
     elif args.seed is not None:
         # Retain explicit old rectangle configs for historical replays.
-        from pressb.table_buttons.task import sample_button_positions
+        from pressb.tasks.table_buttons.task import sample_button_positions
         sampling=cfg['position_sampling']
         sampled=sample_button_positions(cfg['up_camera'],args.seed,bounds_xy=sampling['bounds_xy'],
             min_separation=sampling.get('min_separation', .10),max_separation=sampling.get('max_separation'),

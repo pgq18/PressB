@@ -1,0 +1,352 @@
+{
+  "date": "2026-11-06",
+  "status": "passed",
+  "base_commit": "af0be483ed04dc25e976c785f4ce52097a3c2d1d",
+  "scope": "Consolidate PAP/table-button task implementations, extract common scene components, retain legacy imports and validate real short simulation/model/RL workflows.",
+  "layout": {
+    "pap": "src/pressb/tasks/pap",
+    "table_buttons": "src/pressb/tasks/table_buttons",
+    "shared_scene": [
+      "src/pressb/runtime/scene.py",
+      "src/pressb/runtime/workbench.py"
+    ],
+    "legacy_policy_clients": "src/pressb/compat",
+    "legacy_alias_files": 20
+  },
+  "regression": {
+    "main": {
+      "tests": 2078,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 18,
+      "time": 62.617,
+      "passed": 2060
+    },
+    "usd_collision": {
+      "tests": 73,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.462,
+      "passed": 73
+    },
+    "lerobot": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 3.019,
+      "passed": 1
+    },
+    "vla": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 4.928,
+      "passed": 4
+    },
+    "unique_passed": 2137,
+    "duplicate_note": "VLA source inventory is already counted in main; three dependency-specific flow tests resolve the three main skips.",
+    "unresolved_main_skips": []
+  },
+  "scene_equivalence": {
+    "cases": 17,
+    "usd_serialization_exact": true,
+    "return_metadata_exact": true,
+    "compared_against": "af0be483ed04dc25e976c785f4ce52097a3c2d1d"
+  },
+  "installed_wheel": {
+    "wheel_sha256": "e742a879216d9a796f6a5dcc32fddca5c0ccb4392f73bc2021e1c86b0e4395e8",
+    "wheel_bytes": 832902,
+    "wheel_members": 304
+  },
+  "model_sources": "Bundled model/training implementations unchanged; no separate source clones used by real Wall tests.",
+  "physical_validation": {
+    "status": "passed",
+    "cases": {
+      "pap_hold_reset": {
+        "exit_code": 0,
+        "seconds": 27.81478989799507,
+        "log": "pap_hold_reset.log",
+        "operations_status": "passed",
+        "report_state_at_shutdown": "closing",
+        "close_attempted": true,
+        "shutdown_note": "Isaac fast shutdown exits before the final Python closed flag write; all assertions passed and subprocess exited 0."
+      },
+      "pap_grasp_replay": {
+        "exit_code": 0,
+        "seconds": 13.287184322020039,
+        "log": "pap_grasp_replay.log",
+        "expert_successes": 2,
+        "pixels_exact": true
+      },
+      "elevator_replay": {
+        "exit_code": 0,
+        "seconds": 19.79720745095983,
+        "log": "elevator_replay.log",
+        "operations_status": "passed",
+        "report_state_at_shutdown": "closing",
+        "close_attempted": true,
+        "shutdown_note": "Isaac fast shutdown exits before the final Python closed flag write; all assertions passed and subprocess exited 0.",
+        "expert_successes": 2
+      }
+    }
+  },
+  "table_validation": {
+    "expert_successes": 9,
+    "expert_total": 9,
+    "profiles": [
+      "near",
+      "medium",
+      "far"
+    ],
+    "colors": [
+      "red",
+      "yellow",
+      "blue"
+    ],
+    "wrong_target_rejected": true,
+    "timeout_verified": true,
+    "idempotent_step_verified": true,
+    "joint7_gripper_verified": true
+  },
+  "real_pipeline_two_env": {
+    "status": "passed",
+    "new_learner_initialization_verified": true,
+    "dsrl_resume_preserves_all_40_replay_rows": true,
+    "dsrl_resume_optimizer_steps_increased": true,
+    "dsrl_resume_actor_changed": true,
+    "actors_finite": true,
+    "full_checkpoints_preserved": {
+      "dsrl_train": [
+        "step_000000000020.pt",
+        "step_000000000040.pt"
+      ],
+      "dsrl_resume": [
+        "step_000000000048.pt"
+      ],
+      "residual_train": [
+        "step_000000000020.pt",
+        "step_000000000040.pt"
+      ]
+    },
+    "frozen_actor_unchanged": true,
+    "frozen_actor_trainable_parameters": 0,
+    "frozen_optimizer_and_replay_not_restored": true,
+    "collection": {
+      "episodes": 2,
+      "complete_episodes": 2,
+      "transitions": 26,
+      "verified_png_images": 104,
+      "early_terminated_action_prefixes": 2,
+      "requested_action_shape": [
+        32,
+        7
+      ],
+      "measured_elapsed_steps_preserved": true
+    },
+    "services_exit_zero_and_ports_released": true
+  },
+  "real_pipeline_64_env": {
+    "status": "passed",
+    "scope": "Short functional regression only; not a throughput benchmark or learning-effectiveness evaluation",
+    "declared_gpu_index": 1,
+    "num_envs": 64,
+    "render_resolution": [
+      640,
+      480
+    ],
+    "transmitted_resolution": [
+      256,
+      192
+    ],
+    "max_episode_seconds": 20,
+    "independent_reset": {
+      "unique_world_positions": 64,
+      "unique_local_positions": 64,
+      "unique_up_images": 64,
+      "unique_wrist_images": 64,
+      "verified_png_files": 128,
+      "indexed_reset_preserved_other_63_envs": true
+    },
+    "native_model_batches": {
+      "encode": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "decode": [
+        64,
+        64,
+        64
+      ],
+      "noise_shapes": [
+        [
+          64,
+          32,
+          20
+        ],
+        [
+          64,
+          32,
+          20
+        ],
+        [
+          64,
+          32,
+          20
+        ]
+      ]
+    },
+    "training": {
+      "transitions": 192,
+      "updates": 39,
+      "episodes": 0,
+      "physics_chunk_requests": 3,
+      "fused_step_and_reset_requests": 3,
+      "terminal_fused_resets_exercised": false,
+      "terminal_note": "Three 32-action chunks span 3.2 simulated seconds, below the unchanged 20-second episode limit; terminal fused resets were exercised in the separate 2-env full pipeline test",
+      "replay_capacity": 128,
+      "replay_rows": 128,
+      "optimizer_actor_entries": 16,
+      "full_checkpoints": [
+        "step_000000000064.pt",
+        "step_000000000128.pt",
+        "step_000000000192.pt"
+      ]
+    },
+    "resources": {
+      "min_sampled_available_host_bytes": 30488096768,
+      "swap_out_bytes_during_sampling": 20135936,
+      "swap_in_bytes_during_sampling": 1536000,
+      "note": "Pre-existing swap usage and additional swap-out during model loading are recorded; no zero-swap performance claim"
+    },
+    "services_exit_zero_and_ports_released": true,
+    "telemetry_entry_sha256": "511ffe4e2f0157702406c3c1a15fbe0e615916c8bf94098ac5613b643ba488ab",
+    "actual_nvml_gpu_and_process_evidence": {
+      "status": "passed",
+      "scope": "2-second sampled in-run allocations, not guaranteed absolute peaks",
+      "during_run": [
+        {
+          "gpu_uuid": "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9",
+          "pid": 2930344,
+          "maximum_sampled_memory_mib": 14232
+        },
+        {
+          "gpu_uuid": "GPU-20a4a7cb-a011-ae8a-2a86-bb6392818199",
+          "pid": 2930554,
+          "maximum_sampled_memory_mib": 530
+        },
+        {
+          "gpu_uuid": "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9",
+          "pid": 2930554,
+          "maximum_sampled_memory_mib": 15088
+        }
+      ],
+      "owned_pids_absent": {
+        "2930344": true,
+        "2930554": true
+      },
+      "post_shutdown_compute_rows": [],
+      "checked_unix": 1793971098.3266172
+    }
+  },
+  "checkpoint_migration": {
+    "status": "passed",
+    "dsrl_transitions": 100022,
+    "residual_transitions": 16704,
+    "strict_cpu_resume_verified": true,
+    "originals_and_previous_copies_unchanged": true,
+    "formal_training_resumed": false,
+    "resume_experiment": "outputs/task_consolidation_20261106/checkpoint_migration/resume_experiment.json",
+    "noise_migration_record": {
+      "path": "outputs/task_consolidation_20261106/checkpoint_migration/dsrl_step_000000100022.pt.migration.json",
+      "sha256": "f35632a483487d328e6c5a54745b18e072b8c139f6213772ade2ecf3d176cda0"
+    },
+    "residual_migration_record": {
+      "path": "outputs/task_consolidation_20261106/checkpoint_migration/residual_step_000000016704.pt.migration.json",
+      "sha256": "377488d7d730b7b738b08f1c35248db99390aab0199b421c6361ff5ad08f3636"
+    }
+  },
+  "limits": [
+    "Short RL runs verify execution and updates, not long-run learning quality or throughput.",
+    "Expert replay success is a physics regression, not a learned-policy success-rate evaluation.",
+    "Isaac fast shutdown may leave report.status=closing after operations_status=passed; subprocess exit code 0 is verified separately."
+  ],
+  "evidence": {
+    "source_snapshot.json": {
+      "path": "outputs/task_consolidation_20261106/source_snapshot.json",
+      "sha256": "6e4abbd0feb790c748e60fc353d97d0ca623f021dc88a21408c98539ed74cfc2"
+    },
+    "legacy_alias_audit.json": {
+      "path": "outputs/task_consolidation_20261106/legacy_alias_audit.json",
+      "sha256": "b51a3235baa31403103bf438b83488d32e85eb02f61b70108b589da77ffb0208"
+    },
+    "tests/summary.json": {
+      "path": "outputs/task_consolidation_20261106/tests/summary.json",
+      "sha256": "66c9afb3d2b73340c35d512477755f9a583551645b37fb6e6adbfd367a816f27"
+    },
+    "tests/main.log": {
+      "path": "outputs/task_consolidation_20261106/tests/main.log",
+      "sha256": "d4b767a69078e58c41fc011e5dc901a62a4f33a767bdc755ca338acaccdb6f2d"
+    },
+    "tests/main.xml": {
+      "path": "outputs/task_consolidation_20261106/tests/main.xml",
+      "sha256": "e4da9edba7c472fefd6292df7bc0d8e2f080c0f4d341a4b66c9507862cdc2ed0"
+    },
+    "tests/usd_collision.log": {
+      "path": "outputs/task_consolidation_20261106/tests/usd_collision.log",
+      "sha256": "e0f0afc6dd877409598eca6afb3d20e532e03a70e93f5adcc6a08868771e2ca6"
+    },
+    "tests/lerobot.log": {
+      "path": "outputs/task_consolidation_20261106/tests/lerobot.log",
+      "sha256": "dbf285f40937d1846399ae599bde895a68742d91f508b7f15f755ac134966d7d"
+    },
+    "tests/vla.log": {
+      "path": "outputs/task_consolidation_20261106/tests/vla.log",
+      "sha256": "3d863be2b6a8eafda455704b9b78bc9acce43c545b0c8499bb1114a6e27bb2b9"
+    },
+    "scenes/comparison.json": {
+      "path": "outputs/task_consolidation_20261106/scenes/comparison.json",
+      "sha256": "eb2707f77a5927dadba7b409484d3e0efdd13788f88c579d520842590e00c2a0"
+    },
+    "packaging/verification.json": {
+      "path": "outputs/task_consolidation_20261106/packaging/verification.json",
+      "sha256": "a4f6b341637dee4bb891423cfb6138f315dd2926e17920eb39942875bac2f191"
+    },
+    "verification/physical_validation.json": {
+      "path": "outputs/task_consolidation_20261106/verification/physical_validation.json",
+      "sha256": "c1120998761d176dc770155f2b5041b7f8d59a428c48bec7ed3adb4cc9b2983b"
+    },
+    "verification/table_validation_audit.json": {
+      "path": "outputs/task_consolidation_20261106/verification/table_validation_audit.json",
+      "sha256": "8758822b5a774b4d0fcd7e7277d2f53abaa9e0da0416d49aaeed01c9373dce79"
+    },
+    "verification/real_pipeline_smoke/audit.json": {
+      "path": "outputs/task_consolidation_20261106/verification/real_pipeline_smoke/audit.json",
+      "sha256": "05d88705d86a6d19f816900078e42f57972ced35bdc73cfa4c2c65ad24e44071"
+    },
+    "verification/real_pipeline_64_smoke/audit.json": {
+      "path": "outputs/task_consolidation_20261106/verification/real_pipeline_64_smoke/audit.json",
+      "sha256": "5a93a8f188cded9a4c8b174e0b44e8db03a3ba6f489f5c56c21de379f960eb3c"
+    },
+    "verification/real_pipeline_64_smoke/source_identity_verification.json": {
+      "path": "outputs/task_consolidation_20261106/verification/real_pipeline_64_smoke/source_identity_verification.json",
+      "sha256": "26f7da00ff9b50ef5dfc7752f20d569bfb4d16f8ba6e5ba89c7c14474e130c2d"
+    },
+    "checkpoint_migration/verification.json": {
+      "path": "outputs/task_consolidation_20261106/checkpoint_migration/verification.json",
+      "sha256": "e475bb96ec5713bea9b8f2412fcda02005d9da18c997fc7a34c1bfabd2d65766"
+    },
+    "checkpoint_migration/resume_experiment.json": {
+      "path": "outputs/task_consolidation_20261106/checkpoint_migration/resume_experiment.json",
+      "sha256": "6bdb06b3fa1a3e6b29bf6248d784c670ffab8c1f9e483278bb7b556f696dff8e"
+    },
+    "checkpoint_migration/resume_experiment_validation.json": {
+      "path": "outputs/task_consolidation_20261106/checkpoint_migration/resume_experiment_validation.json",
+      "sha256": "4d846c8081ce5dadf424daabb91e8fe194663492b8f94747a9776e1fea0bd0c2"
+    }
+  }
+}
