@@ -1,0 +1,276 @@
+{
+  "coordinate_system": "native 640x480 wrist image, header removed, u right v down, zero based",
+  "finger": "image-left visible main finger, link8 in v04 convention",
+  "observations": [
+    {
+      "name": "open",
+      "width_m": 0.0594,
+      "split": "train",
+      "tip_v": 351,
+      "tip_sigma_px": 3.0,
+      "rows": [
+        {
+          "v": 360,
+          "left_u": 367,
+          "right_u": 408,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 380,
+          "left_u": 365,
+          "right_u": 412,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 400,
+          "left_u": 358,
+          "right_u": 415,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 420,
+          "left_u": 350,
+          "right_u": 418,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 440,
+          "left_u": 339,
+          "right_u": 422,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 460,
+          "left_u": 327,
+          "right_u": 429,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 475,
+          "left_u": 316,
+          "right_u": 434,
+          "sigma_px": 3.5
+        }
+      ],
+      "source_frame": 322,
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000322.jpg",
+      "observed": [
+        0.02129301687433082,
+        0.6814288998561461,
+        -0.563880974734328,
+        -0.06997024971245268,
+        0.7418172919751499,
+        0.036896260387160124,
+        0.0594
+      ],
+      "feedback_minus_camera_ms": 1.020193099975586,
+      "method": "Green-channel silhouette crossing after 5x3 Gaussian blur, threshold95; checked visually against source. Boundary uncertainty covers defocus, compression and opening feedback timing. No cube features."
+    },
+    {
+      "name": "opening35",
+      "width_m": 0.035,
+      "split": "train",
+      "tip_v": 352,
+      "tip_sigma_px": 3.0,
+      "rows": [
+        {
+          "v": 360,
+          "left_u": 438,
+          "right_u": 483,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 380,
+          "left_u": 438,
+          "right_u": 496,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 400,
+          "left_u": 436,
+          "right_u": 504,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 420,
+          "left_u": 435,
+          "right_u": 514,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 440,
+          "left_u": 436,
+          "right_u": 524,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 460,
+          "left_u": 434,
+          "right_u": 537,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 475,
+          "left_u": 429,
+          "right_u": 549,
+          "sigma_px": 3.5
+        }
+      ],
+      "source_frame": 231,
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000231.jpg",
+      "observed": [
+        -0.02940879789610445,
+        0.43619268665842287,
+        -0.4391248398017733,
+        -0.08546877347016232,
+        0.704537059152551,
+        0.08826130027335324,
+        0.035
+      ],
+      "feedback_minus_camera_ms": 9.653568267822266,
+      "method": "Green-channel silhouette crossing after 5x3 Gaussian blur, threshold95; checked visually against source. Boundary uncertainty covers defocus, compression and opening feedback timing. No cube features."
+    },
+    {
+      "name": "opening40",
+      "width_m": 0.0401,
+      "split": "holdout",
+      "tip_v": 352,
+      "tip_sigma_px": 3.0,
+      "rows": [
+        {
+          "v": 360,
+          "left_u": 425,
+          "right_u": 469,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 380,
+          "left_u": 424,
+          "right_u": 480,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 400,
+          "left_u": 423,
+          "right_u": 487,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 420,
+          "left_u": 422,
+          "right_u": 495,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 440,
+          "left_u": 421,
+          "right_u": 505,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 460,
+          "left_u": 414,
+          "right_u": 517,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 475,
+          "left_u": 408,
+          "right_u": 527,
+          "sigma_px": 3.5
+        }
+      ],
+      "source_frame": 236,
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000236.jpg",
+      "observed": [
+        -0.02940879789610445,
+        0.43619268665842287,
+        -0.4391248398017733,
+        -0.08546877347016232,
+        0.704537059152551,
+        0.08826130027335324,
+        0.0401
+      ],
+      "feedback_minus_camera_ms": 10.735750198364258,
+      "method": "Green-channel silhouette crossing after 5x3 Gaussian blur, threshold95; checked visually against source. Boundary uncertainty covers defocus, compression and opening feedback timing. No cube features."
+    },
+    {
+      "name": "opening50",
+      "width_m": 0.05,
+      "split": "holdout",
+      "tip_v": 352,
+      "tip_sigma_px": 3.0,
+      "rows": [
+        {
+          "v": 360,
+          "left_u": 397,
+          "right_u": 439,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 380,
+          "left_u": 396,
+          "right_u": 447,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 400,
+          "left_u": 395,
+          "right_u": 451,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 420,
+          "left_u": 389,
+          "right_u": 457,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 440,
+          "left_u": 381,
+          "right_u": 464,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 460,
+          "left_u": 372,
+          "right_u": 473,
+          "sigma_px": 3.5
+        },
+        {
+          "v": 475,
+          "left_u": 363,
+          "right_u": 482,
+          "sigma_px": 3.5
+        }
+      ],
+      "source_frame": 246,
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000246.jpg",
+      "observed": [
+        -0.02940879789610445,
+        0.43619268665842287,
+        -0.4391248398017733,
+        -0.08546877347016232,
+        0.704537059152551,
+        0.08826130027335324,
+        0.05
+      ],
+      "feedback_minus_camera_ms": 13.314962387084961,
+      "method": "Green-channel silhouette crossing after 5x3 Gaussian blur, threshold95; checked visually against source. Boundary uncertainty covers defocus, compression and opening feedback timing. No cube features."
+    }
+  ],
+  "limitations": [
+    "Only finger silhouettes, no moving cube reference.",
+    "Frame width is measured CAN full gap, not commanded width.",
+    "Only visible silhouette supports; no named 3D mesh vertex correspondences.",
+    "Static physical finger-pad geometry not calibrated; residual after camera fitting may reflect mesh difference.",
+    "Opening35/40/50 were moving around 10 mm/s; pixels have 3.5 px uncertainty.",
+    "Do not compare current physics 30mm closed silhouette to real35.6mm as equal width."
+  ],
+  "disallowed_changes": [
+    "camera K/focal length",
+    "mount height6mm",
+    "robot and objects geometry",
+    "global camera"
+  ]
+}

@@ -1,0 +1,445 @@
+{
+  "date": "2026-11-07",
+  "task": "playground",
+  "status": "partial_visual_registration_improvement_applied",
+  "config": "configs/piper_playground.json",
+  "previous_config": "configs/calibration/playground_20261107_before_multiview.json",
+  "scope": "Offline fit, same measured-pose rendering and same applied-command physics replay; no real actuation, reset or grasp retry.",
+  "raw_evidence_preserved": true,
+  "default_objects": [],
+  "method": {
+    "fit": "Constant wrist extrinsics and static cube pose/size using pre-contact measured feedback, fixed live RGB intrinsics, initial RGB-D plane and finger silhouette.",
+    "time_alignment": {
+      "source": "D435i global_time device_timestamp_ms/1000; linearly interpolate measured encoder feedback",
+      "max_interpolation_interval_s": 0.034430503845214844,
+      "optimized_time_offset": false
+    },
+    "validation_policy": "Contiguous image block excluded from fitting, but model variants were compared on these metrics. These are reserved-image validation, not a completely blind final test.",
+    "fixed": [
+      "RGB intrinsics",
+      "URDF/link geometry",
+      "joint zeros and limits",
+      "base/table height convention",
+      "TCP",
+      "arm/gripper drives",
+      "friction",
+      "original applied command timeline"
+    ]
+  },
+  "parameter_changes": {
+    "wrist_delta_rotation_vector_deg": [
+      0.4931177380351952,
+      -0.2830492964632107,
+      0.3905719307509561
+    ],
+    "wrist_delta_translation_link6_m": [
+      0.00223468975323833,
+      -7.618386623937033e-05,
+      0.006442407800362384
+    ],
+    "green_center_before_m": [
+      0.3561883927860311,
+      -0.10436479478880745
+    ],
+    "green_center_after_m": [
+      0.366558377078963,
+      -0.11127844661581733
+    ],
+    "green_edge_m": 0.030155487429924948,
+    "global_eye_before_m": [
+      0.7171012280697232,
+      0.046535352428906565,
+      0.4943071492714702
+    ],
+    "global_eye_after_m": [
+      0.727703993237285,
+      0.038900450010592585,
+      0.4942872997908898
+    ]
+  },
+  "image_validation": {
+    "heldout_contiguous": {
+      "before_point_rmse_px": 21.466967119418715,
+      "after_point_rmse_px": 5.716647622953483
+    },
+    "independent": {
+      "before_point_rmse_px": 29.067743240329715,
+      "after_point_rmse_px": 6.821872214378839
+    }
+  },
+  "frozen_descent_validation": {
+    "status": "Frozen candidate evaluated on newly independently annotated pre-contact descent; no further fitting or annotation edits",
+    "candidate": {
+      "n": 3,
+      "n_points": 11,
+      "point_rmse_px": 19.067616606934493,
+      "coordinate_rmse_px": 13.48284100382861,
+      "frames": [
+        {
+          "name": "descent_1s",
+          "elapsed_s": 1,
+          "n_points": 4,
+          "coordinate_rmse_px": 8.864453119269553,
+          "point_rmse_px": 12.53622982429149,
+          "max_point_error_px": 14.416223125026699,
+          "valid_mask": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "projected_uv": [
+            [
+              569.6264820818349,
+              332.06253153947114
+            ],
+            [
+              466.6877782834406,
+              331.9424388748342
+            ],
+            [
+              473.74357565814284,
+              234.25382148444
+            ],
+            [
+              582.4504129749967,
+              233.95019184734878
+            ]
+          ]
+        },
+        {
+          "name": "descent_3s",
+          "elapsed_s": 3,
+          "n_points": 4,
+          "coordinate_rmse_px": 13.83157061490568,
+          "point_rmse_px": 19.56079475252078,
+          "max_point_error_px": 20.97421157203133,
+          "valid_mask": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "projected_uv": [
+            [
+              591.9803468377104,
+              359.160878510137
+            ],
+            [
+              479.14573513894857,
+              358.91186333468073
+            ],
+            [
+              487.6626775454595,
+              252.98679643154327
+            ],
+            [
+              607.4551840425398,
+              252.73920333982838
+            ]
+          ]
+        },
+        {
+          "name": "descent_4.5s",
+          "elapsed_s": 4.5,
+          "n_points": 3,
+          "coordinate_rmse_px": 17.512790732912354,
+          "point_rmse_px": 24.76682616948651,
+          "max_point_error_px": 26.39302818984725,
+          "valid_mask": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "projected_uv": [
+            [
+              612.9291031596416,
+              383.60631435528416
+            ],
+            [
+              490.8837368122059,
+              383.2166438372416
+            ],
+            [
+              500.9131479904379,
+              269.7880056476099
+            ],
+            [
+              631.1412225473792,
+              269.60777450195116
+            ]
+          ]
+        }
+      ]
+    },
+    "annotations": "outputs/playground_grasp_transfer_20261107/calibration_landmarks_frozen_holdout/landmarks.json",
+    "old": {
+      "n": 3,
+      "n_points": 11,
+      "point_rmse_px": 51.34675068108438,
+      "coordinate_rmse_px": 36.307635598489746,
+      "frames": [
+        {
+          "name": "descent_1s",
+          "elapsed_s": 1,
+          "n_points": 4,
+          "coordinate_rmse_px": 33.045278169417614,
+          "point_rmse_px": 46.73308055958195,
+          "max_point_error_px": 54.40657470749591,
+          "valid_mask": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "projected_uv": [
+            [
+              539.3799912086557,
+              358.89414232981545
+            ],
+            [
+              442.46171882733654,
+              358.1522450573603
+            ],
+            [
+              448.0473964950108,
+              268.1361078357621
+            ],
+            [
+              550.1443235805829,
+              268.428550009181
+            ]
+          ]
+        },
+        {
+          "name": "descent_3s",
+          "elapsed_s": 3,
+          "n_points": 4,
+          "coordinate_rmse_px": 36.77933510269441,
+          "point_rmse_px": 52.01383451729529,
+          "max_point_error_px": 60.78290006411444,
+          "valid_mask": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "projected_uv": [
+            [
+              557.168661359947,
+              387.07014393788234
+            ],
+            [
+              451.49551802025485,
+              386.1106393671728
+            ],
+            [
+              458.1224638689148,
+              289.18490085538616
+            ],
+            [
+              569.9731808278891,
+              289.6256316393312
+            ]
+          ]
+        },
+        {
+          "name": "descent_4.5s",
+          "elapsed_s": 4.5,
+          "n_points": 3,
+          "coordinate_rmse_px": 39.67303379172477,
+          "point_rmse_px": 56.10614244874326,
+          "max_point_error_px": 61.644466609872076,
+          "valid_mask": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "projected_uv": [
+            [
+              573.6972511253533,
+              412.29135418073207
+            ],
+            [
+              459.9608074469156,
+              411.10760800849005
+            ],
+            [
+              467.64754350505666,
+              307.98336149404645
+            ],
+            [
+              588.5734626002321,
+              308.5806570261818
+            ]
+          ]
+        }
+      ]
+    },
+    "sample_count": 3,
+    "visible_point_count": 11,
+    "max_feedback_interpolation_interval_s": 0.034412384033203125,
+    "fit_or_selection_used_these_images": false,
+    "quantities": "point_rmse_px is Euclidean2D error per corner, pooled over visible points; coordinate_rmse_px averages scalar u/v residuals",
+    "limitation": "Only3 near-contact poses/11points; nominal image improvement does not verify physical finger clearance or eliminate kinematic bias.",
+    "candidate_config": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/candidate_config.json"
+  },
+  "physics_replay": {
+    "hardware_access": false,
+    "real_contact_evidence": "first resolved object motion, global camera frame1083; contact body not identified",
+    "real_capture_index": 1083,
+    "event_global_exposure_unix_s": 1794046651.135619,
+    "event_relative_real_run_s": 6.8670408725738525,
+    "q_observed_interpolated_rad_m": [
+      -0.2844886680750757,
+      1.9826242170954786,
+      -1.3228723065491022,
+      0.0,
+      1.003162894168781,
+      -0.24469516112960502,
+      0.0594
+    ],
+    "interpolation_scope": "Error audit only; neither real observed q nor this interpolation drives simulation.",
+    "runs": {
+      "applied_baseline_02": {
+        "q_sim_interpolated_rad_m": [
+          -0.2850296199321747,
+          1.9857828087820686,
+          -1.3214287338385757,
+          6.786326332837343e-09,
+          0.994830694619648,
+          -0.24478349089622498,
+          0.060000010913318
+        ],
+        "sim_minus_real_joint_deg": [
+          -0.030994258331534377,
+          0.18097397284671202,
+          0.08271062373342435,
+          3.8882785727007294e-07,
+          -0.477399868226122,
+          -0.0050609228326992505
+        ],
+        "sim_minus_real_gripper_m": 0.0006000109133179957,
+        "sim_minus_real_tcp_xyz_m": [
+          0.0009718514527420896,
+          -0.0004932814935922208,
+          -0.0014964736316790406
+        ],
+        "tcp_error_norm_m": 0.0018512847453668868,
+        "nearest_physics_frame": 2911,
+        "nearest_frame_time_difference_s": -0.009650707244873047,
+        "window_6_4_to_7_3_frames": 27,
+        "window_cube_contact_frames": 0,
+        "first_cube_contact_phase": "close",
+        "first_cube_contact_relative_real_run_s": 11.057390213012695,
+        "first_contact_after_real_event_s": 4.190349340438843,
+        "final_object_base_m": [
+          0.35619255900382996,
+          -0.10436613857746124,
+          0.015000274181365958
+        ],
+        "object_displacement_m": 4.595075742866738e-06,
+        "plan_sha256": "a332814712786d6d8d68da4b0d954e1fb4f4b1eecee5a9ec6d84a2cf0339b690"
+      },
+      "applied_candidate_01": {
+        "q_sim_interpolated_rad_m": [
+          -0.2850296199321747,
+          1.9857828087820686,
+          -1.3214287338385757,
+          6.786326332837343e-09,
+          0.994830694619648,
+          -0.24478349089622498,
+          0.060000010913318
+        ],
+        "sim_minus_real_joint_deg": [
+          -0.030994258331534377,
+          0.18097397284671202,
+          0.08271062373342435,
+          3.8882785727007294e-07,
+          -0.477399868226122,
+          -0.0050609228326992505
+        ],
+        "sim_minus_real_gripper_m": 0.0006000109133179957,
+        "sim_minus_real_tcp_xyz_m": [
+          0.0009718514527420896,
+          -0.0004932814935922208,
+          -0.0014964736316790406
+        ],
+        "tcp_error_norm_m": 0.0018512847453668868,
+        "nearest_physics_frame": 2911,
+        "nearest_frame_time_difference_s": -0.009650707244873047,
+        "window_6_4_to_7_3_frames": 27,
+        "window_cube_contact_frames": 0,
+        "first_cube_contact_phase": "close",
+        "first_cube_contact_relative_real_run_s": 9.724056959152222,
+        "first_contact_after_real_event_s": 2.857016086578369,
+        "final_object_base_m": [
+          0.3668408691883087,
+          -0.10491424053907394,
+          0.015078535079956046
+        ],
+        "object_displacement_m": 0.0063707163579696914,
+        "plan_sha256": "a332814712786d6d8d68da4b0d954e1fb4f4b1eecee5a9ec6d84a2cf0339b690"
+      }
+    },
+    "unchanged_control_physics_fields": {
+      "physics_dt": true,
+      "fps": true,
+      "robot_usd": true,
+      "robot_urdf": true,
+      "arm_stiffness": true,
+      "arm_damping": true,
+      "arm_max_effort": true,
+      "gripper_stiffness": true,
+      "gripper_damping": true,
+      "gripper_max_effort": true,
+      "finger_static_friction": true,
+      "finger_dynamic_friction": true,
+      "gripper_max_width_m": true
+    },
+    "identical_applied_plans": true,
+    "conclusion": "Neither original nor selected candidate reproduces pre-closing edge disturbance. Camera/cube registration improves visual consistency but contact geometry is not validated."
+  },
+  "limitations": [
+    "URDF joint zero and linkage geometry are held fixed, not independently calibrated.",
+    "base_link/tabletop z=0 is a scene convention; physical mounting height remains an assumption.",
+    "Only one motion path and one static cube; weak directions are regularized toward prior.",
+    "Plane residual is a fitting constraint and is not independent validation.",
+    "Post-contact cube position is excluded. Post-contact wrist depth is invalid at near range and excluded.",
+    "No collision labels or grasp success scores enter the fit; no grasp/limit changes.",
+    "Finger silhouette is approximate, piecewise smooth; local numerical Jacobian rank is not a physical covariance estimate.",
+    "Default annotations, size prior and masks are specific to this stationary green cube sequence.",
+    "Finger tip image vertical error worsens from approximately 1px to 8px; mask IoU approximately unchanged (0.763 to 0.762).",
+    "Table plane normal error worsens from 0.718 to 1.030 degrees, although its signed offset decreases from 10.01 to 3.43mm; this is a fitting constraint.",
+    "Frozen descent image error increases as gripper approaches object (12.54,19.56,24.77px); cannot claim contact accuracy from image fit.",
+    "Real first visible object motion at 6.867s precedes closing. Both physical replays still first contact during closing, so the physical failure remains unexplained.",
+    "Recent read-only capture has a moved green cube and different arm pose; old cube locations are historical calibration references only."
+  ],
+  "artifacts": {
+    "comparison": "outputs/playground_grasp_transfer_20261107/calibration_comparison/geometry_comparison_pregrasp.jpg",
+    "multistage_comparison": "outputs/playground_grasp_transfer_20261107/calibration_comparison/geometry_comparison_three_poses.jpg",
+    "independent_review": "outputs/playground_grasp_transfer_20261107/edge_contact_analysis/model_a_independent_review.json",
+    "fit": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/report.json",
+    "same_pose_rendering": "outputs/playground_grasp_transfer_20261107/calibration_comparison/geometry_comparison_audit.json"
+  },
+  "tests": {
+    "passed": 47,
+    "skipped": 0,
+    "command": "env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=.cache/usd-inspect:src .conda/envs/pressb/bin/python -m pytest -q tests/test_playground.py tests/test_camera_intrinsics_usd.py tests/test_playground_multiview_calibration.py tests/test_playground_grasp_retime.py",
+    "scope": "CPU/USD contracts, calibrated synthetic recovery and degeneracy, no-overwrite, strict data metrics, actual-applied timeline replay; real Isaac replays recorded separately."
+  },
+  "sha256": {
+    "configs/piper_playground.json": "aa7aa8411a419cdc952b56f699a485b2777dad68733207bd052db14f9121ab75",
+    "configs/calibration/playground_20261107_before_multiview.json": "f0c01bc3a10457af2cf09396ee0962356a656c4089f0077ca74bbb80058d5d9f",
+    "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/report.json": "992afe09e3771d0d076b21c9e70a1ba191db8c0b3aed0863d6d764050496bded",
+    "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/candidate_config.json": "be128798f8cf5bd89517b79375fca6dbadd1adfba8ee5421b61b7df2a00de38b",
+    "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/frozen_descent_validation.json": "102a4bc16c16b43500d9e4b91b65377c40357753459c323a494d4a76be2ec95d",
+    "outputs/playground_grasp_transfer_20261107/calibration_diagnosis/applied_physics_comparison_01.json": "9a7fdbff58548d88bb5c625160c1f9015f686ead92ba630e0f80034e97875720",
+    "outputs/playground_grasp_transfer_20261107/calibration_comparison/geometry_comparison_audit.json": "df1f0afb87ba000af2c30c2c4267c26370afafd28d70d0fc4857083a3be53131",
+    "scripts/calibrate_playground_multiview.py": "5a56c4297aea3f9d3af8f3f259da4ff745ee8c72ff73c53ac006b232ab0bf86f",
+    "scripts/render_playground_alignment.py": "08c925937e01cce84468fd182ff3696f9c9931366c0fe6707e71f3b86058b08b",
+    "scripts/run_playground_grasp.py": "a4d754f2dfa6e03c9e8ce52240654749e91925d00109b0f2715cf305875e5296"
+  }
+}

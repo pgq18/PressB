@@ -1,0 +1,250 @@
+{
+  "date": "2026-11-07",
+  "run": "playground_grasp_transfer_20261107/retry_06",
+  "status": "physical grasp failed; release timed out; latched emergency stop remains at last read-only observation",
+  "operator_observation": {
+    "verbatim_zh": "夹住了，但没夹起来",
+    "source": "User on-site observation in this conversation",
+    "task_success": false,
+    "cube_lift": false
+  },
+  "home": {
+    "success": true,
+    "completed_actions": 605,
+    "action_count": 605,
+    "elapsed_s": 57.26790120000078
+  },
+  "localization": {
+    "green_edge_m": 0.029,
+    "green_xy_base_m": [
+      0.4211683417358358,
+      0.09349156894479986
+    ],
+    "green_yaw_deg": 4.953577918452572,
+    "mount_height_m": 0.014,
+    "planned_grasp_tcp_table_z_m": 0.02,
+    "planned_grasp_tcp_base_z_m": 0.006,
+    "wrist_intrinsics_and_handeye_unchanged": true,
+    "wrist_fixed_top_global_disagreement_mm": 18.390127190550537,
+    "wrist_depth_global_disagreement_mm": 27.75354367000762,
+    "absolute_cartesian_error_bound_validated": false
+  },
+  "simulation": {
+    "success": true,
+    "simulation_only": true,
+    "hardware_access": false,
+    "frames": 1188,
+    "duration_s": 39.6,
+    "min_held_lift_m": 0.04996544122695923,
+    "return_distance_m": 3.493999479506639e-05,
+    "unintended_external_robot_contacts": [],
+    "attachments_or_object_teleportation": false,
+    "plan_sha256": "903c32086874e305883d98e71e3cf2b54c40c9ccd7076f1c91936e67934f0d8d"
+  },
+  "physical_execution": {
+    "success": false,
+    "completed_actions": 939,
+    "action_count": 1188,
+    "elapsed_s": 55.82823329999519,
+    "error": "ReplayError: Robot did not catch up within tracking timeout",
+    "failure_kind": "hardware_or_control",
+    "emergency_stop_requested": true,
+    "started_unix_s": 1794059174.4398472,
+    "finished_unix_s": 1794059230.2677364
+  },
+  "telemetry_limits": {
+    "measured_gripper_width_m": 0.0351,
+    "modeled_tcp_close_to_hold_z_m": 0.04921742717098096,
+    "no_cube_height_measurement": true,
+    "meaning": "Joint-derived TCP motion and loaded gripper telemetry do not establish object lift; physical result follows operator observation."
+  },
+  "release_failure": {
+    "action_index": 939,
+    "unique_action_indices": [
+      939
+    ],
+    "rows": 145,
+    "elapsed_span_s": 4.980678081512451,
+    "time_to_summary_failure_s": 5.015690565109253,
+    "all_tracking_wait": true,
+    "fraction_values": [
+      0.5
+    ],
+    "applied_gripper_target_mm": {
+      "min": 28.167,
+      "median": 28.167,
+      "max": 28.167
+    },
+    "observed_gripper_width_mm": {
+      "min": 35.1,
+      "median": 35.1,
+      "max": 35.1
+    },
+    "width_gap_mm": {
+      "min": 6.932999999999998,
+      "median": 6.932999999999998,
+      "max": 6.932999999999998
+    },
+    "observed_effort_raw": {
+      "min": -1049.0,
+      "median": -1042.0,
+      "max": -1037.0
+    },
+    "planned_release_end_width_mm": 60.0,
+    "release_counter_at_failure": 0,
+    "interpretation": "Controller never advanced past first interpolated release action. Its logged applied width28.167mm remained smaller than loaded measured width35.1mm, and opening to60mm was never reached. Control-code root-cause review is separate."
+  },
+  "latest_observed_hardware_state": {
+    "joints_deg": [
+      12.518,
+      136.298,
+      -107.047,
+      0.301,
+      76.258,
+      7.556
+    ],
+    "gripper_width_m": 0.0351,
+    "arm_status": 1,
+    "ctrl_mode": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "j5_limit_deg": 70.0,
+    "post_stop_j5_crossed_limit_after_s": 12.612940073013306,
+    "motor_enable_bits_are_not_torque_measurement": true,
+    "reset_after_stop": false,
+    "motion_commands_after_stop": false,
+    "recording_processes_ended": true
+  },
+  "local_release_fix": {
+    "implemented": true,
+    "deployed": false,
+    "physically_validated": false,
+    "scope": {
+      "scope": "Only loaded-contact release opening bridge; no policy/force/limits changes",
+      "trusted_anchor": "Most recent acquired AND contact-valid measured opening, never anomalous carry-grace feedback",
+      "eligibility": "Contiguous release entered after acquired grasp; target below remembered contact opening; actual opening > target; both coherent gripper packet and subsequently measured width inside existing expected interval",
+      "retirement": "Permanent for that release once target reaches anchor or actual measured opening; no reactivation as widths change",
+      "timeout": "Original tracking_timeout_s accumulated from release entry across action boundaries; checked after fresh feedback and before next command",
+      "unchanged_guards": [
+        "Stationary release arm targets and existing arm tracking",
+        "Hard 15 mm gripper and arm error bounds",
+        "Fault/enable/effort maximum/frame freshness",
+        "Watchdog/cancel/global deadline",
+        "Actual final opening >= expected interval upper+min closing gap",
+        "Ordinary stuck-closed opening still position-tracked after bridge"
+      ],
+      "not_claimed": [
+        "Reliable object identification from load",
+        "Real-world successful lift",
+        "Base/camera/grasp geometry calibration solved"
+      ]
+    },
+    "tests": {
+      "joint_test_count": 401,
+      "joint_tests": [
+        "tests/test_grasp_replay.py",
+        "tests/test_real_replay.py",
+        "tests/test_piper_real.py"
+      ],
+      "result": "401 passed in 0.81s after explanatory-string-only update",
+      "diff_check": "passed",
+      "independent_actual_driver_dynamic_mcu": "outputs/playground_grasp_transfer_20261107/retry_06/release_fix_review/independent/audit.json",
+      "independent_current_real_plan_actions_completed": 1188,
+      "same_driver_same_plan_before_after": {
+        "original_code_audit": "outputs/playground_grasp_transfer_20261107/retry_06/release_fix_review/independent/original_code_case/audit.json",
+        "original_completed_actions": 939,
+        "new_completed_actions": 1188,
+        "total_actions": 1188,
+        "original_first_release_target_m": 0.028166666666666666,
+        "original_first_release_observed_m": 0.0351,
+        "original_timeout_s": 4.999999999999716,
+        "original_emergency_stop": true,
+        "new_emergency_stop": false,
+        "scope": "Offline dynamic fake MCU with actual PiperHardware driver; not a hardware success claim"
+      }
+    },
+    "final_source_sha256": {
+      "src/pressb/control/real_replay.py": "ca21e9fcec3aed4c2df080f2eea1cecd7926e12586cab9e80c886cad3f423a29",
+      "src/pressb/control/grasp_replay.py": "21708fedc27c308078287d015e6286532fec563a7c584ecbe78c27bed971a11c",
+      "src/pressb/robots/piper/real.py": "26a99b4188dac175bc4d82b3e9a166ba98223bd4881d7a44c13a3565e8b286e0"
+    },
+    "before_after": "Identical dynamic fake MCU, actual driver and 1188-action plan: archived original code stalls at 939 and requests stop; patched code finishes 1188. This does not solve or validate physical lifting."
+  },
+  "evidence": [
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/playground_retry_08_home_run/summary.json",
+      "sha256": "d0243439fdfaa316414d94b86640965d6d3a3907fa5912f75a1147420f48abf2"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/localization_01/report.json",
+      "sha256": "f16aebdcfa820bbaf593674bab3ff48ca59feae46facc5c5a7eef5135e605162"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/sim_trial_01/summary.json",
+      "sha256": "738f721c5ddf2c5a205c02282a1fdcd851bc6068d9bc899ed29bf413e95b63f3"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/grasp_replay_plan_01.json",
+      "sha256": "86c824fc248b172a0fec686964f6a14ce87abd4651267c6f64708114819f6b71"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/playground_retry_08_grasp_run/summary.json",
+      "sha256": "d3a55b2b4ba737fd15bd5e490fede7f9587355635943a2f00dafeff0cfd0711a"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/real_attempt_audit.json",
+      "sha256": "c80a6206c63e007d1e265985c97960dd79aaf058fa6e3879aebaac55589440dd"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/after_grasp_feedback.json",
+      "sha256": "a66a4d00bf0deca5bedcfa81156767969975c3e68bf2645628bbafb764bead9d"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/executed_source/sha256.json",
+      "sha256": "1da58f907564b52ca3be6843bb2e32fe073056679a50cc8b012b409633d03902"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/release_fix_review/audit.json",
+      "sha256": "fa8a51941c19a28bc31a29494300a9ce5ce15f0118f935f9a31bab1308c83458"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/release_fix_review/independent/audit.json",
+      "sha256": "97f84358dc63a0a1ebfb35315a0de22941947abfaede81db30b2c7c25a1670b8"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/release_fix_review/independent/original_code_case/audit.json",
+      "sha256": "c0b747e499dcb6484029ee0660fb8c4674b6bb7c23b1d415f7bce1a3eb4f1c0d"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/video/visual_observation.json",
+      "sha256": "fc1166181b2e920ce6a31a37843d04eb9d71d7d8cdfcb20598e4c95bd65c473f"
+    }
+  ],
+  "videos": [
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/video/close_lift_release_stop_detail_1x.mp4",
+      "sha256": "7a35dad11f5f4f35ad5fb7427665907aca3a94e8c36e840e4e084e3194cce6c9"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/video/real_grasp_trial_1x.mp4",
+      "sha256": "4d87084f0edc11d729707a53a89decb0d71369eaec734cd10b51222ee483b822"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/retry_06/video/real_vs_sim_grasp_1x.mp4",
+      "sha256": "a44bb451e0c57cf31ee06b4987c3f5eaa11a1a8b0ad56db4f5e025d240d3ff2c"
+    }
+  ],
+  "video_timing": "Independent 1x playback, not phase retimed; simulation end explicitly freezes; real footage retains at least 15 seconds after stop.",
+  "unresolved": [
+    "Actual physical contact geometry and cause of failure to lift",
+    "Remaining global/wrist registration disagreement",
+    "Physical cause of post-stop joint movement"
+  ]
+}

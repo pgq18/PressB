@@ -1,0 +1,32 @@
+{
+  "server": {"host": "127.0.0.1", "port": 8101, "transport": "http"},
+  "service": {"request_cache_size": 8},
+  "backend": {
+    "plugin": "playground",
+    "config": {
+      "scene_config": "configs/calibration/playground_20261108_final.json",
+      "scene_overrides": {
+        "task_instruction": "Observe the object on the tabletop.",
+        "objects": [
+          {
+            "name": "ExampleCube",
+            "size": [0.029, 0.029, 0.029],
+            "center_xy": [0.32, 0.04],
+            "yaw_deg": 0,
+            "mass": 0.035,
+            "color": [0.8, 0.035, 0.025],
+            "roughness": 0.3,
+            "clearance": 0.0005
+          }
+        ]
+      },
+      "num_envs": 1,
+      "horizon": 32,
+      "gpu": 0,
+      "headless": true,
+      "max_episode_seconds": 30,
+      "gamma": 0.99,
+      "smoothing": {"mode": "none", "alpha": 0.8}
+    }
+  }
+}

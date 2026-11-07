@@ -1,0 +1,94 @@
+{
+  "date": "2026-11-07",
+  "task": "playground",
+  "status": "simulated_deeper_grasp_diagnostic_completed",
+  "hardware_access": false,
+  "default_scene_modified_this_round": false,
+  "scene_config": "configs/piper_playground.json",
+  "scene_config_sha256": "313c54a2d7f7f4f7ef72a8a0ea6542675764379504bb08a7a466b1b5e3fc6e7c",
+  "finding": "The current simulated physical finger/cube vertical overlap is about 10 mm (34–36% of the 29 mm cube); previous camera registration did not materially alter this depth.",
+  "depth_ablation": {
+    "tcp_above_table_before_m": 0.02,
+    "tcp_above_table_after_m": 0.012,
+    "nominal_change_m": -0.008,
+    "frame_count": 2146,
+    "arm_command_rows_changed": 999,
+    "same_gripper_commands": true,
+    "same_phases_and_fps": true,
+    "same_effective_scene": true,
+    "different_arm_commands_from_real_recording": true,
+    "new_max_joint_speed_deg_s": 6.135522658041704,
+    "timing": "Native 30Hz simulator; changed arm path retains original phase times, not an identical-command calibration comparison"
+  },
+  "close_geometry_mm": {
+    "before": {
+      "finger7_min_above_table": 19.108,
+      "finger8_min_above_table": 18.502,
+      "finger7_cube_vertical_overlap": 9.901,
+      "finger8_cube_vertical_overlap": 10.508
+    },
+    "after": {
+      "finger7_min_above_table": 11.117,
+      "finger8_min_above_table": 10.513,
+      "finger7_cube_vertical_overlap": 17.886,
+      "finger8_cube_vertical_overlap": 18.49
+    }
+  },
+  "geometry_meaning": "Vertical bounding-envelope overlap reconstructed from recorded arm q, full opening with symmetric fingers, actual STL and recorded object pose; not a measured contact patch.",
+  "physics": {
+    "success": true,
+    "min_held_lift_m": 0.04997831583023071,
+    "held_bilateral_contact_fraction": 1.0,
+    "return_distance_m": 0.007255994902878321,
+    "unintended_external_robot_contacts": [],
+    "attachments_or_object_teleportation": false,
+    "plan_sha256": "38e6a09981de8c8b04cd572fc85cdb06b74f34c38b97cef423ef0f6379373187"
+  },
+  "remaining_limits": [
+    "Changed motion cannot identify the true scene calibration correction.",
+    "Fit04 object is offset about14.16mm along tool-local X from the frozen trajectory target; lowering does not remove this lateral offset.",
+    "Deep simulated grip opening remains about30.0mm vs recorded real35.6mm.",
+    "Real cube pose, finger pads/length, base height, joint zeros and hand-eye geometry remain partly confounded.",
+    "Visible image upper/lower cube edges were previously mislabeled as top-face boundaries; projected 8-corner checks identify the near-side vertical face. Pixel residuals remain valid but earlier face labels are superseded."
+  ],
+  "planner_fix": {
+    "script": "scripts/run_playground_grasp.py",
+    "new_option": "--grasp-height-above-table",
+    "default_above_table_m": 0.02,
+    "legacy_base_option": [
+      "--grasp-height",
+      "--grasp-height-base"
+    ],
+    "negative_base_z_supported": true,
+    "example": "12 mm above table with14 mm mount => base Z -2 mm",
+    "archived_plan_input_unchanged": true,
+    "not_cause_of_previous_video": "Retry08 supplied plan already used base Z6 mm for20 mm above table; fixed bug affects newly generated default plans only."
+  },
+  "validation": {
+    "tests": "83 passed, 0 skipped",
+    "test_log": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/regression.log",
+    "full_physics_frames": 2146
+  },
+  "artifacts": {
+    "raw_physics": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/deeper_8mm_physics",
+    "metadata_erratum": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/metadata_erratum.json",
+    "corrected_plan": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/deeper_8mm/plan_metadata_corrected.json",
+    "geometry_report": "outputs/playground_grasp_transfer_20261107/retry_08/contact_depth_review/geometry_report.json",
+    "geometry_comparison": "outputs/playground_grasp_transfer_20261107/retry_08/contact_depth_review/geometry_deeper_comparison.json",
+    "video_directory": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/video",
+    "comparison_video": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/video/depth_20_vs_12mm_diagnostic_1x.mp4",
+    "video_qa": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/video/final_media_qa.json",
+    "conditional_pose_report": "outputs/playground_grasp_transfer_20261107/retry_08/contact_depth_review/face_projection_and_pnp.json",
+    "visual_edge_erratum": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/contact_depth_review/visual_edge_identity_erratum.json"
+  },
+  "conditional_pose_check": {
+    "accepted_scene_correction": false,
+    "table_base_z_m": -0.014,
+    "real_cube_lowest_base_z_m": -0.01419,
+    "pixel_perturbation_interval_m": [
+      -0.017914,
+      -0.010568
+    ],
+    "meaning": "Conditional on existing camera/FK and selected visible side-face corners; excludes systematic calibration errors. Does not support raising the table another 8-14 mm. Held real cube is occluded, so real grasp depth cannot be measured reliably from this fit."
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "scope": "Already-recorded stationary depth, explicitly restricted bare-table regions. No calibration changes.",
+  "configuration_table_base_z_mm": -14,
+  "results": {
+    "home": {
+      "global": {
+        "roi_xyxy": [
+          30,
+          260,
+          300,
+          440
+        ],
+        "original_valid_pixels": 48600,
+        "inliers": 48598,
+        "fit_rms_mm": 0.8049043678010285,
+        "normal_base": [
+          -0.006617223207930796,
+          0.0033634412625813295,
+          0.9999724494304277
+        ],
+        "z_at_origin_mm": -17.58537012506854,
+        "z_at_grasp_xy_mm": -15.690047510106833,
+        "normal_tilt_deg": 0.4253083588053896,
+        "raw_normal_cv": [
+          0.006905710345765665,
+          0.565564962927425,
+          0.8246748352372107
+        ],
+        "raw_plane_distance_m": 0.4931744128664726
+      },
+      "wrist": {
+        "roi_xyxy": [
+          280,
+          60,
+          430,
+          240
+        ],
+        "original_valid_pixels": 27000,
+        "inliers": 27000,
+        "fit_rms_mm": 0.48309199245365375,
+        "normal_base": [
+          -0.00026820266755674143,
+          0.0029776362799106087,
+          0.99999553086477
+        ],
+        "z_at_origin_mm": 2.724616939825233,
+        "z_at_grasp_xy_mm": 2.5602717485095954,
+        "normal_tilt_deg": 0.17129691439211,
+        "raw_normal_cv": [
+          0.015094676510047287,
+          0.6017856663302172,
+          0.7985149732726077
+        ],
+        "raw_plane_distance_m": 0.3204753820370469
+      }
+    },
+    "retreat": {
+      "global": {
+        "roi_xyxy": [
+          30,
+          260,
+          300,
+          440
+        ],
+        "original_valid_pixels": 48600,
+        "inliers": 48593,
+        "fit_rms_mm": 0.7894636753518208,
+        "normal_base": [
+          -0.006681881980577522,
+          0.0031727654311750667,
+          0.9999726426321452
+        ],
+        "z_at_origin_mm": -17.298340571217402,
+        "z_at_grasp_xy_mm": -15.365524616748672,
+        "normal_tilt_deg": 0.42381446508005727,
+        "raw_normal_cv": [
+          0.007096315361885669,
+          0.5656176915229443,
+          0.8246370530994469
+        ],
+        "raw_plane_distance_m": 0.4928330175321488
+      },
+      "wrist": {
+        "roi_xyxy": [
+          280,
+          60,
+          430,
+          240
+        ],
+        "original_valid_pixels": 21714,
+        "inliers": 21714,
+        "fit_rms_mm": 0.32856980115658446,
+        "normal_base": [
+          -0.03233537050324325,
+          -0.028480585417310713,
+          0.9990712087077198
+        ],
+        "z_at_origin_mm": -3.0985788382380752,
+        "z_at_grasp_xy_mm": 9.98724785902767,
+        "normal_tilt_deg": 2.4696210463703867,
+        "raw_normal_cv": [
+          -0.006335022043780106,
+          -0.26583095180608296,
+          0.9639988446868475
+        ],
+        "raw_plane_distance_m": 0.1600370739643064
+      }
+    }
+  },
+  "caveats": [
+    "Global depth-to-base pose was fitted using tabletop depth; internal agreement does not independently verify 14mm mounting height.",
+    "Fixed-camera consistency across captures is required before interpreting differences.",
+    "Near-field wrist depth may have systematic bias, and frame transform uses unverified robot kinematics and hand-eye."
+  ]
+}

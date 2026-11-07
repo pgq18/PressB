@@ -332,6 +332,16 @@ class TableButtonsBackend:
             **deepcopy(spec), "success": False, "settling_physics_steps": self.config["settling_ticks"],
             "elapsed_control_steps": 0}}]
 
+    def end_episode(self, env_ids):
+        """Retire the active episode without executing an action or physics tick."""
+        self._check()
+        if (not isinstance(env_ids, list) or len(env_ids) != 1
+                or type(env_ids[0]) is not int or env_ids[0] != 0):
+            raise ValueError("Table buttons end_episode requires env_ids=[0]")
+        if not self._ready:
+            raise ValueError("Only an initialized active table buttons episode may end")
+        self._ready = False
+
     def step(self, items):
         self._check()
         if not self._ready:

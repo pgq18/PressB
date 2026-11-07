@@ -1,4 +1,4 @@
-"""One entry point for configured model, simulation, training and evaluation nodes."""
+"""Launch configured inference, simulation, real robot, training and evaluation nodes."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,7 @@ from pressb.registry import available
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("list", "validate", "prepare", "inference", "simulation", "train", "eval", "collect"))
+    parser.add_argument("command", choices=("list", "validate", "prepare", "inference", "simulation", "real_robot", "train", "eval", "collect"))
     parser.add_argument("--config", type=Path, help="Declarative experiment JSON")
     parser.add_argument("--resolved-dir", type=Path, help="Output directory for immutable resolved node configs")
     parser.add_argument("--output", type=Path, help="Runner output directory")
@@ -23,7 +23,8 @@ def main(argv=None):
     parser.add_argument("--max-transitions", type=int)
     parser.add_argument("--resume", type=Path, help="Trusted full RL checkpoint, with optimizer/replay")
     parser.add_argument("--inference", help="Override runner inference endpoint")
-    parser.add_argument("--simulation", help="Override runner simulation endpoint")
+    parser.add_argument("--simulation", "--environment", dest="simulation",
+                        help="Override runner environment endpoint (simulation or real robot)")
     parser.add_argument("--token-env", default="PRESSB_RL_TOKEN")
     args = parser.parse_args(argv)
     if args.command == "list":
@@ -66,9 +67,12 @@ def main(argv=None):
     if args.command == "prepare":
         print(json.dumps({key: str(path) for key, path in paths.items()}, indent=2))
         return 0
-    if args.command in ("inference", "simulation"):
+    if args.command in ("inference", "simulation", "real_robot"):
         from pressb.runtime.server import run_service
-        run_service(args.command, paths[args.command])
+        # Physical environments keep the same config and endpoint keys as
+        # simulators, so existing trainers and trajectory collectors work.
+        node_key = "simulation" if args.command == "real_robot" else args.command
+        run_service(args.command, paths[node_key])
         return 0
     from pressb.runtime.trainer import GenericTrainer
     if os.environ.get(args.token_env):

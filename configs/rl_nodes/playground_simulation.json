@@ -1,0 +1,17 @@
+{
+  "server": {"host": "127.0.0.1", "port": 8101, "transport": "http"},
+  "service": {"request_cache_size": 8},
+  "backend": {
+    "plugin": "playground",
+    "config": {
+      "scene_config": "configs/piper_playground.json",
+      "num_envs": 1,
+      "horizon": 32,
+      "gpu": 0,
+      "headless": true,
+      "max_episode_seconds": 30,
+      "gamma": 0.99,
+      "smoothing": {"mode": "none", "alpha": 0.8}
+    }
+  }
+}

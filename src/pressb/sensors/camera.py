@@ -1,6 +1,26 @@
 """Calibrated USD cameras with lazy simulator imports."""
 
 
+def camera_intrinsics_from_usd(prim, resolution):
+    """Return the authored pinhole K, including an off-centre principal point.
+
+    Isaac Camera.get_intrinsics_matrix() assumes a centred principal point;
+    read USD directly so measured RealSense calibration remains observable.
+    """
+    import numpy as np
+    from pxr import UsdGeom
+
+    camera = UsdGeom.Camera(prim)
+    width, height = resolution
+    focal = camera.GetFocalLengthAttr().Get()
+    horizontal = camera.GetHorizontalApertureAttr().Get()
+    vertical = camera.GetVerticalApertureAttr().Get()
+    ox = camera.GetHorizontalApertureOffsetAttr().Get()
+    oy = camera.GetVerticalApertureOffsetAttr().Get()
+    return np.array([[focal*width/horizontal, 0., width/2-ox*width/horizontal],
+                     [0., focal*height/vertical, height/2+oy*height/vertical], [0., 0., 1.]])
+
+
 def set_intrinsics(prim, spec):
     from pxr import UsdGeom
     camera = UsdGeom.Camera(prim)
@@ -31,5 +51,4 @@ def make_camera(stage, path, spec, base):
     prim.CreateClippingRangeAttr(Gf.Vec2f(.005, 20.))
     set_intrinsics(prim.GetPrim(), spec)
     return str(prim.GetPath())
-
 

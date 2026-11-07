@@ -1,0 +1,613 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-08",
+  "task": "playground",
+  "status": "final_reference_adopted",
+  "default_config": "configs/piper_playground.json",
+  "frozen_config": "configs/calibration/playground_20261108_final.json",
+  "config_sha256": "446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21",
+  "selection": "Retain previous runtime parameters after bounded joint geometry/optics and material candidate evaluation; append final revision metadata only.",
+  "scope": {
+    "simulation_only": true,
+    "hardware_access": false,
+    "new_real_robot_trials": 0,
+    "new_joint_candidate_full_physics_replays": 4,
+    "baseline_physics_reused_and_hash_verified": true,
+    "default_empty_workspace": true
+  },
+  "parameters": {
+    "effective_mount_height_m": 0.006,
+    "mount_interpretation": "Empirical contact-depth correction, not a measurement replacing the approximate 14 mm physical riser.",
+    "table": {
+      "table_height": 0.76,
+      "table_width": 1.6,
+      "table_depth": 1.05,
+      "table_x_min": -0.12
+    },
+    "global_camera": {
+      "resolution": [
+        640,
+        480
+      ],
+      "fx": 606.1517333984375,
+      "fy": 605.0548095703125,
+      "cx": 327.25390625,
+      "cy": 249.86172485351562,
+      "eye_base_m": [
+        0.7116748606489064,
+        0.010420793926993965,
+        0.4888002813898958
+      ],
+      "target_base_m": [
+        0.42985320496061935,
+        0.02714489243481863,
+        0.0761298815376491
+      ],
+      "base_from_camera_usd": [
+        [
+          0.06885489678096501,
+          -0.8231434994760833,
+          0.5636433113765741,
+          0.7116748606489064
+        ],
+        [
+          0.9976048991572628,
+          0.060544886603492803,
+          -0.03344819701564933,
+          0.010420793926993965
+        ],
+        [
+          -0.006593054429484788,
+          0.5645964009595147,
+          0.8253407997044934,
+          0.4888002813898958
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "horizontal_fov_deg": 55.660994584430625,
+      "wrist_camera_intrinsics": {
+        "width": 640,
+        "height": 480,
+        "fx": 605.6944580078125,
+        "fy": 605.6384887695312,
+        "cx": 320.6307678222656,
+        "cy": 250.77304077148438,
+        "model": "distortion.inverse_brown_conrady",
+        "coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "status": "Retry08 joint image registration constrained by the recorded bare-table global depth plane; live D435i intrinsics retained."
+    },
+    "wrist_camera": {
+      "resolution": [
+        640,
+        480
+      ],
+      "fx": 605.6944580078125,
+      "fy": 605.6384887695312,
+      "cx": 320.6307678222656,
+      "cy": 250.77304077148438,
+      "link6_from_camera_usd": [
+        [
+          0.06584741924177227,
+          -0.9476492371246081,
+          -0.3124500612199439,
+          -0.06503229279955493
+        ],
+        [
+          -0.997827209411166,
+          -0.06183569777264283,
+          -0.0227421775495506,
+          0.04188022858042896
+        ],
+        [
+          0.002231039650743798,
+          0.31326868636702065,
+          -0.9496619148960107,
+          0.034052191933061325
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "status": "Live D435i intrinsics retained; wrist-only refinement against measured-opening finger contours, with fixed 6 mm effective mount. Residual real finger/contact and scene registration mismatch remains."
+    },
+    "initial_state_joint_rad_m": [
+      -0.18537141985431774,
+      0.47251298839242484,
+      -0.4591612196146682,
+      -0.11377801393751034,
+      0.7479783042346899,
+      0.08194320838113378,
+      0.0
+    ],
+    "reference_objects": [
+      {
+        "name": "GreenCube",
+        "center_xy": [
+          0.3140078421313393,
+          0.08634996212296461
+        ],
+        "size": [
+          0.029,
+          0.029,
+          0.029
+        ],
+        "mass": 0.025,
+        "color": [
+          0.006,
+          0.27,
+          0.18
+        ],
+        "roughness": 0.22,
+        "yaw_deg": 22.38732838942143
+      },
+      {
+        "name": "BlueCube",
+        "center_xy": [
+          0.32323228577668783,
+          0.1779876734267889
+        ],
+        "size": [
+          0.03,
+          0.03,
+          0.03
+        ],
+        "mass": 0.025,
+        "color": [
+          0.006,
+          0.35,
+          0.55
+        ],
+        "roughness": 0.22,
+        "yaw_deg": -6.473082551184806
+      }
+    ],
+    "default_objects": [],
+    "materials": {
+      "Mat": {
+        "color": [
+          0.001,
+          0.08,
+          0.12
+        ],
+        "roughness": 0.68,
+        "metallic": 0.0,
+        "specular": 0.08
+      }
+    },
+    "lighting": {
+      "ambient": {
+        "intensity": 180,
+        "color": [
+          0.92,
+          0.96,
+          1.0
+        ]
+      },
+      "area_lights": [
+        {
+          "name": "BroadKey",
+          "position_base_m": [
+            0.69,
+            0.3,
+            1.094
+          ],
+          "target_base_m": [
+            0.33,
+            0.02,
+            -0.006
+          ],
+          "width": 0.5,
+          "height": 0.35,
+          "intensity": 45000,
+          "color": [
+            0.92,
+            0.97,
+            1.0
+          ]
+        },
+        {
+          "name": "SoftFill",
+          "position_base_m": [
+            -0.2,
+            0.0,
+            1.094
+          ],
+          "target_base_m": [
+            0.35,
+            0.0,
+            -0.006
+          ],
+          "width": 1.0,
+          "height": 0.8,
+          "intensity": 500,
+          "color": [
+            0.94,
+            0.98,
+            1.0
+          ]
+        },
+        {
+          "name": "SideFill",
+          "position_base_m": [
+            0.3,
+            -0.65,
+            0.494
+          ],
+          "target_base_m": [
+            0.32,
+            0.2,
+            0.034
+          ],
+          "width": 0.7,
+          "height": 0.6,
+          "intensity": 1500.0,
+          "color": [
+            0.88,
+            0.95,
+            1.0
+          ]
+        }
+      ]
+    },
+    "rendering": {
+      "warmup_frames": 48,
+      "subframes_per_frame": 2,
+      "direct_samples_per_pixel": 4,
+      "reflection_samples_per_pixel": 4
+    },
+    "physics": {
+      "physics_dt": 0.008333333333333333,
+      "fps": 30,
+      "arm_stiffness": 12000.0,
+      "arm_damping": 600.0,
+      "arm_max_effort": 100.0,
+      "gripper_stiffness": 2500.0,
+      "gripper_damping": 40.0,
+      "gripper_max_effort": 10.0,
+      "finger_static_friction": 1.0,
+      "finger_dynamic_friction": 0.8
+    }
+  },
+  "candidate_comparisons": [
+    {
+      "candidate": "current_baseline",
+      "mount_mm": 6,
+      "grouped_engineering_score": 0.6436189231736036,
+      "score_change_from_baseline_percent": 0.0,
+      "pixel_coordinate_rmse_px": {
+        "global_cube": 1.1534886896707512,
+        "global_finger": 4.059600396413464,
+        "wrist_cube": 7.621371729738387,
+        "wrist_finger": 4.697864663265021
+      },
+      "near_face_diagnostic_rmse_px": 9.852874016496987,
+      "normalized_groups": {
+        "global_cube": 0.3844962298902504,
+        "global_finger": 0.6766000660689108,
+        "wrist_cube": 0.7621371729738387,
+        "wrist_finger": 0.7829774438775035,
+        "table_depth": 0.5212435544752285
+      },
+      "depth_coarse_workarea_gate": true,
+      "depth_at_origin_sensitivity_score": 0.6971218076423298,
+      "max_depth_residual_mm": {
+        "green": 10.769030525146022,
+        "origin": 16.45242690613114
+      },
+      "prior_normalized_adjustment_rms": 0,
+      "physics_complete": true,
+      "physics_gates": {
+        "full_original_2146_commands_and_phases": true,
+        "physics_success": true,
+        "held_lift_at_least_40mm": true,
+        "held_bilateral_at_least_95percent": true,
+        "return_xy_within_15mm": true,
+        "no_unintended_external_contacts": true,
+        "no_attachment_or_teleport": true,
+        "no_finger_table_penetration": true,
+        "fixed_K_geometry_and_dynamic_parameters": true
+      },
+      "all_physics_gates_pass": true,
+      "close_overlap_mm": [
+        17.888293270144185,
+        18.493060557999286
+      ],
+      "deeper_grasp_preference": true,
+      "minimum_finger_table_clearance_mm": 10.241825309071046,
+      "min_held_lift_mm": 49.974262714385986,
+      "held_bilateral_fraction": 1.0,
+      "return_xy_mm": 7.239961254712842
+    },
+    {
+      "candidate": "joint_06mm",
+      "mount_mm": 6,
+      "grouped_engineering_score": 0.6825309683483628,
+      "score_change_from_baseline_percent": 6.045820558365311,
+      "pixel_coordinate_rmse_px": {
+        "global_cube": 1.089293078426147,
+        "global_finger": 3.857208220456903,
+        "wrist_cube": 8.497851711452041,
+        "wrist_finger": 5.35425983230165
+      },
+      "near_face_diagnostic_rmse_px": 14.916174544329763,
+      "normalized_groups": {
+        "global_cube": 0.3630976928087157,
+        "global_finger": 0.6428680367428171,
+        "wrist_cube": 0.8497851711452041,
+        "wrist_finger": 0.8923766387169416,
+        "table_depth": 0.5154148466605918
+      },
+      "depth_coarse_workarea_gate": true,
+      "depth_at_origin_sensitivity_score": 0.771867622100932,
+      "max_depth_residual_mm": {
+        "green": 8.143972131988246,
+        "origin": 20.057022143843245
+      },
+      "prior_normalized_adjustment_rms": 0.8139405345694367,
+      "physics_complete": true,
+      "physics_gates": {
+        "full_original_2146_commands_and_phases": true,
+        "physics_success": true,
+        "held_lift_at_least_40mm": true,
+        "held_bilateral_at_least_95percent": true,
+        "return_xy_within_15mm": true,
+        "no_unintended_external_contacts": true,
+        "no_attachment_or_teleport": true,
+        "no_finger_table_penetration": true,
+        "fixed_K_geometry_and_dynamic_parameters": true
+      },
+      "all_physics_gates_pass": true,
+      "close_overlap_mm": [
+        17.89292695064323,
+        18.488210054783885
+      ],
+      "deeper_grasp_preference": true,
+      "minimum_finger_table_clearance_mm": 10.241874604887428,
+      "min_held_lift_mm": 49.97378587722778,
+      "held_bilateral_fraction": 1.0,
+      "return_xy_mm": 8.336386913720485
+    },
+    {
+      "candidate": "joint_08mm",
+      "mount_mm": 8,
+      "grouped_engineering_score": 0.6675092829876608,
+      "score_change_from_baseline_percent": 3.711879647083216,
+      "pixel_coordinate_rmse_px": {
+        "global_cube": 1.0724349336227457,
+        "global_finger": 3.762821940758945,
+        "wrist_cube": 8.575453483432048,
+        "wrist_finger": 5.241755024975601
+      },
+      "near_face_diagnostic_rmse_px": 15.032989794520573,
+      "normalized_groups": {
+        "global_cube": 0.3574783112075819,
+        "global_finger": 0.6271369901264908,
+        "wrist_cube": 0.8575453483432047,
+        "wrist_finger": 0.8736258374959335,
+        "table_depth": 0.4562296993831354
+      },
+      "depth_coarse_workarea_gate": true,
+      "depth_at_origin_sensitivity_score": 0.7318135467528706,
+      "max_depth_residual_mm": {
+        "green": 7.332495940511279,
+        "origin": 16.849500335951596
+      },
+      "prior_normalized_adjustment_rms": 0.5380131866343826,
+      "physics_complete": true,
+      "physics_gates": {
+        "full_original_2146_commands_and_phases": true,
+        "physics_success": true,
+        "held_lift_at_least_40mm": true,
+        "held_bilateral_at_least_95percent": true,
+        "return_xy_within_15mm": true,
+        "no_unintended_external_contacts": true,
+        "no_attachment_or_teleport": true,
+        "no_finger_table_penetration": true,
+        "fixed_K_geometry_and_dynamic_parameters": true
+      },
+      "all_physics_gates_pass": true,
+      "close_overlap_mm": [
+        15.893271700669047,
+        16.49001661269875
+      ],
+      "deeper_grasp_preference": true,
+      "minimum_finger_table_clearance_mm": 12.241874661894562,
+      "min_held_lift_mm": 49.74484443664551,
+      "held_bilateral_fraction": 1.0,
+      "return_xy_mm": 8.09050693514478
+    },
+    {
+      "candidate": "joint_10mm",
+      "mount_mm": 10,
+      "grouped_engineering_score": 0.6590116279642154,
+      "score_change_from_baseline_percent": 2.3915867350065456,
+      "pixel_coordinate_rmse_px": {
+        "global_cube": 1.0758807763448563,
+        "global_finger": 3.800836353838044,
+        "wrist_cube": 8.73611612354339,
+        "wrist_finger": 5.066005143694362
+      },
+      "near_face_diagnostic_rmse_px": 15.86083861898338,
+      "normalized_groups": {
+        "global_cube": 0.35862692544828545,
+        "global_finger": 0.633472725639674,
+        "wrist_cube": 0.8736116123543389,
+        "wrist_finger": 0.844334190615727,
+        "table_depth": 0.4067962493574848
+      },
+      "depth_coarse_workarea_gate": true,
+      "depth_at_origin_sensitivity_score": 0.7032419288819721,
+      "max_depth_residual_mm": {
+        "green": 6.4223351683251,
+        "origin": 14.026858122426317
+      },
+      "prior_normalized_adjustment_rms": 0.3188276041977316,
+      "physics_complete": true,
+      "physics_gates": {
+        "full_original_2146_commands_and_phases": true,
+        "physics_success": true,
+        "held_lift_at_least_40mm": true,
+        "held_bilateral_at_least_95percent": true,
+        "return_xy_within_15mm": true,
+        "no_unintended_external_contacts": true,
+        "no_attachment_or_teleport": true,
+        "no_finger_table_penetration": true,
+        "fixed_K_geometry_and_dynamic_parameters": true
+      },
+      "all_physics_gates_pass": true,
+      "close_overlap_mm": [
+        13.896603556988456,
+        14.4974841522746
+      ],
+      "deeper_grasp_preference": true,
+      "minimum_finger_table_clearance_mm": 14.24187466526169,
+      "min_held_lift_mm": 49.7208833694458,
+      "held_bilateral_fraction": 1.0,
+      "return_xy_mm": 7.849249846575842
+    },
+    {
+      "candidate": "joint_14mm",
+      "mount_mm": 14,
+      "grouped_engineering_score": 0.6619953545653565,
+      "score_change_from_baseline_percent": 2.8551726386696563,
+      "pixel_coordinate_rmse_px": {
+        "global_cube": 1.1194025966313765,
+        "global_finger": 4.204514558397524,
+        "wrist_cube": 9.122066565113672,
+        "wrist_finger": 4.6888051626527805
+      },
+      "near_face_diagnostic_rmse_px": 18.40636867291425,
+      "normalized_groups": {
+        "global_cube": 0.3731341988771255,
+        "global_finger": 0.7007524263995873,
+        "wrist_cube": 0.9122066565113671,
+        "wrist_finger": 0.7814675271087967,
+        "table_depth": 0.3436476011043752
+      },
+      "depth_coarse_workarea_gate": true,
+      "depth_at_origin_sensitivity_score": 0.674784047940362,
+      "max_depth_residual_mm": {
+        "green": 4.699907182249831,
+        "origin": 8.616596601245185
+      },
+      "prior_normalized_adjustment_rms": 0.44020442295569884,
+      "physics_complete": true,
+      "physics_gates": {
+        "full_original_2146_commands_and_phases": true,
+        "physics_success": true,
+        "held_lift_at_least_40mm": true,
+        "held_bilateral_at_least_95percent": true,
+        "return_xy_within_15mm": true,
+        "no_unintended_external_contacts": true,
+        "no_attachment_or_teleport": true,
+        "no_finger_table_penetration": true,
+        "fixed_K_geometry_and_dynamic_parameters": true
+      },
+      "all_physics_gates_pass": true,
+      "close_overlap_mm": [
+        9.885178204202441,
+        10.488302028455495
+      ],
+      "deeper_grasp_preference": false,
+      "minimum_finger_table_clearance_mm": 18.2418746884703,
+      "min_held_lift_mm": 50.009727478027344,
+      "held_bilateral_fraction": 1.0,
+      "return_xy_mm": 7.249085256928355
+    }
+  ],
+  "score_interpretation": "Equal-weight normalized five-group engineering score, not a probability or calibrated error. A 10% change band is a selection heuristic, not a statistical confidence interval. Lower values are preferable; within-band changes do not justify new parameters.",
+  "depth_interpretation": "Use table-plane offset at working cube XY, consistent with earlier reports. Extrapolated base-origin plane offset changes ranking and fails coarse gate for baseline; not hidden. See integrated selection audit.",
+  "appearance": {
+    "candidate_adopted": false,
+    "report": "outputs/playground_final_20261108/appearance/candidate_evaluation.json",
+    "reason": "Both mean colour errors improve, but two wrist local ROI errors exceed the frozen +2.0 DeltaE76 degradation bound (+2.27/+2.02). The dark-foreground mask includes shadowed table and is not evidence of finger degradation."
+  },
+  "validation": {
+    "regression": {
+      "passed": 102,
+      "failed": 0,
+      "log": "outputs/playground_final_20261108/regression.log"
+    },
+    "isaac_backend_smoke": {
+      "status": "passed",
+      "closed": true,
+      "checks": {
+        "measured_j1_change_rad": 0.06000024080276489,
+        "gripper_width_m": 0.025000110268592834,
+        "retry_idempotent": true,
+        "timed_truncation": true,
+        "reset_after_terminal": true,
+        "measured_state_changed": true,
+        "images_valid": true,
+        "fk_camera_agrees": true
+      }
+    },
+    "new_empty_pose_render": {
+      "physics_steps": 0,
+      "max_errors": {
+        "link_translation_m": 2.22613959932616e-07,
+        "link_rotation_matrix": 4.602886276294793e-07,
+        "wrist_translation_m": 2.2008794053895997e-07,
+        "wrist_rotation_matrix": 4.3795039378347056e-07
+      }
+    },
+    "runtime_parameters_unchanged_from_baseline": true,
+    "frozen_default_output_config_bytes_equal": true
+  },
+  "remaining_limits": [
+    "Current baseline held-out wrist cube coordinate RMSE7.62px and contour4.70px; near-side face diagnostic9.85px. These are residual mismatches, not perfect alignment.",
+    "Wrist depth table offsets at working cube remain about-10.77mm (home) and-4.56mm (retreat); origin-intercept residual reaches-16.45mm. A single effective mount adjustment does not solve pose-dependent FK/hand-eye/depth inconsistency.",
+    "Natural close opening real about35.6mm versus simulated30mm remains unresolved; do not erase this difference with camera adjustment.",
+    "Reported finger overlap is vertical mesh/cube envelope overlap under symmetric fingers, not contact patch or measured real overlap.",
+    "All held-out frames/openings are from a previously inspected single session. No blind independent real-world validation was done."
+  ],
+  "real_sim_natural_held_width_mm": [
+    35.6,
+    30.00456467270851
+  ],
+  "video": {
+    "path": "outputs/playground_final_20261108/media/real_final_1x.mp4",
+    "sha256": "be29e8af602ff05eb0024fe6f493dc6c449cdeba1a918117caf21c65d109c20f",
+    "duration_s": 25,
+    "frames": 750,
+    "fps": 30,
+    "interval_s": [
+      34,
+      59
+    ],
+    "layout": "Left recorded real / right final simulated replay; global above wrist",
+    "retimed": false,
+    "new_baseline_physics_run_claimed": false
+  },
+  "preview": "outputs/playground_final_20261108/media/final_empty_preview.png",
+  "detail": "outputs/playground_final_20261108/media/matched_width_detail.png",
+  "source_sha256": {
+    "configs/piper_playground.json": "446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21",
+    "configs/calibration/playground_20261108_final.json": "446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21",
+    "outputs/playground_final_20261108/baseline_config.json": "af785ce1779e15232546688690059375585a19aa35456d9a3f52a38e11f264eb",
+    "outputs/playground_final_20261108/review/predeclared_review.json": "76fda3ea2c24ca8cf4fb5a0239d517cd35001c1b352cf202abd452ef8c0aa328",
+    "outputs/playground_final_20261108/review/integrated_selection.json": "e711f1e8eeea8573ea22195a19ac8dd11c0b1ccf6aa70b76e3e61edda0281dba",
+    "outputs/playground_final_20261108/review/candidate_physics_review.json": "f957d882e7d17ce13ba791896ae0bbcd18ade84335899d31b6d6a5e7accc7a60",
+    "outputs/playground_final_20261108/review/final_config_runtime_equality.json": "b8f1f7104051cd9879ef2371d9fb0a2d64563899a4f8cd1e30b27c4f52956f3f",
+    "outputs/playground_final_20261108/appearance/candidate_evaluation.json": "80a466a9a5302353b3c6b66bb0040b68db6204527778865fc17bc3f8dc68c749",
+    "outputs/playground_final_20261108/default_smoke/report.json": "495f7b4180d310d2d730efcc9b976596d113838b9112c8df34c34d1332d15dec",
+    "outputs/playground_final_20261108/regression.log": "7337da1083773092e0ba40a5886f19a998b7c0495f12107d204bc742f704b6d0",
+    "outputs/playground_final_20261108/empty_preview/summary.json": "f8e99fec615ea3e5e458190dbbfb4645297cfe50723f53955d0121320a3b2d2e",
+    "outputs/playground_final_20261108/media/final_media_qa.json": "673b9f7a23b409cd4fc0ff53bd9e03fa0e6805280974ca40273ac9e3eb53622e"
+  }
+}

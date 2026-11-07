@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "experiment": "Playground green cube grasp with reference queue and adapter",
+  "artifact_root": "outputs/playground_grasp_transfer_20261107/retry_08",
+  "software_tests": {
+    "passed": 475,
+    "seconds": 1.4
+  },
+  "software_source_sha256": {
+    "src/pressb/robots/piper/real.py": "a33aa8bb06587b0cc02b44069bb437dcd5ff3427056c7e01522b90f840521e9c",
+    "src/pressb/control/real_replay.py": "cb643376ac5a9e426d626dd858144d8d2b7d1ba998e1e5afc966d510dfc1c728",
+    "src/pressb/control/reference_execution.py": "775f52063e7ac2ff7b206b399b9822c29fa76952ac777b6b72401fac501f7dd4"
+  },
+  "control": {
+    "execution_mode": "reference",
+    "command_policy": "reference",
+    "hz": 30,
+    "device_speed_percent": 2,
+    "gripper_effort_raw_command": 1000,
+    "arrival_wait": false,
+    "contact_gate": false,
+    "measured_joint_startup_bounds_gate": false,
+    "firmware_limits_changed": false,
+    "reset_sent_this_turn": false,
+    "normal_cleanup_sends_new_target": false
+  },
+  "geometry": {
+    "green_cube_edge_m": 0.029,
+    "estimated_base_mount_m": 0.014,
+    "green_cube_xy_base_m": [
+      0.3295564649523107,
+      0.08487684729787992
+    ],
+    "grasp_tcp_height_above_table_m": 0.02,
+    "wrist_intrinsics": "unchanged, measured real values",
+    "known_wrist_global_xy_disagreement_m": 0.02257
+  },
+  "home": {
+    "completed_actions": 900,
+    "elapsed_s": 30.811811274004867,
+    "max_final_joint_error_deg": 0.07000027465819779,
+    "error": null,
+    "old_2500_action_candidate_executed": false
+  },
+  "simulation": {
+    "success": true,
+    "completed_frames": 2146,
+    "duration_s": 71.53333333333333,
+    "min_held_object_lift_m": 0.04996967315673828,
+    "return_distance_m": 5.4121550809967155e-05,
+    "unintended_external_robot_contacts": [],
+    "plan_sha256": "6b2758813eafa4eaec647ae07e55217dde292a87f7853c86f7f2d6d311148668"
+  },
+  "physical_dispatch": {
+    "completed_actions": 2146,
+    "total_actions": 2146,
+    "elapsed_s": 72.37793344601232,
+    "dispatch_complete": true,
+    "error": null,
+    "cleanup_errors": [],
+    "task_success_from_dispatch": null,
+    "following_previous_target_max_joint_error_deg": 1.04,
+    "all_joint_p95_following_previous_target_error_deg_upper_bound": 0.118,
+    "observed_lift_gripper_width_m": 0.0356,
+    "observed_release_gripper_width_m": 0.0594
+  },
+  "physical_visual_outcome": {
+    "status": "cube_lifted_and_returned",
+    "task_success": true,
+    "basis": "Independent inspection of continuous global and wrist camera frames; root also inspected the chronological global grasp sequence.",
+    "observations": [
+      "Visible green cube bottom rises about 32 px in the fixed global image while the blue cube remains stationary.",
+      "Green cube stays between the fingers during lift and hold, then moves downward with the gripper.",
+      "After release, the green cube remains on the tabletop while open fingers retreat."
+    ],
+    "real_lift_height_m": null,
+    "real_lift_height_note": "No calibrated physical object-height measurement; approximately 50 mm is the simulated lift only.",
+    "trial_count": 1,
+    "reviewed_continuous_frames": 389,
+    "review_relative_interval_s": [
+      39,
+      78
+    ],
+    "root_reviewed_sequence": "video/real_global_grasp_sequence.jpg"
+  },
+  "last_measured_state": {
+    "joints_deg": [
+      14.365,
+      102.489,
+      -64.352,
+      0.0,
+      51.89,
+      -11.285
+    ],
+    "gripper_width_m": 0.0594,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "artifacts": {
+    "summary": "playground_retry_10_grasp_run/summary.json",
+    "feedback": "after_grasp_feedback.json",
+    "replay": "playground_retry_10_grasp_run/replay.jsonl",
+    "real_camera_frames": "playground_retry_10_grasp_camera/",
+    "passive_can": "playground_retry_10_grasp_can/",
+    "simulation": "sim_trial/",
+    "localization_review": "localization_plan_review/report.json",
+    "visual_sequence": "video/real_global_grasp_sequence.jpg",
+    "visual_review": "visual_outcome_review/report.json",
+    "real_video": "video/real_grasp_trial_1x.mp4",
+    "comparison_video": "video/real_vs_sim_grasp_1x.mp4",
+    "short_comparison_video": "video/close_lift_return_detail_1x.mp4"
+  },
+  "limitations": [
+    "Dispatch completion and loaded gripper feedback alone do not establish object lift.",
+    "Passive CAN recorder observes feedback, not SDK outbound frames with local loopback disabled.",
+    "Mount height and cross-camera extrinsics are not fully calibrated."
+  ],
+  "execution_audit": "execution_audit/report.json",
+  "independent_review_sha256": {
+    "visual_outcome_review/report.json": "31f3cffee4444926301c5aca8d45a9d461b2a54a1b2e20784e1421aabbe14ea9",
+    "execution_audit/report.json": "4b8c61ae9d894c6cddd3e4b33b20ba7882acc293eb6a23703984a44374bbacd8"
+  },
+  "video_timing": {
+    "complete_comparison_s": 79.4,
+    "real_dispatch_s": 72.37793344601232,
+    "simulation_s": 71.53333333333333,
+    "playback": "independent 1x; shorter simulation freezes with label; no time stretching",
+    "cameras_hardware_synchronized": false
+  }
+}

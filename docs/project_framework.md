@@ -1,5 +1,13 @@
 # Runtime, task plugins, model adapters and experiments
 
+The calibrated [Playground](playground.md#derive-another-task-from-this-workspace)
+also serves as a reusable workbench scene template. New tasks pin its versioned
+scene configuration, add objects with scene overrides or a composed scene builder,
+and define their own reset/reward/success logic in a task plugin. The shared
+runtime, model adapters and training loop remain reusable. The supplied
+`configs/rl_nodes/playground_objects_example.json` demonstrates scene composition;
+it retains the workspace backend's zero-reward semantics.
+
 PressB uses one runtime for inference services, environment services, DSRL,
 action-residual learning, policy evaluation and chunk trajectory recording.
 Choose a task, a frozen model and execution settings in an experiment JSON.
@@ -408,3 +416,7 @@ evaluation and collection, followed by strict offline verification of the paused
 formal checkpoints. The final migration evidence also records an interrupted
 attempt after a provenance correction and a validation-only retry after fixing a
 PyTorch guard in the offline harness; neither required a product-code change.
+
+## Physical environment and human outcomes
+
+The fourth service role, `pressb real_robot`, supplies the same environment contract as simulation with `num_envs=1`. Hardware adapters belong to `robots`, capture drivers to `sensors`, physical execution to `runtime/real_robot.py`, and replaceable reset/reward hooks to a configured factory. The trainer optionally replaces environment outcomes with episode-scoped human labels and acknowledges external termination before reset. See [real robot setup and verification scope](real_robot.md). Existing simulation configuration keys remain compatible.

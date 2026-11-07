@@ -4,13 +4,15 @@
 
 PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学习改善冻结的视觉语言动作模型。项目连接物理仿真、模型推理与策略训练，记录相机观测，并依据真实接触和物体运动判定任务结果。
 
-**更新于 2026-11-07：** 现有三个 PiPER 任务。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
+**更新于 2026-11-07：** 现有三个 PiPER 任务，以及独立的干净工作台孪生环境。电梯残差 RL 在固定条件评估中达到 **119/120（99.17%）**；PAP 的 Wall-X 随机评估分别为红色方块 **65/100**、五色方块 **54/100**。桌面按键已支持单／多任务 VLA-JEPA 评估，并完成一轮[三色不同路径的 9,000 条全新示范采集](docs/results/table_buttons_target_relative_20261030/README.md)，与旧的共享路径数据集分开保存。
 
 [任务](#任务概览) · [结果](#当前结果) · [视频](#演示视频) · [运行](#运行三个任务) · [三节点 RL](#在线强化学习独立三节点) · [工作交接](docs/HANDOVER.md)
 
+**新增真机交互端：** 使用 `pressb real_robot` 可将单台 PiPER＋双 RealSense 接入通用 rollout，替代仿真端；控制和相机采集代码已内置，并可在训练端选择人工成功／失败标签。见[配置、接口和验证范围](docs/real_robot.md)。已在 `ssh piper` 验证初始位姿回位和一条完整 PAP episode：episode 144 以 1% 设备速度完成 **342/342 条动作，用时 135.52 秒**，逐动作到位误差为关节小于 0.5°、夹爪不超过 1 mm。本次是重新安排执行时长的空桌面轨迹回放；物品抓取入盒成功率和真机在线 RL 尚未验证。
+
 ## 通用运行核心与插件
 
-**2026-11-07 代码归属整理：** 新实验采用 **通用运行核心＋任务插件＋模型适配器＋实验配置**。DSRL、动作残差、固定 DSRL 后训练残差、评估和 chunk 轨迹记录共用执行流程；机械臂／相机装配和 PhysX 控制复用，场景、随机化、奖励和成功条件由任务插件定义。任务专用实现归入 `tasks/{elevator,pap,table_buttons}`，共享能力归入 `runtime`、`control`、`sensors` 和 `robots/piper`。历史命令保留，已删除的 Python 路径不再设置别名占位。
+**2026-11-07 代码归属整理：** 新实验采用 **通用运行核心＋任务插件＋模型适配器＋实验配置**。DSRL、动作残差、固定 DSRL 后训练残差、评估和 chunk 轨迹记录共用执行流程；机械臂／相机装配和 PhysX 控制复用，场景、随机化、奖励和成功条件由任务插件定义。任务专用实现归入 `tasks/{elevator,pap,table_buttons,playground}`，共享能力归入 `runtime`、`control`、`sensors` 和 `robots/piper`。历史命令保留，已删除的 Python 路径不再设置别名占位。
 
 包根目录的 Python 文件只有 `__init__.py` 和 `registry.py`。任务与模型适配器使用共享契约，共享层不反向导入具体任务、模型实现、上游模型源码或历史流程；`models` 负责接入保留上游结构与来源的 `model_sources`，`compat` 负责历史客户端及电梯 RL 编排。扩展框架或更新外部脚本时，参见[代码归属与路径迁移表](docs/project_framework.md#code-ownership)。`configs/rl_nodes/` 仍保存配置模板，但 `pressb.rl_nodes`、`pressb.online_rl` 两个 Python 包已经移除。
 
@@ -29,6 +31,7 @@ PressB 利用 Isaac 仿真评估机器人策略，并通过在线残差强化学
 | [电梯按键](docs/scene_details.md) | 12 个接触驱动按钮、按压杆、腕部与桌面 RGB 相机 | 1,200 条专家轨迹、LeRobot 导出、VLA-JEPA 评估、三节点 SAC 残差／噪声训练 |
 | [桌面抓取入盒（PAP）](docs/piper_pick_place.md) | 对齐数据集的绿色工作台、纸盒、自由方块及双相机 | 真机轨迹回放、原生 Wall-X 闭环推理、可选关节平滑、配对的位置／颜色随机评估 |
 | [桌面彩色按键](docs/table_buttons.md) | PAP 工作台上的红／黄／蓝弹簧按键 | 近／中／远随机布局、三色不同路径的 IK 示范、LeRobot 采集／合并、VLA-JEPA 训练与闭环评估 |
+| [Playground 工作台模板](docs/playground.md) | 当前真机工作台、空桌面、实测 D435i 内参与经修正的相机外参 | [最终参考预设](configs/calibration/playground_20261108_final.json)及[添加物体的派生场景示例](configs/rl_nodes/playground_objects_example.json)；新任务复用标定并定义各自任务判据，工作台后端本身无任务奖励 |
 
 三个任务使用独立配置。PAP 依据 `piper_pap_20260606_offset` 中的关节、相机图像及实拍照片复刻，包含光滑方块、较粗糙纸盒／桌面和柔和光照，已有红、蓝正方体回放配置；数据集内其他物体还需各自的几何模型。PAP 保留对齐数据集的相机；桌面按键的腕部相机**内参和光心位姿**与电梯任务一致，固定相机沿用 PAP。桌面按键已接入学习策略推理与带物理审核的闭环评估。电梯和 PAP／Wall-OSS 均已完成在线 RL 训练，PAP 训练日志与评估证据见交接文档；训练 recent SR 与独立评估分开统计。桌面按键已接入通用任务／模型接口并完成功能验证，尚未开展长程在线 RL 训练。桌面按键监督训练与模型推理已内置于 PressB；[历史 HTTP 评估说明](docs/table_buttons_policy_eval.md)保留原实验命令。
 
@@ -350,7 +353,7 @@ PRESSB_TEST_SNAPSHOT=outputs/edge_feedback/scene.usda \
 | `src/pressb/runtime/` | 公共服务、采样／SAC／回放、检查点、PhysX、资产迁移及共享 USD 桌面组件 |
 | `src/pressb/control/`、`src/pressb/sensors/` | 通用滤波、位姿转换、相机标定、RGB-D 记录和图像拼接 |
 | `src/pressb/robots/piper/` | PiPER 运动学、控制器、关节装配和 D435 硬件 |
-| `src/pressb/tasks/{elevator,pap,table_buttons}/` | 各任务的场景、默认配置、物理结果判定、采样、规划、采集和评估 |
+| `src/pressb/tasks/{elevator,pap,table_buttons,playground}/` | 各任务的场景、默认配置、物理结果判定、采样、规划、采集和评估 |
 | `src/pressb/models/` | 冻结模型适配器、加载与推理封装 |
 | `src/pressb/model_sources/` | 保留上游结构及来源的 Wall-OSS／VLA-JEPA 模型、数据与监督训练源码 |
 | `src/pressb/experiments/`, `src/pressb/training/` | 实验命令／配置与监督训练入口 |

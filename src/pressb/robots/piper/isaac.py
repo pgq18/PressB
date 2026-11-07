@@ -135,6 +135,11 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
     world.reset()
     for camera in cameras.values():
         camera.initialize()
+    # Camera construction normalizes vertical aperture to square pixels. Real
+    # calibration can have fx != fy; restore it after all sensor initialization.
+    set_intrinsics(stage.GetPrimAtPath(up_path), cfg["up_camera"])
+    if "wrist_camera" in cfg:
+        set_intrinsics(wrist_prim, cfg["wrist_camera"])
     indices = np.array([robot.get_dof_index(f"joint{i}") for i in range(1, 9)])
 
     def full_command(value):

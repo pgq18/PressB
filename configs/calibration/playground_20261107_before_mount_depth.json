@@ -1,0 +1,364 @@
+{
+  "robot_usd": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+  "robot_urdf": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+  "robot_base_xy": [
+    0.0,
+    0.0
+  ],
+  "table_height": 0.76,
+  "table_depth": 1.05,
+  "table_width": 1.6,
+  "table_x_min": -0.12,
+  "physics_dt": 0.008333333333333333,
+  "fps": 30,
+  "arm_stiffness": 12000.0,
+  "arm_damping": 600.0,
+  "arm_max_effort": 100.0,
+  "gripper_stiffness": 2500.0,
+  "gripper_damping": 40.0,
+  "gripper_max_effort": 10.0,
+  "finger_static_friction": 1.0,
+  "finger_dynamic_friction": 0.8,
+  "wrist_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 605.6944580078125,
+    "fy": 605.6384887695312,
+    "cx": 320.6307678222656,
+    "cy": 250.77304077148438,
+    "link6_from_camera_usd": [
+      [
+        0.06731970136079805,
+        -0.9462611699495045,
+        -0.3163192312435143,
+        -0.06469589464985921
+      ],
+      [
+        -0.9976857091828069,
+        -0.06687987995885625,
+        -0.012259989767069622,
+        0.04346013671273961
+      ],
+      [
+        -0.009554239953687685,
+        0.31641251540115134,
+        -0.9485735799591001,
+        0.034294575372013886
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "status": "Live D435i intrinsics retained. Retry08 video registration (fit04), validated on held-out frames within this capture; approximate contact geometry."
+  },
+  "wrist_camera_resolution": [
+    640,
+    480
+  ],
+  "overview_camera": {
+    "eye_base_m": [
+      -0.35,
+      -0.75,
+      0.586
+    ],
+    "target_base_m": [
+      0.32,
+      0.05,
+      0.066
+    ],
+    "fx": 710.0,
+    "fy": 710.0,
+    "cx": 640.0,
+    "cy": 360.0,
+    "resolution": [
+      1280,
+      720
+    ]
+  },
+  "materials": {
+    "Mat": {
+      "color": [
+        0.001,
+        0.08,
+        0.12
+      ],
+      "roughness": 0.68,
+      "metallic": 0.0,
+      "specular": 0.08
+    }
+  },
+  "lighting": {
+    "ambient": {
+      "intensity": 180,
+      "color": [
+        0.92,
+        0.96,
+        1.0
+      ]
+    },
+    "area_lights": [
+      {
+        "name": "BroadKey",
+        "position_base_m": [
+          0.69,
+          0.3,
+          1.086
+        ],
+        "target_base_m": [
+          0.33,
+          0.02,
+          -0.014
+        ],
+        "width": 0.5,
+        "height": 0.35,
+        "intensity": 45000,
+        "color": [
+          0.92,
+          0.97,
+          1.0
+        ]
+      },
+      {
+        "name": "SoftFill",
+        "position_base_m": [
+          -0.2,
+          0.0,
+          1.086
+        ],
+        "target_base_m": [
+          0.35,
+          0.0,
+          -0.014
+        ],
+        "width": 1.0,
+        "height": 0.8,
+        "intensity": 500,
+        "color": [
+          0.94,
+          0.98,
+          1.0
+        ]
+      },
+      {
+        "name": "SideFill",
+        "position_base_m": [
+          0.3,
+          -0.65,
+          0.486
+        ],
+        "target_base_m": [
+          0.32,
+          0.2,
+          0.026000000000000002
+        ],
+        "width": 0.7,
+        "height": 0.6,
+        "intensity": 1500.0,
+        "color": [
+          0.88,
+          0.95,
+          1.0
+        ]
+      }
+    ]
+  },
+  "rendering": {
+    "warmup_frames": 48,
+    "subframes_per_frame": 2,
+    "direct_samples_per_pixel": 4,
+    "reflection_samples_per_pixel": 4
+  },
+  "task": "playground",
+  "root_path": "/World/Playground",
+  "task_instruction": "Explore the empty tabletop workspace.",
+  "background": false,
+  "lights": true,
+  "mount_hardware": true,
+  "camera_tripod": true,
+  "objects": [],
+  "static_props": [
+    {
+      "name": "Floor",
+      "center_base_m": [
+        0.4,
+        0,
+        -0.794
+      ],
+      "size": [
+        6,
+        6,
+        0.04
+      ],
+      "color": [
+        0.12,
+        0.13,
+        0.14
+      ],
+      "roughness": 1.0,
+      "collision": true
+    }
+  ],
+  "gripper_max_width_m": 0.07,
+  "initial_state_joint_rad_m": [
+    -0.18537141985431774,
+    0.47251298839242484,
+    -0.4591612196146682,
+    -0.11377801393751034,
+    0.7479783042346899,
+    0.08194320838113378,
+    0.0
+  ],
+  "up_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 606.1517333984375,
+    "fy": 605.0548095703125,
+    "cx": 327.25390625,
+    "cy": 249.86172485351562,
+    "eye_base_m": [
+      0.7116748606489064,
+      0.010420793926993965,
+      0.4808002813898958
+    ],
+    "target_base_m": [
+      0.42985320496061935,
+      0.02714489243481863,
+      0.0681298815376491
+    ],
+    "base_from_camera_usd": [
+      [
+        0.06885489678096501,
+        -0.8231434994760833,
+        0.5636433113765741,
+        0.7116748606489064
+      ],
+      [
+        0.9976048991572628,
+        0.060544886603492803,
+        -0.03344819701564933,
+        0.010420793926993965
+      ],
+      [
+        -0.006593054429484788,
+        0.5645964009595147,
+        0.8253407997044934,
+        0.4808002813898958
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "horizontal_fov_deg": 55.660994584430625,
+    "wrist_camera_intrinsics": {
+      "width": 640,
+      "height": 480,
+      "fx": 605.6944580078125,
+      "fy": 605.6384887695312,
+      "cx": 320.6307678222656,
+      "cy": 250.77304077148438,
+      "model": "distortion.inverse_brown_conrady",
+      "coeffs": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "status": "Retry08 joint image registration constrained by the recorded bare-table global depth plane; live D435i intrinsics retained."
+  },
+  "calibration_objects": [
+    {
+      "name": "GreenCube",
+      "center_xy": [
+        0.3140078421313393,
+        0.08634996212296461
+      ],
+      "size": [
+        0.029,
+        0.029,
+        0.029
+      ],
+      "mass": 0.025,
+      "color": [
+        0.006,
+        0.27,
+        0.18
+      ],
+      "roughness": 0.22,
+      "yaw_deg": 22.38732838942143
+    },
+    {
+      "name": "BlueCube",
+      "center_xy": [
+        0.32323228577668783,
+        0.1779876734267889
+      ],
+      "size": [
+        0.03,
+        0.03,
+        0.03
+      ],
+      "mass": 0.025,
+      "color": [
+        0.006,
+        0.35,
+        0.55
+      ],
+      "roughness": 0.22,
+      "yaw_deg": -6.473082551184806
+    }
+  ],
+  "reconstruction": {
+    "captured_on": "2026-11-07",
+    "capture_reference": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames.jsonl",
+    "calibration_reference": "docs/results/playground_video_calibration_20261107.json",
+    "global_intrinsics": "Live D435i serial 261622078356 at 640x480 retained; extrinsics fitted with cube/finger images and global bare-table depth.",
+    "wrist_configuration": "Live D435i K retained. Link6 camera extrinsics fitted using recorded measured poses, static cube corners and fingertip silhouettes; not absolute tool metrology.",
+    "dimensions_status": "Table height/depth/width and mounting visuals are approximate visual priors, not newly measured dimensions.",
+    "clean_workspace": "Blue and green cubes are registration references only; omitted by default. No PAP box, tape, or table buttons.",
+    "scope": "Workspace twin; no task reward, success detector, policy evaluation or learned controller.",
+    "wrist_extrinsics_sha256": "dde07d03cdfbb988eb92d05385f2f3441d71603d9536254652c6c294ce91fc0d",
+    "appearance": "Image-guided matte tabletop PBR approximation; no fabricated camera background and no photometric calibration.",
+    "multiview_revision": {
+      "status": "Historical prior revision, superseded by video_registration_revision below",
+      "report": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/report.json",
+      "portable_result": "docs/results/playground_calibration_20261107.json",
+      "previous_config": "configs/calibration/playground_20261107_before_multiview.json",
+      "frozen_descent_validation": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/frozen_descent_validation.json",
+      "physical_replay": "outputs/playground_grasp_transfer_20261107/calibration_diagnosis/applied_physics_comparison_01.json",
+      "physical_accuracy": "Not measured absolute tool clearance; actual finger geometry, joint zero and base/table relationship unresolved",
+      "reference_objects": "Historical pre-contact positions only; real green cube has since moved. Default workspace stays empty."
+    },
+    "mount_height_revision": {
+      "status": "Adopted user-estimated 14 mm mounting height; not a precise measurement",
+      "height_m": 0.014,
+      "height_source": "User estimate: tabletop to robot mounting underside about 1.4 cm, excluding robot base housing.",
+      "previous_config": "configs/calibration/playground_20261107_before_retry08_video.json",
+      "portable_result": "docs/results/playground_base_height_20261107.json",
+      "frames": "Robot base 14 mm above tabletop. Fixed background props/light world coordinates retained; live camera intrinsics unchanged; extrinsics updated by video registration.",
+      "scope": "Default remains empty. Historical calibration_objects are not current cube locations. All prior real trial records remain under their original configs.",
+      "limitations": "Mount-height uncertainty and physical tool/contact calibration remain unresolved."
+    },
+    "reference_objects": "Pre-contact locations from retry08 only, not current live positions; omitted from the default empty scene.",
+    "video_registration_revision": {
+      "status": "Adopted fit04 visual registration with unchanged-trajectory PhysX validation",
+      "report": "docs/results/playground_video_calibration_20261107.json",
+      "previous_default": "configs/calibration/playground_20261107_before_retry08_video.json",
+      "reproducible_inputs": "configs/calibration/playground_20261107_retry08_video_manifest_v04.json",
+      "physical_accuracy": "Within-capture image validation, not absolute metrology. Real/sim closed-gripper width and near-field projections still differ.",
+      "hardware_actions_this_revision": false
+    }
+  },
+  "robot_base_height_above_table_m": 0.014
+}

@@ -1,0 +1,99 @@
+{
+  "scope": "Offline, no SSH, no CAN, no simulator launch, no commanded robot changes",
+  "baseline": "configs/calibration/playground_20261107_retry08_video_baseline.json",
+  "annotations": "configs/calibration/playground_20261107_retry08_video_annotations_v04.json",
+  "global_depth_plane": "configs/calibration/playground_20261107_retry08_video_depth.json",
+  "held_out": {
+    "wrist_cube": "pregrasp20 seconds; both blocks static, 16 coordinate residuals",
+    "global_finger": "20s/36s before contact; grasp_open/close/lift only secondary silhouette checks",
+    "global_cube": "Same repeated static source landmarks, consistency check only",
+    "wrist_finger": "Same-opening train/heldout supports correlated; closing-width check is new opening",
+    "depth": "Home global naked-table depth fitted; global retreat repeats fixed-view observation; wrist home/retreat entirely withheld"
+  },
+  "references": {
+    "scene_source_sha256": "0e8aa0d748203c8d37e60518d1f2bf5fd9364c0e2735940c6d36fe5becc47925",
+    "fit03_candidate_sha256": "15c3e84f27c160c4a08520281d92a6481723740838f55c7be07a65ed1158dc36",
+    "fit03_annotations_sha256": "02527e81998875a7e55427342d2b0e565f028c589c20503938438eecc9ca92d8",
+    "fit04_candidate_sha256": "24850198ed535b7f8433552cf1e94067c3dc0d956782f822969a954750eaa2fb"
+  },
+  "erratum": "The frozen experimental fit_03/report.json generic limitation says Depth not fitted. This means wrist depth only; its explicit global_plane_constraint field is accurate: home global depth was fitted. Exported current script/report corrects this wording.",
+  "command": "PYTHONPATH=src /home/pengguanqi/miniconda3/envs/zprl/bin/python scripts/calibrate_playground_video.py --config configs/calibration/playground_20261107_retry08_video_baseline.json --annotations configs/calibration/playground_20261107_retry08_video_annotations_v04.json --depth-plane-report configs/calibration/playground_20261107_retry08_video_depth.json --output outputs/playground_video_calibration_v04_reproduced",
+  "variant": "fit04, adds manually annotated static blue top at34s with3px sigma",
+  "supplement": {
+    "schema_version": 1,
+    "coordinate_system": "Native 640x480 camera view, u right/v down, zero-based; real composite header of 32px removed; no resizing",
+    "corner_order": "Existing scene local top corners [(-0.5,-0.5),(-0.5,+0.5),(+0.5,+0.5),(+0.5,-0.5)] * side, followed by scene yaw. This is physical corner order, not identical image-cyclic start across views.",
+    "annotation_method": "Independent manual native-pixel blue top-face reading, checked using enlarged blue34_detail_grid.png; no fit output used to move pixel observations.",
+    "observations": [
+      {
+        "name": "pregrasp_34s",
+        "camera": "wrist",
+        "frame_index": 561,
+        "split": "train",
+        "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000561.jpg",
+        "view_file": "outputs/playground_grasp_transfer_20261107/retry_08/contact_alignment_review/views/pregrasp_34s_real_wrist.png",
+        "run_elapsed_s": 33.990649461746216,
+        "camera_timestamp_unix_s": 1794061586.995658,
+        "feedback_timestamp_unix_s": 1794061586.9888985,
+        "feedback_minus_camera_ms": -6.759405136108398,
+        "measured_state_joint_rad_m": [
+          0.23757421778146814,
+          1.7213135214868875,
+          -1.0894345190948604,
+          0.0,
+          0.8957029721234899,
+          -0.18146188232985044,
+          0.0594
+        ],
+        "action_index_nearest": 1011,
+        "state_source": "replay.jsonl observed before command; nearest recorded UNIX timestamp",
+        "cube_corners": {
+          "BlueCube": [
+            [
+              154,
+              282
+            ],
+            [
+              50,
+              235
+            ],
+            [
+              95,
+              130
+            ],
+            [
+              204,
+              184
+            ]
+          ]
+        },
+        "cube_uncertainty_px": 3.0,
+        "finger_points": [],
+        "finger_silhouettes": [],
+        "cube_note": "Only stationary BLUE top-face corners. Corners are slightly rounded/blurred; manually read to +/-3px. Green is excluded. Existing scene physical corner order maintained. Supplemental training frame chosen after fit03 showed near-field extrapolation residual; 20/36/41 remain held out."
+      }
+    ],
+    "append_to": "Existing fit03 training data; preserve old fit inputs and holdout splits",
+    "heldout_frames": [
+      422,
+      581,
+      634
+    ]
+  },
+  "validation_status": "All validation frames excluded from optimizer; already inspected during development/variant selection, not a blind independent test set.",
+  "input_asset_sha256": {
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf": "01471dc1766d7ecaea268a4bdc15615e6ed95b969a42b32b9302a2c77095c439",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606"
+  },
+  "development_sequence": [
+    "fit01: visual points only; rejected large global table-depth disagreement",
+    "fit02: add global bare-table plane constraint; plane still inconsistent across table",
+    "fit03: use depth precision normal0.15deg/offset1.5mm; deduplicate same-width wrist support",
+    "fit04: add static blue34s training corners after near-field visual residual diagnosis; same prior/constraints as03; no tuning on physics task success"
+  ],
+  "depth_input_sha256": "9739606de34cd2cc2128ebeeac6278cce7c783b1c6182871373618a3dcd5d6e9",
+  "final_reproduction": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/reproduced_04_final",
+  "final_script_sha256": "cb04b7859c1477d72e110f410fcc222b3ce54725b586fc190995897dc40c8d8d",
+  "candidate_metadata_note": "Frozen historical fit04 has inherited prior wrist_extrinsics_sha256. The final CLI recomputes this current fingerprint; transforms and all18 fitted numerical parameters match exactly."
+}

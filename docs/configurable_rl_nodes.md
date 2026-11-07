@@ -484,3 +484,7 @@ Artifacts are in `outputs/rl_nodes_smoke_20261104/`:
 
 Long-run PAP learning performance and hyperparameter selection remain separate
 experiments. The original elevator results do not establish PAP performance.
+
+## Real robot endpoint and human labels
+
+`pressb real_robot` can replace the simulation endpoint using the same schema/reset/step protocol, with one PiPER environment. The trainer can select environment outcomes or human success/failure labels; an externally ended episode is acknowledged through `/end_episode` before reset. See [real robot guide](real_robot.md) and the `pap_real_walloss_dsrl.json` / `pap_real_walloss_eval.json` experiments. No arm movement has been tested yet because the remote machine has no CAN connection.

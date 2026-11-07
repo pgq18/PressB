@@ -1,0 +1,27 @@
+{
+  "scope": "Offline, no SSH, no CAN, no simulator launch, no commanded robot changes",
+  "baseline": "configs/calibration/playground_20261107_retry08_video_baseline.json",
+  "annotations": "configs/calibration/playground_20261107_retry08_video_annotations.json",
+  "global_depth_plane": "configs/calibration/playground_20261107_retry08_video_depth.json",
+  "held_out": {
+    "wrist_cube": "pregrasp20 seconds; both blocks static, 16 coordinate residuals",
+    "global_finger": "20s/36s before contact; grasp_open/close/lift only secondary silhouette checks",
+    "global_cube": "Same repeated static source landmarks, consistency check only",
+    "wrist_finger": "Same-opening train/heldout supports correlated; closing-width check is new opening",
+    "depth": "Home global naked-table depth fitted; global retreat repeats fixed-view observation; wrist home/retreat entirely withheld"
+  },
+  "references": {
+    "scene_source_sha256": "0e8aa0d748203c8d37e60518d1f2bf5fd9364c0e2735940c6d36fe5becc47925",
+    "fit03_candidate_sha256": "15c3e84f27c160c4a08520281d92a6481723740838f55c7be07a65ed1158dc36",
+    "fit03_annotations_sha256": "02527e81998875a7e55427342d2b0e565f028c589c20503938438eecc9ca92d8"
+  },
+  "erratum": "The frozen experimental fit_03/report.json generic limitation says Depth not fitted. This means wrist depth only; its explicit global_plane_constraint field is accurate: home global depth was fitted. Exported current script/report corrects this wording.",
+  "command": "PYTHONPATH=src /home/pengguanqi/miniconda3/envs/zprl/bin/python scripts/calibrate_playground_video.py --config configs/calibration/playground_20261107_retry08_video_baseline.json --annotations configs/calibration/playground_20261107_retry08_video_annotations.json --depth-plane-report configs/calibration/playground_20261107_retry08_video_depth.json --output outputs/playground_video_calibration_reproduced",
+  "validation_status": "All validation frames excluded from optimizer; already inspected during development/variant selection, not a blind independent test set.",
+  "input_asset_sha256": {
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf": "01471dc1766d7ecaea268a4bdc15615e6ed95b969a42b32b9302a2c77095c439",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606"
+  },
+  "depth_input_sha256": "9739606de34cd2cc2128ebeeac6278cce7c783b1c6182871373618a3dcd5d6e9"
+}

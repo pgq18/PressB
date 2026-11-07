@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-07",
+  "change": "PiPER finite replay action dispatch aligned with reference client",
+  "reference": {
+    "reference_repository": "/home/pengguanqi/Workspace/Work/lerobot-piper",
+    "head": "8fff0fde7c79f23a93d845d1a50e985de01f8b8a",
+    "inspected_files": {
+      "piper_scripts/piper_inference/piper_client.py": "04bf989456259e62b621406eb4563747394bf6df2c60331fb2effb8dfa8f7763",
+      "piper_scripts/piper_inference/piper_client.sh": "96a380107250881ecb8b0aab7c2912222c09179fa3588ebb49cf0e3da3235768",
+      "src/lerobot/motors/piper/piper_motors_bus.py": "000f1128f249d9f5704f984ce1bcb2519cc0826d7cf6720881a562619e7144ca"
+    },
+    "scope": "Action queue dispatch: target clipping, measured-state delta limits, one action per control period, fixed last-target settling. UI/inference lifecycle and hardware SDK speed not copied.",
+    "reference_entry_defaults": {
+      "fps": 30,
+      "settle_time_s": 0.5,
+      "inference_action_chunk_size": 32,
+      "joint_delta_deg": 45,
+      "gripper_delta_cm": 3,
+      "action_smoothing_enabled": true,
+      "prefix_interpolation_steps": 8,
+      "mean_filter_window": 5
+    },
+    "this_change_preprocessing": "Existing generated trajectories are already action arrays; no additional smoothing is applied by the dispatch scheduler. Model preprocessing remains separate."
+  },
+  "behavior": {
+    "cli_default": "reference unless explicitly specified by plan",
+    "library_default": "tracked for old programmatic callers",
+    "per_target_arrival_wait": false,
+    "contact_phase_gating": false,
+    "soft_arrival_timeout": false,
+    "automatic_trajectory_smoothing": false,
+    "settle_time_s": 0.5,
+    "reference_chunk_size_default": null,
+    "online_reference_chunk_size": 32,
+    "success_meaning": "dispatch_only",
+    "task_success": null,
+    "target_reached": null
+  },
+  "retained_adapter_and_lifecycle_checks": [
+    "configured hardware command/velocity bounds",
+    "fresh feedback",
+    "hardware faults",
+    "initial-pose match",
+    "manual stop",
+    "control watchdog"
+  ],
+  "verification": {
+    "scope": "Prepared execution queues only: smoothing disabled; excludes model preprocessing, GUI/idle lifecycle, real SDK velocity projection and lost-feedback fallback equivalence.",
+    "reference_source": "/home/pengguanqi/Workspace/Work/lerobot-piper/piper_scripts/piper_inference/piper_client.py",
+    "reference_sha256": "04bf989456259e62b621406eb4563747394bf6df2c60331fb2effb8dfa8f7763",
+    "queue_cases": {
+      "chunk_whole_send_0": {
+        "dispatch_complete": true,
+        "sent_count": 19,
+        "original_sent_count": 19,
+        "maximum_time_difference_s": 0.0,
+        "maximum_target_difference_si": 1.1102230246251565e-16,
+        "last_send_s": 0.6,
+        "original_next_inference_s": 0.6333333333333333
+      },
+      "chunk_whole_send_0.005": {
+        "dispatch_complete": true,
+        "sent_count": 20,
+        "original_sent_count": 20,
+        "maximum_time_difference_s": 0.0,
+        "maximum_target_difference_si": 1.1102230246251565e-16,
+        "last_send_s": 0.6333333333333333,
+        "original_next_inference_s": 0.6666666666666666
+      },
+      "chunk_2_send_0": {
+        "dispatch_complete": true,
+        "sent_count": 34,
+        "original_sent_count": 34,
+        "maximum_time_difference_s": 0.0,
+        "maximum_target_difference_si": 1.1102230246251565e-16,
+        "last_send_s": 1.1,
+        "original_next_inference_s": 1.1333333333333335
+      },
+      "chunk_2_send_0.005": {
+        "dispatch_complete": true,
+        "sent_count": 36,
+        "original_sent_count": 36,
+        "maximum_time_difference_s": 0.0,
+        "maximum_target_difference_si": 1.1102230246251565e-16,
+        "last_send_s": 1.166666666666667,
+        "original_next_inference_s": 1.2000000000000004
+      }
+    },
+    "dynamic_mcu": {
+      "dispatch_complete": true,
+      "completed_actions": 1188,
+      "elapsed_s": 40.10999999999774,
+      "task_success": null,
+      "target_reached": null,
+      "stopped": false,
+      "source_plan_sha256": "86c824fc248b172a0fec686964f6a14ce87abd4651267c6f64708114819f6b71",
+      "fixture_sha256": "a5b48c538801f00bf60d63a9b24cfe23990175a1588b363824e2eb1b96da0988",
+      "claim": "Dispatch only; this fake contact model does not validate grasp, object transport or placement."
+    },
+    "source_sha256": {
+      "src/pressb/control/real_replay.py": "a71588dfc9a60f18f37c514541dbb6a8ef7b2ffff006507ec0686d1c69b9a8a5",
+      "src/pressb/control/reference_execution.py": "3822831436a17f7877bf50d15f260e72ac44433598f4058ccb19c0922723b6ce",
+      "src/pressb/robots/piper/real.py": "26a99b4188dac175bc4d82b3e9a166ba98223bd4881d7a44c13a3565e8b286e0",
+      "scripts/replay_real_robot.py": "0a2ff85e6ee5f0684de11bd88044d73eed053ecc07358b718178e36afd6ed916",
+      "tests/test_reference_replay.py": "0d2228d9d422798e94f4558004e0eb28b6aac1b17c83c1e30320113d77460a2d"
+    },
+    "test_result": "429 passed in 1.33s; reference (28), tracked replay, grasp replay and real PiperHardware suites."
+  },
+  "root_test_result": "429 passed in 1.36s",
+  "deployment": {
+    "remote_workspace": "/home/metachip/Workspace/pressb_probe_20261107_cameras_01",
+    "backup": "/home/metachip/Workspace/pressb_probe_20261107_cameras_01/software_updates/reference_dispatch_20261107_220846/before_source",
+    "deployed_sha256": {
+      "src/pressb/control/real_replay.py": "a71588dfc9a60f18f37c514541dbb6a8ef7b2ffff006507ec0686d1c69b9a8a5",
+      "src/pressb/control/grasp_replay.py": "21708fedc27c308078287d015e6286532fec563a7c584ecbe78c27bed971a11c",
+      "src/pressb/control/reference_execution.py": "3822831436a17f7877bf50d15f260e72ac44433598f4058ccb19c0922723b6ce",
+      "scripts/replay_real_robot.py": "0a2ff85e6ee5f0684de11bd88044d73eed053ecc07358b718178e36afd6ed916"
+    },
+    "hardware_adapter_unchanged": true,
+    "can_tx_packets_before": 84935,
+    "can_tx_packets_after": 84935,
+    "motion_executed": false,
+    "reset_sent": false,
+    "enable_sent": false,
+    "inspection_only_plan": "/home/metachip/Workspace/pressb_probe_20261107_cameras_01/software_updates/reference_dispatch_20261107_220846/inspection_plan.json"
+  },
+  "remote_inspection": {
+    "executed": false,
+    "execution_mode": "reference",
+    "action_count": 1188,
+    "success_meaning": "dispatch_only",
+    "task_success": null
+  },
+  "last_physical_trial": {
+    "source": "docs/results/playground_mount14_grasp_retry_20261107.json",
+    "task_success": false,
+    "operator_observation": "夹住了，但没夹起来",
+    "last_read_only_arm_status": 1,
+    "last_read_only_j5_deg": 76.258,
+    "fresh_joint_probe_this_update": false,
+    "latched_stop_cleared_this_update": false
+  },
+  "evidence_directory": "outputs/reference_execution_20261107",
+  "limitations": [
+    "Queue comparisons exclude preprocessing, GUI/idle lifecycle, SDK projection and lost-feedback fallback equivalence.",
+    "Fake MCU validates command dispatch only; no new physical replay or grasp verification.",
+    "Archived inspection plan is not current-pose approval for execution."
+  ]
+}

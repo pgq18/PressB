@@ -1,0 +1,957 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "status": "PAP_EPISODE144_COMPLETE_EMPTY_TABLE_REPLAY_SUCCEEDED_FINAL_POSE_ENABLED_NO_ESTOP",
+  "hardware": {
+    "hostname": "metachip-ThinkPad-X1-Carbon-Gen-8",
+    "can_interface": "can0",
+    "bitrate": 1000000,
+    "sdk_version": "0.6.2"
+  },
+  "source": {
+    "dataset": "/home/pengguanqi/Datasets/piper_pap_20260606_offset",
+    "episode_index": 144,
+    "frame_start": 0,
+    "frame_stop": 342,
+    "sha256": "23c992ca3cc11da300277b9f105c00172af77b8e9207c3749e17a2f6dab13154"
+  },
+  "dataset_units": {
+    "arm_input": "degrees",
+    "gripper_input": "full opening centimetres",
+    "replay_arm": "radians",
+    "replay_gripper": "full opening metres",
+    "conversion_basis": "Reference PiPER LeRobot driver; no additional dataset-name offset applied."
+  },
+  "attempt": {
+    "success": false,
+    "started_unix_s": 1794039626.9276485,
+    "finished_unix_s": 1794039627.2243335,
+    "elapsed_s": 0.2967752700060373,
+    "ticks": 2,
+    "completed_actions": 0,
+    "error": "_PiperPositionError: PiPER startup recovery feedback moved outward",
+    "cleanup_errors": []
+  },
+  "phase": "complete_episode_finished",
+  "dataset_replay_started": true,
+  "initial_pose_reached": true,
+  "commanded_motion_attempted": true,
+  "stop_origin": "software startup recovery feedback guard",
+  "diagnosis": {
+    "executed_feedback_slack_deg": 0.002,
+    "j2_before_after_deg": [
+      -1.507,
+      -1.546
+    ],
+    "j3_before_after_deg": [
+      2.381,
+      2.513
+    ],
+    "first_faulting_feedback_frame_captured": false,
+    "reported_motor_fault": false,
+    "reported_collision": false
+  },
+  "latest_recorded_feedback": {
+    "joints_deg": [
+      -10.621,
+      27.116,
+      -26.308,
+      -6.519,
+      42.856,
+      4.695
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 1,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "probe_finished_at_utc": "2026-11-07T09:18:58.032262+00:00",
+    "sample_count": 100,
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0,
+    "source": "after_full_episode144_feedback.json"
+  },
+  "firmware_limits": {
+    "1": {
+      "max_angle_deg": 150.0,
+      "min_angle_deg": -150.0,
+      "max_speed_rad_s": 3.0,
+      "payload_hex": "0105dcfa24012c00",
+      "max_speed_raw": 300
+    },
+    "2": {
+      "max_angle_deg": 180.0,
+      "min_angle_deg": 0.0,
+      "max_speed_rad_s": 3.0,
+      "payload_hex": "0207080000012c00",
+      "max_speed_raw": 300
+    },
+    "3": {
+      "max_angle_deg": 0.0,
+      "min_angle_deg": -170.0,
+      "max_speed_rad_s": 3.0,
+      "payload_hex": "030000f95c012c00",
+      "max_speed_raw": 300
+    },
+    "4": {
+      "max_angle_deg": 100.0,
+      "min_angle_deg": -100.0,
+      "max_speed_rad_s": 3.0,
+      "payload_hex": "0403e8fc18012c00",
+      "max_speed_raw": 300
+    },
+    "5": {
+      "max_angle_deg": 70.0,
+      "min_angle_deg": -70.0,
+      "max_speed_rad_s": 3.0,
+      "payload_hex": "0502bcfd44012c00",
+      "max_speed_raw": 300
+    },
+    "6": {
+      "max_angle_deg": 180.0,
+      "min_angle_deg": -180.0,
+      "max_speed_rad_s": 3.0,
+      "payload_hex": "060708f8f8012c00",
+      "max_speed_raw": 300
+    }
+  },
+  "firmware_limits_queried_only": true,
+  "firmware_limits_modified": false,
+  "followup_home": {
+    "status": "ATTEMPTED_FAILED_BEFORE_INITIAL_POSE",
+    "target_joint_degrees": [
+      -1.687,
+      25.062,
+      -25.171,
+      -4.869,
+      40.37,
+      5.102
+    ],
+    "target_gripper_m": 0.0,
+    "control_hz": 30.0,
+    "max_joint_command_speed_deg_s": [
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0,
+      5.0
+    ],
+    "max_gripper_command_speed_m_s": 0.01,
+    "sdk_speed_percent": 5,
+    "startup_recovery_tolerance_deg": [
+      0.0,
+      3.0,
+      3.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "startup_recovery_feedback_slack_deg": [
+      0.002,
+      0.25,
+      0.25,
+      0.002,
+      0.002,
+      0.002
+    ],
+    "startup_recovery_timeout_s": 10.0,
+    "dry_run_validated": true,
+    "executed": true,
+    "remote_dry_run_validated": true,
+    "plan": "home_plan_after_reset.json",
+    "expected_initial_state": [
+      0.04996877648459765,
+      -0.0278554548618295,
+      0.042394047530942267,
+      -0.029443704481144337,
+      0.3733259270015871,
+      -0.041416663149825436,
+      0.0
+    ],
+    "post_reset_dry_run_validated": true,
+    "post_reset_executed": true,
+    "pending": null,
+    "operator_confirmed_hands_clear": true,
+    "physical_run": "home_run_01",
+    "validation_reports_only": {
+      "home_plan_validation.json": {
+        "validated": true,
+        "executed": false
+      },
+      "home_plan_remote_validation.json": {
+        "validated": true,
+        "executed": false
+      },
+      "home_plan_after_reset_validation.json": {
+        "validated": true,
+        "executed": false
+      }
+    }
+  },
+  "software_validation": {
+    "passed": 208,
+    "failed": 0,
+    "test_files": [
+      "tests/test_piper_real.py",
+      "tests/test_real_replay.py",
+      "tests/test_real_robot_backend.py",
+      "tests/test_real_robot_wiring.py"
+    ],
+    "hardware_success_established": false
+  },
+  "reset": {
+    "sent": true,
+    "pending": null,
+    "sdk_method": "ResetPiper() / EmergencyStop(0x02)",
+    "equivalent_call": "MotionCtrl_1(0x02, 0x00, 0x00)",
+    "can_id": "0x150",
+    "sdk_warning": "Reset removes motor power and can let the arm fall.",
+    "automatic_reset_or_retry": false,
+    "source": "outputs/piper_connection_20261107/sdk_0_6_2/interface/piper_interface_v2.py",
+    "operator_authorized": true,
+    "operator_confirmation": "Arm supported; one reset only.",
+    "send_attempts": 1,
+    "payload_hex": "0200000000000000",
+    "send_unix_s": 1794040296.966589,
+    "enable_commands_sent_by_reset_operation": false,
+    "motion_commands_sent_by_reset_operation": false,
+    "subsequent_read_only_arm_status": 0,
+    "subsequent_read_only_motors_enabled": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "source_report": "reset_run_01/report.json",
+    "send_attempts_total": 3,
+    "second_reset_sent": true,
+    "third_reset_sent": true,
+    "latest_source_report": "reset_run_03/report.json",
+    "fourth_reset_sent": false,
+    "current_estop_latched": false,
+    "historical_estop_latched_after_second_attempt": true,
+    "historical_estop_latched_after_third_attempt": true
+  },
+  "cameras": {
+    "serial_by_view": {
+      "up": "261622078356",
+      "wrist": "243322073170"
+    },
+    "mapping_basis": "Visual inspection of pre-replay images.",
+    "hardware_synchronized": false,
+    "captured_pairs": 427,
+    "pipelines_closed": true,
+    "video": "outputs/piper_replay_20261107/startup_attempt_d435i.mp4",
+    "video_scope": "Stopped startup attempt only, not a successful dataset replay.",
+    "reset_comparison": {
+      "before": "outputs/piper_replay_20261107/before_reset.jpg",
+      "after": "outputs/piper_replay_20261107/after_reset.jpg",
+      "finding": "No obvious large displacement in the compared images; this does not establish mechanical support or readiness to enable."
+    },
+    "after_second_attempt": "outputs/piper_replay_20261107/after_home_attempt.jpg",
+    "third_attempt_video": {
+      "path": "outputs/piper_replay_20261107/home_native_attempt_d435i.mp4",
+      "duration_s": 7.305,
+      "scope": "Actual-time native startup attempt, labeled stopped; not a successful replay."
+    },
+    "after_reset_03": "outputs/piper_replay_20261107/after_reset_03.jpg",
+    "successful_home_video": {
+      "path": "outputs/piper_replay_20261107/pap_home_success_d435i.mp4",
+      "duration_approx_s": 20.3,
+      "playback_speed": 1,
+      "device_speed_percent": 1,
+      "scope": "Actual-time successful initial-pose approach with before/after footage; no subsequent dataset trajectory."
+    },
+    "complete_episode_video": {
+      "path": "full_episode144_d435i.mp4",
+      "encoded_duration_s": 139.52,
+      "selected_capture_duration_s": 139.49411783218383,
+      "playback": "actual execution wall time, 1x; includes about 2 s before and after",
+      "left": "global",
+      "right": "wrist",
+      "hardware_synchronized": false
+    }
+  },
+  "unverified": [
+    "Grasping and task success",
+    "Physical online reinforcement learning",
+    "Model-policy execution and object-transfer success-rate evaluation on the physical robot"
+  ],
+  "evidence_root": "outputs/piper_replay_20261107",
+  "evidence_sha256": {
+    "approach_run_01/summary.json": "4658f837fead5b71c4ce34d26d2dd2c3914771ddbcebd0ba28a6835233f08872",
+    "approach_run_01/replay.jsonl": "2cbc78975104dfc07c619089b9e8a3e2612d2c236091914d0406120f1e8b8316",
+    "pre_replay_feedback.json": "3fc14c4f558cfdaa9eb9844ae49956ceaafd43cce2bd91326d5abbe360e2921e",
+    "after_stopped_feedback.json": "cb8d4816181f01b35af5c14cadd5390b0721b754d242fb8b03e144fda357501a",
+    "before_home_feedback.json": "9e4f057107cd243846fe25b6afed84de2c9497575a82c064fb8f874376669f34",
+    "firmware_limits.json": "74f5f07391c9ed36bc664c9d96108c7652a8ce5710428b73301347ca07d41d3f",
+    "home_plan_prepared.json": "f1ace6ed981f643562ecfd23ce5fc4fef4fc916097f6cbe91e497b11e99d2302",
+    "home_plan_validation.json": "5932afc1d60277c870d9de522a27f7daa82e561bbb42ed67e8e8757a9a884631",
+    "replay_regression.log": "402e8c8a981c7f70e67433d249f8d52a47e07052cf71f0e42ca86a61b6df8d9f",
+    "replay_capture_01/report.json": "f113ecfb936ebd41a31ab2c37f6ba51b1033bfcdcc97d23088bc2bbf2bd4f9f9",
+    "executed_piper_real.py": "8498d68fa812f1d03422cf0cf4334c017c22f35d1fb8b7cd12106a51a52c452e",
+    "executed_real_replay.py": "cb6da3d7562ca3e93b58e1a295bf162931dd0310dee053a02fc53c854186edb3",
+    "startup_attempt_d435i.mp4": "39b6784e07345361b89ff823e442582042bb98fc0f6a019fa2afa8379007875d",
+    "home_plan_remote_validation.json": "5932afc1d60277c870d9de522a27f7daa82e561bbb42ed67e8e8757a9a884631",
+    "reset_run_01/report.json": "f5be86f41fa69bc9ca1a1b093c53c02628f719cdb62da5cb4b268092fd3c5d52",
+    "after_reset_feedback.json": "37a0a3cefccda0978ffe50aa6911b08420b14338932dfc23a4f54e7017de4b02",
+    "before_reset.jpg": "11adc1adb352065662ecbd8bad4907f97c53a46850d1278f7ba309fecbe53c32",
+    "after_reset.jpg": "4f90169d64bd186c1968ee1d6e8f02d77dc75d1bc58d353e1068ab5f3f6287c8",
+    "home_plan_after_reset.json": "6048031f1542cbbd5055c8e7605d4cce57ae212b4f00e047e967078cc9394b3a",
+    "home_plan_after_reset_validation.json": "2072a56ed5af0ea7652746112713da29002ebb48fabd352063a52037724d48b2",
+    "home_run_01/summary.json": "94b35597cd222645182adca401aab6c044cf40116a5bd746885c6f0c0eae7f50",
+    "home_run_01/replay.jsonl": "64b0743636eeb21ee2a6b976f8871cc3a5c58f2694977b7862b2e1c7d55e5803",
+    "after_home_attempt_feedback.json": "115b75b17b660eff72fdd2f94a5ab77764534b8271b2cd860b551b32d214d2d4",
+    "after_home_attempt.jpg": "9b9df55235779d10f7b7856eb00e6800bfaba40b5ae0b0d461114c826b559cdd",
+    "firmware_limits_corrected.json": "cdaef63e1e5c56769aa1f0753bcc157898fe8c6a54012da3e3714a1ab9f76b08",
+    "firmware_version.json": "9f7547cabd05d297ff1cbca091827671c87e0f7ad400acc785f4a9808ebbaf59",
+    "reference_encoding_audit.json": "f3288c494ec15a03279c76af11bbff0f3335dc51b7dfa32b527a8a9a49556ec6",
+    "replay_regression_after_diagnostics.log": "d4cbfbb49f3b1f6f16d563a63829a07559b6e002b31f479cadf59f5e6b7f1ae1",
+    "executed_home_piper_real.py": "330f6209852fd5dd6718fe5e66dafb19d9358b8432e1e30a283d520ce5c86861",
+    "executed_home_real_replay.py": "cb6da3d7562ca3e93b58e1a295bf162931dd0310dee053a02fc53c854186edb3",
+    "home_plan_native_prepared.json": "6d3f7ae9436817212c755ce286a8d7dfc4d86a96930a9f3dabe68c9a677f609d",
+    "home_plan_native_validation.json": "351b739f9fa5f7f85b13497deb92e723ce702496b6c1afedc707b0e82fe492e0",
+    "home_plan_native_remote_validation.json": "351b739f9fa5f7f85b13497deb92e723ce702496b6c1afedc707b0e82fe492e0",
+    "native_final_regression.log": "21fd18c91b9f1162b9e001205afae4b65698cbe9f130ac504bf63ce8240e31e8",
+    "native_offline_integration/validation.json": "66610b7031b5f831927083120f7175f28332396840c495c35b3045271761cbf0",
+    "native_offline_integration/fake_mcu_summary.json": "15dfb02d7e9ba6584baeee255262b1550cd6f2ac942fe8ffbc5bc0e1a0ca9536",
+    "native_offline_integration/fake_mcu_replay.jsonl": "c79caf31aa4248b84cdc389e35ef668594d889ce63db5789de682566b92414e1",
+    "native_offline_integration/fake_mcu_integration.py": "1a6c0d49c009ad429abffda751c5d150b3f68b88e81c3ef9ccb68f07a614533d",
+    "native_offline_integration/README.md": "5e2bf828c51c78d3a9873429980a50efff4ac632d2d863e0b6d974f5f51d2fa1",
+    "reset_run_02/report.json": "d6f9158e95105fa228b617779ed768e414b26033223cd042db6cdcf33fe80528",
+    "after_reset_02_feedback.json": "a8747bc7a1a5b00f3a802864064e6a171035b7293d353eafd6dc62bd2d459e25",
+    "home_plan_native_after_reset_02.json": "8700a5bf35d5fcaee81e5d5db828eda6ff4f1edc09c55208d935079c821fd5e7",
+    "home_native_run_01/summary.json": "bf0f9fcd055d237fd9c9c8baa2bedfd12c6fff365bfddea4d86fb6b371aa4ebc",
+    "home_native_run_01/replay.jsonl": "d5ca96e289dc3dc9c54242e068c8c972dc3463fe016483de3fe7d67ba6315538",
+    "after_native_home_feedback.json": "7fc86b9ff102b9d78c53d13606e429cb38c57dd5f8a32db99ef97ea24a9e737e",
+    "native_enable_feedback_transitions.json": "5c934661ef5cf50563f22f9aacb6687e41ce219862cf420df179e8a9ffd735c2",
+    "native_enable_audit.json": "fe19f5d5b343a2c781be4c363c2b4cbb1ece3029d2044e86f4b154aad10a2f64",
+    "home_can_03/report.json": "6f1b7cc294a9973f77d677d881818dc8db710d3f16d1c3b0476e1bca97c69e1d",
+    "home_can_03/frames.jsonl": "ed0d620b5cedbe3afeec29b74776ee480a74e41c792a3592e94173273a90c931",
+    "home_native_attempt_d435i.mp4": "d89f72731e1f474b905520df15eb7250fb55466cfe290d7e48fbe74e03de0557",
+    "before_native_home_fresh.jpg": "0702632fe74baac4d81ef22c76bb0324d69dd71753a68301dce6bb3d5c9a0eab",
+    "after_reset_02.jpg": "f8f8d4bfaf9ffb050dfc40100f2b8124dfe141034ecdaada1b1a3110dbe6cd84",
+    "native_home_progress.jpg": "24d77896199031a6147fbccc2565ca8cf455b34e759dded8ad1a730db78b2c78",
+    "native_boundary_regression_tests.log": "1c5aa1a13a05024ba422d53e05b44b847270f6811541daa1c4c47421c433b224",
+    "native_boundary_regression/verify_boundary.py": "bf3e31889a2ea54617516950e9cbf5ae3c854bf0611a642991aff369aec7e1fa",
+    "native_boundary_regression/real_before_fix.py": "273a4cc4963b3176330f2c859cc1ab4e0790d5d04044ea312381ba8e7beb3423",
+    "native_boundary_regression/before_recorded/summary.json": "bda54c8b1e09cb9b864fef0f8fa9fdca12af4201b73b6c71090e3ad6b616e7c9",
+    "native_boundary_regression/before_recorded/replay.jsonl": "1b563e3f5b776d567739a94c2315b33a9b21d17ea794e9d6a0a4caf45d4a84fb",
+    "native_boundary_regression/current_recorded/independent_summary.json": "927296e0c23cd3cd1f37fdfd145f3c379b06ed9bcdba997816030cdfc9b5bed9",
+    "native_boundary_regression/current_recorded/summary.json": "f63d5eb05fc9d46855950b8aacf47841d5d58b27db77243520f269727a105207",
+    "native_boundary_regression/current_recorded/replay.jsonl": "23a3354f2576848b79a8d513d4571eb1381edf24ce955fc8da9d11c400350c30",
+    "native_boundary_regression/current_excess_return/independent_summary.json": "192a261b755344714b716f20fb97d17221dbb42b80e7014396a651bbcfdc208c",
+    "native_boundary_regression/current_excess_return/summary.json": "e48d109a945d4f2c7f4f568853a3cfc8ae88f7855f579802b776dfbd67965bb6",
+    "native_boundary_regression/current_excess_return/replay.jsonl": "efecd076c06819b703651aafd38a3400a6c74aeeb927d27a4799f8547c9287ef",
+    "native_boundary_deployment.json": "ab2be9c9fcc2d626f890fec69bd547839762464b56cfaca137d6271efefd0260",
+    "native_boundary_regression_tests_final.log": "b877ffc4119577165fc79d4595cc12e23821b731265a79193668cbeae4253a1d",
+    "native_boundary_regression/current_recorded_3/independent_summary.json": "f2b29db34acd44ba0be83de6a3d42a41769e3efd478ee492f643f085e8102b50",
+    "native_boundary_regression/current_recorded_3/summary.json": "f63d5eb05fc9d46855950b8aacf47841d5d58b27db77243520f269727a105207",
+    "native_boundary_regression/current_recorded_3/replay.jsonl": "23a3354f2576848b79a8d513d4571eb1381edf24ce955fc8da9d11c400350c30",
+    "reset_run_03/report.json": "15416c512c240a5ff600e4bc437aeb7fd781947b3394d8685a3e0be7a5befcf6",
+    "after_reset_03_feedback.json": "65ecb10df0900668f9e3e373b44219b0a2ada3214ab97e8d2b32ef84b695cfa9",
+    "after_reset_03.jpg": "694299b48ef5ff83cb80631968b54ca831e414fc56e72c42bbd71c2a51dda680",
+    "home_plan_native_after_reset_03.json": "96bd19da84909830fc762d8bb5a69a4d493fd56fab37f6d136c249cb3f60d894",
+    "home_plan_native_after_reset_03_validation.json": "57cf766cf38127cc7be48118dee0ee54db983d9286f16348f8d010b7d283edf0",
+    "home_plan_native_after_reset_03_remote_validation.json": "57cf766cf38127cc7be48118dee0ee54db983d9286f16348f8d010b7d283edf0",
+    "home_native_run_02/summary.json": "e217912eae37d9c7f4d29b3d3685a583f8eb63c8f9ce9c80a07d3f9c85c601b7",
+    "home_native_run_02/replay.jsonl": "8b5b35e39e70905e579c8adc4f5fd8d06c515f104acc332cf0ce48244b0f5330",
+    "after_native_home_02_feedback.json": "60b9223ab376b588b99e8f583e9cd67097c3d808dc27ce008d2f3c160cf08b00",
+    "home_native_success_audit.json": "67ca0d496950da72a7a6a81bbf3ed1924a336407a5cca249ac12b7baf1a56959",
+    "executed_native_home_02_piper_real.py": "be47a32482d073f9477d4f8b66aefbc9ac339c39b51b4b9952ca69f11f271166",
+    "executed_native_home_02_real_replay.py": "cf86140cab64688fbc949096b09effea6e87978772a27142099df7de3f65a82b",
+    "pap_home_success_d435i.mp4": "d8ff4335805b932025bb325711b817af766d62bf9d72ade05c1870173e184ef1",
+    "home_can_04/report.json": "1a49ce75fac9abdd09c048677ae0ab1b8e7dc0e05d94df14c9e1581d33c68215",
+    "home_can_04/frames.jsonl": "939b853dfbbabb558c1ec6894279a27b7c5e1ca22ef03e6cf431c7ae313fcb87",
+    "full_episode144_run_01/summary.json": "7296b1f4f9d2193f1dc2d893a02ec0c575a6d442730b9f293206df204e9e3a09",
+    "full_episode144_run_01/replay.jsonl": "567ca2c7d6e400bea83fec5fccea8495122fdb9ba831f06f4e6fe997ee20fcc9",
+    "full_episode144_audit.json": "9597c53b501ce61496e175925970b0cfb6cab3bf8f54fa8306d6b7237cbb9a92",
+    "after_full_episode144_feedback.json": "30c8e18b50e280d62bc578c1e333d987de1c5c1c453f2d3e1c93f269ee1dfc84",
+    "episode144_full_plan_01.json": "3d7fcabd1589943a0843ff715038632b622c75eed4a2265245117764a626c9d4",
+    "executed_full_episode144_piper_real.py": "be47a32482d073f9477d4f8b66aefbc9ac339c39b51b4b9952ca69f11f271166",
+    "executed_full_episode144_real_replay.py": "cf86140cab64688fbc949096b09effea6e87978772a27142099df7de3f65a82b",
+    "full_episode144_video.json": "8ac7256ebacf41a27ff0d0f7a47f3f5d051011753fe24bc4788eb0ad1c9c4d7f",
+    "full_episode144_d435i.mp4": "ad5cb60d88dc8dbc125319c9abdb8b646dcafbb8775b936aa48058433fde99cb"
+  },
+  "pre_reset_recorded_feedback": {
+    "probe_finished_at_utc": "2026-11-07T08:24:18.113553+00:00",
+    "joints_deg": [
+      2.627,
+      -1.546,
+      2.513,
+      -1.244,
+      21.889,
+      -2.423
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 0,
+    "arm_status": 1,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0
+  },
+  "post_reset_recorded_feedback": {
+    "probe_finished_at_utc": "2026-11-07T08:31:51.579459+00:00",
+    "sample_count": 100,
+    "joints_deg": [
+      2.863,
+      -1.596,
+      2.429,
+      -1.687,
+      21.39,
+      -2.373
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 0,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0,
+    "source": "after_reset_feedback.json"
+  },
+  "second_attempt": {
+    "success": false,
+    "started_unix_s": 1794040376.4798672,
+    "finished_unix_s": 1794040376.9848914,
+    "elapsed_s": 0.505112654005643,
+    "ticks": 7,
+    "completed_actions": 0,
+    "error": "PiperHardwareError: PiPER projected setpoint exceeds the active startup recovery envelope",
+    "cleanup_errors": [],
+    "phase": "approach_to_first_pose",
+    "stop_origin": "software active startup recovery command envelope",
+    "dataset_replay_started": false,
+    "initial_pose_reached": false,
+    "reported_motor_fault": false,
+    "reported_collision": false
+  },
+  "firmware_limits_original_decoding": {
+    "1": {
+      "max_angle_deg": 150.0,
+      "min_angle_deg": -150.0,
+      "max_speed_rad_s": 0.3,
+      "payload_hex": "0105dcfa24012c00"
+    },
+    "2": {
+      "max_angle_deg": 180.0,
+      "min_angle_deg": 0.0,
+      "max_speed_rad_s": 0.3,
+      "payload_hex": "0207080000012c00"
+    },
+    "3": {
+      "max_angle_deg": 0.0,
+      "min_angle_deg": -170.0,
+      "max_speed_rad_s": 0.3,
+      "payload_hex": "030000f95c012c00"
+    },
+    "4": {
+      "max_angle_deg": 100.0,
+      "min_angle_deg": -100.0,
+      "max_speed_rad_s": 0.3,
+      "payload_hex": "0403e8fc18012c00"
+    },
+    "5": {
+      "max_angle_deg": 70.0,
+      "min_angle_deg": -70.0,
+      "max_speed_rad_s": 0.3,
+      "payload_hex": "0502bcfd44012c00"
+    },
+    "6": {
+      "max_angle_deg": 180.0,
+      "min_angle_deg": -180.0,
+      "max_speed_rad_s": 0.3,
+      "payload_hex": "060708f8f8012c00"
+    }
+  },
+  "firmware_version": "S-V1.8-7",
+  "firmware_speed_unit_correction": {
+    "speed_unit_rad_s_per_raw": 0.01,
+    "original_query": "firmware_limits.json",
+    "version_query": "firmware_version.json",
+    "unit_reference": "https://github.com/agilexrobotics/piper_sdk/blob/master/CHANGELOG.MD",
+    "note": "Original query artifact decoded speed as 0.001 rad/s/raw. This derived correction preserves original bytes. No device parameter was changed."
+  },
+  "software_validation_after_diagnostics": {
+    "passed": 213,
+    "failed": 0,
+    "source": "replay_regression_after_diagnostics.log",
+    "physical_execution_validated": false,
+    "scope": "Diagnostic logging and regression coverage after the failed second approach."
+  },
+  "reference_control_audit": "docs/results/piper_control_reference_audit_20261107.md",
+  "reference_encoding_audit": {
+    "source": "reference_encoding_audit.json",
+    "case_count": 3,
+    "identical_sdk_calls": true,
+    "hardware_access": false,
+    "scope": "Same target/speed encoding and SDK call order only; startup policies differ."
+  },
+  "native_recovery_preparation": {
+    "implemented": true,
+    "default_enabled": false,
+    "plan": "home_plan_native_prepared.json",
+    "method": "recover_startup_native",
+    "plan_schema_field": "native_startup_recovery",
+    "physical_hardware_executed": true,
+    "code_deployed": true,
+    "deployed_source_sha256": {
+      "src/pressb/robots/piper/real.py": "273a4cc4963b3176330f2c859cc1ab4e0790d5d04044ea312381ba8e7beb3423",
+      "src/pressb/control/real_replay.py": "cf86140cab64688fbc949096b09effea6e87978772a27142099df7de3f65a82b"
+    },
+    "target_rule": "From fresh measured pose, move only initial J2/J3 excursions to 1 degree inside their nominal boundary; hold other joints and gripper.",
+    "native_options": {
+      "speed_percent": 1,
+      "verified_max_joint_speed_rad_s": [
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ],
+      "inset_rad": 0.017453292519943295,
+      "max_travel_rad": 0.06981317007977318,
+      "measured_speed_limit_rad_s": 0.08726646259971647,
+      "nonrecover_drift_rad": 0.017453292519943295,
+      "timeout_s": 20.0,
+      "stable_s": 0.5,
+      "tolerance_rad": 0.004363323129985824
+    },
+    "gripper_drift_limit_m": 0.001,
+    "speed_measurement_minimum_can_timestamp_window_s": 0.2,
+    "ordinary_sdk_speed_percent": 1,
+    "ordinary_arrival_joint_tolerance_deg": 0.5,
+    "ordinary_arrival_gripper_tolerance_m": 0.001,
+    "caller_verifies_firmware_speed_units": true,
+    "clears_estop": false,
+    "local_dry_run_validated": true,
+    "remote_dry_run_validated": true,
+    "local_remote_validation_identical": true,
+    "validation_executed": false,
+    "software_regression": {
+      "passed": 332,
+      "failed": 0,
+      "source": "native_final_regression.log"
+    },
+    "independent_integration": {
+      "source": "native_offline_integration/validation.json",
+      "success": true,
+      "physical_hardware_used": false,
+      "fake_mcu_only": true,
+      "limitations": [
+        "The fake MCU clips targets to nominal firmware joint limits; actual firmware clipping is a hypothesis, not established by this software test.",
+        "The fake MCU integrates velocity at 3rad/s times commanded speed percentage without physical dynamics, inertia, collisions, latency or gravity.",
+        "Successful offline recovery is not physical validation or permission to enable hardware."
+      ]
+    },
+    "pending": null,
+    "physical_execution_success": false,
+    "executed_plan": "home_plan_native_after_reset_02.json",
+    "physical_run": "home_native_run_01",
+    "latest_physical_validation": {
+      "success": true,
+      "run": "home_native_run_02",
+      "scope": "Initial pose only; earlier failed native attempt retained in third_attempt."
+    }
+  },
+  "second_attempt_recorded_feedback": {
+    "probe_finished_at_utc": "2026-11-07T08:33:15.134046+00:00",
+    "sample_count": 100,
+    "joints_deg": [
+      2.863,
+      -1.493,
+      1.891,
+      0.0,
+      23.089,
+      -2.267
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 0,
+    "arm_status": 1,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0,
+    "source": "after_home_attempt_feedback.json"
+  },
+  "third_attempt": {
+    "success": false,
+    "started_unix_s": 1794041961.7271874,
+    "finished_unix_s": 1794041962.9611933,
+    "elapsed_s": 1.2341671840113122,
+    "ticks": 0,
+    "completed_actions": 0,
+    "error": "_PiperPositionError: PiPER feedback is outside configured joint/gripper limits",
+    "cleanup_errors": [],
+    "native_recovery_completed": false,
+    "native_recovery_feedback_samples": 43,
+    "phase": "native_startup_recovery",
+    "ordinary_control_started": false,
+    "dataset_replay_started": false,
+    "initial_pose_reached": false,
+    "plan": "home_plan_native_after_reset_02.json",
+    "run": "home_native_run_01",
+    "operator_authorized_reset_and_subsequent_hands_clear": true,
+    "reported_motor_fault": false,
+    "reported_collision": false
+  },
+  "native_boundary_failure": {
+    "identified": true,
+    "diagnosis": "Recovery allowance retired on the first nominal J2 boundary reading, so a later -0.052 degree reading was rejected by strict nominal limits before stable interior arrival.",
+    "boundary_zero_feedback_unix_s": 1794041962.9158902,
+    "negative_jitter_feedback_unix_s": 1794041962.9413748,
+    "negative_jitter_deg": -0.052,
+    "first_estop_feedback_unix_s": 1794041962.965425,
+    "raw_source": "home_can_03/frames.jsonl",
+    "correction_status": "Correction offline validated, deployed, and physically verified for one initial-pose approach home_native_run_02; no subsequent dataset trajectory."
+  },
+  "native_enable_verification": {
+    "all_six_false_to_true_before_native_feedback": true,
+    "earliest_enabled_unix_s": 1794041961.9370713,
+    "latest_enabled_unix_s": 1794041962.0168326,
+    "first_native_record_unix_s": 1794041962.044248,
+    "transitions_source": "native_enable_feedback_transitions.json",
+    "audit_source": "native_enable_audit.json",
+    "sdk_local_loopback": false,
+    "passive_can_records_sdk_transmissions": false,
+    "scope": "Driver feedback establishes enable transitions; missing transmit frames on a separate passive CAN socket do not establish missing commands."
+  },
+  "reset_operations": [
+    {
+      "report": "reset_run_01/report.json",
+      "send_attempts": 1,
+      "operator_authorized": true
+    },
+    {
+      "report": "reset_run_02/report.json",
+      "send_attempts": 1,
+      "operator_authorized": true,
+      "send_unix_s": 1794041705.1778915,
+      "can_id": "0x150",
+      "payload_hex": "0200000000000000",
+      "after_reset_arm_status": 0,
+      "after_reset_motors_enabled": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "after_reset_readonly_probe": "after_reset_02_feedback.json"
+    },
+    {
+      "report": "reset_run_03/report.json",
+      "send_attempts": 1,
+      "operator_authorized": true,
+      "send_unix_s": 1794042535.913374,
+      "can_id": "0x150",
+      "payload_hex": "0200000000000000",
+      "enable_or_motion_sent": false,
+      "after_reset_arm_status": 0,
+      "after_reset_motors_enabled": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "after_reset_readonly_probe": "after_reset_03_feedback.json"
+    }
+  ],
+  "native_boundary_correction": {
+    "implemented": true,
+    "scope": "Only original J2/J3 startup exceptions are retained through native stable inset arrival; ordinary retirement stays strict.",
+    "feedback_slack_cap_deg": 0.25,
+    "ordinary_joint_limits_relaxed": false,
+    "deployment_confirmed": true,
+    "physical_hardware_executed": true,
+    "software_regression": {
+      "passed": 339,
+      "failed": 0,
+      "elapsed_s": 2.88,
+      "source": "native_boundary_regression_tests_final.log"
+    },
+    "independent_validation": {
+      "physical_hardware_used": false,
+      "recorded_feedback_count": 43,
+      "appended_return_deg": -0.052,
+      "old_implementation_reproduced_failure": true,
+      "corrected_implementation_success": true,
+      "illegal_targets_clipped": 0,
+      "native_samples": 108,
+      "ordinary_ticks": 416,
+      "virtual_elapsed_s": 16.003333333332122,
+      "max_final_joint_error_deg": 0.4509995269775372,
+      "excess_return_deg": -0.251,
+      "excess_return_rejected": true,
+      "current_source": "native_boundary_regression/current_recorded_3/independent_summary.json",
+      "old_source": "native_boundary_regression/before_recorded/summary.json",
+      "excess_source": "native_boundary_regression/current_excess_return/independent_summary.json",
+      "pre_final_current_source": "native_boundary_regression/current_recorded/independent_summary.json",
+      "ordinary_retirement_remains_strict": true
+    },
+    "software_regression_pre_final": {
+      "passed": 338,
+      "failed": 0,
+      "elapsed_s": 2.84,
+      "source": "native_boundary_regression_tests.log"
+    },
+    "deployment_evidence": "native_boundary_deployment.json",
+    "deployed_adapter_sha256": "be47a32482d073f9477d4f8b66aefbc9ac339c39b51b4b9952ca69f11f271166",
+    "remote_dry_run_executed": false,
+    "physical_motion_after_fix": true,
+    "hardware_reset_after_fix": true,
+    "reversed_recovery_target_rejected_before_send": true,
+    "deployment_snapshot_hardware_reset_after_fix": false,
+    "reset_after_fix_report": "reset_run_03/report.json",
+    "deployment_note_scope": "Original native_boundary_deployment.json is unchanged and records the earlier status at deployment, before authorized reset_run_03.",
+    "physical_validation": {
+      "success": true,
+      "run": "home_native_run_02",
+      "scope": "One initial-pose approach only",
+      "audit": "home_native_success_audit.json"
+    }
+  },
+  "third_attempt_recorded_feedback": {
+    "probe_finished_at_utc": "2026-11-07T08:59:47.516433+00:00",
+    "sample_count": 100,
+    "joints_deg": [
+      2.861,
+      -1.411,
+      1.696,
+      0.0,
+      23.74,
+      -2.346
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 0,
+    "arm_status": 1,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0,
+    "source": "after_native_home_feedback.json"
+  },
+  "next_home_after_reset_03": {
+    "plan": "home_plan_native_after_reset_03.json",
+    "local_validation": "home_plan_native_after_reset_03_validation.json",
+    "remote_validation": "home_plan_native_after_reset_03_remote_validation.json",
+    "local_remote_validation_identical": true,
+    "validated": true,
+    "executed": true,
+    "fourth_physical_attempt_started": true,
+    "hands_clear_confirmation_received": true,
+    "success": true,
+    "run": "home_native_run_02",
+    "dry_run_executed": false
+  },
+  "post_reset_03_recorded_feedback": {
+    "probe_finished_at_utc": "2026-11-07T09:09:10.194703+00:00",
+    "sample_count": 100,
+    "joints_deg": [
+      2.862,
+      -1.511,
+      0.743,
+      4.392,
+      30.117,
+      -2.335
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 0,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0,
+    "source": "after_reset_03_feedback.json"
+  },
+  "successful_initial_pose_only": false,
+  "fourth_attempt": {
+    "success": true,
+    "started_unix_s": 1794042635.804243,
+    "finished_unix_s": 1794042652.041213,
+    "elapsed_s": 16.237083025000175,
+    "ticks": 408,
+    "completed_actions": 1,
+    "error": null,
+    "cleanup_errors": [],
+    "native_recovery_completed": true,
+    "native_recovery_feedback_samples": 93,
+    "native_recovery_elapsed_s": 1.9510068800009321,
+    "run": "home_native_run_02",
+    "plan": "home_plan_native_after_reset_03.json",
+    "phase": "native_recovery_then_initial_pose_approach",
+    "scope": "PAP episode144 action0 only; no subsequent dataset trajectory or other motion.",
+    "hands_clear_confirmed": true,
+    "max_joint_arrival_error_deg": 0.4539995269775389,
+    "joint_arrival_threshold_deg": 0.5,
+    "device_speed_percent": 1,
+    "initial_pose_reached": true,
+    "all_six_enabled_before_native_phase": true,
+    "audit": "home_native_success_audit.json"
+  },
+  "physical_totals": {
+    "failed_approaches": 3,
+    "successful_initial_pose_approaches": 1,
+    "authorized_resets": 3,
+    "subsequent_dataset_trajectory_executed": true,
+    "successful_complete_episode_replays": 1
+  },
+  "verified_physical_scope": [
+    "One successful approach to PAP episode144 action0 initial pose",
+    "Six motor enable transitions before native recovery in successful run",
+    "One complete empty-table replay of PAP episode144, 342/342 action rows; retimed physical execution, not an object-transfer task evaluation"
+  ],
+  "capture_processes": {
+    "camera_recording_stopped": true,
+    "passive_can_recording_stopped": true,
+    "robot_remains_enabled": true,
+    "current_estop_latched": false,
+    "read_only_probe_stopped": true,
+    "current_pose": "dataset episode144 final pose"
+  },
+  "successful_home_recorded_feedback": {
+    "probe_finished_at_utc": "2026-11-07T09:11:21.964202+00:00",
+    "sample_count": 100,
+    "joints_deg": [
+      -1.691,
+      24.917,
+      -24.717,
+      -4.792,
+      40.323,
+      5.047
+    ],
+    "gripper_width_m": 0.0,
+    "ctrl_mode": 1,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_reported_motor_fault_flags_false": true,
+    "read_only_probe_tx_packets_delta": 0,
+    "source": "after_native_home_02_feedback.json"
+  },
+  "initial_pose_source": {
+    "dataset": "/home/pengguanqi/Datasets/piper_pap_20260606_offset",
+    "episode_index": 144,
+    "frame_start": 0,
+    "frame_stop": 1,
+    "sha256": "23c992ca3cc11da300277b9f105c00172af77b8e9207c3749e17a2f6dab13154"
+  },
+  "complete_episode_replay_completed": true,
+  "complete_episode_replay": {
+    "physical_execution": true,
+    "scope": "One complete episode144,342frames; empty-table motion replay, not an object-transfer success evaluation",
+    "success": true,
+    "completed_actions": 342,
+    "ticks": 3944,
+    "device_speed_percent": 1,
+    "elapsed_s": 135.52397050400032,
+    "source_timestamp_span_s": 11.366666666666667,
+    "time_policy": "Retimed to hardware tracking; original 30Hz timing not preserved. Video uses actual capture timestamps.",
+    "all_action_indices_observed": true,
+    "max_per_action_arrival_joint_error_deg": 0.4990017700195346,
+    "max_per_action_arrival_gripper_error_mm": 1.0,
+    "final_target_deg": [
+      -10.678999900817871,
+      27.100000381469727,
+      -26.22800064086914,
+      -6.571000099182129,
+      42.952999114990234,
+      4.669000148773193
+    ],
+    "final_feedback_deg": [
+      -10.621,
+      27.116,
+      -26.308,
+      -6.519,
+      42.856,
+      4.695
+    ],
+    "final_gripper_width_m": 0.0,
+    "final_arm_status": 0,
+    "final_error_code": 0,
+    "all_motors_enabled_after": true,
+    "readonly_probe_tx_delta": 0,
+    "post_faults_clear": true,
+    "source_adapter_sha256": "be47a32482d073f9477d4f8b66aefbc9ac339c39b51b4b9952ca69f11f271166",
+    "plan_sha256": "3d7fcabd1589943a0843ff715038632b622c75eed4a2265245117764a626c9d4",
+    "summary": "full_episode144_run_01/summary.json",
+    "events": "full_episode144_run_01/replay.jsonl",
+    "source": {
+      "dataset": "/home/pengguanqi/Datasets/piper_pap_20260606_offset",
+      "episode_index": 144,
+      "frame_start": 0,
+      "frame_stop": 342,
+      "sha256": "23c992ca3cc11da300277b9f105c00172af77b8e9207c3749e17a2f6dab13154"
+    },
+    "new_reset": false,
+    "native_recovery_phase": false,
+    "startup_recovery_tolerance_rad": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "joint_reference_slew_deg_s": 5.0,
+    "gripper_reference_slew_mm_s": 10.0,
+    "current_pose": "dataset final pose, not initial pose"
+  }
+}

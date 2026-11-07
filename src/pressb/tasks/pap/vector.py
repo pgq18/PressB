@@ -447,9 +447,19 @@ class PAPVectorBackend:
     diagnostic_snapshot = snapshot
 
     def _ids(self, env_ids):
-        if (not isinstance(env_ids, list) or not env_ids or len(set(env_ids)) != len(env_ids)
-                or any(type(i) is not int or not 0 <= i < self.num_envs for i in env_ids)):
+        if (not isinstance(env_ids, list) or not env_ids
+                or any(type(i) is not int or not 0 <= i < self.num_envs for i in env_ids)
+                or len(set(env_ids)) != len(env_ids)):
             raise ValueError("Expected distinct valid PAP environment ids")
+
+    def end_episode(self, env_ids):
+        """Retire slots without advancing physics or replacing their observation."""
+        self._check()
+        self._ids(env_ids)
+        if any(not self.ready[i] for i in env_ids):
+            raise ValueError("Only initialized active PAP environments may end")
+        # As with physical termination, their objects can settle on peer steps.
+        self.ready[env_ids] = False
 
     def reset(self, env_ids, seed, options=None):
         self._check()

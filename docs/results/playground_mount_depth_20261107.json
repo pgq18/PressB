@@ -1,0 +1,141 @@
+{
+  "date": "2026-11-07",
+  "task": "playground",
+  "status": "adopted_empirical_mount_height_depth_alignment",
+  "hardware_access": false,
+  "scene_config": "configs/piper_playground.json",
+  "scene_config_sha256": "99deb9a37b5cfa7f5cc916710ebb464b8c41e0346f24ebc5bba70b82fd963b60",
+  "previous_config": "configs/calibration/playground_20261107_before_mount_depth.json",
+  "alternative_10mm_config": "configs/calibration/playground_20261107_mount10mm_candidate.json",
+  "selected_mount_height_m": 0.006,
+  "previous_mount_height_m": 0.014,
+  "interpretation": "Effective simulation height chosen to deepen overlap under the same original joint commands. Does not identify actual physical mounting thickness; original user estimate 14 mm remains evidence.",
+  "selection_reason": "6 mm increases close-stage coverage to62-64% and improves near-contact vertical alignment, matching the reported shallow-grip discrepancy. 10 mm minimizes pooled multi-stage projection errors and remains a documented alternative.",
+  "default_empty": true,
+  "initial_pose_unchanged": true,
+  "fixed": [
+    "all original2146 arm/gripper commands, fps and phases",
+    "table and object world initial positions",
+    "global and overview camera world transforms and live K",
+    "wrist link-local extrinsics and live K",
+    "URDF, meshes, collision, friction and drives",
+    "lights and room prop world positions"
+  ],
+  "changes": [
+    "robot world Z -8mm",
+    "visual mounting plate14 ->6mm",
+    "fixed-world base-relative coordinates re-expressed +8mm in local Z"
+  ],
+  "geometry_meaning": "Reconstructed vertical mesh/cube envelope overlap, not measured contact patch. Symmetric finger opening assumption, actual object rotation included.",
+  "runs": {
+    "mount_14mm": {
+      "mount_height_m": 0.014,
+      "close_finger_cube_vertical_overlap_mm": [
+        9.901380069705677,
+        10.507726088677426
+      ],
+      "close_min_finger_height_above_table_mm": 18.501788988317337,
+      "close_cube_center_in_tcp_mm": [
+        14.161853852531959,
+        0.9560573077001637,
+        3.999237994537685
+      ],
+      "physics": {
+        "success": true,
+        "min_held_lift_m": 0.050019025802612305,
+        "held_bilateral_contact_fraction": 1.0,
+        "return_distance_m": 0.007195533670885994,
+        "unintended_external_robot_contacts": [],
+        "plan_sha256": "6b2758813eafa4eaec647ae07e55217dde292a87f7853c86f7f2d6d311148668",
+        "frames": 2146
+      }
+    },
+    "mount_10mm": {
+      "mount_height_m": 0.01,
+      "close_finger_cube_vertical_overlap_mm": [
+        13.886871880648792,
+        14.49184594211715
+      ],
+      "close_min_finger_height_above_table_mm": 14.509788343965269,
+      "close_cube_center_in_tcp_mm": [
+        13.783677246528088,
+        0.8820815155516891,
+        0.028776763576511804
+      ],
+      "physics": {
+        "success": true,
+        "min_held_lift_m": 0.0499720573425293,
+        "held_bilateral_contact_fraction": 1.0,
+        "return_distance_m": 0.007251154642146586,
+        "unintended_external_robot_contacts": [],
+        "plan_sha256": "6b2758813eafa4eaec647ae07e55217dde292a87f7853c86f7f2d6d311148668",
+        "frames": 2146
+      }
+    },
+    "mount_06mm": {
+      "mount_height_m": 0.006,
+      "close_finger_cube_vertical_overlap_mm": [
+        17.888293270144185,
+        18.493060557999286
+      ],
+      "close_min_finger_height_above_table_mm": 10.508818709902233,
+      "close_cube_center_in_tcp_mm": [
+        13.460406412229002,
+        0.8280678442820217,
+        -3.9589589415220483
+      ],
+      "physics": {
+        "success": true,
+        "min_held_lift_m": 0.049974262714385986,
+        "held_bilateral_contact_fraction": 1.0,
+        "return_distance_m": 0.00724017652394293,
+        "unintended_external_robot_contacts": [],
+        "plan_sha256": "6b2758813eafa4eaec647ae07e55217dde292a87f7853c86f7f2d6d311148668",
+        "frames": 2146
+      }
+    }
+  },
+  "image_coordinate_rmse_px": {
+    "global_finger_14_10_6": [
+      4.13,
+      3.32,
+      3.79
+    ],
+    "wrist_static_cube_all_14_10_6": [
+      5.51,
+      5.31,
+      6.44
+    ],
+    "wrist_20s_14_10_6": [
+      8.71,
+      7.03,
+      5.7
+    ],
+    "green_nearside_preclose_14_10_6": [
+      20.42,
+      14.64,
+      12.72
+    ]
+  },
+  "remaining_limits": [
+    "Not all images improve; wrist horizontal cube mismatch increases under height-only adjustment.",
+    "About13.46mm tool-X object offset remains after close.",
+    "Simulated closed gap about30mm versus real35.6mm remains unresolved.",
+    "Conditional PnP supports the prior14mm plane under fixed hand-eye but excludes camera/FK systematic errors. True mount and finger/kinematic errors are not identified.",
+    "Original plan metadata describes the14mm scene; effective table height must use run config. New tabletop-relative IK compensates mount changes."
+  ],
+  "validation": {
+    "tests": "92 passed,0 skipped",
+    "test_log": "outputs/playground_mount_height_20261107/regression.log",
+    "default_isaac_smoke": "passed",
+    "smoke_report": "outputs/playground_mount_height_20261107/default_smoke/report.json",
+    "smoke_initial_launcher_issue": "External shell redirection created supervisor-owned log path; rejected before launch. Preserved default_smoke_launcher_failure.log. Retried without redirection and passed."
+  },
+  "artifacts": {
+    "geometry": "outputs/playground_mount_height_20261107/geometry/mount_geometry_report.json",
+    "projection": "outputs/playground_mount_height_20261107/projection/projection_report.json",
+    "coordinate_semantics": "outputs/playground_mount_height_20261107/review/coordinate_semantics.json",
+    "comparison_video": "outputs/playground_mount_height_20261107/video/real_mount_14_10_6mm_1x.mp4",
+    "video_qa": "outputs/playground_mount_height_20261107/video/final_media_qa.json"
+  }
+}

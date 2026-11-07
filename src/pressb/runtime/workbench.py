@@ -62,7 +62,7 @@ def _materials(stage, root, overrides=None, material_overrides=None, effective=N
     return result
 
 
-def _lighting(stage, root, cfg, base_xy, height, table_x, table_y):
+def _lighting(stage, root, cfg, base_xy, height, table_x, table_y, base_height=0.):
     """Author legacy lights or base-relative area lights with explicit aim."""
     lighting = cfg.get("lighting", {})
     if not isinstance(lighting, Mapping):
@@ -99,7 +99,7 @@ def _lighting(stage, root, cfg, base_xy, height, table_x, table_y):
             names.add(name)
             position = _vector(config.get("position_base_m", []), 3, f"{label}.position_base_m")
             target = _vector(config.get("target_base_m", []), 3, f"{label}.target_base_m")
-            origin = [*base_xy, height]
+            origin = [*base_xy, height + base_height]
             position_world = [v + o for v, o in zip(position, origin)]
             target_world = [v + o for v, o in zip(target, origin)]
             direction = Gf.Vec3d(*target_world) - Gf.Vec3d(*position_world)
@@ -124,8 +124,8 @@ def _lighting(stage, root, cfg, base_xy, height, table_x, table_y):
         position = [table_x, table_y - .15, height + 1.4]
         lights = [dict(name="Ceiling", path=root + "/Lighting/Ceiling",
                        position_world_m=position, target_world_m=[table_x, table_y - .15, height],
-                       position_base_m=[table_x - base_xy[0], -.15, 1.4],
-                       target_base_m=[table_x - base_xy[0], -.15, 0.],
+                       position_base_m=[table_x - base_xy[0], -.15, 1.4 - base_height],
+                       target_base_m=[table_x - base_xy[0], -.15, 0. if base_height == 0. else -base_height],
                        optical_forward_world=[0., 0., -1.], width=1.2, height=.7,
                        intensity=intensity(cfg.get("key_intensity", 1600.), "key_intensity"),
                        color=[1., 1., 1.])]
@@ -146,27 +146,33 @@ def _lighting(stage, root, cfg, base_xy, height, table_x, table_y):
             light.CreateIntensityAttr(info["intensity"])
     return dict(enabled=enabled, ambient=ambient if enabled else None,
                 area_lights=[{k: v for k, v in info.items() if k != "transform"} for info in lights] if enabled else [],
-                coordinate_frame="position_base_m and target_base_m relative to robot base at tabletop",
+                coordinate_frame=("position_base_m and target_base_m relative to robot base at tabletop"
+                                  if base_height == 0. else
+                                  "position_base_m and target_base_m relative to elevated robot base"),
                 color_space="linear RGB")
 
 
-def _mount_hardware(stage, root, base_xy, height, table_x_min, mats):
+def _mount_hardware(stage, root, base_xy, height, table_x_min, mats, base_height=0.):
     """Photographic mounting plate and clamps, with no physics APIs.
 
-    The plate intentionally lies almost flush with the tabletop: the robot's
-    measured base frame is unchanged. The slightly raised screw heads, clamps,
-    and threaded rods are visible context, not new robot collision geometry.
+    A zero mounting height preserves the legacy almost-flush visual plate.
+    A positive height places the plate's upper face at the elevated robot base.
+    The fixed articulation is anchored separately; these parts remain visual.
     """
     path = root + "/MountHardware"
     UsdGeom.Xform.Define(stage, path)
-    _cube(stage, path + "/BasePlate", (base_xy[0] - .04, base_xy[1], height - .002),
-          (.22, .24, .006), mats["MountBlack"])
+    plate_center_z = -.002 if base_height == 0. else base_height / 2
+    plate_thickness = .006 if base_height == 0. else base_height
+    bolt_offset = 0. if base_height == 0. else base_height - .001
+    upper_clamp_offset = max(0., bolt_offset)
+    _cube(stage, path + "/BasePlate", (base_xy[0] - .04, base_xy[1], height + plate_center_z),
+          (.22, .24, plate_thickness), mats["MountBlack"])
     for i, (x, y) in enumerate([(-.13, -.104), (-.13, .104), (.052, -.104), (.052, .104)]):
         x, y = base_xy[0] + x, base_xy[1] + y
-        _cylinder_between(stage, f"{path}/Bolt{i}/Head", (x, y, height + .001),
-                          (x, y, height + .004), .005, mats["Aluminium"])
-        _cylinder_between(stage, f"{path}/Bolt{i}/Socket", (x, y, height + .004),
-                          (x, y, height + .0042), .0022, mats["DarkRubber"])
+        _cylinder_between(stage, f"{path}/Bolt{i}/Head", (x, y, height + .001 + bolt_offset),
+                          (x, y, height + .004 + bolt_offset), .005, mats["Aluminium"])
+        _cylinder_between(stage, f"{path}/Bolt{i}/Socket", (x, y, height + .004 + bolt_offset),
+                          (x, y, height + .0042 + bolt_offset), .0022, mats["DarkRubber"])
     front_x = base_xy[0] + table_x_min
     # Cast-orange C frames face into the table (+X). Segment boxes leave the
     # centre visibly open; a steel screw rises from the lower jaw to the desk.
@@ -178,12 +184,20 @@ def _mount_hardware(stage, root, base_xy, height, table_x_min, mats):
             ("OuterSpine", -.071, -.082, .025, .176),
             ("LowerJaw", -.015, -.179, .122, .026),
         ]:
+            if name == "TopJaw":
+                dz += upper_clamp_offset
+            elif name == "OuterSpine":
+                dz += upper_clamp_offset / 2
+                sz += upper_clamp_offset
             _cube(stage, f"{clamp_path}/{name}", (front_x + dx, y, height + dz),
                   (sx, .025, sz), mats["ClampOrange"])
         for name, a, b in [
             ("UpperCurve", (-.062, .018), (-.078, -.013)),
             ("LowerCurve", (-.078, -.154), (-.065, -.178)),
         ]:
+            if name == "UpperCurve":
+                a = (a[0], a[1] + upper_clamp_offset)
+                b = (b[0], b[1] + upper_clamp_offset)
             _cylinder_between(stage, f"{clamp_path}/{name}",
                               (front_x + a[0], y, height + a[1]),
                               (front_x + b[0], y, height + b[1]), .013, mats["ClampOrange"])
@@ -201,7 +215,8 @@ def _mount_hardware(stage, root, base_xy, height, table_x_min, mats):
         _cylinder_between(stage, f"{clamp_path}/Handle", (screw_x, y - .035, height - .226),
                           (screw_x, y + .035, height - .226), .004, mats["Aluminium"])
     return {"root_path": path, "visual_only": True,
-            "plate_center_base": [-.04, 0., -.002], "plate_size": [.22, .24, .006]}
+            "plate_center_base": [-.04, 0., plate_center_z - base_height],
+            "plate_size": [.22, .24, plate_thickness]}
 
 
 def _validate_workbench(stage, cfg, *, default_root="/World/PickPlace"):
@@ -219,10 +234,13 @@ def _validate_workbench(stage, cfg, *, default_root="/World/PickPlace"):
     width = _positive(cfg.get("table_width", table.get("width", 1.6)), "table width")
     x_min = float(cfg.get("table_x_min", table.get("x_min", -.12)))
     base_xy = _vector(cfg.get("robot_base_xy", [0., 0.]), 2, "robot_base_xy")
+    base_height = float(cfg.get("robot_base_height_above_table_m", 0.))
+    if not math.isfinite(base_height) or base_height < 0:
+        raise ValueError("robot_base_height_above_table_m must be finite and nonnegative")
     if not math.isfinite(x_min):
         raise ValueError("table_x_min must be finite")
     return dict(root=root, height=height, depth=depth, width=width,
-                x_min=x_min, base_xy=base_xy)
+                x_min=x_min, base_xy=base_xy, base_height=base_height)
 
 
 def _prepare_workbench(stage, cfg, geometry):
@@ -266,7 +284,7 @@ def _prepare_workbench(stage, cfg, geometry):
               (table_x, table_y + sign * (width / 2 - .055), height - .12),
               (depth - .11, .026, .028), mats["Aluminium"])
 
-    mounting = (_mount_hardware(stage, root, base_xy, height, x_min, mats)
+    mounting = (_mount_hardware(stage, root, base_xy, height, x_min, mats, geometry["base_height"])
                 if cfg.get("mount_hardware", True) else None)
 
     return dict(geometry, effective_materials=effective_materials, mats=mats,
@@ -304,12 +322,13 @@ def _finish_workbench(stage, cfg, workbench):
             _cube(stage, f"{root}/Room/Outlet{i}/GroundSlot", (back_x - .055, y, height + .079),
                   (.001, .006, .016), mats["DarkRubber"])
         collider("Room/Floor", (table_x, table_y, -.025), (6., 6., .05), mats["Floor"])
-    effective_lighting = _lighting(stage, root, cfg, base_xy, height, table_x, table_y)
+    base_height = workbench["base_height"]
+    effective_lighting = _lighting(stage, root, cfg, base_xy, height, table_x, table_y, base_height)
 
     return {
         "root_path": root,
         "table_top_z": height,
-        "robot_base_position_world": [*base_xy, height],
+        "robot_base_position_world": [*base_xy, height + base_height],
         "table_bounds_xy_world": [[base_xy[0] + x_min, table_y - width / 2],
                                    [base_xy[0] + x_min + depth, table_y + width / 2]],
         "collision_paths": collision_paths,

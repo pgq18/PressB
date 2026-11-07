@@ -1,5 +1,216 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-08 Playground 作为后续新任务的基础模板
+
+- 用户明确：未来在此工作台添加其他物体形成新任务。沿用现有 `scene_config + scene_overrides`，新任务固定引用 `configs/calibration/playground_20261108_final.json`；桌面、PiPER、双相机标定、初始姿态、灯光和动力学统一继承，各任务自己定义物体、随机化、语言、奖励/终止。新标定应另存模板版本，再显式升级派生任务。
+- 新增可运行节点示例 `configs/rl_nodes/playground_objects_example.json`：仅添加29mm红色ExampleCube及示例观测指令；仍为`playground`单环境、reward=0、无自动成功条件。完整新任务在`tasks/<task>/`实现，复用场景builder和共享runtime；没有复制新框架，也未修改已定版空桌配置。
+- 文档说明dict递归合并/list整体替换、dynamic XY/table-Z与static base-XYZ差异、`run_playground.py`接收scene而非node JSON、活动episode需先`end_episode`再reset。README双语与框架说明已补入口。
+- **40项既有CPU/USD测试通过**；真实Isaac读取该node示例，方块移动约72mm XY并物理落桌后，结束episode再reset恢复原位置（误差0）；双相机K/外参一致，模板/default SHA仍为`446f8eb0...34b21`，正常清理退出。验证目录 `outputs/playground_template_20261108/`。首次harness未先退休episode而被协议拒绝，日志保留，按正常API时序重跑通过；无生产代码修复、无真机操作。
+
+## 2026-11-08 Playground 综合定版（仅离线与仿真）
+
+- 最终预设 `configs/calibration/playground_20261108_final.json` 与当前默认 `configs/piper_playground.json` 完全相同，SHA256 `446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21`。相较本轮前的配置只增加 `reconstruction.final_revision`，全部运行参数保留；不继续按单张图漂移参数。
+- 综合选择：有效安装高度 **6 mm**、当前已配准global、上一轮等开度wrist外参修正、实机两路K/640×480、29 mm绿块、原几何与驱动摩擦；默认仍空桌面。6 mm是经验仿真修正，不是重新测得真机垫板厚度。
+- 新完成6/8/10/14 mm四档联合外参/cube XY-yaw拟合及各自 **2146条原命令**完整PhysX回放。加上已核验SHA的当前baseline，共5组物理门槛全部通过，无非预期外部接触/绑定/瞬移。五组图像/深度等权工程分数baseline **0.64362**，新fit **0.68253/0.66751/0.65901/0.66200**，均无明确综合优势；mount-only8mm仅改善0.37%，低于10%选择容差。候选及所有失败/退化指标保留。
+- 当前闭合双指竖直覆盖 **17.89/18.49 mm**，稳定抬升 **49.97 mm**，双指接触率1，放回XY偏移7.24mm。覆盖不是实际接触斑，真机35.6mm vs 仿真约30mm开度差仍在，不能称绝对标定完成。深度采用工作物体XY位置；改用base原点的外推深度会改变排名，已在独立审计披露。
+- 唯一桌面调色候选双视角平均色差下降，但两处wrist局部退化+2.27/+2.02超冻结阈值+2.0，未采用；不应描述为颜色全面变差或夹爪轮廓变差。灯光、粗糙度、夹爪形状和动力学未因这轮图像拟合改变。
+- **102项CPU/USD通过**；最终默认重新做空桌渲染及真实Isaac backend smoke，reset/step、时限、幂等重试、相机内参/FK与退出通过。未SSH/CAN、未真机运动、未commit/push。
+- [便携结果](results/playground_final_20261108.json)，全部证据 `outputs/playground_final_20261108/`。最终比较 `media/real_final_1x.mp4` 为左真机/右最终仿真、上global下wrist，34–59s原速，复用已完成录像并明确自然开度差；`media/final_empty_preview.png` 是新的无参考物默认场景。历史所有记录保留。
+
+## 2026-11-07 Wrist 夹爪轮廓对齐（仅相机外参、无真机操作）
+
+- 用户指出腕部图像内夹爪位置不一致。已将默认 Playground wrist 光学外参微调 **0.707° / 1.633 mm**，保留实机 `fx/fy/cx/cy`、640×480、底座6mm、global相机和所有物理参数/动作。旧默认归档 `configs/calibration/playground_20261107_before_wrist_refine.json`；PAP 未改。
+- 先分离开度问题：real闭合35.6mm vs sim自然接触30mm可导致约15px横移。本轮用相同实测35/40.1/50/59.4mm开度配准，未用camera掩盖该开度差；CPU审计排除double光心偏移、开度轴符号和STL/USD不一致。
+- 原指身外缘最大偏19px，独立Isaac等宽渲染的四宽度轮廓RMSE **7.44→4.64px**，未入优化的40/50mm **6.06→4.91px**，最大偏差降到12px。仍有形状/材质差；20s静止cube验证RMSE5.70→7.62px有退化，不能声称全画面对齐。验证帧已用于候选筛选，并非盲测。
+- 新脚本 `scripts/refine_playground_wrist.py` 使用原STL三角形逐行边缘（不能用凸包跨越指身凹轮廓），默认sigma5px、prior0.3°/0.5mm；版本化标注 `configs/calibration/playground_20261107_wrist_contours.json`。10项新增回归；综合 **102 passed**。只变camera+metadata，reproduced_final_v2与采用的数值逐位相同。
+- 同2146动作完整物理重放前后 `physics.jsonl` **逐字相同**，49.974mm抬升/放回保持，无非预期外部碰撞。该调整只改变成像，不改变夹取物理过程。
+- 便携结果 [wrist refinement](results/playground_wrist_refinement_20261107.json)。证据 `outputs/playground_wrist_refine_20261107/`；最终等宽图 `evidence/renderer_comparison_selected.png`，旧before_after是v1历史不要误用；视频 `video/real_wrist_before_after_1x.mp4` 左真机/中before/右after，原速34–59s，上global下wrist。
+
+## 2026-11-07 按用户授权降低 Playground 仿真底座高度（无真机操作）
+
+- 默认 `configs/piper_playground.json` 的有效安装高度 **14→6 mm**，改善同一原始轨迹的夹入深度。原 14 mm 完整存档于 `configs/calibration/playground_20261107_before_mount_depth.json`，10 mm 候选保留。此值是经验仿真修正，不能称真机垫板实测 6 mm；原用户估测 14 mm 仍作为历史依据。
+- 14/10/6 mm 三组完整 2146 条原始关节/夹爪命令、阶段、帧率保持逐值相同。桌面、物体、全局/overview 相机、灯光/地板世界位置不动；仅对固定物的 base 坐标重表达，wrist link-local 外参及两相机实机内参不改。默认仍为空桌面、旧初始姿态，其他任务配置不改。
+- 闭合双指竖直覆盖分别 9.90/10.51、13.89/14.49、17.89/18.49 mm。6 mm 时最低指尖离桌 10.51 mm，稳定抬升 49.974 mm、双指接触率 100%，放回偏移 7.24 mm，无非预期外部碰撞。覆盖是几何包络，不是精确接触斑。
+- 图像存在权衡：6 mm 改善接触前 green 侧面 RMSE 20.42→12.72 px；10 mm 的多帧总体图像误差更低。横向偏心约 13.46 mm、模拟约 30 mm 与真机 35.6 mm 夹持开度差仍未解决。不能宣称完整标定完成或所有图像都改善。
+- 新增纯 CPU `scripts/adjust_playground_mount.py` 保持房间世界坐标生成候选，9 项新增语义测试；综合 **92 passed/0 skipped**，新默认真实 Isaac reset/step/相机/退出 smoke 通过。两组新物理回放完整通过。
+- 便携结果 [mount depth](results/playground_mount_depth_20261107.json)。证据 `outputs/playground_mount_height_20261107/`；四列原速视频 `video/real_mount_14_10_6mm_1x.mp4`，左真机/14/10/6，上global下wrist。本轮未 SSH、未发送真实机械臂动作。
+- 注意只用原 plan 做高度对照，不叠加上一轮 deeper_8mm 新动作。旧 plan 的高度元数据描述原14mm场景，以本次config计算桌上高度；新生成 table-relative IK 会补偿mount变化。
+
+## 2026-11-07 夹持深度复核与下移 8 mm 仿真对照（无真机执行）
+
+- 用户指出仍夹得浅。实际 STL＋物体姿态审计确认：fit04 原轨迹闭合时两指最低离桌 19.11/18.50 mm，与 29 mm 方块竖直包络只重叠 9.90/10.51 mm，约 34–36%。此前优化的是视觉对齐，并未修正该物理夹入深度。包络重叠不是接触斑面积，日志缺少独立两指位置及接触点，采用对称手指假设。
+- 仅仿真做下移 8 mm 对照：桌上 TCP 20→12 mm，保持 fit04 场景、XY/姿态目标、夹爪命令、2146 帧和阶段时序，改变 999 条手臂命令，未真机执行。闭合重叠增至 17.89/18.49 mm（62–64%），最低离桌 10.51 mm；自然 PhysX 稳定抬升 49.978 mm、放回，无非预期外部接触。仍约 30 mm 夹持开度，且旧冻结路径与校准后的物体存在约 14.16 mm 工具 X 方向偏心。该实验不是孪生标定完成，默认场景不改。
+- 修复未来新生成轨迹的坐标语义：新增 `--grasp-height-above-table`（默认 20 mm），正确减去安装垫高；显式 `--grasp-height/--grasp-height-base` 保留旧 base-Z 语义，`--plan-input` 不改历史动作。原 retry08 轨迹已正确使用 baseZ=6 mm，不能把新发现的生成器问题解释为旧视频差异。83 项相关 CPU/USD 测试通过。
+- 8 顶点投影审计纠正视觉报告中的面标签：绿色可见四边形是近侧竖直面，不能直接称“顶面”；原像素误差仍有效，但旧面语义撤回。默认相机、垫高和几何未因这一诊断继续拟合。
+- 便携记录 [夹持深度诊断](results/playground_contact_depth_20261107.json)。原始几何审计在 `retry_08/contact_depth_review/`；新仿真、计划及 25 秒左真机/中20mm/右12mm视频在 `retry_08/calibration_optimization/contact_depth_review/`。右列持续注明新动作未真机执行；执行计划继承旧高度/速度元信息的勘误有单独记录，原始证据未覆盖。
+
+## 2026-11-07 最新录像驱动的 Playground 校准修订（仅离线）
+
+- 根据 retry_08 的完整真机录像、实测关节反馈和双 RGB-D，采用联合图像校准 `fit04`，更新默认 `configs/piper_playground.json` 的全局/腕部外参与参考方块位置，正式采用用户估计的 14 mm 安装垫高。保持实机内参、29 mm 绿块、旧默认起始姿态、机器人模型、摩擦与驱动不变；默认仍 `objects=[]`，其他任务配置不变。旧默认完整存档于 `configs/calibration/playground_20261107_before_retry08_video.json`。
+- 相对本轮原仿真，绿块参考 XY 修正约 `[-15.55,+1.47]` mm。优化器外的同次采集验证：20 秒腕部角点坐标 RMSE **30.96→8.71 px**，20/36 秒全局指尖 **13.38→4.10 px**；41 秒绿块边缘相对指尖误差约 **63→21 px**。这些画面开发时已查看，不是盲测；全局静态方块点约 0.98→1.15 px 有小幅退化。全局裸桌深度参与拟合，腕部深度仅验证，近场仍有残差。
+- 原 **2146 条动作**逐值保持，新的完整自然 PhysX 回放稳定抬升 **50.019 mm**、保持双指接触后放回，无绑定/瞬移或非预期外部碰撞。新夹持开度约 **30.018 mm**，真机 **35.6 mm**，仍差 **5.58 mm**；不能称接触几何已准确对齐。方块自然侧移后回桌距初始点约 **7.20 mm**。物理成功不是优化目标，也不是新真机实验。
+- 独立 CLI 可重现全部 18 个参数（最大差 0），内置纯 NumPy STL 读取、输入指纹、输出防覆盖；`scripts/calibrate_playground_video.py` 配合 `configs/calibration/playground_20261107_retry08_video_manifest_v04.json`。63 项相关 CPU/USD 测试无跳过通过；最终默认空桌 Isaac 接口 smoke 通过 reset/step、相机/FK、超时、重试幂等和退出清理。
+- 本轮**没有 SSH/CAN、复位、使能或真机运动**；实机状态仍以下方最后一次真实记录为准。旧录像、日志、轨迹均保留。便携结果见 [录像校准记录](results/playground_video_calibration_20261107.json)，三列原速对比与全部验证在 `outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/`。
+
+## 2026-11-07 Reference 驱动对齐：真机完整抓取与放回成功
+
+- 按用户要求对齐原 PiPER client 的执行规则。`reference` 队列与硬件策略不加逐点到位等待、5 秒软到位超时、接触阶段门控、实测关节角启动拦截或额外软件 slew；使用合法目标和设备 MOVEJ 插补。原目标/单步限幅、反馈故障与人工停止保留；旧 `tracked/projected` 行为可显式复现。reference 正常结束不发新目标或失能，不把 dispatch 完成当任务成功。
+- 475 项相关测试通过（含 27 项实际 adapter＋fake SDK 集成），源码备份后已部署到 ssh piper。本轮未发送复位。用户确认现场未压桌/卡住、人员离开后执行。原 J5=76.276° 的 2500 帧恢复候选因现场摆放后姿态已改变，在使能前起点核对被拒绝，0 动作；没有使用旧轨迹。读取新姿态后改用 900 帧 PAP home 目标、设备 1%，30.812 秒完成，最终最大关节误差 0.070°。
+- 回位后重新定位绿色 29 mm 方块：底座 XY `[0.329556,0.084877]` m，朝向 25.75°。沿用估计 14 mm 安装高度、TCP 桌面上 20 mm（base Z=6 mm）、实测相机内参及已有外参；全局/腕部 XY 仍有 22.57 mm 差异，不能宣称标定完成。
+- 新 PhysX 完整轨迹 2146 帧、71.533 秒，方块稳定抬升约 49.970 mm 后放回，未检测到非预期外部机器人接触。真机采用同一目标序列、30 Hz、设备 2%、effort 1000；2146/2146 动作、72.378 秒完成，包含张爪和撤退，无执行错误或保护停止。
+- **真实抓取结果由连续双相机画面核实：绿色方块离开桌面、随夹爪抬升并下降，松开后留在桌面。** 固定全局画面绿色底缘上移约 32 px、再回到桌面位置，蓝色方块保持不动；不把这一像素位移转换为未实测的 5 cm 真实升高。执行器本身仍记录 `task_success=null`，视觉结论单独保存；本轮仅一次成功试验，不是成功率评测。
+- 最新只读反馈 `after_grasp_feedback.json`：`arm_status=0,error_code=0`，六电机 enabled，关节 `[14.365,102.489,-64.352,0,51.890,-11.285]`°、夹爪 59.4 mm；后置 11.48 秒采集关节变化范围全为 0。**机械臂当前保持撤退后的姿态，未急停、未再回位或追加抓取。** 本轮运动/双相机/CAN/只读采集进程均已退出。下方急停及 J5 超界记录均为历史。
+- 便携记录 [reference 抓取结果](results/piper_reference_grasp_retry_20261107.json)；原始 `outputs/playground_grasp_transfer_20261107/retry_08/`，含独立视觉审核、执行审核、双相机原帧、PhysX、localization、原速对照视频。SDK 禁用本地 loopback，passive CAN 仅捕获反馈，不能用未见命令帧证明未发送命令。
+
+## 2026-11-07 再次抓取请求：单次复位完成，等待现场 J5 回限位
+
+- 用户要求重新测试抓取。只读100条反馈和双 D435i RGB-D确认仍急停、J5=76.258°，绿色方块被夹爪遮挡；探针CAN TX增量0。用户随后明确现场支撑、授权仅复位，已执行 `reset_once.py` 一次：`0x150/0200000000000000`，send_attempts=1、send_bytes=16，无重试/使能/运动。
+- 复位后100条新鲜只读反馈（TX增量0）：`arm_status=0, ctrl_mode=0, error_code=0`、六电机均disabled、无故障位，关节 `[12.371,136.323,-107.140,0.367,76.276,7.565]`°、夹爪35.1mm。**急停已清除，不需要再次复位；J5仍超过已读设备70°上限。** 已请求现场支撑并使用熟悉方式恢复J5到界内、稳定放置且人员离开后告知。收到回复后必须先读新姿态，尚未执行回位/抓取。
+- 用户质疑为何仍要求手动J5恢复。已再次核对：原client只做目标限幅（J5±75°）和单步delta，原bus不因实测角超界拒绝启动；当前阻止的是PressB适配器额外的 `_check_joint_feedback_bounds`。查询到70°仅证明配置范围，**不能证明固件拒绝向内回位**。此前“因此必须手动调整”的推断撤回，尚未修改控制代码或评估/执行新的向内恢复路径；不能将本次解释视为运动授权。当前仍以复位后disabled状态为最近反馈。
+- 新执行策略为下节已部署的 `reference`。恢复后需要新鲜姿态和物体定位，再生成/仿真验证抓取；不要直接运行旧1188帧计划。原始证据 `outputs/playground_grasp_transfer_20261107/retry_07/`，远端 `playground_retry_09_before/`、`playground_retry_09_reset/`。旧轮次急停/姿态记录均为历史。
+
+## 2026-11-07 按原 PiPER 客户端对齐动作发送：已部署，仅软件验证
+
+- 用户明确要求参考 `lerobot-piper/piper_scripts/piper_inference`，不要自加执行规则。有限回放新增 `reference` 调度：按配置频率逐条发送，使用原目标限幅和相对实测值的单步限幅，块末重复末目标并定时等待 0.5 秒；不增加逐点到位、5 秒软到位超时或接触阶段门控。之前拟议的自定义 streaming/阶段等待方案已撤回归档。已生成轨迹不额外平滑。
+- CLI 未显式指定模式时默认 `reference`；尊重计划中的显式模式，`--execution-mode` 可覆盖。库层旧计划默认仍为 `tracked`，供复现旧运行。`reference_chunk_size=null` 表示整条有限轨迹作为一块；显式 32 对应原在线客户端默认块长。此次只对齐执行队列规则，不声称完整推理/UI/SDK 生命周期等价；底层限位、速度约束、反馈/故障、起点核对、人工停止和 watchdog 保留。
+- 429 项相关测试通过；原脚本完整 `control_loop` 的四组队列对照，发送时刻差 0、目标最大差 `1.11e-16` SI，包含块末最后一帧。实际驱动＋动态假 MCU 完成 1188/1188 条发送，无停止；`success_meaning=dispatch_only`，`target_reached/task_success=null`，不能据此宣称真机到位或抓取成功。
+- 四个文件已同步到 `ssh piper` 的现有工作目录，旧源码备份于 `software_updates/reference_dispatch_20261107_220846/before_source/`，硬件适配器源码未改。远端 dry run 为 `reference`、1188 actions、`executed=false`；CAN TX 前后均 84935。**本轮没有连接硬件执行、复位、使能或运动。** 归档计划仅用于检查，不可当作当前起点有效的运动计划。
+- 最近实际抓取仍是下方的失败试验，最近只读状态为急停、J5=76.258°，本轮未重新读关节或解除急停。下方“释放修复未部署”描述的是该历史时点；当前 tracked 修复随本次代码同步，但未真机验证，reference 本身不使用这些门控。
+- [便携验证记录](results/piper_reference_execution_20261107.json)；原始证据 `outputs/reference_execution_20261107/`（原脚本来源、独立对照、假 MCU、部署和远端 dry run）。
+
+## 2026-11-07 Playground 14 mm 修正后真机重试：夹住但未抬起，释放超时停止（历史失败试验）
+
+- 用户授权现场准备完成后，仅执行一次回位与抓取。回位 605/605 动作、57.268 秒成功；重新采集双 RGB-D，绿色 29 mm 方块 XY 为 `[0.421168,0.093492]` m。沿用 14 mm 安装高度候选、实测双相机内参及原 wrist 外参。跨视角 XY 仍相差约 18–28 mm，不能称绝对标定完成。
+- 新 1,188 帧完整 PhysX 轨迹成功，稳定方块抬升 49.965 mm，无非预期外部接触。规划抓取 TCP 为桌面上 20 mm，即 base Z=6 mm。**真机仍失败：用户现场确认“夹住了，但没夹起来”。** 日志计算的约 49.217 mm 仅是 URDF/FK 末端位移，夹持负载与 35.1 mm 开度均不能替代物体升空证据。
+- 真机设备速度 2%、effort 1000 未增加，完成 939/1188 动作，用时 55.828 秒。首次 release 目标 28.167 mm 小于实测接触开度 35.1 mm，6.933 mm 误差超过 5 mm 软到位阈值，程序不推进到后续张开目标，约 5 秒后请求软件急停。未完成释放／撤退；这是 PressB 回放层的控制问题，非已报告的电机故障，与未夹起的任务失败分开记录。
+- **最近只读状态仍为急停：** `arm_status=1, ctrl_mode=0, error_code=0`，关节 `[12.518,136.298,-107.047,0.301,76.258,7.556]`°，夹爪 35.1 mm。停止后 CAN 显示姿态变化，J5 约 12.61 秒后超过 70°，最终 76.258°。使能位不证明保持力；未确定姿态变化的物理原因。停止后未复位或追加运动，所有采集／回放进程结束。下方无急停／home 状态均为历史。
+- 释放死锁已在本机修复，**未部署、未真机验证**：仅对已获接触的初始张开段允许有界软到位过渡，锚定最近可信接触开度，越过开度即永久退出，跨动作累计原 5 秒限时；硬限制、故障／时效、arm 跟踪等保持。401 项测试通过；同一真实驱动＋动态假 MCU、相同原计划，归档旧代码精确复现 939/1188 超时，新版 1188/1188 完成。此软件修复不代表物理抓取已解决。
+- [便携记录](results/playground_mount14_grasp_retry_20261107.json)；原始证据 `outputs/playground_grasp_transfer_20261107/retry_06/`。`video/close_lift_release_stop_detail_1x.mp4` 为 35.83 秒关键过程；完整真机和真机／仿真对照均标明失败，并保留停止后 15 秒实际画面，各自原速播放。已执行源码原样存于 `executed_source/`，不得用修复后源码覆盖。
+
+## 2026-11-07 Playground 安装高度诊断：14 mm 候选，已完成两轮仿真
+
+- 用户补充桌面到机械臂安装底面约 **14 mm**，不含机械臂底座自身高度。旧代码把 `base_link` 和桌面设为同高，URDF/USD 没有隐藏安装偏移；可见安装板 RGB-D 高程约 11–13 mm，仅支持非零垫高，不是精确基座标定。
+- 共用 workbench 新增 `robot_base_height_above_table_m`，默认 0；Playground 动态物体仍落在桌面。新增可直接加载的空桌候选 `configs/calibration/playground_20261107_mount14mm_candidate.json`，补偿固定相机、灯光、地板的 base-relative Z 以保持世界位置；腕部实测焦距和当前 link6 外参均不改。默认配置仍保留，历史抓取记录不改写。
+- 相同 29 mm 方块、XY、姿态和物理参数下，14 mm 场景重放原 1177 帧关节计划：两指接触 0、抬升 0。将抓取 TCP 桌上 20 mm 正确换算为 base Z=6 mm 后重解 IK，1180 帧完整 PhysX 成功，稳定抬升 **49.961 mm**，放回偏差 **0.117 mm**，无非预期外部接触，最大 J5 **63.572°**。这些是仿真结果，未执行新真机抓取。
+- 在回位后同一张腕部图像上，仅加入 14 mm 的投影敏感性检查：纵向误差 20.55→6.44 px，横向仍约 25.23 px。此前 21–28 mm 是跨视角 XY 重建差，不是已测定的腕部外参平移；安装高度可解释夹浅和部分投影偏差，手眼/FK/指爪几何仍需独立校核。
+- Playground 37 项、独立场景回归 88 项、根代理 USD/相机/物体回归 51 项、轨迹与序列化 11 项通过，套件有重叠不相加。独立检查 37 个固定场景世界变换。顺带修正仿真失败结果 `numpy.bool_` 无法写 JSON；第一轮失败报告由完整物理日志重建并注明来源，第二轮正常落盘。不能把 Isaac 退出码 0 当成成功。
+- 便携记录 [安装高度诊断](results/playground_base_height_20261107.json)；原始 `outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/`。本轮无 SSH/CAN 操作、无新运动/复位，最近真机状态仍以下方完整抓取停止后的记录为准。安装板/夹具仍为视觉件，不模拟其碰撞。
+
+## 2026-11-07 Playground 完整抓取实测：起抬失载，无急停（21:25 后最新状态）
+
+- 低速回位已完成，新全局 RGB-D 定位绿色 29 mm 方块 XY `[0.419486,0.091522]` m。新位置使用固定径向倾斜 5°工具姿态、60 mm预抓、20 mm抓取、50 mm抬升，维持现有限位。完整1177帧PhysX通过，稳定抬升49.964 mm，无桌面/蓝块非预期接触。
+- 已将完整轨迹提交一次真机执行，设备2%速度、gripper effort仍1000。39.66秒在34.4 mm开度/raw effort约−1040取得显式接触判定；41.65秒开始lift后负载和开度快速下降，41.964秒以`grasp_lost`保持中止，完成726/1177。用户现场确认方块在桌面，录像显示相对指尖转动/偏移；本次仍未完成稳定抓取。
+- TCP按实际关节与URDF计算仅抬升约5.63 mm，不等于方块升空高度。无急停、无复位、无后续自动运动；目前保持early-lift姿态，六电机enabled，status/error均0，关节`[12.305,120.488,-88.342,0,57.723,16.336]`°，夹爪27.8 mm。停止后CAN及100条只读反馈均未见关节下垂。
+- 新可选contact-aware replay保留默认position模式；close/carry需新鲜负载和开度证据，任务失载hold保留原clamp目标，hardware/control故障仍stop。独立actual-adapter/fake-MCU验证通过；本机相关402+独立helper67项测试通过。新遥测接口已真机只读20样本/发送增量0验证。
+- 便携结果 [完整抓取试验](results/playground_complete_grasp_20261107.json)；原始 `outputs/playground_grasp_transfer_20261107/retry_05/`。`video/real_vs_sim_grasp_1x.mp4`为左右真机/仿真、上下global/wrist独立1×，仿真先结束明确冻结；`close_lift_detail_1x.mp4`保留失载后5秒。
+- 用户随后提出真实 base 可能垫高及夹取过浅；离线诊断及 14 mm 候选仿真已完成，见上方最新节。约 21–28 mm 跨相机位置差尚不能归因于单一 wrist 外参。未改已测相机内参、未追加真机运动。下方急停状态或 home 状态均是历史。
+
+
+## 2026-11-07 Playground 完整抓取准备：复位与回位已完成（21:18 后）
+
+- 用户现场确认上一轮 20 mm 下移试验实际夹住了方块，但没有抬升；此为现场观察，独立于录像和遥测结论。此前“闭合失败”应理解为位置到位判定超时，不能据此否定现场夹持。
+- 用户支撑机械臂并授权仅复位后，已发送一次复位，随后六电机未使能、status/error 均为 0，J5 回到 42.682°。用户再次确认稳定放置且人员离开后，执行先竖直抬升约 30 mm、再回 PAP 起始位姿的低速回位；646/646 动作完成，用时 61.268 秒，无急停或错误。
+- 最新只读状态：`[-1.771,25.553,-25.260,-4.769,40.462,5.038]`°，夹爪 29.7 mm，六电机均 enabled，status/error 均为 0，机械臂停在初始位姿。原始记录 `outputs/playground_grasp_transfer_20261107/retry_05/`；下方“当前急停仍锁存”均为历史状态。
+- 已采集回位后的双 D435i RGB-D，绿色方块位置已发生变化，不能沿用旧目标。正在准备显式有界接触夹持控制及新完整轨迹；尚未执行本轮抓取。默认空桌 Playground 与相机实测内参保持。
+
+
+## 2026-11-07 Playground 下移 5 mm 抓取：闭合超时，急停后姿态变化（19:38 最新状态）
+
+- 按用户“夹的时候下移多一点”，`retry_04` 将计划抓取 TCP 高度从 25 mm 降至 20 mm，绿色方块采用实测 29 mm；XY 与最终闭合目标 28 mm 保持。833 帧 PhysX 完整计划成功，稳定抬升约 49.9768 mm。真实低速分段下降至计划 25／22.85／20 mm 均完成，20 mm 处新鲜关节反馈经 URDF 计算 TCP 为 20.059 mm；这些是运动学高度，不是实测指尖桌面间隙。
+- **真实闭合阶段失败，尚未进入抬升。** `playground_retry_06_grasp` 用时 9.46865 秒，仅完成 90/656 条动作，在局部索引 90（原计划帧 267）等待：目标夹爪开度 29.6667 mm，反馈停在 34.8 mm，误差 5.1333 mm 超过既有 5 mm 到位阈值，约 5 秒后触发 tracking timeout，软件发送急停。夹爪反馈阻塞和较高 effort 只支持受阻判断，不证明双指正确夹住方块或完成抓取。
+- **当前急停仍锁存，停止后机械臂姿态发生变化，未保持原抓取姿态、未撤退。** `after_stop_feedback.json`（19:38:16，100 样本、TX 增量 0）为 `[-1.666,125.664,-84.364,-0.342,76.284,-1.528]`°，夹爪 34.8 mm，`ctrl_mode=0, arm_status=1, error_code=0`，六电机 enable 位仍 true、无驱动故障位。J5 已超过 70°上限；使能位不能解释为保持力已验证。停止后没有复位或追加运动，后续运动前需要现场处理、确认复位准备并重新读取姿态。下方 `retry_03` 的“无急停／已撤退”是上一轮历史状态。
+- 新记录 [下移抓取结果](results/playground_deeper_grasp_20261107.json)，原始证据 `outputs/playground_grasp_transfer_20261107/retry_04/`。独立闭合及停止后变化分析、含停止后画面的视频随该记录保存。此前配置与试验结果保持原样；默认 Playground 和腕部实测内参不变。
+- 闭合审计 `retry_06_gripper_contact_audit.json`：5–8 秒区间 600 条新鲜 CAN 反馈的开度恒为 34.8 mm，effort raw 中位数 −1043，支持明显闭合阻力；该值未经力／力矩标定，不能区分方块接触、卡阻或正确双指抓取。主视频 `retry_04/video/real_deeper20_with_poststop_1x.mp4` 共 51.433 秒，各阶段真实 1×，包含停止后 15 秒实际姿态变化；阶段之间等待省略，不宣称相机硬同步。
+
+## 2026-11-07 Playground 重新抓取：执行完成，真实方块未抬起（19:28 后更新）
+
+- 用户确认现场清空并授权低速回位及抓取，已完成 `retry_03` 的四个真实阶段：回位 1/1 动作、16.694 秒；预抓取 615/615、52.039 秒；下降到 52.5 mm 计划 TCP 高度 99/99、5.511 秒；连续下降／闭合／抬升／放下／张开／撤退 710/710、40.631 秒。四个执行器均 `success=true`，无错误或保护停止。回位中 `native_startup_recovery.check_inward_progress=false` 已实际运行并完成；下方“仅部署、未运动”是此前状态。
+- **执行器成功不等于抓取成功：本次真实抓取失败。** `grasp_live_03.jpg`、`grasp_live_04.jpg` 可见绿色方块仍在桌上，未随夹爪抬起。PhysX `sim_trial_02` 使用同一规划抓取高度 25 mm、闭合目标 28 mm，方块抬升约 49.975 mm并稳定保持 1.5 秒；真机控制器会按反馈重新定时，不能声称两次已执行命令的时间轴相同。具体偏差来源仍待定位，不能仅由执行器通过推断接触几何正确。
+- 最新只读反馈 `after_grasp_feedback.json`（19:28:51，100 样本、TX 增量 0）：关节 `[-1.666, 101.206, -71.174, 0.000, 65.043, -1.777]`°、夹爪 59.4 mm；status0/error0，六电机 enabled，无驱动故障。机械臂保持在撤退后的计划 TCP 高度 80 mm 姿态，无急停；没有随后复位或追加运动。80 mm 为运动学计划值，不是实测桌面间隙。
+- 默认 Playground 仍为空桌面，腕部相机实测内参保持不变；本次方块及抓取计划为独立试验配置。证据位于 `outputs/playground_grasp_transfer_20261107/retry_03/`，便携记录见 [抓取重试结果](results/playground_grasp_retry_20261107.json)，说明见 [playground.md](playground.md#authorized-grasp-retry-2026-11-07)。此前失败、复位和标定证据保持原样。
+- 视频 `retry_03/video/real_full_retry_1x.mp4` 为 131.933 秒：各动作阶段按真实 1× 播放，省略阶段之间的长等待；`real_vs_sim_grasp_1x.mp4` 为 43.633 秒，真实 40.631 秒／仿真对应段 23.667 秒各按自己的 1× 播放，较短侧明确标注冻结。两者不是硬件同步或同时间轴执行；关键帧已复核，真实方块仍在桌面。回放、相机及 CAN 采集进程均已结束。
+- 初步离线核对：相同动作索引的实测关节经同一 URDF 计算，闭合末端真／仿 TCP 差约 1.10 mm、抬升保持差约 0.30 mm；腕部画面中方块相对指尖仍有约 30–40 px 的目测差异（非三维测量）。证据不支持把明显关节跟踪错误当作主要解释，但无法区分物体前后／高度、指爪几何、零位或相机标定等因素，也不能据此归因摩擦。此前二维间隙检查不足以验证三维抓取接触。见 `retry_03/geometric_failure_audit/report.json`。
+- 用户随后提供方块边长 **29.0 mm**；本次 `retry_03/sim_trial_02` 实际配置为 **29.0734578 mm**，差 0.07346 mm（相对实测约 0.253%）。较早原始采集的 30.16 mm 拟合值不适用于本次配置。原配置保留；独立 `sim_trial_measured_29mm` 仅改绿色方块三轴边长，809 条动作、初始状态、阶段时序及物理参数保持一致，仍成功抬升 49.9755 mm、稳定双指接触 100%、回放落点偏移 0.0072 mm，无非预期外部接触。该微小尺寸修正不能解释当前仿真中的成败差异，但不验证真实接触几何；受控复测未连续录制视频，物理步进和静态截图仍保留。见其 `comparison.json`。
+
+## 2026-11-07 PiPER 启动单调检查可选关闭：已部署，未执行真机运动
+
+- 用户要求停用启动检查。新增 `native_startup_recovery.check_inward_progress`（默认true），当前准备的回位方案显式false。只关闭native阶段“恢复反馈边界持续收缩”和“反馈反向超过slack停止”两项；初始有效J2/J3改用已有配置、最高3°的固定反馈边界。起点匹配、使能阶段检查、合法目标、1%设备速度、4°偏移、5°/秒观测速度、其他轴/夹爪漂移、故障/超时/急停/稳定到位均保留。退出即恢复普通检查，不重新开放已退休的恢复例外。
+- **371项相关测试通过**，包含记录的J2 −0.633→−1.676°反馈点以及关闭策略后的各类保留保护。记录点测试只验证位置规则接受后主动中止，不能说真实回位成功，也未解释反馈跳变；独立速度检查仍可能触发。
+- 两个源码文件已同步到 `ssh piper` 的现有部署，hash一致。新方案 `playground_home_bounded_policy_01.json`（仅回位、夹爪保持27.4mm）已在本机和远端通过相同dry run，`executed=false`，CAN TX增量0。本轮未使能/复位/运动；执行前仍须读取当前实际状态并刷新方案起点。旧方案与源码备份保留。
+- 证据 `outputs/playground_grasp_transfer_20261107/retry_02/startup_policy_update_01/`；便携记录 `docs/results/piper_startup_policy_20261107.json`；说明 `docs/real_robot.md`。下方现场状态为最近一次只读采集结果，不能代替后续新鲜反馈。
+
+## 2026-11-07 Playground 最新恢复状态：急停已解除，J2/J3 仍未确认回到界内
+
+- 用户再次明确支撑并仅授权复位，已执行 `retry_02/playground_retry_03_reset` 一次；随后全部操作只有只读反馈和双相机采集。当前 status0/error0、六电机未使能，不需要再次复位。下方“急停再次锁存”为复位前历史状态。
+- 用户确认调整后两次补读，最新角度 `[0.784,-1.672,2.428,0.000,21.620,-2.563]°`，夹爪27.4mm；J1/J4/J5/J6已有变化，J2/J3仍与复位后相同。最新100样本probe TX增量0；被动CAN也记录了0x251–256电机反馈，未发送命令。尚未重新使能、回位或抓取，不能重复相同边界启动。
+- SDK时间戳仅为CAN接收时间，重复位置广播也会使其增长，不能据此断定操作者没有移动或编码器必定刷新。J2是肩部俯仰、J3是长臂末端肘关节；已请求确认实际调整部位/方式。需先获得与实际姿态一致且明确在界内的反馈，再规划普通低速回位；未放宽保护阈值。
+- 证据根目录 `outputs/playground_grasp_transfer_20261107/retry_02/`：`latest_recovery_status.json`、`recovered_feedback_05.json`、`disabled_raw_feedback_01.json`、`playground_retry_04_before/`。采集已退出，无本轮运动进程。
+
+## 2026-11-07 Playground 再次回位启动受保护停止：未进入抓取
+
+- 现场再次调整后，fresh反馈为 `[4.633,-0.633,2.336,-0.353,20.723,2.725]°`，夹爪27.4mm，stop已解除、六电机未使能。J5已在界内；J2/J3在既有3°启动恢复范围。只采用已验证native J2/J3恢复参数，目标+1°/-1°，然后PAP原位，夹爪保持不动；没有扩大限位/保护阈值。
+- 实际执行 `retry_02/playground_retry_02_home` 在 **0.3023秒** 保护停止：原始CAN在+.289741s单包J2从−0.633→−1.676°，超过0.25°允许反向变化；J5同周期20.952→21.499°。只收到1条native snapshot，普通回位actions=0，未抓取。驱动使能反馈+.1606至+.2508s出现；被动CAN没有记录TX，软件target正确不能替代线缆命令证明。10Hz图像未见明显视角变化，但不能判定是编码器更新还是机械动态，原因未定。
+- **当前急停再次锁存**：停止后100样本 `[4.633,-1.676,2.336,-0.353,21.499,2.725]°`，status1/error0/六电机enabled仍true；只读probe TX增量0。没有再复位/重试。不要反复执行相同边界起步；下一步需现场恢复到J2/J3明显在限位内的工作姿态，fresh读数验证后再规划。复位会失能，仍需新的现场支撑授权。
+- 证据在 `outputs/playground_grasp_transfer_20261107/retry_02/`：`home_failure_audit.json`、`playground_retry_02_home_can/`、`playground_retry_02_home_capture/`、`home_after_stop_feedback.json`。录像和被动采集已正常关闭。下方“已仅复位”状态已被本次停止覆盖。
+
+## 2026-11-07 Playground 抓取重试前恢复：已仅复位，等待现场 J5 回限位
+
+- 用户要求回原位后再抓，并确认现场已支撑、仅授权一次复位。已发送一次 `0x150/0200000000000000`；后续只读100样本TX增量0，急停状态0、错误0，六电机均未使能。未执行任何回位/抓取或使能命令。证据 `outputs/playground_grasp_transfer_20261107/retry_02/playground_retry_02_reset/report.json`、`after_reset_feedback.json`。
+- 最新J5 **76.307°**，仍高于本次验证上限70°；已请求现场通过熟悉的示教/维护方式恢复到限位内、稳定放置并离开运动范围后告知。现有native恢复只覆盖J2/J3小越界，不能放宽J5限位绕过。收到确认后先读取新鲜姿态，再建回位计划；不要自动再复位。绿色方块已移位，重抓前必须重新定位，旧抓取计划不能直接重放。此前“急停仍锁存”记录均为历史状态。
+
+## 2026-11-07 Playground 根据真实失败轨迹校准：视觉改善，接触仍未闭合
+
+- 当前默认 `configs/piper_playground.json` 已采用保守多姿态视觉修正。旧配置完整保存于 `configs/calibration/playground_20261107_before_multiview.json`。默认仍为空桌；蓝绿方块只作显式历史标定参考，真实绿色方块后来已移动。PAP、电梯、table_buttons 配置未修改。
+- 保留两台真实 D435i 的 `fx/fy/cx/cy`。只优化腕部外参、历史参考方块几何并相应重新注册全局相机。腕部光心改变约6.82mm、旋转约0.69°；绿色方块中心改动X+10.37/Y−6.91mm，拟合边长30.16mm。没有改URDF、关节零偏/限位、TCP、桌面高度、摩擦或驱动，也没有复位/使能/真实动作。
+- 每角点二维欧氏RMSE：连续预留5姿态21.47→5.72px；独立标注6姿态29.07→6.82px；冻结候选后新标下降3姿态/11角点51.35→19.07px。前两组用于候选审阅，不是完全盲测。个别早期帧变差，指尖纵向误差约1→8px，下降越接近方块剩余误差越大；绝不能声称毫米级绝对精度或抓取已可靠。
+- 已做同 `applied` 指令/原始时间轴的两版真实PhysX复验，共各3200帧/106.667秒，无物体绑定/瞬移；下降阶段两版均零物体接触。真实首次可辨物体位移在下降开始后6.867秒，仍张开59.4mm；仿真旧11.057秒/新9.724秒才首次接触，均已闭夹。**校准仍未解释下降碰边。** 具体实际接触体未从视频确认；需继续实测真实指套/夹爪开度几何、绝对关节零位、底座与桌面关系。
+- 同实测q的零物理步截图单独用于视觉对照；与 `applied` 物理回放严格区分。新增工具 `scripts/calibrate_playground_multiview.py`、`scripts/render_playground_alignment.py` 及实际指令重定时支持；47项相关CPU/USD测试通过。原/新PhysX进程均退出0，GPU已释放。
+- 新只读证据 `playground_post_contact_calibration_01/` 显示姿态和绿色方块位置已变化（J5约76.228°，超出配置+70°上界）。独立SDK/控制器FK接收探针TX增量0，SDK offset=1与URDF一致，不支持简单DH模式搞错的解释，也不证明真实绝对零位准确。后续不要沿用下方旧状态、不要自动复位或直接继续旧动作；仍需新鲜状态核对。近距离腕部深度失效，未用于拟合。
+- 便携结果：`docs/results/playground_calibration_20261107.json`；详细证据：`outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/`、`calibration_diagnosis/applied_physics_comparison_01.json`；对比图：`calibration_comparison/geometry_comparison_pregrasp.jpg` 和 `geometry_comparison_three_poses.jpg`。完整方法/复现见 `docs/playground.md`。以下初始构建与实测记录保留为历史。
+
+## 2026-11-07 Playground 抓取迁移实测：真机闭夹超时，急停仍锁存
+
+- **用户随后现场纠正：夹爪向下移动时先碰到了方块边缘，真实没有夹起。** 因此必须区分“下降碰边”的物理失败与稍后“闭夹到位超时”的控制停止原因；之前将接触描述为已经夹住不准确。当前在离线核对录像与标定，未再操作硬件。不能仅放宽闭夹容差后重试，需先解决下降对齐与实际夹爪几何/坐标标定。
+- 用户授权低速抓绿色方块、抬约5cm再放回，并要求同步对比录像。只执行了一次；未在停止后复位或重试。
+- `scripts/run_playground_grasp.py` 的真实PhysX验证成功：双指接触抬升49.965mm，稳定1.5秒，放回偏移0.035mm，无活动机械臂与桌面等非预期外部接触；无物体绑定/瞬移。原速49.767秒视频及完整物理记录在 `outputs/playground_grasp_20261107/sim_trial_03/`。
+- 真机 `playground_pregrasp_run_01` 完成733动作/58.026秒。随后 `playground_grasp_run_01` 在闭夹局部207/原计划940帧停下：目标26.990mm，反馈32.1–32.2mm，比5mm到位阈值大约0.11mm，等待5秒触发stop；等待时六关节最大误差0.091°。尚未到989帧的抬升段，不能说真机抓取成功或抬起后掉落。
+- **最新物理状态优先于下方旧回放记录**：停止后只读probe 100样本、TX增量0；arm_status=1、error_code=0，六电机enabled反馈仍为true。最终角度 `[-16.3,115.18,-76.453,-0.692,58.698,-13.561]°`，夹爪30.3mm，停止前后姿态已有变化。不要自动复位、直接resume旧目标，也不要把32.1mm直接当作方块尺寸。恢复需要现场准备及新鲜状态/物体位置核对。
+- 相机录制已关闭。真实两段日志、双相机1392对原图及 `grasp_transfer_audit.json` 位于 `outputs/playground_grasp_transfer_20261107/`，便携记录 `docs/results/playground_grasp_20261107.json`。对比视频按各自原速播放，明确标注悬停检查、结束冻结和真机未抬升。
+- 原通用replay是位置到位语义；真实接触抓取需要显式有界接触模式，不能通过统一放宽/忽略夹爪跟踪来宣称修复。本轮没有修改实机控制器或放宽停止后的阈值。新增重定时工具6项测试通过，仅接受applied和真实墙钟，不用observed强制设置仿真物理状态；本次视频使用原始成功仿真，未运行重定时物理重放。
+
+## 2026-11-07 Playground 真机工作台孪生环境
+
+- 新增独立 `tasks/playground`、`configs/piper_playground.json` 和 `configs/rl_nodes/playground_simulation.json`。默认空桌，保留 PiPER、工作台、安装件和相机三脚架；蓝绿方块只用于显式 `--reference-objects` 标定预览。PAP、table_buttons、电梯配置未改。
+- 在 `ssh piper` 对当前静止姿态只读采集 RGB-D、设备内参和 CAN 反馈；本轮未发运动／使能／复位命令。新全局光心约 `[0.71710, 0.04654, 0.49431]m`（相对机器人底座）。按用户最新要求，双相机均使用实机读出的 `fx/fy/cx/cy`，腕部 `link6_from_camera_usd` 保留 PAP；继承外参相对实测桌面仍有约 11.7mm 高度残差，不能将拟合残差当成绝对标定精度。
+- `scripts/run_playground.py` 提供干净场景三视角 PNG/USD、可选真实反馈离线重放；`capture_real_workspace.py` 和 `fit_playground_camera.py` 保存采集与拟合流程。默认对应点只适用于本次 capture_01，换相机／方块位置需重新标注。
+- 插件复用公共 reset/step 服务、PiPER运行时、动作平滑。当前单环境、reward=0、没有任务成功检测、时限截断；后续需任务奖励/人工信号才能开展有意义的RL。不要称已有多环境 playground 或任务成功率。
+- 修复公共PiPER运行时在Isaac相机初始化后被覆盖的非等值 fx/fy，并从USD核对主点；原配置fx=fy的任务保持光学参数。渲染与后端均检查实际USD姿态和URDF FK，解决仅set_joint_positions+render可能画面滞后的问题。
+- 最终130项CPU/USD回归无跳过；实际Isaac的none和joint_ema两种模式通过关节/夹爪运动、双相机、幂等重试、超时和再次reset。标准fast shutdown由父进程验证退出码0和资源释放；slow shutdown的Isaac退出GC段错仅保留为失败诊断。所有测试进程已退出，远端相机采集已关闭。
+- 最终预览 `outputs/playground_twin_20261107/playground_preview.jpg`；clean/calibration最终渲染分别为 `render_clean_03`、`render_calibration_03`。可移植摘要见 `docs/results/playground_20261107.json`，说明见 `docs/playground.md`。旧01/02渲染为修复前诊断，不作最终结果。未commit/push。
+
+
+## 2026-11-07 PiPER 真机回位与完整单条轨迹回放（17:18 后更新）
+
+- 已连接 `ssh piper` 的 `can0`（1 Mbps），双 D435i 已确认：全局 `261622078356`、腕部 `243322073170`。下方较早的“无 CAN／运动未测试”记录是历史状态。
+- **已成功低速回到 PAP episode 144 的起始位姿，并在后续独立授权下完整回放该 episode 的 342 条动作。** 回位阶段仅执行 action 0。 在前三次失败和三次单独授权复位后，用户确认人员离开，`home_native_run_02` 第四次回位成功：实际 16.237 秒，native 恢复 1.951 秒／93 次反馈，普通控制 408 ticks／1 条动作完成，最大到位误差 0.454°（阈值 0.5°）。设备速度 1%，六电机均在 native 阶段开始前完成使能，证据 `home_native_success_audit.json`。
+- 使能顺序已用实际反馈核对：16:59:21.937–16:59:22.017，六个电机的 `driver_enable_status` 均从 false 变为 true，随后才进入 native 回位阶段。参考驱动和 PressB 均先调用 `EnableArm(7)`；PressB 还等待六关节和夹爪使能反馈。不能用肉眼是否看到移动来判断使能。证据 `outputs/piper_replay_20261107/native_enable_audit.json`。
+- 第三次触发原因：J2 首次达到 0° 后恢复标记立即退休，随后 CAN 测得 −0.052°，被普通严格限位拒绝。停止前无硬件故障反馈。native-only 延迟退休修复已完成：原始 J2/J3 恢复标记保留至稳定到达边界内目标或退出 native 阶段，并在发送前拒绝反向恢复目标；0.25° 容差及普通严格限位不变。最终 339 项相关测试通过；独立 fake-MCU 复现旧版失败并验证新版，−0.251° 回跳仍拒绝。修复部署后已完成上述一次真实回位验证；离线最大误差 0.451°，真实到位最大误差 0.454°，勿混用。
+- **完整单条回放成功：** `full_episode144_run_01` 完成 342/342 actions、3,944 ticks，实际 135.524 秒。设备速度 1%，关节参考变化率 5°/s、夹爪参考变化率 10 mm/s；逐动作到位最大关节误差 0.499°、夹爪误差 1 mm。本次从合法起始姿态开始，startup allowance 全零，没有新增复位或 native 恢复。用户要求的是 episode 144 完整一条，不是 500 条全部回放。
+- 数据集原时间跨度 11.367 秒，本次为低速硬件跟踪重新定时；`full_episode144_d435i.mp4` 为 139.52 秒实际执行原速录像（左全局／右腕部，含前后各约 2 秒），不能按原采集速度解读。**桌面为空，本次只验证完整轨迹执行，不代表物体抓取放置成功率、模型策略执行或真机在线 RL 验证。**
+- 最近一次只读检查为完整回放后的 17:18：关节角 `[-10.621, 27.116, -26.308, -6.519, 42.856, 4.695]`°，夹爪闭合，`arm_status=0`、`error_code=0`，六电机 enabled，无驱动故障；100 次采样、TX delta=0。**机械臂保持使能并停在数据集最终位姿，无急停锁存；该位姿不同于起始位姿。** 所有回放、相机／CAN 录制和只读 probe 进程均已结束。累计保留三次失败接近、三次单独授权复位、一次成功回位和一次完整单条回放的历史。旧 dry-run 和部署证据描述当时状态，不改写原始证据。
+- 完整记录见 [real_robot.md](real_robot.md)、[控制实现核对](results/piper_control_reference_audit_20261107.md)、[回放证据](results/piper_replay_20261107.json)。原始 CAN、双相机录像、执行时源码和计划保留在 `outputs/piper_replay_20261107/`；SDK 关闭本地 CAN 回环，独立监听只捕获反馈，不能据此声称记录了发送命令。
+
+## 2026-11-07 真机端与训练端人工结果覆盖
+
+- 新增 `pressb real_robot`，通过 `piper_real` 接入同一环境服务，固定 `num_envs=1`；保留历史 `node_type=simulation`、`nodes.simulation`、`endpoints.simulation` 通信键，增加 `environment_type=real_robot`。PiPER CAN 控制、SI 单位换算、逐帧反馈检查与双 RealSense RGB 采集已内化，不依赖外部 LeRobot 仓库。
+- 控制驱动在 `robots/piper/real.py`，相机在 `sensors/realsense.py`，通用执行器在 `runtime/real_robot.py`；复位／奖励通过任务工厂替换。当前动作接口为六个绝对关节角 rad＋全夹爪宽度 m，其他模型表示需要显式适配。提供可选 EMA、限位／指令速度限制、独立超时看门狗、缺失 CAN／陈旧反馈拒绝执行，默认 `actuation_enabled=false`。
+- 训练端新增 `run.human_feedback.mode=environment|human`，默认沿用环境；人工模式可用于原生仿真或真机，奖励默认为成功 1／失败 0。原始环境结果保存在 info；人工提前终止必须收到 `/end_episode` 的 episode／step 身份确认，然后再存 replay 和重置。PAP、原生电梯、桌面按键和真机支持该能力，旧远程电梯桥不支持。未标注自然终止时等待人工；取消等待不会写入假标签。
+- 默认真机任务的人工复位在机械臂主机上，训练标签在训练主机上，两者 token／episode ID 不同。模板 `pap_real_walloss_dsrl.json`、`pap_real_walloss_eval.json` 已提供；相机序列号仍是待确认占位符，硬件控制默认关闭。使用与扩展说明见 [real_robot.md](real_robot.md)。
+- **验证：2,516 项独立 CPU／依赖环境测试通过，无未解决依赖跳过。** 包括 HTTP 下 base／DSRL／残差完整小流程（明确使用假硬件和假推理）、人工邮箱与训练器集成、检查点语义、停止等待、生命周期及旧仿真回归；干净 wheel 安装后可独立导入／构造真机后端。真实模型／Isaac 长程实验未重跑，真实机械臂运动未测试。
+- `ssh piper` 实测两台 D435i：`243322073170`、`261622078356`，640×480 RGB、配置 30 FPS，采集 30 组双路数据；关闭／重开／再关闭通过，无遗留 video 占用。画面较暗，**全局／腕部对应关系尚未确认**。远端没有 CAN，已验证缺失 CAN 报错、禁用动作的 reset 拒绝、节点 SIGTERM 正常退出及端口释放；不能据此宣称已完成机械臂控制联调。
+- 本地证据 `outputs/real_robot_20261107/`；便携汇总 [results/real_robot_20261107.json](results/real_robot_20261107.json)。远端测试使用独立 `/home/metachip/Workspace/pressb_probe_20261107_cameras_01/.venv`，没有修改已有 Conda 环境。原始数据、权重未更改，正式 PAP 残差仍暂停；本轮没有自动 commit／push。
+- 新增任务生命周期与公共控制接口改变了源码身份；下节旧恢复配置的验收结论属于旧快照，本轮未迁移训练检查点。以后恢复正式训练时需重新核验身份，不能绕过严格检查。
+
 ## 2026-11-07 任务／共享／历史实现归属整理完成，验收与迁移通过
 
 - 本轮继续按用户要求拆清代码归属：电梯场景、规划、楼层语义、采集与仿真移入 `tasks/elevator`；PAP／桌面按键仍由各自任务包负责。共享服务与学习流程在 `runtime`，通用滤波／位姿转换在 `control`，标定／RGB-D 记录／图像拼接在 `sensors`，PiPER 运动学、控制与硬件在 `robots/piper`。根目录 Python 文件只保留 `__init__.py`、`registry.py`。

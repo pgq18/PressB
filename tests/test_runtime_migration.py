@@ -237,6 +237,7 @@ def test_invalid_backend_selection_fails_before_loading(fake_registry, spec, kin
 @pytest.mark.parametrize("node_kind,plugin_kind,service_class", [
     ("inference", "model", "InferenceService"),
     ("simulation", "task", "SimulationService"),
+    ("real_robot", "task", "SimulationService"),
 ])
 def test_run_service_maps_node_kind_to_plugin_kind(
         tmp_path, monkeypatch, node_kind, plugin_kind, service_class):
@@ -260,7 +261,10 @@ def test_run_service_maps_node_kind_to_plugin_kind(
     class FakeService:
         def __init__(self, actual_backend, **options):
             created.append((actual_backend, options))
-            self.handlers = {"/health": lambda _: {"node_type": node_kind}}
+            self.handlers = {"/health": lambda _: {
+                "node_type": "simulation" if node_kind == "real_robot" else node_kind,
+                "environment_type": node_kind,
+            }}
 
         def close(self):
             closed.append(self)
@@ -271,7 +275,8 @@ def test_run_service_maps_node_kind_to_plugin_kind(
     def unexpected_http_server(*args, **kwargs):
         pytest.fail("Fixture service must not open an HTTP server")
 
-    service_module = importlib.import_module(f"pressb.runtime.{node_kind}")
+    module_name = "simulation" if node_kind == "real_robot" else node_kind
+    service_module = importlib.import_module(f"pressb.runtime.{module_name}")
     monkeypatch.setattr(server, "load_backend", fake_load_backend)
     monkeypatch.setattr(service_module, service_class, FakeService)
     monkeypatch.setattr(server, "serve_websocket", fake_serve_websocket)

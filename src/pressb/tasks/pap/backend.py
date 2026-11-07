@@ -397,10 +397,20 @@ class PAPParallelBackend:
     def _ids(self, env_ids):
         if self._broken or self._closed:
             raise RuntimeError("PAP backend is closed or failed; state is unknown and commands will not be retried")
-        if not isinstance(env_ids, list) or not env_ids or len(set(env_ids)) != len(env_ids):
+        if not isinstance(env_ids, list) or not env_ids:
             raise ValueError("env_ids must be a nonempty list of distinct environment ids")
         if any(type(i) is not int or not 0 <= i < len(self.workers) for i in env_ids):
             raise ValueError("Environment id out of range")
+        if len(set(env_ids)) != len(env_ids):
+            raise ValueError("env_ids must be a nonempty list of distinct environment ids")
+
+    def end_episode(self, env_ids):
+        """Retire active slots at the last completed step without worker commands."""
+        self._ids(env_ids)
+        if any(not self._ready[i] for i in env_ids):
+            raise ValueError("Only initialized active PAP environments may end")
+        for i in env_ids:
+            self._ready[i] = False
 
     def _parallel(self, requests):
         try:

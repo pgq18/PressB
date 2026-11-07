@@ -1,0 +1,1306 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "Native 640x480 camera view, u right/v down, zero-based; real composite header of 32px removed; no resizing",
+  "corner_order": "Existing scene local top corners [(-0.5,-0.5),(-0.5,+0.5),(+0.5,+0.5),(+0.5,-0.5)] * side, followed by scene yaw. This is physical corner order, not identical image-cyclic start across views.",
+  "annotation_method": "Manual source-image readings. Current geometric projection used only to establish cyclic physical corner identity, not to select pixel positions.",
+  "limitations": [
+    "Pixel observations are not a measured physical depth or contact force.",
+    "Finger extrema constrain projected mesh support, not a named mesh vertex; link identity must be assigned by fit geometry.",
+    "Repeated global cube corners are stationary-scene checks, not independent camera poses.",
+    "Wrist green cube corners after contact are deliberately excluded from static-scene fitting.",
+    "Finger pad geometry and encoder zero remain uncalibrated."
+  ],
+  "observations": [
+    {
+      "name": "pregrasp_10s",
+      "camera": "global",
+      "frame_index": 322,
+      "split": "train",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000322.jpg",
+      "run_elapsed_s": 10.039434671401978,
+      "camera_timestamp_unix_s": 1794061563.0429385,
+      "feedback_timestamp_unix_s": 1794061563.0443487,
+      "feedback_minus_camera_ms": 1.4102458953857422,
+      "measured_state_joint_rad_m": [
+        0.02129301687433082,
+        0.6799977298695108,
+        -0.5624323514551727,
+        -0.06997024971245268,
+        0.739932336382996,
+        0.036896260387160124,
+        0.0594
+      ],
+      "action_index_nearest": 295,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "GreenCube": [
+          [
+            359.5,
+            175.5
+          ],
+          [
+            383.5,
+            165.5
+          ],
+          [
+            398,
+            186
+          ],
+          [
+            372,
+            196.5
+          ]
+        ],
+        "BlueCube": [
+          [
+            455,
+            172
+          ],
+          [
+            484,
+            172
+          ],
+          [
+            486,
+            193
+          ],
+          [
+            454,
+            193
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [],
+      "q_rad_m": [
+        0.02123950079923421,
+        0.6799479301885181,
+        -0.5624323514551727,
+        -0.06997024971245268,
+        0.739932336382996,
+        0.03685686660965845,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "118b58afb9580f6590e48acb2f28e5a207740766083f12859dd450d31429d624"
+    },
+    {
+      "name": "pregrasp_10s",
+      "camera": "wrist",
+      "frame_index": 322,
+      "split": "train",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000322.jpg",
+      "run_elapsed_s": 10.039434671401978,
+      "camera_timestamp_unix_s": 1794061563.0493336,
+      "feedback_timestamp_unix_s": 1794061563.0443487,
+      "feedback_minus_camera_ms": -4.984855651855469,
+      "measured_state_joint_rad_m": [
+        0.02129301687433082,
+        0.6799977298695108,
+        -0.5624323514551727,
+        -0.06997024971245268,
+        0.739932336382996,
+        0.036896260387160124,
+        0.0594
+      ],
+      "action_index_nearest": 295,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "GreenCube": [
+          [
+            254,
+            317
+          ],
+          [
+            205,
+            338
+          ],
+          [
+            185,
+            290
+          ],
+          [
+            234,
+            272
+          ]
+        ],
+        "BlueCube": [
+          [
+            64,
+            322
+          ],
+          [
+            8,
+            317
+          ],
+          [
+            20,
+            269
+          ],
+          [
+            77,
+            272
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link8",
+          "feature": "distal finger visible silhouette minimum v",
+          "extremum": "min",
+          "roi_xyxy": [
+            358,
+            339,
+            410,
+            388
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "Use v as support value; u identifies the visible finger. Camera-housing geometry is excluded.",
+          "axis": "v",
+          "sigma_px": 3.0,
+          "value_px": 351
+        }
+      ],
+      "q_rad_m": [
+        0.02129301687433082,
+        0.68020906621683,
+        -0.5626462650750201,
+        -0.06997024971245268,
+        0.7402106818160505,
+        0.036896260387160124,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "118b58afb9580f6590e48acb2f28e5a207740766083f12859dd450d31429d624"
+    },
+    {
+      "name": "pregrasp_20s",
+      "camera": "global",
+      "frame_index": 422,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000422.jpg",
+      "run_elapsed_s": 20.046737909317017,
+      "camera_timestamp_unix_s": 1794061573.0505126,
+      "feedback_timestamp_unix_s": 1794061573.0444465,
+      "feedback_minus_camera_ms": -6.066083908081055,
+      "measured_state_joint_rad_m": [
+        0.11157889907999749,
+        1.0983007916949916,
+        -0.7825532767166975,
+        -0.04344124508213886,
+        0.8059057821083817,
+        -0.05400048705670456,
+        0.0594
+      ],
+      "action_index_nearest": 594,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "GreenCube": [
+          [
+            359.5,
+            175.5
+          ],
+          [
+            383.5,
+            165.5
+          ],
+          [
+            398,
+            186
+          ],
+          [
+            372,
+            196.5
+          ]
+        ],
+        "BlueCube": [
+          [
+            455,
+            172
+          ],
+          [
+            484,
+            172
+          ],
+          [
+            486,
+            193
+          ],
+          [
+            454,
+            193
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            276,
+            40
+          ],
+          "roi_xyxy": [
+            265,
+            5,
+            284,
+            48
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            349,
+            37
+          ],
+          "roi_xyxy": [
+            340,
+            5,
+            360,
+            44
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.11157889907999749,
+        1.0986665256851074,
+        -0.7826667803688023,
+        -0.04344124508213886,
+        0.8059057821083817,
+        -0.05400048705670456,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "12a61c7315ebb9e2a29c86eb2290ec307a17e8b385ea078f4566a43615aac2e4"
+    },
+    {
+      "name": "pregrasp_20s",
+      "camera": "wrist",
+      "frame_index": 422,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000422.jpg",
+      "run_elapsed_s": 20.046737909317017,
+      "camera_timestamp_unix_s": 1794061573.0519753,
+      "feedback_timestamp_unix_s": 1794061573.0444465,
+      "feedback_minus_camera_ms": -7.528781890869141,
+      "measured_state_joint_rad_m": [
+        0.11157889907999749,
+        1.0983007916949916,
+        -0.7825532767166975,
+        -0.04344124508213886,
+        0.8059057821083817,
+        -0.05400048705670456,
+        0.0594
+      ],
+      "action_index_nearest": 594,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "GreenCube": [
+          [
+            317,
+            282
+          ],
+          [
+            255,
+            300
+          ],
+          [
+            238,
+            237
+          ],
+          [
+            297,
+            219
+          ]
+        ],
+        "BlueCube": [
+          [
+            95,
+            249
+          ],
+          [
+            28,
+            235
+          ],
+          [
+            46,
+            173
+          ],
+          [
+            111,
+            189
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link8",
+          "feature": "distal finger visible silhouette minimum v",
+          "extremum": "min",
+          "roi_xyxy": [
+            358,
+            339,
+            410,
+            388
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "Use v as support value; u identifies the visible finger. Camera-housing geometry is excluded.",
+          "axis": "v",
+          "sigma_px": 3.0,
+          "value_px": 351
+        }
+      ],
+      "q_rad_m": [
+        0.11157889907999749,
+        1.098754714107438,
+        -0.7826941491895257,
+        -0.04344124508213886,
+        0.8059057821083817,
+        -0.05400048705670456,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "12a61c7315ebb9e2a29c86eb2290ec307a17e8b385ea078f4566a43615aac2e4"
+    },
+    {
+      "name": "pregrasp_28s",
+      "camera": "global",
+      "frame_index": 501,
+      "split": "train",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000501.jpg",
+      "run_elapsed_s": 27.986181259155273,
+      "camera_timestamp_unix_s": 1794061580.9896626,
+      "feedback_timestamp_unix_s": 1794061581.0030484,
+      "feedback_minus_camera_ms": 13.385772705078125,
+      "measured_state_joint_rad_m": [
+        0.1830152253641254,
+        1.4608231306267339,
+        -0.9586046383653656,
+        -0.02103121748653167,
+        0.8567297699264566,
+        -0.12786282100110458,
+        0.0594
+      ],
+      "action_index_nearest": 832,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {},
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            317,
+            122
+          ],
+          "roi_xyxy": [
+            291,
+            79,
+            330,
+            133
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            383,
+            111
+          ],
+          "roi_xyxy": [
+            369,
+            74,
+            400,
+            121
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.1830152253641254,
+        1.4602415807741138,
+        -0.9577669296490915,
+        -0.02103121748653167,
+        0.8567297699264566,
+        -0.12786282100110458,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "971d84dcea5fd20f1781425c94f004c3adef0212604bdac5a1f2bb26758053f8"
+    },
+    {
+      "name": "pregrasp_28s",
+      "camera": "wrist",
+      "frame_index": 501,
+      "split": "train",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000501.jpg",
+      "run_elapsed_s": 27.986181259155273,
+      "camera_timestamp_unix_s": 1794061580.9911945,
+      "feedback_timestamp_unix_s": 1794061581.0030484,
+      "feedback_minus_camera_ms": 11.853933334350586,
+      "measured_state_joint_rad_m": [
+        0.1830152253641254,
+        1.4608231306267339,
+        -0.9586046383653656,
+        -0.02103121748653167,
+        0.8567297699264566,
+        -0.12786282100110458,
+        0.0594
+      ],
+      "action_index_nearest": 832,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "GreenCube": [
+          [
+            403,
+            313
+          ],
+          [
+            321,
+            327
+          ],
+          [
+            308,
+            241
+          ],
+          [
+            391,
+            230
+          ]
+        ],
+        "BlueCube": [
+          [
+            125,
+            238
+          ],
+          [
+            43,
+            207
+          ],
+          [
+            72,
+            126
+          ],
+          [
+            156,
+            157
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [],
+      "q_rad_m": [
+        0.1830152253641254,
+        1.460308132102895,
+        -0.9578627952536451,
+        -0.02103121748653167,
+        0.8567297699264566,
+        -0.12786282100110458,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "971d84dcea5fd20f1781425c94f004c3adef0212604bdac5a1f2bb26758053f8"
+    },
+    {
+      "name": "pregrasp_34s",
+      "camera": "global",
+      "frame_index": 561,
+      "split": "train",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000561.jpg",
+      "run_elapsed_s": 33.990649461746216,
+      "camera_timestamp_unix_s": 1794061586.9940827,
+      "feedback_timestamp_unix_s": 1794061586.9888985,
+      "feedback_minus_camera_ms": -5.184173583984375,
+      "measured_state_joint_rad_m": [
+        0.23757421778146814,
+        1.7213135214868875,
+        -1.0894345190948604,
+        0.0,
+        0.8957029721234899,
+        -0.18146188232985044,
+        0.0594
+      ],
+      "action_index_nearest": 1011,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {},
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            348,
+            181
+          ],
+          "roi_xyxy": [
+            329,
+            146,
+            361,
+            189
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            408,
+            163
+          ],
+          "roi_xyxy": [
+            394,
+            136,
+            423,
+            172
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.23757421778146814,
+        1.721457265084314,
+        -1.0894345190948604,
+        0.0,
+        0.8957029721234899,
+        -0.1817067788291696,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "828ef0c5404347abcde47f78f22fa79c794c1605ab6fb060fda48fc074800c73"
+    },
+    {
+      "name": "pregrasp_34s",
+      "camera": "wrist",
+      "frame_index": 561,
+      "split": "train",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000561.jpg",
+      "run_elapsed_s": 33.990649461746216,
+      "camera_timestamp_unix_s": 1794061586.995658,
+      "feedback_timestamp_unix_s": 1794061586.9888985,
+      "feedback_minus_camera_ms": -6.759405136108398,
+      "measured_state_joint_rad_m": [
+        0.23757421778146814,
+        1.7213135214868875,
+        -1.0894345190948604,
+        0.0,
+        0.8957029721234899,
+        -0.18146188232985044,
+        0.0594
+      ],
+      "action_index_nearest": 1011,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "BlueCube": [
+          [
+            154,
+            282
+          ],
+          [
+            50,
+            235
+          ],
+          [
+            95,
+            130
+          ],
+          [
+            204,
+            184
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [],
+      "cube_note": "Only stationary BLUE top-face corners. Corners are slightly rounded/blurred; manually read to +/-3px. Green is excluded. Existing scene physical corner order maintained. Supplemental training frame chosen after fit03 showed near-field extrapolation residual; 20/36/41 remain held out.",
+      "q_rad_m": [
+        0.23757421778146814,
+        1.72150094214227,
+        -1.0894345190948604,
+        0.0,
+        0.8957029721234899,
+        -0.18178119159457626,
+        0.0594
+      ],
+      "cube_sigma_px": 3.0,
+      "source_image_sha256": "828ef0c5404347abcde47f78f22fa79c794c1605ab6fb060fda48fc074800c73"
+    },
+    {
+      "name": "pregrasp_36s",
+      "camera": "global",
+      "frame_index": 581,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000581.jpg",
+      "run_elapsed_s": 35.9921452999115,
+      "camera_timestamp_unix_s": 1794061588.9955337,
+      "feedback_timestamp_unix_s": 1794061588.9955852,
+      "feedback_minus_camera_ms": 0.0514984130859375,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.786763368436675,
+        -1.121932549766995,
+        0.0,
+        0.9061574943429359,
+        -0.1960004749989632,
+        0.0594
+      ],
+      "action_index_nearest": 1071,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "BlueCube": [
+          [
+            455,
+            172
+          ],
+          [
+            484,
+            172
+          ],
+          [
+            486,
+            193
+          ],
+          [
+            454,
+            193
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            355,
+            193
+          ],
+          "roi_xyxy": [
+            335,
+            155,
+            372,
+            202
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            413,
+            173
+          ],
+          "roi_xyxy": [
+            398,
+            148,
+            429,
+            182
+          ],
+          "uncertainty_px": 2.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.786763368436675,
+        -1.121932549766995,
+        0.0,
+        0.9061574943429359,
+        -0.1960004749989632,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "11ec4c6e677c9455ebbb748b82e446ee02db38c753d78638057733b5c9d8e0fb"
+    },
+    {
+      "name": "pregrasp_36s",
+      "camera": "wrist",
+      "frame_index": 581,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000581.jpg",
+      "run_elapsed_s": 35.9921452999115,
+      "camera_timestamp_unix_s": 1794061588.9972394,
+      "feedback_timestamp_unix_s": 1794061588.9955852,
+      "feedback_minus_camera_ms": -1.6541481018066406,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.786763368436675,
+        -1.121932549766995,
+        0.0,
+        0.9061574943429359,
+        -0.1960004749989632,
+        0.0594
+      ],
+      "action_index_nearest": 1071,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {},
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link8",
+          "feature": "distal finger visible silhouette minimum v",
+          "extremum": "min",
+          "roi_xyxy": [
+            358,
+            339,
+            410,
+            388
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "Use v as support value; u identifies the visible finger. Camera-housing geometry is excluded.",
+          "axis": "v",
+          "sigma_px": 3.0,
+          "value_px": 351
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.786763368436675,
+        -1.121932549766995,
+        0.0,
+        0.9061574943429359,
+        -0.1960004749989632,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "11ec4c6e677c9455ebbb748b82e446ee02db38c753d78638057733b5c9d8e0fb"
+    },
+    {
+      "name": "grasp_open",
+      "camera": "global",
+      "frame_index": 639,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000639.jpg",
+      "run_elapsed_s": 41.84232521057129,
+      "camera_timestamp_unix_s": 1794061594.7998073,
+      "feedback_timestamp_unix_s": 1794061594.8137784,
+      "feedback_minus_camera_ms": 13.971090316772461,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0594
+      ],
+      "action_index_nearest": 1245,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "BlueCube": [
+          [
+            455,
+            172
+          ],
+          [
+            484,
+            172
+          ],
+          [
+            486,
+            193
+          ],
+          [
+            454,
+            193
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            361,
+            218
+          ],
+          "roi_xyxy": [
+            344,
+            194,
+            377,
+            226
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            405,
+            202
+          ],
+          "roi_xyxy": [
+            395,
+            188,
+            420,
+            210
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "6c34b455457693d9aa7aa94c1e22566140a35aff221f0ddb7fe481ea6fa748aa"
+    },
+    {
+      "name": "grasp_open",
+      "camera": "wrist",
+      "frame_index": 639,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000639.jpg",
+      "run_elapsed_s": 41.84232521057129,
+      "camera_timestamp_unix_s": 1794061594.8016114,
+      "feedback_timestamp_unix_s": 1794061594.8137784,
+      "feedback_minus_camera_ms": 12.166976928710938,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0594
+      ],
+      "action_index_nearest": 1245,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {},
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link8",
+          "feature": "distal finger visible silhouette minimum v",
+          "extremum": "min",
+          "roi_xyxy": [
+            358,
+            339,
+            410,
+            388
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "Use v as support value; u identifies the visible finger. Camera-housing geometry is excluded.",
+          "axis": "v",
+          "sigma_px": 3.0,
+          "value_px": 351
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0594
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "6c34b455457693d9aa7aa94c1e22566140a35aff221f0ddb7fe481ea6fa748aa"
+    },
+    {
+      "name": "close",
+      "camera": "global",
+      "frame_index": 686,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000686.jpg",
+      "run_elapsed_s": 46.55800986289978,
+      "camera_timestamp_unix_s": 1794061599.503317,
+      "feedback_timestamp_unix_s": 1794061599.495848,
+      "feedback_minus_camera_ms": -7.46917724609375,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "action_index_nearest": 1385,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "BlueCube": [
+          [
+            455,
+            172
+          ],
+          [
+            484,
+            172
+          ],
+          [
+            486,
+            193
+          ],
+          [
+            454,
+            193
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            367,
+            216
+          ],
+          "roi_xyxy": [
+            355,
+            191,
+            382,
+            224
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            400,
+            202
+          ],
+          "roi_xyxy": [
+            388,
+            188,
+            413,
+            211
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "23b17beedba2ddbcf8eaba4ebee1fd5897b68ccda7f3c2758ca553a3e8e12044"
+    },
+    {
+      "name": "close",
+      "camera": "wrist",
+      "frame_index": 686,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000686.jpg",
+      "run_elapsed_s": 46.55800986289978,
+      "camera_timestamp_unix_s": 1794061599.5050547,
+      "feedback_timestamp_unix_s": 1794061599.495848,
+      "feedback_minus_camera_ms": -9.206771850585938,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "action_index_nearest": 1385,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {},
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link8",
+          "feature": "distal finger visible silhouette minimum v",
+          "extremum": "min",
+          "roi_xyxy": [
+            426,
+            341,
+            478,
+            390
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "Use v as support value; u identifies the visible finger. Camera-housing geometry is excluded.",
+          "axis": "v",
+          "sigma_px": 3.0,
+          "value_px": 353
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.8635229489393856,
+        -1.0504438636053073,
+        0.0,
+        0.7566002307395419,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "23b17beedba2ddbcf8eaba4ebee1fd5897b68ccda7f3c2758ca553a3e8e12044"
+    },
+    {
+      "name": "lift_hold",
+      "camera": "global",
+      "frame_index": 749,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000749.jpg",
+      "run_elapsed_s": 52.87780165672302,
+      "camera_timestamp_unix_s": 1794061605.8079996,
+      "feedback_timestamp_unix_s": 1794061605.8157399,
+      "feedback_minus_camera_ms": 7.740259170532227,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.7716837236994438,
+        -1.1439411516346434,
+        0.0,
+        0.9431933810702556,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "action_index_nearest": 1574,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {
+        "BlueCube": [
+          [
+            455,
+            172
+          ],
+          [
+            484,
+            172
+          ],
+          [
+            486,
+            193
+          ],
+          [
+            454,
+            193
+          ]
+        ]
+      },
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link7",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            368,
+            182
+          ],
+          "roi_xyxy": [
+            351,
+            153,
+            382,
+            190
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        },
+        {
+          "image_side": "right",
+          "link": "link8",
+          "feature": "distal finger visible silhouette maximum v",
+          "extremum": "max",
+          "uv": [
+            403,
+            170
+          ],
+          "roi_xyxy": [
+            389,
+            148,
+            416,
+            177
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "v extremum and u of projected hull tip band (softweight0.75px), approximate silhouette correspondence, sigma3px",
+          "occlusion": "No cube overlap at pregrasp; contact-stage nearby object may obscure the inner edge.",
+          "axis": "v",
+          "sigma_px": 3.0
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.7716837236994438,
+        -1.1439411516346434,
+        0.0,
+        0.9431933810702556,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "aef00ee6845b6149e7911eeab43cad02786d8087a84eb2c6b99c277be9a127e4"
+    },
+    {
+      "name": "lift_hold",
+      "camera": "wrist",
+      "frame_index": 749,
+      "split": "holdout",
+      "source_file": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames/frame_000749.jpg",
+      "run_elapsed_s": 52.87780165672302,
+      "camera_timestamp_unix_s": 1794061605.8097904,
+      "feedback_timestamp_unix_s": 1794061605.8157399,
+      "feedback_minus_camera_ms": 5.949497222900391,
+      "measured_state_joint_rad_m": [
+        0.25071654704898544,
+        1.7716837236994438,
+        -1.1439411516346434,
+        0.0,
+        0.9431933810702556,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "action_index_nearest": 1574,
+      "state_source": "linear interpolation of measured replay observed state at camera exposure UNIX timestamp",
+      "cube_corners": {},
+      "cube_uncertainty_px": 2.0,
+      "finger_points": [],
+      "finger_silhouettes": [
+        {
+          "image_side": "left",
+          "link": "link8",
+          "feature": "distal finger visible silhouette minimum v",
+          "extremum": "min",
+          "roi_xyxy": [
+            426,
+            340,
+            478,
+            389
+          ],
+          "uncertainty_px": 3.0,
+          "fit_constraint": "Use v as support value; u identifies the visible finger. Camera-housing geometry is excluded.",
+          "axis": "v",
+          "sigma_px": 3.0,
+          "value_px": 352
+        }
+      ],
+      "q_rad_m": [
+        0.25071654704898544,
+        1.7716837236994438,
+        -1.1439411516346434,
+        0.0,
+        0.9431933810702556,
+        -0.1969604060875601,
+        0.0356
+      ],
+      "cube_sigma_px": 2.0,
+      "source_image_sha256": "aef00ee6845b6149e7911eeab43cad02786d8087a84eb2c6b99c277be9a127e4"
+    }
+  ],
+  "source_annotation_sha256": "ab01c114f589f36276de687e3fd4ce6c6b3c8f98bb2890fa17ce9eed9ffb27d4",
+  "adaptations": [
+    "Global static cube points counted once for training",
+    "Wrist identical-width finger support counted once for training",
+    "Per-camera exposure interpolation of actual encoder measurements",
+    "Global finger tip UV support approximation sigma3px; wrist scalar v only",
+    "grasp_open,20s,close,lift held out; no contact green included"
+  ],
+  "supplement_sha256": "0648a185dadd39a45cdefb14274bb43ae54c653480cdfbe9dc1631fccdb1f83c"
+}

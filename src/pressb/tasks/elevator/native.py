@@ -198,6 +198,41 @@ class NativeElevatorBackend(ElevatorBackend):
                 finally:
                     self._app.close()
 
+    def end_episode(self, env_ids):
+        """Retire local slots at their cached observation, with no physics step.
+
+        The schema bridge, legacy service and engine each own episode state.
+        All three must agree before a peer can step or an ended slot can reset.
+        Human outcome/reward semantics remain the caller's responsibility.
+        """
+        if threading.get_ident() != self._owner:
+            raise RuntimeError("Native elevator calls require the owning simulator thread")
+        self._ids(env_ids)
+        service, engine = self._legacy_service, self._engine
+        if (self._cohort is None or service.items is None or engine._items is None
+                or service.fault is not None):
+            raise ValueError("Only initialized active elevator environments may end")
+        for i in env_ids:
+            if (i not in self._items or i >= len(service.items) or i >= len(engine._items)
+                    or self._items[i]["terminated"] or self._items[i]["truncated"]
+                    or service.items[i]["terminated"] or service.items[i]["truncated"]
+                    or engine._items[i]["done"]):
+                raise ValueError("Only initialized active elevator environments may end")
+        # Keep observations, physical outcomes, rewards, episode IDs and clocks.
+        # Copy first so previously returned/cached responses remain immutable.
+        prepared = []
+        for i in env_ids:
+            bridge_item = copy.deepcopy(self._items[i])
+            legacy_item = copy.deepcopy(service.items[i])
+            for item in (bridge_item, legacy_item):
+                item.update(terminated=True, truncated=False)
+                item.setdefault("info", {})["termination"] = "external_episode_end"
+            prepared.append((i, bridge_item, legacy_item))
+        for i, bridge_item, legacy_item in prepared:
+            self._items[i], service.items[i] = bridge_item, legacy_item
+            engine._items[i].update(done=True, termination="external_episode_end")
+        engine.recording.difference_update(env_ids)
+
     def close(self):
         self._close_runtime()
 

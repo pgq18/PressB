@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-07",
+  "hostname": "metachip-ThinkPad-X1-Carbon-Gen-8",
+  "interface": "can0",
+  "bitrate": 1000000,
+  "status": "CAN_FEEDBACK_VERIFIED_ADAPTER_DEFAULT_LIMITS_REJECT_CURRENT_POSE",
+  "connection_verified": true,
+  "pressb_default_adapter_connected": false,
+  "robot_commands_sent": false,
+  "sdk_transmission_attempts": 0,
+  "tx_packets_final": 0,
+  "passive_duration_s": 10.00008577699191,
+  "feedback_hz": {
+    "0x2A5": 199.69828704816476,
+    "0x2A6": 199.59828790592732,
+    "0x2A7": 199.59828790592732,
+    "0x2A8": 199.59828790592732
+  },
+  "sdk_read_samples": 100,
+  "joint_and_gripper_timestamps_strictly_advancing": true,
+  "last_state": {
+    "joints_deg": [
+      0.667,
+      -1.507,
+      2.381,
+      4.218,
+      21.069,
+      -2.54
+    ],
+    "joints_rad": [
+      0.011641346110802177,
+      -0.02630211182755455,
+      0.041556289489984986,
+      0.07361798784912083,
+      0.3677234201026853,
+      -0.04433136300065597
+    ],
+    "gripper_width_m": 0.0,
+    "joint_timestamp": 1794038770.2699656,
+    "gripper_timestamp": 1794038770.2700934,
+    "ctrl_mode": 0,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "motor_faults": [
+      {
+        "voltage_too_low": false,
+        "motor_overheating": false,
+        "driver_overcurrent": false,
+        "driver_overheating": false,
+        "collision_status": false,
+        "driver_error_status": false,
+        "stall_status": false
+      },
+      {
+        "voltage_too_low": false,
+        "motor_overheating": false,
+        "driver_overcurrent": false,
+        "driver_overheating": false,
+        "collision_status": false,
+        "driver_error_status": false,
+        "stall_status": false
+      },
+      {
+        "voltage_too_low": false,
+        "motor_overheating": false,
+        "driver_overcurrent": false,
+        "driver_overheating": false,
+        "collision_status": false,
+        "driver_error_status": false,
+        "stall_status": false
+      },
+      {
+        "voltage_too_low": false,
+        "motor_overheating": false,
+        "driver_overcurrent": false,
+        "driver_overheating": false,
+        "collision_status": false,
+        "driver_error_status": false,
+        "stall_status": false
+      },
+      {
+        "voltage_too_low": false,
+        "motor_overheating": false,
+        "driver_overcurrent": false,
+        "driver_overheating": false,
+        "collision_status": false,
+        "driver_error_status": false,
+        "stall_status": false
+      },
+      {
+        "voltage_too_low": false,
+        "motor_overheating": false,
+        "driver_overcurrent": false,
+        "driver_overheating": false,
+        "collision_status": false,
+        "driver_error_status": false,
+        "stall_status": false
+      }
+    ]
+  },
+  "adapter_error": "PiperFeedbackError: Timed out waiting for live PiPER feedback: PiPER feedback is outside configured joint/gripper limits",
+  "adapter_source_sha256": "9c548395f239f257794457f1b3641dd57356372c837c158503ef116ab3330c77",
+  "remaining": "Verify joint zero/reference and calibrated physical limits before enabling control; no motion, homing or calibration commands tested.",
+  "evidence": {
+    "passive_can_report.json": "b659a3f51772aabbae3eaf7b171e07feef17f8e8ca7bb9a6dbab0ea917f646cf",
+    "sdk_readonly_report.json": "8df965b71e2656c4735a9b2d15afb42dd303ba2501a5436cacd24ba9f7aeaa40",
+    "adapter_readonly_report.json": "8079563aa6243d55edbd36d6edd0ee77abf6c221725eff0736bdcab096df28a4",
+    "can_final.txt": "c884dc6d38de23570753a3c9b9eec591b75b927d524f388f1c467d0c33779b60"
+  }
+}

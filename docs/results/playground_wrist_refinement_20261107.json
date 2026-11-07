@@ -1,0 +1,245 @@
+{
+  "date": "2026-11-07",
+  "task": "playground",
+  "status": "adopted_wrist_only_extrinsic_refinement",
+  "hardware_access": false,
+  "default_config": "configs/piper_playground.json",
+  "default_config_sha256": "af785ce1779e15232546688690059375585a19aa35456d9a3f52a38e11f264eb",
+  "previous_default": "configs/calibration/playground_20261107_before_wrist_refine.json",
+  "contour_annotations": "configs/calibration/playground_20261107_wrist_contours.json",
+  "change": {
+    "delta_rotation_degrees": [
+      -0.661064641744477,
+      -0.23514365681839264,
+      -0.0854070982176033
+    ],
+    "delta_translation_mm": [
+      -0.33639814969572146,
+      -1.5799081323106494,
+      -0.24238343895255868
+    ],
+    "rotation_norm_deg": 0.7068191935230898,
+    "translation_norm_mm": 1.6334084465125367
+  },
+  "parameter_convention": "Left-multiplied rotation-vector correction in link6 axes plus camera-centre translation in link6 axes; no change to live intrinsic matrix.",
+  "camera_intrinsics": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 605.6944580078125,
+    "fy": 605.6384887695312,
+    "cx": 320.6307678222656,
+    "cy": 250.77304077148438
+  },
+  "fixed": [
+    "effective mount6mm",
+    "global camera",
+    "table/object positions and materials",
+    "URDF and finger assets",
+    "physics drives/friction",
+    "original2146 arm/gripper commands",
+    "default initial pose and empty scene"
+  ],
+  "fitting": {
+    "measured_widths_train_m": [
+      0.035,
+      0.0594
+    ],
+    "measured_widths_excluded_from_optimizer_m": [
+      0.0401,
+      0.05
+    ],
+    "selected_regularization": {
+      "rotation_each_deg": 0.3,
+      "translation_each_mm": 0.5,
+      "cube_sigma_px": 5
+    },
+    "model": "Original STL triangle silhouette intersections at native pixel rows; not convex-hull body approximation.",
+    "before": {
+      "train": {
+        "cube": {
+          "n": 40,
+          "rmse_px": 6.71354174848878,
+          "max_abs_px": 15.476837241649875
+        },
+        "finger_tip": {
+          "n": 2,
+          "rmse_px": 3.8945564165886886,
+          "max_abs_px": 5.5011209986572
+        },
+        "finger_edges": {
+          "n": 28,
+          "rmse_px": 8.587240507546426,
+          "max_abs_px": 18.94812843758416
+        }
+      },
+      "holdout": {
+        "cube": {
+          "n": 16,
+          "rmse_px": 5.698263085621768,
+          "max_abs_px": 11.662270583554516
+        },
+        "finger_tip": {
+          "n": 2,
+          "rmse_px": 3.8540463581429303,
+          "max_abs_px": 4.615787962142349
+        },
+        "finger_edges": {
+          "n": 28,
+          "rmse_px": 6.381457033481485,
+          "max_abs_px": 15.747875056421549
+        }
+      }
+    },
+    "after": {
+      "train": {
+        "cube": {
+          "n": 40,
+          "rmse_px": 5.70615432013425,
+          "max_abs_px": 13.21781294031615
+        },
+        "finger_tip": {
+          "n": 2,
+          "rmse_px": 2.834012423610789,
+          "max_abs_px": 3.9132218298932457
+        },
+        "finger_edges": {
+          "n": 28,
+          "rmse_px": 4.094821894745613,
+          "max_abs_px": 11.429303589979327
+        }
+      },
+      "holdout": {
+        "cube": {
+          "n": 16,
+          "rmse_px": 7.621371729738387,
+          "max_abs_px": 13.280397805534108
+        },
+        "finger_tip": {
+          "n": 2,
+          "rmse_px": 1.0333556763899414,
+          "max_abs_px": 1.4594829958672335
+        },
+        "finger_edges": {
+          "n": 28,
+          "rmse_px": 4.697864663265021,
+          "max_abs_px": 11.635379319167441
+        }
+      }
+    },
+    "identifiability": {
+      "scales": [
+        0.017453292519943295,
+        0.017453292519943295,
+        0.017453292519943295,
+        0.003,
+        0.003,
+        0.003
+      ],
+      "singular_values": [
+        38.70745368311547,
+        24.644992563441456,
+        7.453175812166314,
+        5.768236822410174,
+        2.690523840545986,
+        2.3169497719267365
+      ],
+      "condition_number": 16.706211827340134,
+      "rank": 6,
+      "weakest_scaled_direction": [
+        -0.26128538749365493,
+        -0.49680122713540564,
+        -0.6313972546372727,
+        0.47013376465253154,
+        0.021247473825976526,
+        0.2545167617765349
+      ]
+    },
+    "selection_scope": "Same-recording development validation; candidates were compared using held-out metrics, so not a blind independent test."
+  },
+  "renderer_contour_validation": {
+    "before_all": {
+      "count": 56,
+      "mae_px": 5.839285714285714,
+      "rmse_px": 7.439037956233704,
+      "max_abs_px": 19
+    },
+    "before_train": {
+      "count": 28,
+      "mae_px": 7.178571428571429,
+      "rmse_px": 8.600249165825703,
+      "max_abs_px": 19
+    },
+    "before_holdout": {
+      "count": 28,
+      "mae_px": 4.5,
+      "rmse_px": 6.0592314458424275,
+      "max_abs_px": 15
+    },
+    "after_all": {
+      "count": 56,
+      "mae_px": 3.767857142857143,
+      "rmse_px": 4.638734433318763,
+      "max_abs_px": 12
+    },
+    "after_train": {
+      "count": 28,
+      "mae_px": 3.5357142857142856,
+      "rmse_px": 4.354800307050338,
+      "max_abs_px": 12
+    },
+    "after_holdout": {
+      "count": 28,
+      "mae_px": 4.0,
+      "rmse_px": 4.906264217449828,
+      "max_abs_px": 12
+    }
+  },
+  "physical_invariance": {
+    "hardware_access": false,
+    "physics_logs_byte_identical": true,
+    "before": "outputs/playground_mount_height_20261107/mount_06mm/physics/physics.jsonl",
+    "after": "outputs/playground_wrist_refine_20261107/physics_after/physics.jsonl",
+    "before_sha256": "0486c4f547f1259f11460ce0e14a4a881be8466ed1a451757e728b54c4776b18",
+    "after_sha256": "0486c4f547f1259f11460ce0e14a4a881be8466ed1a451757e728b54c4776b18",
+    "meaning": "Only optical registration changed. No change in commanded or observed joints, cube contact/grasp trajectory, or physical success."
+  },
+  "physical_outcome": {
+    "success": true,
+    "frames": 2146,
+    "min_held_lift_m": 0.049974262714385986,
+    "held_bilateral_contact_fraction": 1.0,
+    "return_distance_m": 0.00724017652394293,
+    "unintended_external_robot_contacts": []
+  },
+  "remaining_limits": [
+    "Natural real/sim held width about35.6/30mm remains different; camera changes must not mask this.",
+    "Finger shape/material and unlogged individual-finger asymmetry remain uncertain.",
+    "Static cube20s coordinate RMSE changes5.70->7.62px; not every scene feature improves.",
+    "Camera registration cannot correct physical grasp depth or object placement."
+  ],
+  "validation": {
+    "tests": "102 passed,0 skipped",
+    "log": "outputs/playground_wrist_refine_20261107/regression.log",
+    "measured_pose_renders": "outputs/playground_wrist_refine_20261107/width_after/summary.json",
+    "full_physics_replay": "outputs/playground_wrist_refine_20261107/physics_after/summary.json"
+  },
+  "artifacts": {
+    "fit": "outputs/playground_wrist_refine_20261107/fit/reproduced_final_v2/report.json",
+    "selection": "outputs/playground_wrist_refine_20261107/fit/candidate_comparison.json",
+    "same_width_image": "outputs/playground_wrist_refine_20261107/evidence/renderer_comparison_selected.png",
+    "same_width_metrics": "outputs/playground_wrist_refine_20261107/evidence/renderer_comparison_selected.json",
+    "video": "outputs/playground_wrist_refine_20261107/video/real_wrist_before_after_1x.mp4",
+    "render_audit": "outputs/playground_wrist_refine_20261107/render_audit/report.json",
+    "video_qa": "outputs/playground_wrist_refine_20261107/video/final_media_qa.json",
+    "video_physics_equivalence": "outputs/playground_wrist_refine_20261107/video/physics_equivalence.json"
+  },
+  "source_sha256": {
+    "scripts/refine_playground_wrist.py": "eb7d93df7cd81844736d8975631c51004a6ce32450baaea034477829f8f6af1e",
+    "scripts/calibrate_playground_video.py": "cb04b7859c1477d72e110f410fcc222b3ce54725b586fc190995897dc40c8d8d",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf": "01471dc1766d7ecaea268a4bdc15615e6ed95b969a42b32b9302a2c77095c439",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d",
+    "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606"
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "date": "2026-11-07",
+  "status": "implemented_and_simulation_verified",
+  "task_id": "playground",
+  "scope": "Independent clean real-workspace reconstruction; no automatic task reward or policy evaluation",
+  "default_objects": [],
+  "temporary_registration_cubes": "Only instantiated with explicit --reference-objects; not included in clean USD or backend default",
+  "config": "configs/piper_playground.json",
+  "simulation_node_config": "configs/rl_nodes/playground_simulation.json",
+  "capture": {
+    "path": "outputs/playground_twin_20261107/playground_capture_01/capture.json",
+    "can_access": "receive only; no actuation commands",
+    "stationary_joint_range_deg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "hardware_synchronized": false,
+    "measured_intrinsics": {
+      "global": {
+        "width": 640,
+        "height": 480,
+        "fx": 606.1517333984375,
+        "fy": 605.0548095703125,
+        "cx": 327.25390625,
+        "cy": 249.86172485351562,
+        "model": "distortion.inverse_brown_conrady",
+        "coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "wrist": {
+        "width": 640,
+        "height": 480,
+        "fx": 605.6944580078125,
+        "fy": 605.6384887695312,
+        "cx": 320.6307678222656,
+        "cy": 250.77304077148438,
+        "model": "distortion.inverse_brown_conrady",
+        "coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "registration": {
+    "global_eye_base_m": [
+      0.7171012280697232,
+      0.046535352428906565,
+      0.4943071492714702
+    ],
+    "global_transform_source": "outputs/playground_twin_20261107/camera_refit.json",
+    "wrist_intrinsics": "measured live device values",
+    "wrist_extrinsics": "unchanged PAP link6_from_camera_usd",
+    "wrist_table_depth_residual_m": 0.0117,
+    "accuracy_limit": "Approximate registration; no ground-truth accuracy bound; table dimensions/mounting and materials are visual priors."
+  },
+  "artifacts": {
+    "clean_views": "outputs/playground_twin_20261107/render_clean_03",
+    "calibration_views": "outputs/playground_twin_20261107/render_calibration_03",
+    "preview": "outputs/playground_twin_20261107/playground_preview.jpg",
+    "real_sim_registration_comparison": "outputs/playground_twin_20261107/registration_comparison.jpg"
+  },
+  "verification": {
+    "cpu_usd_tests": {
+      "passed": 130,
+      "skipped": 0,
+      "log": "outputs/playground_twin_20261107/regression_tests.log"
+    },
+    "actual_isaac": {
+      "kind": "playground_real_isaac_backend_acceptance",
+      "simulation_only": true,
+      "num_envs": 1,
+      "native_shutdown_exits_process": true,
+      "close_returns_to_python": false,
+      "final_runs": {
+        "joint_ema": {
+          "report": "outputs/playground_twin_20261107/backend_smoke_03/report.json",
+          "sha256": "f98c51b3b87854dbd643200789b20fafd70373aac580707f8716497a50aada07",
+          "exit_code": 0,
+          "native_shutdown_verified": true,
+          "component_cleanup_completed": true,
+          "status": "passed",
+          "duration_s": 13.74131223699078,
+          "state_change": {
+            "measured_j1_change_rad": 0.05990740656852722,
+            "gripper_width_m": 0.025000102818012238,
+            "retry_idempotent": true,
+            "timed_truncation": true,
+            "reset_after_terminal": true,
+            "measured_state_changed": true,
+            "images_valid": true,
+            "fk_camera_agrees": true
+          },
+          "max_fk_error": 5.161742486214926e-07,
+          "max_wrist_pose_error": 3.547889494415202e-07,
+          "child_pid": null,
+          "child_pid_absent": null
+        },
+        "none": {
+          "report": "outputs/playground_twin_20261107/backend_smoke_04/report.json",
+          "sha256": "a97e85ce9045638f4f2153d3066593e8a1c09a8743ce1b87c75621ce36aab3c3",
+          "exit_code": 0,
+          "native_shutdown_verified": true,
+          "component_cleanup_completed": true,
+          "status": "passed",
+          "duration_s": 12.43926424602978,
+          "state_change": {
+            "measured_j1_change_rad": 0.06000024080276489,
+            "gripper_width_m": 0.025000110268592834,
+            "retry_idempotent": true,
+            "timed_truncation": true,
+            "reset_after_terminal": true,
+            "measured_state_changed": true,
+            "images_valid": true,
+            "fk_camera_agrees": true
+          },
+          "max_fk_error": 4.4560637074697595e-07,
+          "max_wrist_pose_error": 3.790617705279331e-07,
+          "child_pid": 3070042,
+          "child_pid_absent": true
+        }
+      },
+      "diagnostics": {
+        "backend_smoke_01": "Operations passed, pre-supervisor fast shutdown could not write final closure flag; not final acceptance.",
+        "backend_smoke_02": "Operations and Python close completed, but slow native teardown segfaulted at Python exit (139) in omni.kit.ui.editor_menu.__del__; retained as diagnostic and not accepted."
+      },
+      "gpu_processes_after": "",
+      "tests": {
+        "count": 121,
+        "suite": [
+          "tests/test_playground.py",
+          "tests/test_experiments.py",
+          "tests/test_table_buttons_backend.py",
+          "tests/test_table_buttons.py"
+        ]
+      }
+    },
+    "rendering": {
+      "status": "passed",
+      "physics_steps": 0,
+      "camera_parameters_checked_from_usd": true,
+      "robot_and_wrist_transforms_checked_against_urdf_fk": true,
+      "summary": "outputs/playground_twin_20261107/render_clean_03/summary.json"
+    }
+  },
+  "limitations": [
+    "One environment per node; parallel playground not implemented.",
+    "Reward=0, success detector unavailable; time limit truncates.",
+    "No physical robot movement commanded during workspace capture/reconstruction.",
+    "Table edges outside camera coverage remain estimated; no photogrammetric room model.",
+    "Real-to-sim-to-real transfer and learned policy success not evaluated."
+  ],
+  "source_sha256": {
+    "configs/piper_playground.json": "f0c01bc3a10457af2cf09396ee0962356a656c4089f0077ca74bbb80058d5d9f",
+    "configs/rl_nodes/playground_simulation.json": "18b863cf2c01c0ebdde72a8bbb60b7e80cce99269f72a06d3da8a685b3d56ff1",
+    "src/pressb/tasks/playground/scene.py": "d00d680fb2aeeef6c86a8b11a547243b953f93f0ae07ba30078eeb82019477d0",
+    "src/pressb/tasks/playground/backend.py": "1402c75d7b45734a1e18f4cfe63da419d5f181058c0a04dfbce00e9e323bf9b7",
+    "src/pressb/robots/piper/isaac.py": "b19948700f17bb3be4d60044ebe841c42d282c0ac1711929d392333c8adb8ec3",
+    "src/pressb/sensors/camera.py": "f3731428f8167a78898e3d4d1ce3b80bbb9e9d82a29527383dc7e5c2b74426a6",
+    "scripts/run_playground.py": "ad67e6ba948140047280501e065c7c4096629112fb91a5565ec8cefa7e1b328f",
+    "scripts/capture_real_workspace.py": "cf2680d1ac56f643d91cf6dc278dbf8c1f4c33b7daab488cf2242e6a70c1d088",
+    "scripts/fit_playground_camera.py": "6a997ed18b91daa504e23b9bd2952864489020e5ab0d0d0c21c987bc74e2033b",
+    "scripts/smoke_playground.py": "5eaa8795d484d095fef29e61d196e882d55a321fef8974287b46d29f8ac14536",
+    "tests/test_playground.py": "51e36852d646ba82fd7e98174fbff6f9106bb5c0255a59ecfbd7ce737e658f5d",
+    "tests/test_camera_intrinsics_usd.py": "4973bffe620a9cc23482e136c86974b83c935faf05e92f6234197209a60bd16b"
+  },
+  "subsequent_revision": {
+    "record": "docs/results/playground_calibration_20261107.json",
+    "original_config_preserved": "configs/calibration/playground_20261107_before_multiview.json",
+    "note": "Values and hashes above describe initial reconstruction. Default camera extrinsics and reference-object positions were subsequently refined; see revision record. Contact accuracy remains unresolved."
+  }
+}

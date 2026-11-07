@@ -1,0 +1,490 @@
+{
+  "date": "2026-11-07",
+  "status": "adopted_visual_registration_with_remaining_contact_error",
+  "task": "playground",
+  "scope": "Offline refinement of retry08 real grasp recording; no hardware operations",
+  "default_scene": "configs/piper_playground.json",
+  "previous_default": "configs/calibration/playground_20261107_before_retry08_video.json",
+  "default_empty": true,
+  "default_initial_pose_preserved": true,
+  "selected_candidate": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/fit_04/candidate_config.json",
+  "changes": {
+    "GreenCube": {
+      "center_before_m": [
+        0.3295564649523107,
+        0.08487684729787992
+      ],
+      "center_after_m": [
+        0.3140078421313393,
+        0.08634996212296461
+      ],
+      "center_delta_mm": [
+        -15.548622820971413,
+        1.4731148250846926
+      ],
+      "yaw_before_deg": 25.752628309134813,
+      "yaw_after_deg": 22.38732838942143
+    },
+    "BlueCube": {
+      "center_before_m": [
+        0.33318274109388035,
+        0.17578559990108897
+      ],
+      "center_after_m": [
+        0.32323228577668783,
+        0.1779876734267889
+      ],
+      "center_delta_mm": [
+        -9.95045531719252,
+        2.2020735256999266
+      ],
+      "yaw_before_deg": -4.41755270672082,
+      "yaw_after_deg": -6.473082551184806
+    }
+  },
+  "camera_delta_from_retry08": {
+    "global": {
+      "rotation_deg": [
+        0.22151211633260323,
+        0.30432023922478324,
+        -4.006432271748167
+      ],
+      "translation_mm": [
+        -16.02913258837861,
+        -28.47965608359862,
+        0.5129815990060038
+      ]
+    },
+    "wrist": {
+      "rotation_deg": [
+        1.7661747720744359,
+        0.5838677786547921,
+        2.973561170520185
+      ],
+      "translation_mm": [
+        10.911915061295726,
+        -3.1325533244347787,
+        21.015227296860388
+      ]
+    }
+  },
+  "robot_base_height_above_table_m": 0.014,
+  "mount_height_source": "User estimate, already present in retry08 physics scene; now adopted in the default preset. Not fitted or added twice.",
+  "fixed": [
+    "Real RGB intrinsics, including wrist focal lengths",
+    "URDF, joint zeros and finger collision geometry",
+    "29 mm green cube; 30 mm blue cube prior",
+    "Recorded measured q and complete 2146 action targets",
+    "Drive gains, friction, masses, FPS and physics dt",
+    "Other task presets"
+  ],
+  "metrics_definition": "Coordinate RMSE over scalar image u/v residuals, not Euclidean corner RMSE and not millimetres of physical clearance.",
+  "validation_status": "Optimizer-excluded same-session validation; images were inspected during development. No blind test or absolute robot calibration claim.",
+  "precontact_global_finger_validation": {
+    "before": {
+      "n_coordinates": 8,
+      "coordinate_rmse_px": 13.380303475690134
+    },
+    "after": {
+      "n_coordinates": 8,
+      "coordinate_rmse_px": 4.096627470742508
+    }
+  },
+  "wrist_cube_validation_20s": {
+    "before": {
+      "n_coordinates": 16,
+      "coordinate_rmse_px": 30.962614494347896
+    },
+    "after": {
+      "n_coordinates": 16,
+      "coordinate_rmse_px": 8.71209914775753
+    }
+  },
+  "repeated_global_cube_consistency": {
+    "before": {
+      "n_coordinates": 48,
+      "coordinate_rmse_px": 0.9769485300366054
+    },
+    "after": {
+      "n_coordinates": 48,
+      "coordinate_rmse_px": 1.1534886896707512
+    }
+  },
+  "selected_preclosure_edge_to_finger_error_px": {
+    "before": 63,
+    "after": 21,
+    "manual_pixel_uncertainty": 3,
+    "pose_s": 41,
+    "meaning": "Selected rear edge minus visible fingertip v, not 3D clearance"
+  },
+  "depth_validation": {
+    "before": {
+      "home": {
+        "global": {
+          "normal_base": [
+            -0.006617223207930796,
+            0.0033634412625813295,
+            0.9999724494304277
+          ],
+          "normal_tilt_deg": 0.4253083588053896,
+          "table_z_at_cube_mm": -15.69004751008441,
+          "offset_from_table_mm": -1.6900475100844106
+        },
+        "wrist": {
+          "normal_base": [
+            -0.00026820266755674143,
+            0.0029776362799106087,
+            0.99999553086477
+          ],
+          "normal_tilt_deg": 0.17129691439211,
+          "table_z_at_cube_mm": 2.5602717485165276,
+          "offset_from_table_mm": 16.560271748516527
+        }
+      },
+      "retreat": {
+        "global": {
+          "normal_base": [
+            -0.006681881980577522,
+            0.0031727654311750667,
+            0.9999726426321452
+          ],
+          "normal_tilt_deg": 0.42381446508005727,
+          "table_z_at_cube_mm": -15.365524616726505,
+          "offset_from_table_mm": -1.365524616726505
+        },
+        "wrist": {
+          "normal_base": [
+            -0.03233537050324325,
+            -0.028480585417310713,
+            0.9990712087077198
+          ],
+          "normal_tilt_deg": 2.4696210463703867,
+          "table_z_at_cube_mm": 9.98724785904202,
+          "offset_from_table_mm": 23.98724785904202
+        }
+      }
+    },
+    "after": {
+      "home": {
+        "global": {
+          "normal_base": [
+            -0.0011941597961667794,
+            -0.00023099028860963978,
+            0.9999992603126602
+          ],
+          "normal_tilt_deg": 0.06968860158668362,
+          "table_z_at_cube_mm": -12.831835675304035,
+          "offset_from_table_mm": 1.1681643246959657
+        },
+        "wrist": {
+          "normal_base": [
+            0.00645290567890038,
+            -0.022726631363943598,
+            0.9997208911667026
+          ],
+          "normal_tilt_deg": 1.3537376970353698,
+          "table_z_at_cube_mm": -18.170575518430454,
+          "offset_from_table_mm": -4.170575518430453
+        }
+      },
+      "retreat": {
+        "global": {
+          "normal_base": [
+            -0.0012719827347559504,
+            -0.00041668259527083114,
+            0.9999991042173673
+          ],
+          "normal_tilt_deg": 0.07669004308272377,
+          "table_z_at_cube_mm": -12.50736525755109,
+          "offset_from_table_mm": 1.492634742448911
+        },
+        "wrist": {
+          "normal_base": [
+            -0.036092389847972056,
+            0.001097730294761454,
+            0.9993478545447831
+          ],
+          "normal_tilt_deg": 2.069347711139524,
+          "table_z_at_cube_mm": -10.129734618378556,
+          "offset_from_table_mm": 3.870265381621444
+        }
+      }
+    }
+  },
+  "sensitivity": {
+    "fit_04_prior_half": {
+      "success": true,
+      "validation_metrics": {
+        "global_cube": {
+          "n_coordinates": 48,
+          "coordinate_rmse_px": 1.2196087731094227
+        },
+        "global_finger": {
+          "n_coordinates": 20,
+          "coordinate_rmse_px": 4.634483478358218
+        },
+        "wrist_cube": {
+          "n_coordinates": 16,
+          "coordinate_rmse_px": 8.942069954823243
+        },
+        "wrist_finger": {
+          "n_coordinates": 5,
+          "coordinate_rmse_px": 3.386249330202646
+        }
+      },
+      "green_center_delta_to_fit04_mm": [
+        0.501383756553786,
+        0.1720331490854543
+      ],
+      "green_center_distance_to_fit04_mm": 0.5300764810102824,
+      "condition_number": 90.42672654577866
+    },
+    "fit_04_prior_double": {
+      "success": true,
+      "validation_metrics": {
+        "global_cube": {
+          "n_coordinates": 48,
+          "coordinate_rmse_px": 1.1480322778730974
+        },
+        "global_finger": {
+          "n_coordinates": 20,
+          "coordinate_rmse_px": 4.120175096669649
+        },
+        "wrist_cube": {
+          "n_coordinates": 16,
+          "coordinate_rmse_px": 8.616571234594401
+        },
+        "wrist_finger": {
+          "n_coordinates": 5,
+          "coordinate_rmse_px": 3.874776433478146
+        }
+      },
+      "green_center_delta_to_fit04_mm": [
+        -0.1937191767463764,
+        -0.08439872410201388
+      ],
+      "green_center_distance_to_fit04_mm": 0.2113060909423618,
+      "condition_number": 89.65079179138593
+    },
+    "fit_04_vonly": {
+      "success": true,
+      "validation_metrics": {
+        "global_cube": {
+          "n_coordinates": 48,
+          "coordinate_rmse_px": 1.020581515704051
+        },
+        "global_finger": {
+          "n_coordinates": 10,
+          "coordinate_rmse_px": 2.7386139347773493
+        },
+        "wrist_cube": {
+          "n_coordinates": 16,
+          "coordinate_rmse_px": 8.6460757756325
+        },
+        "wrist_finger": {
+          "n_coordinates": 5,
+          "coordinate_rmse_px": 1.984519983241145
+        }
+      },
+      "green_center_delta_to_fit04_mm": [
+        -4.674760918990939,
+        13.140007515661814
+      ],
+      "green_center_distance_to_fit04_mm": 13.946798455608869,
+      "condition_number": 174.7253559050888
+    }
+  },
+  "physics": {
+    "success": true,
+    "simulation_only": true,
+    "hardware_access": false,
+    "attachments_or_object_teleportation": false,
+    "frames": 2146,
+    "fps": 30,
+    "duration_s": 71.53333333333333,
+    "min_held_lift_m": 0.050019025802612305,
+    "max_lift_m": 0.05001938343048096,
+    "held_bilateral_contact_fraction": 1.0,
+    "return_distance_m": 0.007195533670885994,
+    "unintended_external_robot_contacts": [],
+    "plan_sha256": "6b2758813eafa4eaec647ae07e55217dde292a87f7853c86f7f2d6d311148668",
+    "first_robot_cube_contact": {
+      "frame": 1291,
+      "elapsed_s": 43.06666666666667,
+      "wall_unix_s": null,
+      "phase": "close",
+      "observed": [
+        0.2520761787891388,
+        1.8649414777755737,
+        -1.0498039722442627,
+        1.4214112525223754e-05,
+        0.7566263675689697,
+        -0.19740837812423706,
+        0.045379046350717545
+      ],
+      "object_base_m": [
+        0.31400802731513977,
+        0.08635007590055466,
+        0.0004999527931213166
+      ],
+      "contacts": [
+        {
+          "actors": [
+            "/World/Piper/gripper_base",
+            "/World/Piper/link5"
+          ],
+          "events": 4
+        },
+        {
+          "actors": [
+            "/World/Piper/link8",
+            "/World/Playground/Objects/GreenCube"
+          ],
+          "events": 3
+        }
+      ]
+    }
+  },
+  "closed_gripper_width_mm": {
+    "real": 35.6,
+    "before_sim_lift_hold": 29.0487,
+    "after_sim_lift_hold": 30.01782,
+    "remaining_difference": 5.58218
+  },
+  "limitations": [
+    "Existing global camera pose was inherited from earlier wrist registration; old global cube pixel agreement did not independently verify base-frame cube position.",
+    "The jointly corrected green position shifts X toward robot by15.55mm; this is a model registration estimate, not independent physical metrology.",
+    "URDF, joint zeros, real K,29mm green cube,14mm estimated mounting height, and complete commanded trajectory remain unchanged.",
+    "Global home depth is fitted. Global retreat repeats a fixed sensor view; wrist home/retreat depth was not fitted.",
+    "Two global distal tip transverse u constraints are approximate silhouettes. Removing u produces about13mm greenY ambiguity even though prior0.5/2 sensitivity is submillimetre.",
+    "One motion path and approximate finger silhouette do not uniquely diagnose hand-eye error vs real kinematic error/finger-pad geometry.",
+    "Residual validation wrist error remains8.71px; near-field alignment is improved but not exact.",
+    "No moving-object fit, object attachment, contact manipulation or physics-success tuning was performed.",
+    "Finger pads, width mapping, physical joint zero and camera-to-tool registration are not independently resolved by this recording.",
+    "Cube appearance, table texture, lighting and camera housing are approximations.",
+    "Corrected coordinates apply to the pre-contact cubes in this recording only; they are not current live localization."
+  ],
+  "verification": {
+    "cpu_usd_pytest": "63 passed, 0 skipped",
+    "cpu_usd_log": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/regression_full.log",
+    "isaac_default_backend_smoke": {
+      "status": "passed",
+      "closed": true,
+      "native_shutdown_verified": true,
+      "checks": {
+        "measured_j1_change_rad": 0.06000024080276489,
+        "gripper_width_m": 0.025000110268592834,
+        "retry_idempotent": true,
+        "timed_truncation": true,
+        "reset_after_terminal": true,
+        "measured_state_changed": true,
+        "images_valid": true,
+        "fk_camera_agrees": true
+      }
+    },
+    "isaac_smoke_report": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/default_smoke_final/report.json",
+    "reproduced_max_parameter_abs_difference": 0.0,
+    "source_script_sha256": "cb04b7859c1477d72e110f410fcc222b3ce54725b586fc190995897dc40c8d8d",
+    "other_task_and_node_config_hashes_unchanged": true,
+    "hardware_actions": false,
+    "video_sources_timing_verified": true
+  },
+  "provenance": {
+    "default_config_sha256": "313c54a2d7f7f4f7ef72a8a0ea6542675764379504bb08a7a466b1b5e3fc6e7c",
+    "raw_recording_unchanged": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/video/original_evidence_unchanged.json",
+    "physics": {
+      "input_config_sha256": "24850198ed535b7f8433552cf1e94067c3dc0d956782f822969a954750eaa2fb",
+      "effective_config_sha256": "4a34a2b7042f345107cfb8c844d376260800b70b7ccd76738a4872540f52f0cb",
+      "plan_sha256": "6b2758813eafa4eaec647ae07e55217dde292a87f7853c86f7f2d6d311148668",
+      "simulation_summary_sha256": "af391f12873d435a7433e50d032849ea0c0b6e0112f15b91b8f91d03d457ad58",
+      "runner_script_sha256": "05f62f0970ce722c4faa8e612282c03d3c433539ff7f3aecd8aed087bf8d80ac",
+      "input_config": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/fit_04/candidate_config.json",
+      "command": "scripts/run_playground_grasp.py --config outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/fit_04/candidate_config.json --plan-input outputs/playground_grasp_transfer_20261107/retry_08/sim_trial/plan.json --output outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/fit_04_physics --gpu 1 --video",
+      "hardware_access": false
+    },
+    "fit": {
+      "config_sha256": "9b856bf6fb133abbda86ebc36769a436e89318aa32586fddaca444f545017b22",
+      "annotations_sha256": "eb379e4945e75167d498e18b9cfa22af76b5d3e05bfe08146aca1888e7438500",
+      "input_asset_sha256": {
+        "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf": "01471dc1766d7ecaea268a4bdc15615e6ed95b969a42b32b9302a2c77095c439",
+        "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link7.STL": "475a7d8db056524d7659fadf5a2c307d62791047b6214d733dfc7846ed1c613d",
+        "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/meshes/link8.STL": "3f88d534a85e28a33ef7d2061adacbd1d25214aa9325f9e464aad0f9e4b74606"
+      },
+      "depth_input_sha256": "9739606de34cd2cc2128ebeeac6278cce7c783b1c6182871373618a3dcd5d6e9"
+    }
+  },
+  "reproduction_manifest": "configs/calibration/playground_20261107_retry08_video_manifest_v04.json",
+  "artifacts": {
+    "full_video": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/video/real_original_calibrated_1x.mp4",
+    "detail_video": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/video/descent_close_lift_detail_1x.mp4",
+    "video_timing": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/video/real_original_calibrated_1x.timing.json",
+    "fixed_measured_pose_comparison": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/visual_qa_fit04/real_original_fit04_contact_sheet.png",
+    "physical_comparison": "outputs/playground_grasp_transfer_20261107/retry_08/calibration_optimization/physical_comparison_fit04.json"
+  },
+  "video_qa": {
+    "media": [
+      {
+        "file": "real_original_calibrated_1x.mp4",
+        "sha256": "5ef3c7427f054f5fdc2aba506292eadf1a4dba30f55272aac11f0e6dfd4761f0",
+        "probe": {
+          "programs": [],
+          "streams": [
+            {
+              "width": 1920,
+              "height": 1112,
+              "avg_frame_rate": "30/1",
+              "nb_frames": "2382"
+            }
+          ],
+          "format": {
+            "duration": "79.400000",
+            "size": "23520586"
+          }
+        }
+      },
+      {
+        "file": "descent_close_lift_detail_1x.mp4",
+        "sha256": "4d56535c04c0f1a82e25f06647ad4529e9a9934ad1423bcf9e3da0f24e8d7399",
+        "probe": {
+          "programs": [],
+          "streams": [
+            {
+              "width": 1920,
+              "height": 1112,
+              "avg_frame_rate": "30/1",
+              "nb_frames": "750"
+            }
+          ],
+          "format": {
+            "duration": "25.000000",
+            "size": "7205460"
+          }
+        }
+      }
+    ],
+    "script_sha256": "81cccf32b6591a4e6ba4d51516f12cf93586572fc2093ba0ecd0281b7514d501",
+    "trajectory_mode": {
+      "mode": "identical_commands",
+      "exact_action_values": true,
+      "frames": 2146,
+      "phases_fps_initial_state_units_equal": true
+    },
+    "source_plan_all_equal": true,
+    "layout_qa": "title_layout_qa.json",
+    "original_evidence_unchanged": "original_evidence_unchanged.json",
+    "source_validation": "source_validation.json",
+    "column_shown_durations_s": [
+      77.3778727054596,
+      71.53333333333333,
+      71.53333333333333
+    ],
+    "real_motion_duration_s": 72.3778727054596,
+    "cameras_hardware_synchronized": false,
+    "keyframe_review": [
+      "close",
+      "lift_hold",
+      "grasp_open (root)"
+    ],
+    "no_hardware": true
+  }
+}

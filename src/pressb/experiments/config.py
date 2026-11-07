@@ -1,4 +1,8 @@
-"""Resolve task/model/runner configuration without importing their dependencies."""
+"""Resolve task/model/runner configuration without importing their dependencies.
+
+Both simulated and physical task backends use ``nodes.simulation`` and the
+trainer's ``endpoints.simulation`` key to share one environment wire contract.
+"""
 from __future__ import annotations
 
 from copy import deepcopy

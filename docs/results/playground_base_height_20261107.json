@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "status": "offline_mount_height_candidate_validated_in_simulation_only",
+  "hardware_motion_this_revision": false,
+  "candidate_mount_height_m": 0.014,
+  "height_source": "User approximate measurement from tabletop to robot mounting underside, excluding robot base housing.",
+  "measured_green_cube_edge_m": 0.029,
+  "diagnosis": {
+    "previous_model": "Robot base_link origin and tabletop were at the same height. Mount was visual-only with top approximately 1mm above table; URDF/USD did not add an implicit pedestal.",
+    "coordinate_relation": "table_z_in_robot_base = -robot_base_height_above_table_m; for identical joints TCP and fingers move upward by this height relative to a fixed tabletop.",
+    "depth_corroboration": "Visible installation plate RGBD plane-relative ROI medians 11.53mm and12.54mm; supports nonzero mounting but is not an independent precise base-origin measurement.",
+    "causal_scope": "Omitting a positive mounting height is sufficient to cause a shallow or missed grasp in the current model. It does not prove14mm is exact or explains all physical failure."
+  },
+  "configuration": {
+    "parameter": "robot_base_height_above_table_m",
+    "default_m": 0.0,
+    "clean_candidate": "configs/calibration/playground_20261107_mount14mm_candidate.json",
+    "default_playground_changed": false,
+    "world_fixed": [
+      "table",
+      "dynamic objects",
+      "global camera",
+      "overview camera",
+      "camera tripod",
+      "area lights",
+      "static floor"
+    ],
+    "wrist_intrinsics_and_link6_transform_unchanged": true,
+    "frame_contract": "Objects rest on the tabletop; static *_base_m properties remain robot-base relative. Candidate compensates their Z coordinates to preserve world poses.",
+    "mount_visual_only": true
+  },
+  "simulation": {
+    "simulation_only": true,
+    "hardware_access": false,
+    "candidate_base_height_m": 0.014,
+    "height_source": "User approximate estimate, not independently measured base-link origin",
+    "controls": "Same29mm cube, XY/yaw, wrist K and link6 extrinsic, physical global camera position, staticprops, lights, friction and dynamics; only base mount modeled and joint trajectory either retained or re-solved against table-relative targets.",
+    "original_height_table_m": 0.034,
+    "corrected_height_table_m": 0.02,
+    "corrected_height_base_m": 0.006,
+    "original_plan_byte_identical_to_prior_sim": true,
+    "experiments": {
+      "original_joint_plan_trial": {
+        "success": false,
+        "frames": 1177,
+        "duration_s": 39.233333333333334,
+        "min_held_lift_m": 0.0,
+        "max_lift_m": 5.960464477539063e-08,
+        "held_bilateral_contact_fraction": 0.0,
+        "return_distance_m": 0.0,
+        "cumulative_finger_contacts": {
+          "link7": 0,
+          "link8": 0
+        },
+        "unintended_external_robot_contacts": [],
+        "video_paths": {
+          "up": "/home/pengguanqi/Workspace/Research/PressB/outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/original_joint_plan_trial/up.mp4",
+          "wrist": "/home/pengguanqi/Workspace/Research/PressB/outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/original_joint_plan_trial/wrist.mp4",
+          "overview": "/home/pengguanqi/Workspace/Research/PressB/outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/original_joint_plan_trial/overview.mp4"
+        },
+        "summary_reconstructed": true,
+        "joint5_limits": {
+          "urdf_joint5_upper_deg": 69.90085100596043,
+          "max_commanded_joint5_deg": 66.33597249437314,
+          "max_observed_joint5_deg": 66.33666869099642
+        },
+        "minimum_observed_finger_table_clearance_m": {
+          "link7": 0.03179336582703121,
+          "link8": 0.03300012102158566
+        },
+        "plan_sha256": "82f0f5c61d4ab9cbf9e582c24a23cf7de06261df392fbfcad3f18e488eee59ab"
+      },
+      "corrected_plan_trial": {
+        "success": true,
+        "frames": 1180,
+        "duration_s": 39.333333333333336,
+        "min_held_lift_m": 0.0499609112739563,
+        "max_lift_m": 0.04996132850646973,
+        "held_bilateral_contact_fraction": 1.0,
+        "return_distance_m": 0.00011720016302304553,
+        "cumulative_finger_contacts": {
+          "link7": 1082,
+          "link8": 1098
+        },
+        "unintended_external_robot_contacts": [],
+        "video_paths": {
+          "up": "/mnt/data/pengguanqi/Data/PressB/outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/corrected_plan_trial/up.mp4",
+          "wrist": "/mnt/data/pengguanqi/Data/PressB/outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/corrected_plan_trial/wrist.mp4",
+          "overview": "/mnt/data/pengguanqi/Data/PressB/outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/corrected_plan_trial/overview.mp4"
+        },
+        "summary_reconstructed": false,
+        "joint5_limits": {
+          "urdf_joint5_upper_deg": 69.90085100596043,
+          "max_commanded_joint5_deg": 63.57120839212567,
+          "max_observed_joint5_deg": 63.571958379137
+        },
+        "minimum_observed_finger_table_clearance_m": {
+          "link7": 0.017799125537883875,
+          "link8": 0.01902384394001772
+        },
+        "plan_sha256": "c830ceead12f383baacf8197c848fccc06e707dd69bf40a477fc9b1f4b77c224"
+      }
+    },
+    "interpretation": "An omitted positive mount height is sufficient to produce a missed grasp in this model. Correct frame conversion restores a stable contact-only simulated grasp. This supports the mechanism, not precise14mm calibration or real-world success.",
+    "remaining_uncertainty": "Current hand-eye/FK residual and real gripper contact geometry remain; do not use this simulation as a hardware clearance certificate.",
+    "gpu1_released": true
+  },
+  "projection_sensitivity": {
+    "method": "Change only object tabletop height relative robot base; preserve measured q, K, and current link6-camera transform. Global camera/world landmarks remain fixed. Centroid-only sensitivity; not refit or independent calibration.",
+    "rows": [
+      {
+        "base_height_m": 0,
+        "predicted_centroid_px": [
+          206.55787208337586,
+          184.9463476711727
+        ],
+        "observed_centroid_px": [
+          184.75,
+          205.5
+        ],
+        "observed_minus_predicted_px": [
+          -21.807872083375855,
+          20.553652328827297
+        ],
+        "centroid_error_px": 29.96724726862966
+      },
+      {
+        "base_height_m": 0.005,
+        "predicted_centroid_px": [
+          207.80186778777446,
+          190.07829003115117
+        ],
+        "observed_centroid_px": [
+          184.75,
+          205.5
+        ],
+        "observed_minus_predicted_px": [
+          -23.051867787774455,
+          15.42170996884883
+        ],
+        "centroid_error_px": 27.73477504629026
+      },
+      {
+        "base_height_m": 0.01,
+        "predicted_centroid_px": [
+          209.02120733636025,
+          195.1086208681999
+        ],
+        "observed_centroid_px": [
+          184.75,
+          205.5
+        ],
+        "observed_minus_predicted_px": [
+          -24.27120733636025,
+          10.391379131800107
+        ],
+        "centroid_error_px": 26.402126161076467
+      },
+      {
+        "base_height_m": 0.014,
+        "predicted_centroid_px": [
+          209.97941548205682,
+          199.06173818302526
+        ],
+        "observed_centroid_px": [
+          184.75,
+          205.5
+        ],
+        "observed_minus_predicted_px": [
+          -25.229415482056822,
+          6.4382618169747445
+        ],
+        "centroid_error_px": 26.037945786681473
+      },
+      {
+        "base_height_m": 0.02,
+        "predicted_centroid_px": [
+          211.38879435045513,
+          204.87629006891905
+        ],
+        "observed_centroid_px": [
+          184.75,
+          205.5
+        ],
+        "observed_minus_predicted_px": [
+          -26.63879435045513,
+          0.6237099310809526
+        ],
+        "centroid_error_px": 26.646094995776945
+      }
+    ]
+  },
+  "interpretation": {
+    "wrist_vertical_residual_px_before": 20.553652328827297,
+    "wrist_vertical_residual_px_after_mount14mm": 6.4382618169747445,
+    "wrist_horizontal_residual_abs_px_after_mount14mm": 25.229415482056822,
+    "previous_2cm_error": "Cross-view reconstructed XY disagreement, not a directly measured wrist extrinsic translation.",
+    "remaining": "Current hand-eye/FK residual and real finger geometry are unresolved. Height, hand-eye and FK are coupled in saved RGBD. Do not modify focal length or equate the candidate with absolute Cartesian calibration.",
+    "real_trial_status": "Previous physical attempt still failed; no new real execution has validated the corrected trajectory."
+  },
+  "verification": {
+    "playground_cpu_usd": {
+      "passed": 37,
+      "skipped": 0
+    },
+    "independent_scene_regression": {
+      "passed": 88,
+      "scope": "Playground, PAP appearance and table-buttons; overlapping tests, do not sum"
+    },
+    "root_portability_camera_object_regression": {
+      "passed": 51,
+      "skipped": 0,
+      "command": "PYTHONPATH=.cache/usd-inspect:src .conda/envs/pressb/bin/python -m pytest -q tests/test_scene_portability.py tests/test_camera_intrinsics_usd.py tests/test_pick_place_objects.py"
+    },
+    "grasp_retime_and_serialization": {
+      "passed": 11,
+      "skipped": 0
+    },
+    "independent_frame_audit": "outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/independent_frame_audit.json",
+    "portable_empty_candidate_audit": "outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/clean_candidate_audit.json",
+    "summary_serialization_fix": "Failed NumPy outcome is explicitly converted to Python bool. Original unsuccessful run summary was reconstructed from all1177 physics frames; original raw logs and error preserved. Corrected run wrote native summary normally."
+  },
+  "evidence": {
+    "comparison": "outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/comparison.json",
+    "plane_audit": "outputs/playground_grasp_transfer_20261107/retry_05/table_plane_height_audit.json",
+    "mount_geometry_audit": "outputs/playground_grasp_transfer_20261107/retry_05/base_height_audit.json",
+    "prior_real_attempt": "docs/results/playground_complete_grasp_20261107.json"
+  },
+  "source_sha256": {
+    "src/pressb/runtime/workbench.py": "a2bf3ca40b0f5ea20f5bda8ccb74cfaad20ccb50f77a5ebcde3c6fb6a93d5ffd",
+    "src/pressb/tasks/playground/scene.py": "83e39c38749d638cd239ea8360d6bd6e556ea6fbde9b40ab34385b93cb6bfd0f",
+    "scripts/run_playground_grasp.py": "05f62f0970ce722c4faa8e612282c03d3c433539ff7f3aecd8aed087bf8d80ac",
+    "tests/test_playground.py": "9969a3fc9eef776016a7ddb7a40f1d2ed5873bdd7ff127a706f59e7cae2c90b2",
+    "tests/test_playground_grasp_retime.py": "9c5b0d78fb57271a9436bc65d268cb6d7f2e951fd985ea65683396f3474d35d7",
+    "configs/calibration/playground_20261107_mount14mm_candidate.json": "be6dcfceb1a5caf1e5d30930f1644a23ed4a0dd14e6d220765182cd8722e3311"
+  },
+  "video": {
+    "path": "outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/video/height_correction_sim_1x.mp4",
+    "sha256": "c250b5c857be2758f6386eabaa1c74c028167fec5864316daed1bbf77e6b4e02",
+    "timing": "outputs/playground_grasp_transfer_20261107/retry_05/base_height_14mm/video/height_correction_sim_1x.timing.json",
+    "both_sides_simulation": true
+  }
+}

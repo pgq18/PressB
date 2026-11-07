@@ -61,3 +61,7 @@ class JointActionPostprocessor:
             reset_rule="once per episode; retain state across policy chunks",
             gripper_filtered=False, gripper_rule="sent[t][6] = raw[t][6]",
             initialized=self._previous is not None, applied_actions=self._applied)
+
+    def accept_applied(self, command):
+        """Use a downstream hardware-limited setpoint as the next EMA history."""
+        self._previous = _validated_command(command).copy()

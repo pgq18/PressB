@@ -1,0 +1,126 @@
+{
+  "date": "2026-11-07",
+  "base_commit": "44b0de4850d588044c1a3f6092837e547b0a9a29",
+  "scope": "Physical robot environment adapter and optional trainer-side human outcome override",
+  "test_results": {
+    "main_passed": 2441,
+    "main_dependency_skips": 16,
+    "usd_collision_passed": 71,
+    "lerobot_passed": 1,
+    "vlajepa_passed": 4,
+    "duplicate_passed_cases": 1,
+    "unique_passed": 2516,
+    "unresolved_dependency_skips": 0
+  },
+  "integration": {
+    "base_dsrl_action_residual": "real HTTP services and GenericTrainer with explicit fake hardware/inference",
+    "human_override": "real mailbox and trainer tests; early/end labels, identity ack, replay, checkpoint and cancellation",
+    "wheel": "isolated installed package imports/constructs backend; no external repo or hardware SDK imported",
+    "actual_hardware": "two D435i RGB cameras; stream close/reopen verified; no CAN arm attached",
+    "real_node": "actual ssh piper service health/status, disabled reset rejection, missing CAN probe, SIGTERM cleanup/port released"
+  },
+  "hardware": {
+    "camera_serials": [
+      "243322073170",
+      "261622078356"
+    ],
+    "camera_mapping": "unconfirmed",
+    "can_attached": false,
+    "physical_arm_motion_tested": false,
+    "physical_rl_run": false
+  },
+  "limits": [
+    "PiPER joint6+full-gripper-width ABI implemented; other output representations require explicit adapters",
+    "Software stop does not guarantee a hard real-time stop during SDK/kernel hangs",
+    "No policy success rate or physical robot RL claim; formal PAP residual training remains paused"
+  ],
+  "source_sha256": {
+    "configs/experiments/pap_real_walloss_dsrl.json": "d0bbb17aad4b35c2e26108117e49ede8f7fd5f37b91c869ffc9909334c932d2c",
+    "configs/experiments/pap_real_walloss_eval.json": "82ba659a1540274205730bfb233350f383b14ebc153b8cadaeda796a42c430db",
+    "scripts/real_robot_probe.py": "773ac3a2ad7b18fe4e13686dc36f07a16f8723ac551e78ed93a0a91e0f6226c3",
+    "src/pressb/control/joint_actions.py": "3f2cdee0fce457fb982280705376fd29382873c7d830e03801cbc73258f3aa03",
+    "src/pressb/experiments/cli.py": "ebeefa9ba04a574554d92753563b22e24fe8771862f17c0c968b763710f4f931",
+    "src/pressb/experiments/config.py": "7de5b7ec20f2c9e4fae30ad24e8a30a1a5aa983fd27d40ceed9e36e83c6812bc",
+    "src/pressb/registry.py": "d5774302ee1af7d3c971f42a6118f6958bb17d1bb51abfef5f4ca3d406470fb6",
+    "src/pressb/robots/base.py": "1e3689eb9aa254537660711ab82e7e9b7120a5a30966b30ec046c6b8ec44c08a",
+    "src/pressb/robots/piper/real.py": "9c548395f239f257794457f1b3641dd57356372c837c158503ef116ab3330c77",
+    "src/pressb/runtime/human_feedback.py": "575f16b2ca07ca4e9a383c7f11c74747485b27477532f8caad84287bd2a47a12",
+    "src/pressb/runtime/real_robot.py": "d6f3aba899d2f759e3e2773ff7c285e61dfc86fbab9c702fa585c776260eb24d",
+    "src/pressb/runtime/real_robot_operator.py": "c36caea9d58ae414d489bd18e095ffdb860a843ed45e0a348d0794e8dfab5b71",
+    "src/pressb/runtime/server.py": "ace316b8e992d9713e40664116246ccdfa99ae9dbf3936c80390c9ff157e6e50",
+    "src/pressb/runtime/simulation.py": "1bfc88c8a3692fdf8cb10206ef0fc5e098edd54895ea082d4c26ab5dc52f95a0",
+    "src/pressb/runtime/trainer.py": "325ea43dc7e82a159f797266d26cad837a9264415bba1e2e82b87ace5a6dcdb5",
+    "src/pressb/sensors/realsense.py": "7e4b3771167c43f3a33995acba45d808bce96231680c73841030abd562bc855a",
+    "src/pressb/tasks/elevator/native.py": "93be506e49c2cd93434a2897910ac7e4469fe04a53af0c9ab900ce6267902d65",
+    "src/pressb/tasks/pap/backend.py": "237381b9315f29e7d587181fe8c490c23fd99c604987617761442d5e52613b00",
+    "src/pressb/tasks/pap/vector.py": "d6e155402ebdba4e2b4d13aec7a93029bd778cdd355a799f62996aab0e1f1283",
+    "src/pressb/tasks/table_buttons/backend.py": "11d33209d446bcd601c3142cb443c3192f0977025a3e0dd28c84493a8f702955",
+    "tests/test_external_episode_end_backends.py": "a5ce03f7e439922d15d39aa576f06f4500033f0c373470c635f56d2d0a5f5fe7",
+    "tests/test_human_feedback.py": "7416942fa4fc9a75e1ef595430dd148cc6e7457217c833f7eee871125309089c",
+    "tests/test_piper_real.py": "d26e282d1fb253a16cc63311f43ec96428962afb3f261c9122c1e2c0c592d920",
+    "tests/test_real_robot_backend.py": "bfa3d5dfa9f4eed2f44df7202af84f4b3f9f9ef5409b732546478c2ce8f278eb",
+    "tests/test_real_robot_operator.py": "c5d9928a84adb6abdda51562387ca76e00be7f46c57c36567573dfb979ab310d",
+    "tests/test_real_robot_wiring.py": "77170aa79a7a6a33bf31d38d235ce0cf9b917cc5fe488bece24d3799ad23210f",
+    "tests/test_realsense_source.py": "4f1e54bd235a8d3c88be7ab2172c5057ebad367cc386a90062674147cd0ebc18",
+    "tests/test_runtime_migration.py": "4643c2c7337567b9c2493ac4753f94d60fa85d2b8af92e14fb6c1fc19fe600f4",
+    "tests/test_trainer_human_feedback.py": "6e31e822f0a62ce1daa1ec2e1bc193cd8108ad002be70475bcdd4316982c09f3"
+  },
+  "artifacts": {
+    "final_regression.log": {
+      "path": "outputs/real_robot_20261107/final_regression.log",
+      "sha256": "7813caf4eb790ccb9968a94145f36c410ea1634e624a8cc9fa5abce941b95fea"
+    },
+    "usd_collision.log": {
+      "path": "outputs/real_robot_20261107/usd_collision.log",
+      "sha256": "9b9f4375491340c6a8c760a4624eff50eccfd5c11136fb44388e2d666d7f5b3b"
+    },
+    "usd_collision.xml": {
+      "path": "outputs/real_robot_20261107/usd_collision.xml",
+      "sha256": "9b635b69b374d411223a979aacc7c5d4c6faad8fbced7c54877d662ee3002d9b"
+    },
+    "lerobot.log": {
+      "path": "outputs/real_robot_20261107/lerobot.log",
+      "sha256": "7b62ec3b87d77228861c650dc467d3a176ae5b9e8b21e24e11deec15d8e37174"
+    },
+    "lerobot.xml": {
+      "path": "outputs/real_robot_20261107/lerobot.xml",
+      "sha256": "a2d902062f96d02a29ec1b2915160a9bd71467438ccb310406332197e2e2f6ef"
+    },
+    "vla.log": {
+      "path": "outputs/real_robot_20261107/vla.log",
+      "sha256": "0dee60331ce939837ccd0a75b0534f7ce604936220ba65ca61c99895fcf2ab1f"
+    },
+    "vla.xml": {
+      "path": "outputs/real_robot_20261107/vla.xml",
+      "sha256": "b2df2a6415a4135a399690fd37a3ca4a6b272ecad97a8309dae990f501b57052"
+    },
+    "supplemental_runs.json": {
+      "path": "outputs/real_robot_20261107/supplemental_runs.json",
+      "sha256": "391de3c5ea15ada6c1d83085d01764f54515815f36b4ed673073d2a0d42a58af"
+    },
+    "camera_verification.json": {
+      "path": "outputs/real_robot_20261107/camera_verification.json",
+      "sha256": "663bc85f47aa8452eadbef74dcfcc2d8c854255489418ede9e804d4a0fe94513"
+    },
+    "cameras/probe.json": {
+      "path": "outputs/real_robot_20261107/cameras/probe.json",
+      "sha256": "95222c4099a5d7e2e3dc97b05da39b58996fc467238ed74416191916d2a9b91a"
+    },
+    "node_probe/verification.json": {
+      "path": "outputs/real_robot_20261107/node_probe/verification.json",
+      "sha256": "3e346dc36657fae22c739638ed1776c8c804801768ef91b9829c636c2d17dcb1"
+    },
+    "node_probe/probe_node.py": {
+      "path": "outputs/real_robot_20261107/node_probe/probe_node.py",
+      "sha256": "130ea2ef76ef56aa8dd4eb001875bbd7b70c8b61453dce9320a97bceeff3a698"
+    },
+    "installed_verification.json": {
+      "path": "outputs/real_robot_20261107/installed_verification.json",
+      "sha256": "cc7114e866fef8c6d80b39a3903231edf52709cdf6758a606490cd973bb11e3d"
+    },
+    "wheel/pressb-0.1.0-py3-none-any.whl": {
+      "path": "outputs/real_robot_20261107/wheel/pressb-0.1.0-py3-none-any.whl",
+      "sha256": "e04cc3372630a09498bcd3b4b739f7af9899982d8ce325cd0d0af5b0a31cde87"
+    }
+  }
+}

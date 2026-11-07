@@ -23,6 +23,10 @@ class SimulationService:
             raise ValueError("request_cache_size must be positive")
         self.backend = backend
         self.metadata = deepcopy(validate_metadata(backend.describe(), "simulation"))
+        if callable(getattr(backend, "end_episode", None)):
+            caps = self.metadata.setdefault("capabilities", [])
+            if "external_episode_end" not in caps:
+                caps.append("external_episode_end")
         self.request_cache_size = request_cache_size
         self.requests = OrderedDict()
         self.seen_requests = set()
@@ -33,13 +37,18 @@ class SimulationService:
     @property
     def handlers(self):
         return {"/health": self.health, "/status": self.status, "/reset": self.reset,
-                "/step": self.step, "/step_and_reset": self.step_and_reset, "/close_run": self.close_run}
+                "/step": self.step, "/step_and_reset": self.step_and_reset,
+                "/end_episode": self.end_episode, "/close_run": self.close_run}
 
     def health(self, payload=None):
         return deepcopy(self.metadata)
 
     def status(self, payload=None):
-        return {"run_id": self.run_id, "fault": self.fault, "environments": deepcopy(self.slots)}
+        result = {"run_id": self.run_id, "fault": self.fault, "environments": deepcopy(self.slots)}
+        status = getattr(self.backend, "status", None)
+        if callable(status):
+            result["backend"] = status()
+        return result
 
     def _request(self, payload, operation):
         if self.fault:
@@ -248,11 +257,49 @@ class SimulationService:
         # An identical request retry returns these exact IDs without more physics.
         return self._commit(key, digest, {"items": results, "reset_items": reset_results})
 
+    def end_episode(self, payload):
+        """Acknowledge external termination at an already returned step boundary.
+
+        This advances neither actions nor the step ID. Human labels belong to
+        the trainer, while the environment acknowledges stopping those episodes.
+        The original step response remains immutable in the request cache.
+        """
+        key, digest, previous = self._request(payload, "end_episode")
+        if previous is not None:
+            return previous
+        if "external_episode_end" not in self.metadata.get("capabilities", []):
+            raise ValueError("Backend does not support externally ending episodes")
+        items = payload.get("items")
+        if not isinstance(items, list) or not items or any(not isinstance(item, dict) for item in items):
+            raise ValueError("end_episode.items must be nonempty mappings")
+        ids = [item.get("env_id") for item in items]
+        self._ids(ids)
+        for item in items:
+            slot = self.slots.get(item["env_id"])
+            if (slot is None or slot["done"] or slot["episode_id"] != item.get("episode_id")
+                    or type(item.get("step_id")) is not int or slot["step_id"] != item["step_id"]):
+                raise ValueError("end_episode must identify the current active episode and returned step")
+        try:
+            self.backend.end_episode(ids)
+        except BaseException as error:
+            self.fault = f"end_episode: {type(error).__name__}: {error}"
+            raise
+        for env_id in ids:
+            self.slots[env_id]["done"] = True
+        return self._commit(key, digest, {"ended": deepcopy(items)})
+
     def close_run(self, payload):
         if self.fault:
             raise RuntimeError("Faulted simulation must be restarted")
         if self.run_id is not None and payload.get("run_id") != self.run_id:
             raise ValueError("Only the owning run can close its session")
+        close_run = getattr(self.backend, "close_run", None)
+        if callable(close_run):
+            try:
+                close_run()
+            except BaseException as error:
+                self.fault = f"close_run: {type(error).__name__}: {error}"
+                raise
         restart_required = (self.metadata.get("requires_restart_after_active_close", False)
                             and any(not slot["done"] for slot in self.slots.values()))
         self.run_id = None

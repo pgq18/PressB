@@ -7,6 +7,7 @@ import importlib
 import json
 import os
 from pathlib import Path
+import signal
 
 from .rpc import RPCServer, MAX_BODY_BYTES
 from .inference_transport import _pack, _unpack
@@ -85,7 +86,7 @@ async def serve_websocket(service, host, port, token=None, *, max_message_bytes=
 
 
 def run_service(kind, config_path):
-    backend_kinds = {"inference": "model", "simulation": "task"}
+    backend_kinds = {"inference": "model", "simulation": "task", "real_robot": "task"}
     if kind not in backend_kinds:
         raise ValueError("Unknown node kind")
     config = json.loads(Path(config_path).read_text())
@@ -102,22 +103,35 @@ def run_service(kind, config_path):
     if transport not in ("http", "ws"):
         raise ValueError("server.transport must be http or ws")
     backend_spec = config["backend"]
-    # Preserve the one-argument factory hook used by existing service hosts.
-    backend = (load_backend(backend_spec, kind=backend_kinds[kind])
-               if isinstance(backend_spec, dict) and "plugin" in backend_spec
-               else load_backend(backend_spec))
-    service = None
+    backend = service = None
+    previous_sigterm = None
+    physical_signal_handler = False
+    def stop_service(signum, frame):
+        raise KeyboardInterrupt
+    if kind == "real_robot":
+        # Service managers normally stop nodes with SIGTERM. Turn that into
+        # the same unwind path as Ctrl-C so physical devices are closed.
+        previous_sigterm = signal.signal(signal.SIGTERM, stop_service)
+        physical_signal_handler = True
     try:
+        # Preserve the one-argument factory hook used by existing service hosts.
+        backend = (load_backend(backend_spec, kind=backend_kinds[kind])
+                   if isinstance(backend_spec, dict) and "plugin" in backend_spec
+                   else load_backend(backend_spec))
         if kind == "inference":
             from .inference import InferenceService
             service = InferenceService(backend, **config.get("service", {}))
-        elif kind == "simulation":
+        else:
             from .simulation import SimulationService
             service = SimulationService(backend, **config.get("service", {}))
-        else:
-            raise ValueError("Unknown node kind")
+        metadata = service.handlers["/health"]({})
+        if kind == "real_robot" and metadata.get("environment_type") != "real_robot":
+            raise ValueError("real_robot requires a physical task backend with environment_type='real_robot'")
+        if metadata.get("environment_type") == "real_robot" and not physical_signal_handler:
+            previous_sigterm = signal.signal(signal.SIGTERM, stop_service)
+            physical_signal_handler = True
         print(json.dumps({"event": "ready", "endpoint": f"{transport}://{host}:{port}",
-                          "metadata": service.handlers["/health"]({})}, allow_nan=False), flush=True)
+                          "metadata": metadata}, allow_nan=False), flush=True)
         if transport == "ws":
             asyncio.run(serve_websocket(service, host, port, token,
                                         max_message_bytes=max_message_bytes))
@@ -127,6 +141,10 @@ def run_service(kind, config_path):
     except KeyboardInterrupt:
         pass
     finally:
-        close = getattr(service if service is not None else backend, "close", None)
-        if close:
-            close()
+        try:
+            close = getattr(service if service is not None else backend, "close", None)
+            if close:
+                close()
+        finally:
+            if physical_signal_handler:
+                signal.signal(signal.SIGTERM, previous_sigterm)

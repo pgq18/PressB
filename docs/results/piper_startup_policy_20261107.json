@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "request": "Disable the extra startup check after repeated recovery stops",
+  "change": "native_startup_recovery.check_inward_progress=false disables shrinking feedback and observed-progress reversal checks only during explicit native recovery",
+  "default_check_inward_progress": true,
+  "prepared_home_plan_check_inward_progress": false,
+  "scope": "original active J2/J3 only; fixed existing configured startup tolerance capped at 3 degrees",
+  "retained_checks": [
+    "expected initial pose and connect/enable checks",
+    "nominal command limits and inward target direction",
+    "startup feedback cap",
+    "1 percent device speed",
+    "4 degree native displacement cap",
+    "5 degrees per second observed speed guard",
+    "other-axis/gripper drift",
+    "feedback freshness and faults",
+    "stable arrival",
+    "watchdog/cancel/deadline/emergency stop"
+  ],
+  "tests": {
+    "passed": 371,
+    "failed": 0,
+    "hardware": "fake SDK only",
+    "log": "outputs/playground_grasp_transfer_20261107/retry_02/startup_policy_update_01/tests.log",
+    "recorded_event_test": "accepts -.633 to -1.676 degree position update with deliberate callback abort before speed window; no physical completion claimed"
+  },
+  "deployment": {
+    "host": "piper",
+    "root": "/home/metachip/Workspace/pressb_probe_20261107_cameras_01",
+    "home_plan": "playground_home_bounded_policy_01.json",
+    "hashes": {
+      "src/pressb/robots/piper/real.py": "ac6ec10f9bcb29b5b309747ab927e4c485056bbce2462e59648207b9f6d573f9",
+      "src/pressb/control/real_replay.py": "4f767c275462668e4286d01e1fcafdc931b0595ccbb5e301b24c7b972d1e3609",
+      "playground_home_bounded_policy_01.json": "e3959bc940056da7d6c5c895dfd3bf90cc6515fd54166b6f24b551fd1b1d69f0"
+    },
+    "local_and_remote_validation_identical": true,
+    "can_tx_delta": 0,
+    "executed": false
+  },
+  "physical_motion_performed": false,
+  "physical_recovery_validated": false,
+  "limitations": [
+    "No resolution of the underlying feedback discontinuity is established.",
+    "Independent speed/travel or connect-phase guards can still stop.",
+    "Re-read actual hardware and refresh expected initial state before any motion."
+  ],
+  "evidence_dir": "outputs/playground_grasp_transfer_20261107/retry_02/startup_policy_update_01"
+}

@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "experiment": "playground_grasp_retry_03",
+  "status": "EXECUTION_COMPLETED_REAL_GRASP_FAILED_ARM_ENABLED_NO_ESTOP",
+  "execution_success": true,
+  "task_success": false,
+  "outcome_definition": {
+    "execution_success": "All four physical executor runs completed their configured action rows without an error or emergency stop.",
+    "task_success": "The real green cube is lifted and held; this failed, as recorded lift views show the cube remaining on the table.",
+    "not_a_success_rate_evaluation": true
+  },
+  "physical_phases": [
+    {
+      "name": "home",
+      "execution_success": true,
+      "task_success": null,
+      "completed_actions": 1,
+      "action_count": 1,
+      "ticks": 411,
+      "elapsed_s": 16.69448109800578,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_05_home/summary.json",
+      "events": "playground_retry_05_home/replay.jsonl",
+      "plan": "home_plan.json",
+      "native_recovery_completed": true
+    },
+    {
+      "name": "pregrasp",
+      "execution_success": true,
+      "task_success": null,
+      "completed_actions": 615,
+      "action_count": 615,
+      "ticks": 1518,
+      "elapsed_s": 52.038837611005874,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_05_pregrasp/summary.json",
+      "events": "playground_retry_05_pregrasp/replay.jsonl",
+      "plan": "pregrasp_plan.json",
+      "native_recovery_completed": false
+    },
+    {
+      "name": "stage52",
+      "execution_success": true,
+      "task_success": null,
+      "completed_actions": 99,
+      "action_count": 99,
+      "ticks": 158,
+      "elapsed_s": 5.51143441098975,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_05_stage52/summary.json",
+      "events": "playground_retry_05_stage52/replay.jsonl",
+      "plan": "stage52_plan.json",
+      "native_recovery_completed": false
+    },
+    {
+      "name": "grasp",
+      "execution_success": true,
+      "task_success": false,
+      "completed_actions": 710,
+      "action_count": 710,
+      "ticks": 1184,
+      "elapsed_s": 40.63085889299691,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_05_grasp/summary.json",
+      "events": "playground_retry_05_grasp/replay.jsonl",
+      "plan": "grasp_plan.json",
+      "native_recovery_completed": false
+    }
+  ],
+  "native_startup": {
+    "check_inward_progress": false,
+    "physically_executed": true,
+    "completed": true,
+    "elapsed_s": 2.4272711899975548,
+    "feedback_samples": 116,
+    "scope": "One bounded home recovery with the explicit option; other configured checks remain active; normal checks resume afterward."
+  },
+  "grasp_plan": {
+    "planned_tcp_height_m": 0.025,
+    "closing_target_full_width_m": 0.028,
+    "planned_lift_m": 0.05,
+    "retreat_tcp_height_m": 0.08,
+    "gripper_arrival_tolerance_m": 0.005,
+    "height_note": "Kinematic plan values, not measured table clearances.",
+    "continuous_close_through_lowering": true
+  },
+  "simulation": {
+    "execution_success": true,
+    "task_success": true,
+    "simulation_only": true,
+    "summary": "sim_trial_02/summary.json",
+    "plan": "sim_plan_02.json",
+    "planned_grasp_height_m": 0.025,
+    "planned_close_width_m": 0.028,
+    "min_held_lift_m": 0.049975454807281494,
+    "max_lift_m": 0.049975693225860596,
+    "held_stable": true,
+    "stable_window_s": 1.5,
+    "held_bilateral_contact_fraction": 1.0,
+    "attachments_or_object_teleportation": false,
+    "identical_applied_command_timeline_to_real": false,
+    "timing_note": "Real executor retimes actions from tracking feedback; common plan does not imply matching executed wall-time trajectories."
+  },
+  "physical_outcome_evidence": {
+    "result": "missed_grasp",
+    "observed_cube_lifted": false,
+    "visual_evidence": [
+      "grasp_live_03.jpg",
+      "grasp_live_04.jpg",
+      "video/lift_hold_real_vs_sim.jpg"
+    ],
+    "reviewed_encoded_video_previews": [
+      "video/full_video_lift_preview.jpg",
+      "video/comparison_final_hold_preview.jpg"
+    ],
+    "root_cause": "Not uniquely established: unresolved object placement/height, finger/tool geometry, joint zeros and camera registration; friction attribution unsupported.",
+    "final_opening_is_not_grasp_success_evidence": true
+  },
+  "latest_feedback": {
+    "source": "after_grasp_feedback.json",
+    "finished_at_utc": "2026-11-07T11:28:51.158859+00:00",
+    "sample_count": 100,
+    "tx_packets_delta": 0,
+    "joints_deg": [
+      -1.666,
+      101.206,
+      -71.174,
+      0.0,
+      65.043,
+      -1.777
+    ],
+    "gripper_width_m": 0.0594,
+    "ctrl_mode": 1,
+    "arm_status": 0,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_reported_motor_fault_flags_false": true
+  },
+  "final_hardware_state": {
+    "enabled": true,
+    "estop_latched": false,
+    "pose": "Planned 80 mm TCP retreat pose",
+    "subsequent_reset_sent": false,
+    "subsequent_motion_sent": false,
+    "replay_camera_can_processes_stopped": true
+  },
+  "configuration": {
+    "clean_playground_default_unchanged": true,
+    "live_wrist_intrinsics_unchanged": true,
+    "objects_and_grasp_plan_are_session_specific": true
+  },
+  "media": {
+    "full_real": {
+      "path": "video/real_full_retry_1x.mp4",
+      "duration_s": 131.93333333333334,
+      "timing": "1x actual motion time within each phase; long inter-phase waits omitted with transitions; latest captured frame held, no temporal interpolation",
+      "timing_manifest": "video/real_full_retry_1x.timing.json"
+    },
+    "real_vs_sim": {
+      "path": "video/real_vs_sim_grasp_1x.mp4",
+      "duration_s": 43.63333333333333,
+      "real_motion_duration_s": 40.63065958023071,
+      "sim_segment_duration_s": 23.666666666666668,
+      "timing": "Independent native 1x; final frame of shorter side held with explicit label; no time scaling",
+      "timing_manifest": "video/real_vs_sim_grasp_1x.timing.json"
+    },
+    "phase_matched_proof": {
+      "path": "video/lift_hold_real_vs_sim.jpg",
+      "real_elapsed_s": 17.4,
+      "real_capture_index": 250,
+      "sim_frame": 402,
+      "sim_segment_elapsed_s": 10.1,
+      "timing": "phase-matched different instants, not synchronized"
+    },
+    "hardware_synchronized": false
+  },
+  "evidence_root": "outputs/playground_grasp_transfer_20261107/retry_03",
+  "evidence_sha256": {
+    "playground_retry_05_home/summary.json": "0f2203811c4a0115093cd1e018e5a976a997d8fddd328df7aa80b6bca15a26c9",
+    "playground_retry_05_home/replay.jsonl": "744ba2c51f02840b76495f1bd8c960199e48dc900a0932b23c08459aced9c13b",
+    "home_plan.json": "74069c539b4f73d0dcd85773a3ace0c6ad3330d22dee4ddd3482b38b1115e343",
+    "playground_retry_05_pregrasp/summary.json": "2ca51d1a7a1f76aa0bc885a6f92fa57617d2d64b1be0ef89977f2b7d9c2913a1",
+    "playground_retry_05_pregrasp/replay.jsonl": "df914fed404a32f416c4b8b363b36b800dc317ba6872363cfdb79dd5777d07b5",
+    "pregrasp_plan.json": "a9e0173d52ebfafa0208a5221eb7ce117c46a448121b9ea2f70f7a34befea9cd",
+    "playground_retry_05_stage52/summary.json": "b4851bbd5101c8931cd4442c0d41c16c30cda3ec4914169c2f4407cb1b33837c",
+    "playground_retry_05_stage52/replay.jsonl": "17c1938a9b8cdf37f9cc803448cd4b07d89637f638b6f4ef7c69e27cdf661518",
+    "stage52_plan.json": "024a60406f67f56149c2d399ec82d3672a4109d38edb13e8dfbeabf5c4eaa819",
+    "playground_retry_05_grasp/summary.json": "8549d24031b10a15193342ec2351909264c2ff64944522b461c7d9be57c26b68",
+    "playground_retry_05_grasp/replay.jsonl": "3848f5b141ef6b8ce57718cd874b54e7fcf89aa07c836565af20be38886724dc",
+    "grasp_plan.json": "a1c40cc93667f8ac6a02532701a059fc00c4182fc6fd14b8129378304462027a",
+    "before_feedback.json": "0386abfdf480bac97bfd446af7e0afb50893ec7da0b5addeb283277b02eb75ea",
+    "after_grasp_feedback.json": "3cc359edc75571787e4b3aa9113a25104b913dec7185e57543a6c612d769e6fe",
+    "sim_plan_01.json": "2020a429ec625479e179b9dcb2efdef8d1168ae9a8195903b5e03ecef1c88940",
+    "sim_plan_02.json": "19acff5faf5c14d65544990d626281c8abc1e721be73b7a8842f7a8e15c70e8c",
+    "sim_plan_02_audit.json": "9e0774b0f0a3244e9f6bae635ec394f51ed442bd51ab310a12114c50dbdcda43",
+    "sim_scene_02.json": "2c765c8e5d14591101467e8008176834a2fa8d6727202f5d6d4805e291ea52f3",
+    "sim_trial_02/summary.json": "1abc7082fc74a620cf853e37e0b0c5be01e0d821e7aad1800f0e30a979a1a43d",
+    "sim_trial_02/physics.jsonl": "38bc1b7e207c7b3ae01d2feca4c8d5950f96d69b7df4ce1a6cdb86093f1ea343",
+    "grasp_live_03.jpg": "434a8c81dea9b6100274c4ba64ff020e71d0cf38904d5e5c96f5995884d713de",
+    "grasp_live_04.jpg": "b078ad436c2cdc6a97b66e9f127978b8c72168e72fc2c3ce8c20fad9db998cf2",
+    "video/real_full_retry_1x.mp4": "81e43f156e942d82e5578638e5c443e0f76ecc9c740912fcecc15a1a385591d2",
+    "video/real_full_retry_1x.timing.json": "7ba486dc9fe50eaeb8110d25034c617610e5d92be294649334689f61b660acd3",
+    "video/real_vs_sim_grasp_1x.mp4": "9873cb7478cf390554f9285fcaa565d83371e0e3e1c1fb775527407c1caf39d2",
+    "video/real_vs_sim_grasp_1x.timing.json": "e7552538296832d6bd601c48ae0bb98d25780d2e59a6c0f03d6bffcf3370a4d0",
+    "video/lift_hold_real_vs_sim.jpg": "f6f301bf674d0ad1d96bb36f6615e6d577b20597e22a2037c8d42b70b130dd86",
+    "video/full_video_lift_preview.jpg": "7d2780a0c1b2c7a1864232c9a3960fef1275de6a6c66769cab1c060909fc8fa8",
+    "video/comparison_final_hold_preview.jpg": "fb039f11abd4f1b54fac1e54a0543fd6140f8267018793fe28d9c6e9c6788caa",
+    "geometric_failure_audit/report.json": "c5c3e1ec5dec0ea6da20d5fdf9b27b6ea6ad29ef7b005c5febabf9d51c77bd0e",
+    "sim_trial_02/config.json": "843f3fcb544e46c0f99acac9226ae9840e91542ab24e0df3b2788ca500e20952",
+    "localization_01/failure_review/report.json": "d6009545f21e9694c541e29eb4dd4aaab3d891c010f5d272c8386720aaabb684",
+    "sim_trial_measured_29mm/comparison.json": "6c7f655b2f3c214c8ce2fbf47f25d01950d30edc42598acb4b2c55e768ef9453",
+    "sim_trial_measured_29mm/summary.json": "f0c8f2a1b7f5ca68434d0f6c268078d30362d1c39db953b319dcd2e3414f6d44",
+    "sim_trial_measured_29mm/config.json": "97fa54c88fab7648f05998195f4b4a05b5316f227a062d96d9894b5e1205c83d",
+    "sim_trial_measured_29mm/plan.json": "778d3e8906a0d9129e023e97a8c67cc45fe39a8d73f8f886a7b33972ed71c053"
+  },
+  "preliminary_geometry_audit": {
+    "source": "geometric_failure_audit/report.json",
+    "method": "Offline compare same-action-index measured real/sim joints and same URDF FK; video frame selected nearest host timestamp, not synchronized exposure. No motion, no calibration changes.",
+    "same_urdf_tcp_difference_norm_mm": {
+      "grasp_open": 1.1146842457544845,
+      "close_end": 1.1013006898738704,
+      "lift_hold": 0.2972952731601823,
+      "release": 1.0751128449373737
+    },
+    "manual_image_difference_px_approx": [
+      30,
+      40
+    ],
+    "image_difference_is_metric_3d_measurement": false,
+    "common_urdf_fk_validates_physical_geometry": false,
+    "conclusion": "Position-following discrepancy in reported joints is about 1.1 mm at close_end under the SAME URDF, while image/object-to-finger geometry differs materially. This points to unresolved extrinsics/tool/finger geometry/pose zero/table calibration; evidence cannot identify a unique cause or justify friction tuning.",
+    "prior_2d_clearance_check_sufficient_for_3d_grasp_contact": false
+  },
+  "cube_size_measurement": {
+    "source": "User measurement supplied after completed real retry",
+    "measured_edge_mm": 29.0,
+    "completed_retry_configuration": "sim_trial_02/config.json",
+    "completed_retry_configured_edge_mm": 29.073457789707007,
+    "difference_mm": 0.07345778970700678,
+    "relative_difference_percent": 0.2533027231276096,
+    "completed_run_configuration_modified": false,
+    "historical_original_capture_edge_estimate_mm": 30.16,
+    "historical_estimate_used_in_current_retry": false,
+    "same_action_29mm_simulation_status": "completed_successfully"
+  },
+  "localization_review": {
+    "source": "localization_01/failure_review/report.json",
+    "before_after_conclusion": "No visible lasting cube displacement; subpixel projection estimate is not independent physical metrology and cannot prove zero contact.",
+    "close_end_max_joint_error_deg": 0.07303339348426637,
+    "actual_finger_pad_gap_measured": false,
+    "contact_force_measured": false,
+    "unique_physical_root_cause_established": false
+  },
+  "controlled_29mm_simulation": {
+    "source": "sim_trial_measured_29mm/comparison.json",
+    "simulation_only": true,
+    "hardware_access": false,
+    "question": "Does changing estimated 29.07346mm cube to measured29.0mm explain sim/real grasp discrepancy?",
+    "scene_numeric_changes": [
+      [
+        "/calibration_objects/0/size/0",
+        0.029073457789707005,
+        0.029
+      ],
+      [
+        "/calibration_objects/0/size/1",
+        0.029073457789707005,
+        0.029
+      ],
+      [
+        "/calibration_objects/0/size/2",
+        0.029073457789707005,
+        0.029
+      ]
+    ],
+    "all_joint_and_gripper_actions_exactly_equal": true,
+    "expected_initial_state_exactly_equal": true,
+    "phase_timing_exactly_equal": true,
+    "baseline": {
+      "success": true,
+      "min_held_lift_m": 0.049975454807281494,
+      "max_lift_m": 0.049975693225860596,
+      "held_stable": true,
+      "held_bilateral_contact_fraction": 1.0,
+      "return_distance_m": 8.086438373043742e-06,
+      "unintended_external_robot_contacts": []
+    },
+    "measured_29mm": {
+      "success": true,
+      "min_held_lift_m": 0.04997551441192627,
+      "max_lift_m": 0.0499759316444397,
+      "held_stable": true,
+      "held_bilateral_contact_fraction": 1.0,
+      "return_distance_m": 7.205389672026718e-06,
+      "unintended_external_robot_contacts": []
+    },
+    "min_held_lift_delta_mm": 5.9604644775390625e-05,
+    "close_phase_min_width_mm": {
+      "baseline": 29.045240953564644,
+      "measured29": 28.973236680030823
+    },
+    "conclusion": "Measured cube size alone does not change successful simulation outcome under otherwise identical modeled geometry and controls. This excludes this 0.07346mm size correction as a sufficient explanation within the current simulator; it does not certify actual geometric alignment or diagnose the remaining sim-real error.",
+    "rendering_difference": "Baseline recorded videos; controlled repeat omitted continuous video rendering. Physics_dt, steps, action timeline and contact criteria are unchanged; initial/lift/final image snapshots still rendered.",
+    "original_plan_sha256": "19acff5faf5c14d65544990d626281c8abc1e721be73b7a8842f7a8e15c70e8c",
+    "derived_plan_sha256": "778d3e8906a0d9129e023e97a8c67cc45fe39a8d73f8f886a7b33972ed71c053"
+  }
+}

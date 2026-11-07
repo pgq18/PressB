@@ -1,0 +1,11 @@
+{
+  "extends": "pap_real_walloss_dsrl.json",
+  "name": "pap_real_walloss_eval",
+  "run": {
+    "method": "base",
+    "mode": "eval",
+    "device": "cpu",
+    "rollout": {"eval_episodes": 10, "max_transitions": 10000},
+    "output_dir": "${project_root}/outputs/pap_real_walloss_eval/run"
+  }
+}

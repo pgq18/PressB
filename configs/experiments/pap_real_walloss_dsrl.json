@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "name": "pap_real_walloss_dsrl",
+  "description": "Single physical PiPER; manual scene reset on robot host, human outcome labels on trainer host. Set camera serials and explicitly enable actuation after hardware commissioning.",
+  "task": {
+    "plugin": "piper_real",
+    "config": {
+      "num_envs": 1,
+      "task_id": "pap_real",
+      "instruction": "Grab the stuff into the box.",
+      "horizon": 32,
+      "control_hz": 30,
+      "gamma": 0.995,
+      "max_episode_steps": 1800,
+      "max_episode_seconds": 120,
+      "watchdog_seconds": 15,
+      "smoothing": {"mode": "joint_ema", "alpha": 0.8},
+      "robot": {
+        "factory": "pressb.robots.piper.real:PiperHardware",
+        "config": {
+          "can_name": "can0",
+          "actuation_enabled": false,
+          "control_hz": 30,
+          "speed_percent": 10,
+          "max_joint_velocity_rad_s": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+          "max_gripper_velocity_m_s": 0.02,
+          "feedback_timeout_s": 0.25
+        }
+      },
+      "cameras": {
+        "factory": "pressb.sensors.realsense:RealSenseCameras",
+        "config": {
+          "cameras": {
+            "up": {"serial": "REPLACE_GLOBAL_CAMERA_SERIAL", "width": 640, "height": 480, "fps": 30},
+            "wrist": {"serial": "REPLACE_WRIST_CAMERA_SERIAL", "width": 640, "height": 480, "fps": 30}
+          },
+          "timeout_ms": 2000,
+          "max_frame_age_s": 0.5
+        }
+      },
+      "task": {
+        "factory": "pressb.runtime.real_robot_operator:ManualTask",
+        "config": {
+          "directory": "${project_root}/outputs/pap_real_operator",
+          "reset_timeout_s": 300,
+          "labels_enabled": false
+        }
+      }
+    }
+  },
+  "model": {
+    "plugin": "walloss",
+    "config": {
+      "model_path": "/home/pengguanqi/Models/piper_pap_20260606",
+      "train_config": "${project_root}/configs/model_metadata/walloss_pap_20260606.yaml",
+      "norm_stats": "/home/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+      "device": "cuda:0",
+      "dtype": "bfloat16",
+      "horizon": 32,
+      "control_hz": 30,
+      "num_inference_timesteps": 10,
+      "input_image_resolution": 256,
+      "camera_mapping": {"up": "face_view", "wrist": "left_wrist_view"},
+      "flow_prefix_cache": true,
+      "flow_prefix_cache_mode": "full_attention"
+    }
+  },
+  "nodes": {
+    "simulation": {"server": {"host": "127.0.0.1", "port": 18201, "transport": "http"}},
+    "inference": {
+      "server": {"host": "127.0.0.1", "port": 18231, "transport": "ws"},
+      "service": {"batch_size": 1, "cache_size": 8, "cache_ttl": 600}
+    }
+  },
+  "run": {
+    "method": "dsrl",
+    "mode": "train",
+    "device": "cuda:1",
+    "seed": 42,
+    "endpoints": {"timeout": 360, "image_transport": "auto", "preprocess_images": true},
+    "rollout": {
+      "max_transitions": 100000,
+      "execution_horizon": 8,
+      "num_envs": 1,
+      "action_bounds": "clip",
+      "terminal_observation_mode": "full",
+      "fused_step_reset": false
+    },
+    "human_feedback": {
+      "mode": "human",
+      "directory": "${project_root}/outputs/pap_real_feedback",
+      "timeout_s": 300,
+      "success_reward": 1.0,
+      "failure_reward": 0.0
+    },
+    "learner": {"noise_steps": 32, "noise_scale": 1.5, "batch_size": 256, "hidden_dim": 256, "bootstrap_truncated": false},
+    "update": {"replay_capacity": 100000, "learning_starts": 2000, "utd": 1},
+    "checkpoint": {"interval": 100000, "keep": null, "include_replay": true},
+    "output_dir": "${project_root}/outputs/pap_real_walloss_dsrl/run"
+  }
+}

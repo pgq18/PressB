@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "experiment": "playground_deeper_grasp_retry_04",
+  "status": "CLOSING_TIMEOUT_BEFORE_LIFT_ESTOP_LATCHED_POST_STOP_POSE_CHANGED",
+  "execution_success": false,
+  "task_success": false,
+  "task_outcome": "Incomplete grasp attempt: stopped during closure before lift, with post-stop arm motion. Successful bilateral grasp not established.",
+  "requested_change": {
+    "previous_planned_grasp_tcp_height_m": 0.025,
+    "new_planned_grasp_tcp_height_m": 0.02,
+    "measured_cube_edge_m": 0.029,
+    "xy_unchanged": true,
+    "final_close_target_m": 0.028,
+    "clean_playground_default_unchanged": true,
+    "live_wrist_intrinsics_unchanged": true
+  },
+  "physical_phases": [
+    {
+      "name": "stage25",
+      "execution_success": true,
+      "completed_actions": 140,
+      "action_count": 140,
+      "ticks": 259,
+      "elapsed_s": 8.965228005006793,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_06_stage25/summary.json",
+      "events": "playground_retry_06_stage25/replay.jsonl",
+      "plan": "stage25_plan.json"
+    },
+    {
+      "name": "stage22",
+      "execution_success": true,
+      "completed_actions": 3,
+      "action_count": 3,
+      "ticks": 7,
+      "elapsed_s": 0.34910234199196566,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_06_stage22/summary.json",
+      "events": "playground_retry_06_stage22/replay.jsonl",
+      "plan": "stage22_plan.json"
+    },
+    {
+      "name": "stage20",
+      "execution_success": true,
+      "completed_actions": 34,
+      "action_count": 34,
+      "ticks": 43,
+      "elapsed_s": 1.567831373991794,
+      "error": null,
+      "cleanup_errors": [],
+      "summary": "playground_retry_06_stage20/summary.json",
+      "events": "playground_retry_06_stage20/replay.jsonl",
+      "plan": "stage20_plan.json"
+    },
+    {
+      "name": "grasp",
+      "execution_success": false,
+      "completed_actions": 90,
+      "action_count": 656,
+      "ticks": 270,
+      "elapsed_s": 9.468650005001109,
+      "error": "ReplayError: Robot did not catch up within tracking timeout",
+      "cleanup_errors": [],
+      "summary": "playground_retry_06_grasp/summary.json",
+      "events": "playground_retry_06_grasp/replay.jsonl",
+      "plan": "grasp_plan.json"
+    }
+  ],
+  "staged_descent": {
+    "source": "localization_review/open_stages.json",
+    "final_planned_tcp_z_m": 0.02,
+    "measured_joints_same_urdf_tcp_z_m": 0.020058730393384322,
+    "height_is_independent_physical_clearance_measurement": false
+  },
+  "stop": {
+    "origin": "Software replay tracking timeout followed by emergency stop",
+    "elapsed_s": 9.468650005001109,
+    "completed_actions": 90,
+    "expected_actions": 656,
+    "waiting_local_action_index_zero_based": 90,
+    "waiting_full_plan_frame_zero_based": 267,
+    "target_opening_mm": 29.666666666666664,
+    "measured_opening_mm": 34.8,
+    "opening_error_mm": 5.133333333333334,
+    "arrival_tolerance_mm": 5.0,
+    "tracking_timeout_s": 5.0,
+    "logged_wait_span_s": 4.984851517001516,
+    "before_stop_joints_deg": [
+      -1.666,
+      106.517,
+      -63.83,
+      0.0,
+      52.30500000000001,
+      -1.7770000000000001
+    ],
+    "lift_executed": false,
+    "planned_release_executed": false,
+    "planned_retreat_executed": false
+  },
+  "contact_evidence": {
+    "source": "retry_06_gripper_contact_audit.json",
+    "loaded_plateau": {
+      "elapsed_window_s": [
+        5,
+        8
+      ],
+      "fresh_frames": 600,
+      "width_mm_min_max": [
+        34.8,
+        34.8
+      ],
+      "effort_raw_min_max": [
+        -1050,
+        -1033
+      ],
+      "effort_raw_median": -1043.0,
+      "status_bytes": [
+        64
+      ]
+    },
+    "fresh_can_frames_support_resistance": true,
+    "physical_force_calibrated": false,
+    "bilateral_grasp_confirmed": false,
+    "contact_identity_confirmed": false,
+    "interpretation": "Fresh stable opening with sharply increased signed effort establishes substantial closing resistance. Intended object contact, collision/jam and bilateral grasp cannot be distinguished from these signals alone. Lift was not executed.",
+    "width_alone_measures_cube_edge": false,
+    "width_alone_proves_gripper_zero_offset": false
+  },
+  "simulation": {
+    "summary": "sim_trial_01/summary.json",
+    "plan": "sim_plan_01.json",
+    "simulation_only": true,
+    "hardware_access": false,
+    "execution_success": true,
+    "task_success": true,
+    "frames": 833,
+    "min_held_lift_m": 0.04997682571411133,
+    "held_stable": true,
+    "stable_window_s": 1.5,
+    "held_bilateral_contact_fraction": 1.0,
+    "attachments_or_object_teleportation": false,
+    "simulation_success_proves_physical_grasp": false
+  },
+  "latest_feedback": {
+    "source": "after_stop_feedback.json",
+    "finished_at_utc": "2026-11-07T11:38:16.061189+00:00",
+    "sample_count": 100,
+    "tx_packets_delta": 0,
+    "joints_deg": [
+      -1.666,
+      125.664,
+      -84.364,
+      -0.342,
+      76.284,
+      -1.528
+    ],
+    "gripper_width_m": 0.0348,
+    "ctrl_mode": 0,
+    "arm_status": 1,
+    "error_code": 0,
+    "motors_enabled": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_reported_motor_fault_flags_false": true
+  },
+  "current_hardware_state": {
+    "estop_latched": true,
+    "post_stop_pose_changed": true,
+    "holding_previous_grasp_pose": false,
+    "retracted": false,
+    "motor_enable_feedback_bits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "enable_bits_prove_maintained_holding_torque": false,
+    "j5_measured_deg": 76.284,
+    "j5_upper_limit_deg": 70.0,
+    "j5_outside_nominal_limit": true,
+    "reset_after_stop_sent": false,
+    "motion_after_stop_commanded": false,
+    "before_any_next_motion": "Requires onsite handling, readiness for reset and fresh pose verification; no automatic reset or retry."
+  },
+  "media": {
+    "path": "video/real_deeper20_with_poststop_1x.mp4",
+    "duration_s": 51.43333333333333,
+    "post_stop_live_seconds_included": 15.0,
+    "playback": "1x wall-clock time, latest-frame hold; no temporal interpolation",
+    "inter_phase_waits_omitted": true,
+    "hardware_synchronized": false,
+    "timing_manifest": "video/real_deeper20_with_poststop_1x.timing.json",
+    "reviewed_before_after_images": [
+      "localization_review/contact_stop_audit/prestop.jpg",
+      "localization_review/contact_stop_audit/post10.jpg"
+    ]
+  },
+  "evidence_root": "outputs/playground_grasp_transfer_20261107/retry_04",
+  "evidence_sha256": {
+    "playground_retry_06_stage25/summary.json": "8bade78208c92ec1f30beca70103024f84e906bb2b1ac1eb416ab9d2632921be",
+    "playground_retry_06_stage25/replay.jsonl": "7dde008850ab4954912a292347daf85bc3356a8051af498042a01e01d74321b7",
+    "stage25_plan.json": "f585fd2abd5b7efaa0eaf7eaae9a753eac078c01d621a3ceffc7fba4da7964d9",
+    "playground_retry_06_stage22/summary.json": "b75a1a9ac2d64e8dfdfa648a16c6dd91d4921172ddcb89cac962b2657747b5ce",
+    "playground_retry_06_stage22/replay.jsonl": "81d3248360bd92568dca583cc1bbc3c40cdced8d72352db5dd263f536f9e0790",
+    "stage22_plan.json": "6238f7aa0c82b9c10f3a68cf7fd3339c361f5bb728208ea1cf9a183f17b37be7",
+    "playground_retry_06_stage20/summary.json": "472b1f7d52de166728ff4f0cb6574836fa987300e54d31f0585f9fecb7f8bf5f",
+    "playground_retry_06_stage20/replay.jsonl": "e8ede5129d902fefce968f97c94a3c6d177e62b9b6fbc0e24635531d8babc53f",
+    "stage20_plan.json": "15ab1ad028d33fde689ea06bd1c47a9e7ea3a25973c03b40b814f14239061e52",
+    "playground_retry_06_grasp/summary.json": "84accb29be57abb414c11df43e352522dfece7eb0c1358f80c32426f18c15262",
+    "playground_retry_06_grasp/replay.jsonl": "3c15467fc4834b789436b1e019308b7931a95e1cf8c98d7f314539637d54c82a",
+    "grasp_plan.json": "91c7aa7c4695ea43180d0f52816c82c9073d10bcd006b1ce847171dfab1123e0",
+    "before_feedback.json": "a92c925afcf6590dcad3004ffc9cde3bf4a3baa362939302854725121c9ec5ba",
+    "at_stage25_feedback.json": "c91900b1d1910a8e097cdd28afe81d176452aaf413432ddfd7524b6e571f819a",
+    "at_stage22_feedback.json": "04f0bbe41b4c2345c66a1a2909b13801319a13cf994ae8a7bad6215d12305744",
+    "at_stage20_feedback.json": "15e9198de05f0c0b35b602c7463f9c963590a7c26affcbada8e8df25de392e53",
+    "after_stop_feedback.json": "b3dce715c4b94ff918e59c90cfdbd63a93266ce8e2da2b78197edf5d63dd771a",
+    "sim_plan_01.json": "0603452febd48e710af838ea7fb3402acc460b5e77a39415c2f59e40aa4e4a70",
+    "sim_plan_01_audit.json": "cfa496ab77a6397df3097209ae554cb5f0b6593a20cd78889817941afc0729e8",
+    "sim_scene_01.json": "f6536939344a9b0b927638f5234275f9e68959df9be5f4846b788fb28c759661",
+    "sim_trial_01/config.json": "f4644551ff8389bd1b850ab7feafeffd4d52c783904dc3c71c4cd162ae6940ff",
+    "sim_trial_01/summary.json": "a0cbffc2af84e33473e0c0edb7174cfa81fbf13cf4f677b60ec1e4ad9245822d",
+    "retry_06_gripper_contact_audit.json": "0549d79926359d1295c3943867f535da12082942d6a4178e84926343f394250c",
+    "playground_retry_06_can/frames.jsonl": "5dd80ad0478359b698a9a48b329af12c1fbb328d4f3392d2fd9bd259b478a8e8",
+    "localization_review/open_stages.json": "122d6a2feb5eefe64c912de37e6b8ed0bc54f7ad6caebb70acac1da531544e31",
+    "localization_review/contact_stop_audit/prestop.jpg": "94a03a1aa378cf1c639a800a3d59201c93438b3a66ef83a5c8035d6cb338dbe7",
+    "localization_review/contact_stop_audit/post10.jpg": "87b9e9bec7ec0cc9c7e9eee31e0f57773773afcf145def8d53ac7c5d8ac438d5",
+    "video/real_deeper20_with_poststop_1x.mp4": "dad7f30233d4de024cf1b4821853ed59af6d9a028e3cc70b0cf6869cbca6b4cf",
+    "video/real_deeper20_with_poststop_1x.timing.json": "b82e0fa83c44ffe51fb3396cc6d8af6bae48b07731148e6c285d35c6f4bb2353",
+    "video/real_deeper20_manifest_with_poststop.json": "83522fb1f05267ba5a0661e92aae85645b80171432f27c8af0a394b05acd34f9"
+  }
+}

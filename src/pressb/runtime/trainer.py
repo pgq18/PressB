@@ -122,6 +122,7 @@ class TrainerConfig:
     checkpoint: CheckpointConfig = field(default_factory=CheckpointConfig)
     frozen_dsrl: FrozenDSRLConfig | None = None
     wandb: WandbConfig = field(default_factory=WandbConfig)
+    human_feedback: dict = field(default_factory=lambda: {"mode": "environment"})
     output_dir: str = "outputs/rl_nodes_run"
 
     def __post_init__(self):
@@ -188,6 +189,7 @@ class TrainerConfig:
             raise ValueError("wandb requires a nonempty project and a list of string tags")
         if not isinstance(self.learner, dict) or not isinstance(self.rollout.reset_options, dict):
             raise ValueError("learner and reset_options must be objects")
+        self.validate_human_feedback()
         self.validate_terminal_mode()
         if self.method == "base" and self.checkpoint.resume:
             raise ValueError("base evaluation does not use an RL checkpoint")
@@ -204,6 +206,41 @@ class TrainerConfig:
             raise ValueError("rollout.fused_step_reset must be boolean")
         if self.rollout.fused_step_reset and mode != "state_only_if_no_bootstrap":
             raise ValueError("fused_step_reset requires state_only_if_no_bootstrap")
+        if self.human_feedback.get("mode") == "human" and (mode != "full" or self.rollout.fused_step_reset):
+            raise ValueError("Human feedback requires full terminal observations and fused_step_reset=false")
+
+    def validate_human_feedback(self):
+        settings = self.human_feedback
+        if not isinstance(settings, dict):
+            raise ValueError("human_feedback must be an object")
+        allowed = {"mode", "directory", "timeout_s", "poll_interval_s", "success_reward", "failure_reward"}
+        if set(settings) - allowed:
+            raise ValueError(f"Unknown human_feedback settings: {sorted(set(settings) - allowed)}")
+        mode = settings.setdefault("mode", "environment")
+        if mode not in ("environment", "human"):
+            raise ValueError("human_feedback.mode must be environment or human")
+        defaults = {"timeout_s": 300., "poll_interval_s": .05, "success_reward": 1., "failure_reward": 0.}
+        for key, default in defaults.items():
+            value = settings.get(key, default)
+            if type(value) not in (int, float) or not math.isfinite(value):
+                raise ValueError(f"human_feedback.{key} must be finite")
+            if key in ("timeout_s", "poll_interval_s") and value <= 0:
+                raise ValueError(f"human_feedback.{key} must be positive")
+            if mode == "human":
+                settings.setdefault(key, default)
+        if mode == "human":
+            settings.setdefault("directory", str(Path(self.output_dir) / "human_feedback"))
+        if "directory" in settings and (not isinstance(settings["directory"], str) or not settings["directory"].strip()):
+            raise ValueError("human_feedback.directory must be a nonempty path string")
+
+
+def _human_feedback_identity(settings):
+    """Reward semantics are resumable identity; operator I/O settings are not."""
+    mode = settings.get("mode", "environment")
+    if mode == "environment":
+        return {"mode": mode}
+    return {"mode": mode, "success_reward": float(settings.get("success_reward", 1.)),
+            "failure_reward": float(settings.get("failure_reward", 0.))}
 
 
 def _canonical(value):
@@ -542,6 +579,8 @@ class GenericTrainer:
         self.max_projection_delta = 0.
         self.projection_delta_by_coordinate = None
         self._wandb = None
+        self.human_feedback = None
+        self._human_feedback_closed = False
 
     def stop(self, _payload=None):
         self.stop_event.set()
@@ -573,6 +612,21 @@ class GenericTrainer:
             except Exception:
                 pass
 
+    def _close_human_feedback(self, failure):
+        if self.human_feedback is None or self._human_feedback_closed:
+            return
+        self._human_feedback_closed = True
+        try:
+            self.human_feedback.close()
+        except BaseException as error:
+            if failure is None:
+                self._status_write("failed", error_type=type(error).__name__, error=str(error))
+                raise
+            try:
+                self._log("events.jsonl", {"event": "human_feedback_close_failed", "error": str(error)})
+            except Exception:
+                pass
+
     def _log(self, name, data):
         with (self.output / name).open("a") as stream:
             stream.write(json.dumps(data, allow_nan=False) + "\n")
@@ -601,6 +655,7 @@ class GenericTrainer:
             "action_bounds": self.config.rollout.action_bounds,
             "terminal_observation_mode": self.config.rollout.terminal_observation_mode,
             "fused_step_reset": self.config.rollout.fused_step_reset,
+            "human_feedback": copy.deepcopy(self.config.human_feedback),
             "reset_envs": self.reset_envs, "reset_calls": self.reset_calls,
             "projected_action_coordinates": self.projected_coordinates,
             "projected_action_chunks": self.projected_chunks,
@@ -665,6 +720,7 @@ class GenericTrainer:
         return future.result()
 
     def _negotiate(self):
+        self.config.validate_human_feedback()
         self.config.validate_terminal_mode()
         self.inference_metadata = self._call(self.inference, "/health")
         self.simulation_metadata = self._call(self.simulation, "/health")
@@ -672,6 +728,9 @@ class GenericTrainer:
                                   self.config.method, self.config.rollout.execution_horizon,
                                   terminal_observation_mode=self.config.rollout.terminal_observation_mode,
                                   fused_step_reset=self.config.rollout.fused_step_reset)
+        if (self.config.human_feedback["mode"] == "human"
+                and "external_episode_end" not in self.simulation_metadata.get("capabilities", [])):
+            raise ValueError("Human feedback requires environment capability external_episode_end")
         contract = self.contract
         noise_shape = tuple(contract["noise_shape"])
         if len(noise_shape) != 2 or noise_shape[0] != contract["action_horizon"]:
@@ -767,6 +826,9 @@ class GenericTrainer:
             raise ValueError("Checkpoint schema/model/task fingerprint differs from connected nodes")
         if _canonical(asdict(learner.config)) != _canonical(asdict(desired)):
             raise ValueError("Checkpoint learner configuration differs; use an explicit matching config")
+        prior_feedback = extra.get("human_feedback", {"mode": "environment"})
+        if _human_feedback_identity(prior_feedback) != _human_feedback_identity(self.config.human_feedback):
+            raise ValueError("Checkpoint human_feedback mode/reward scheme differs; reward semantics cannot change on resume")
         self.learner = learner
         self._run_initial_updates = learner.updates
         if self.config.mode == "eval":
@@ -892,6 +954,8 @@ class GenericTrainer:
         self.reset_envs += len(rows)
         self.reset_calls += 1
         self._physics_in_flight = False
+        if self.human_feedback is not None:
+            self.human_feedback.begin(rows)
         self._observe("on_reset", rows)
         return rows
 
@@ -1043,6 +1107,7 @@ class GenericTrainer:
                  "update_credit": self.update_credit, "dropped_update_credit": self.dropped_update_credit,
                  "terminal_observation_mode": self.config.rollout.terminal_observation_mode,
                  "fused_step_reset": self.config.rollout.fused_step_reset,
+                 "human_feedback": copy.deepcopy(self.config.human_feedback),
                  "simulator_continuation": "fresh episodes; replay contains terminal state with declared image mode"}
         if self.frozen_dsrl is not None:
             extra["frozen_dsrl"] = {**self.frozen_dsrl.provenance, "verification": frozen_verification}
@@ -1084,6 +1149,10 @@ class GenericTrainer:
         try:
             self._status_write("negotiating")
             self._negotiate()
+            if self.config.human_feedback["mode"] == "human":
+                from .human_feedback import HumanFeedback, HumanFeedbackCancelled
+                self.human_feedback = HumanFeedback({key: value for key, value in self.config.human_feedback.items()
+                                                     if key != "mode"})
             if self._budget_remaining() > 0:
                 initial_count = self.num_envs if self.initial_reset_all else min(self.num_envs, self._budget_remaining())
                 self._reset(list(range(initial_count)))
@@ -1115,6 +1184,29 @@ class GenericTrainer:
                 self._physics_in_flight = True
                 response = self._call(self.simulation, step_path, payload)
                 rows = self._validate_steps(slots, response)
+                if self.human_feedback is not None:
+                    # The step RPC has finished and its final observations are
+                    # validated. Hold here for labels before observer/replay or reset.
+                    self._physics_in_flight = False
+                    try:
+                        rows = self.human_feedback.resolve(rows, cancel_event=self.stop_event)
+                    except HumanFeedbackCancelled:
+                        if not self.stop_event.is_set():
+                            raise
+                        # The completed environment step has no resolved human
+                        # outcome. Do not observe, count, or replay this batch.
+                        self._log("events.jsonl", {"event": "human_feedback_cancelled", "unresolved_steps": [
+                            {key: row[key] for key in ("env_id", "episode_id", "step_id")} for row in rows]})
+                        break
+                    if self.human_feedback.pending_end:
+                        self._physics_in_flight = True
+                        pending_end = copy.deepcopy(self.human_feedback.pending_end)
+                        ended = self._call(self.simulation, "/end_episode", {
+                            "run_id": self.run_id, "request_id": uuid.uuid4().hex,
+                            "items": pending_end})
+                        if _canonical(ended.get("ended")) != _canonical(pending_end):
+                            raise ValueError("Environment end_episode confirmation differs from requested episode/step identities")
+                        self._physics_in_flight = False
                 fused_resets = None
                 if self.config.rollout.fused_step_reset:
                     done_ids = [row["env_id"] for row in rows if row["terminated"] or row["truncated"]]
@@ -1217,5 +1309,13 @@ class GenericTrainer:
                     self._status_write("failed", error_type=type(error).__name__, error=str(error))
                 raise
             finally:
-                self._close_observer(failure)
+                cleanup_failure = failure or sys.exc_info()[1]
+                try:
+                    self._close_human_feedback(cleanup_failure)
+                except BaseException as error:
+                    if cleanup_failure is None:
+                        cleanup_failure = error
+                    raise
+                finally:
+                    self._close_observer(cleanup_failure)
         return self.health()

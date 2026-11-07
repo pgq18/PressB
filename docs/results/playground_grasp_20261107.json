@@ -1,0 +1,222 @@
+{
+  "date": "2026-11-07",
+  "task": "playground green cube sim-to-real grasp with dual-camera recording",
+  "outcome": "Simulation grasp succeeded; user observed edge contact during physical descent, followed by a closing timeout before lift. Real grasp not successful.",
+  "real": {
+    "pregrasp_completed": true,
+    "pregrasp_action_count": 733,
+    "pregrasp_elapsed_s": 58.02591268399556,
+    "execution_completed": false,
+    "grasp_success": null,
+    "lift_started": false,
+    "completed_second_stage_actions": 207,
+    "failed_second_stage_action_index": 207,
+    "failed_original_action_index": 940,
+    "lift_first_original_action_index": 989,
+    "error": "ReplayError: Robot did not catch up within tracking timeout",
+    "target_width_at_stop_m": 0.026990291262135917,
+    "observed_width_wait_range_m": [
+      0.0321,
+      0.0322
+    ],
+    "gripper_tracking_tolerance_m": 0.005,
+    "tracking_timeout_s": 5.0,
+    "recorded_wait_interval_s": 4.979005243993015,
+    "max_arm_error_during_wait_deg": 0.09110181033543373,
+    "hardware_speed_percent": 1,
+    "reference_joint_speed_deg_s": 5,
+    "reference_gripper_speed_m_s": 0.01,
+    "user_authorization": "Low-speed green cube grasp, lift approximately 5 cm, put back; onsite readiness confirmed; simultaneous comparison recording requested."
+  },
+  "post_stop": {
+    "read_only_probe_tx_delta": 0,
+    "samples": 100,
+    "last_feedback": {
+      "joints_deg": [
+        -16.3,
+        115.18,
+        -76.453,
+        -0.692,
+        58.698,
+        -13.561
+      ],
+      "joints_rad": [
+        -0.2844886680750757,
+        2.0102702324470685,
+        -1.3343565730272247,
+        -0.01207767842380076,
+        1.0244733643356316,
+        -0.23668409986295103
+      ],
+      "gripper_width_m": 0.0303,
+      "joint_timestamp": 1794046689.6518602,
+      "gripper_timestamp": 1794046689.6519876,
+      "ctrl_mode": 0,
+      "arm_status": 1,
+      "error_code": 0,
+      "motors_enabled": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "motor_faults": [
+        {
+          "voltage_too_low": false,
+          "motor_overheating": false,
+          "driver_overcurrent": false,
+          "driver_overheating": false,
+          "collision_status": false,
+          "driver_error_status": false,
+          "stall_status": false
+        },
+        {
+          "voltage_too_low": false,
+          "motor_overheating": false,
+          "driver_overcurrent": false,
+          "driver_overheating": false,
+          "collision_status": false,
+          "driver_error_status": false,
+          "stall_status": false
+        },
+        {
+          "voltage_too_low": false,
+          "motor_overheating": false,
+          "driver_overcurrent": false,
+          "driver_overheating": false,
+          "collision_status": false,
+          "driver_error_status": false,
+          "stall_status": false
+        },
+        {
+          "voltage_too_low": false,
+          "motor_overheating": false,
+          "driver_overcurrent": false,
+          "driver_overheating": false,
+          "collision_status": false,
+          "driver_error_status": false,
+          "stall_status": false
+        },
+        {
+          "voltage_too_low": false,
+          "motor_overheating": false,
+          "driver_overcurrent": false,
+          "driver_overheating": false,
+          "collision_status": false,
+          "driver_error_status": false,
+          "stall_status": false
+        },
+        {
+          "voltage_too_low": false,
+          "motor_overheating": false,
+          "driver_overcurrent": false,
+          "driver_overheating": false,
+          "collision_status": false,
+          "driver_error_status": false,
+          "stall_status": false
+        }
+      ]
+    },
+    "reset_sent": false,
+    "further_motion_sent": false,
+    "note": "Emergency status remains latched. A subsequent attempt needs onsite recovery and fresh pose/object observations, not resuming old targets."
+  },
+  "interpretation": [
+    "Position tracking treated sustained gripper closing obstruction as lag; this is not a failed lift or object drop.",
+    "Opening 32.1 mm is not a validated object edge measurement: pose, offsets and compliance remain possible.",
+    "Observed contact does not prove secure load-bearing grasp.",
+    "No global tracking tolerance was relaxed after the stop."
+  ],
+  "evidence": [
+    {
+      "path": "outputs/playground_grasp_20261107/sim_trial_03/plan.json",
+      "sha256": "17429df394367d5d72d1e1ed2a6695acee6eb88f28ff555a19884ed0f52d1929"
+    },
+    {
+      "path": "outputs/playground_grasp_20261107/sim_trial_03/summary.json",
+      "sha256": "d93ec549da72bbb71835af635e53406e9809cf3878d653f15d2e7e6d2e99d9e9"
+    },
+    {
+      "path": "outputs/playground_grasp_20261107/sim_trial_03/physics_audit.json",
+      "sha256": "bd1ca96e1f2117deab7f80d86cc25b4ef2414e1547941a1d5681dfac3687fed6"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/pregrasp_plan_01.json",
+      "sha256": "e2115874b02ebe6abc542ae626e444ec06025b91fce679b2722f902bd6144a42"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/grasp_plan_01.json",
+      "sha256": "303241cadcfae78d62ac6642755e91ba1c7f1ff688ee255776f3ff50ab799d9f"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/playground_pregrasp_run_01/summary.json",
+      "sha256": "51d02994d319d3293519c9b011046effa73e8a1558b1a69a9add1bd4245ed610"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/playground_pregrasp_run_01/replay.jsonl",
+      "sha256": "79dae3cea5a06fa41e6b1c1d198dd1e07f4ea9e34330b666fb74cb1292fb9caa"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/playground_grasp_run_01/summary.json",
+      "sha256": "3154f68b8bb9a24ee6256b32d9efe9118bf7125acf3e3407d7b4e6819aac61d1"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/playground_grasp_run_01/replay.jsonl",
+      "sha256": "c33e41c6cefc411b4e568c72ed55540f560ef8472250b2509ee11b14b5eee3be"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/playground_grasp_capture_01/frames.jsonl",
+      "sha256": "0077392f901ca1c2d899eb2f04c0f06399463bc4922230f0fa8b12de079551ea"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/playground_grasp_capture_01/report.json",
+      "sha256": "285a18e17fa7dc51f03b3abd7ae863808e451818b34b668633b35525d3ebf2e0"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/before_feedback.json",
+      "sha256": "55864fba22147b2ef0544d5aa3d355f1be154a083c2f7b47e8b0aa381d1226c8"
+    },
+    {
+      "path": "outputs/playground_grasp_transfer_20261107/after_feedback.json",
+      "sha256": "66fe4e6de9c9b68ce0e8a52006ee73e2cd4207fa8c36de3a64b1a7a745f3b610"
+    }
+  ],
+  "simulation": {
+    "success": true,
+    "simulation_only": true,
+    "attachments_or_object_teleportation": false,
+    "min_held_lift_m": 0.049965083599090576,
+    "held_stable": true,
+    "stable_window_s": 1.5,
+    "return_distance_m": 3.506176100216771e-05,
+    "unintended_external_robot_contacts": [],
+    "fps": 30,
+    "frames": 1493,
+    "duration_s": 49.766666666666666,
+    "plan_sha256": "17429df394367d5d72d1e1ed2a6695acee6eb88f28ff555a19884ed0f52d1929"
+  },
+  "videos": {
+    "comparison_grasp_1x.mp4": {
+      "path": "outputs/playground_grasp_transfer_20261107/video_comparison/comparison_grasp_1x.mp4",
+      "sha256": "b6a721481e7bdf64bac61251621cac5210077f802803d1a9e6e95f47035eedda"
+    },
+    "comparison_full_1x.mp4": {
+      "path": "outputs/playground_grasp_transfer_20261107/video_comparison/comparison_full_1x.mp4",
+      "sha256": "aa3bd67cb99b0632a39db5e54bbaa90a16e63c351308fda438d7566642f61e94"
+    }
+  },
+  "operator_correction": {
+    "source": "User onsite observation in conversation, 2026-11-07",
+    "observation": "The physical fingers contacted the cube edge during downward motion; the cube was not lifted.",
+    "status": "Accepted; exact onset and geometric offsets under offline video/log review.",
+    "implication": "The closing tracking timeout is a later controller stop condition, not an adequate explanation of the initial physical failure. Contact at the edge is not a secure grasp."
+  },
+  "subsequent_calibration": {
+    "record": "docs/results/playground_calibration_20261107.json",
+    "observed_failure": "Pre-closing visible object motion confirmed at 6.867s, width feedback 59.4mm; closing begins at 8.037s. No real lift.",
+    "result": "Default Playground visual registration improved. Same applied-command physics still does not reproduce descent contact. No real reset, actuation or retry.",
+    "historical_state_note": "post_stop describes first post-stop probe only; later passive capture has different arm/object positions. Do not reuse stale pose or cube location."
+  }
+}
