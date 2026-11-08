@@ -9,6 +9,11 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1] / "src/pressb/model_sources/walloss"
+SFT_SOURCE_ADAPTATIONS = {
+    "train_qact.py",
+    "wall_x/data/load_lerobot_dataset.py",
+    "wall_x/trainer/qwen_vl_act_trainer.py",
+}
 
 
 def build_module():
@@ -22,13 +27,23 @@ def test_imported_source_hashes_match_deployed_snapshot():
     manifest = json.loads((ROOT / "source_manifest.json").read_text())
     assert len(manifest["source_commit"]) == 40
     assert manifest["files"]
+    changed_sources = set()
     for entry in manifest["files"]:
         path = ROOT / entry["path"]
         assert path.is_relative_to(ROOT)
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["bundled_sha256"]
-        # Production model/CUDA sources remain exactly the deployed code.
-        if entry["path"].startswith(("wall_x/", "csrc/")):
-            assert entry["bundled_sha256"] == entry["source_sha256"]
+        assert path.stat().st_size == entry["bytes"], entry["path"]
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["bundled_sha256"], entry["path"]
+        if entry["bundled_sha256"] != entry["source_sha256"]:
+            changed_sources.add(entry["path"])
+        if entry["path"] in SFT_SOURCE_ADAPTATIONS:
+            assert entry["adaptation"], entry["path"]
+    # Model, serving and CUDA sources retain exact upstream equality; only
+    # explicitly named SFT entrypoint/data/trainer files may contain adaptations.
+    assert changed_sources == SFT_SOURCE_ADAPTATIONS
+    for entry in manifest["pressb_support_files"]:
+        path = ROOT / entry["path"]
+        assert path.is_relative_to(ROOT)
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"], entry["path"]
 
 
 def test_inference_training_and_wire_dependencies_are_bundled():

@@ -5,6 +5,7 @@ import yaml
 import wandb
 import accelerate
 from argparse import ArgumentParser
+from pathlib import Path
 from accelerate import (
     Accelerator,
     DistributedDataParallelKwargs,
@@ -12,6 +13,7 @@ from accelerate import (
 )
 
 from wall_x.trainer.qwen_vl_act_trainer import QwenVlAct_Trainer
+from pressb.training.image_transforms import resolve_image_transforms_config
 
 
 def setup_environment():
@@ -26,6 +28,10 @@ def load_config(config_path):
 
     # Set model_type in data config if not already set
     config["data"]["model_type"] = config.get("model_type")
+    config["image_transforms"] = resolve_image_transforms_config(
+        config,
+        legacy_config=config["data"].get("lerobot_config", {}).get("image_transforms"),
+    )
 
     return config
 
@@ -89,8 +95,18 @@ def setup_logging(config, accelerator):
 
     print("Configuration:")
     print("=" * 50)
-    print(json.dumps(config, indent=2, ensure_ascii=False))
+    serialized_config = json.dumps(config, indent=2, ensure_ascii=False) + "\n"
+    print(serialized_config, end="")
     print("=" * 50)
+
+    # Record the effective augmentation preset and all other run settings. Keep
+    # the previous snapshot when a resumed run changes its configuration.
+    config_path = Path(save_path) / "resolved_training_config.json"
+    if config_path.exists() and config_path.read_text() != serialized_config:
+        config_path.replace(
+            config_path.with_name(f"resolved_training_config.previous-{time.time_ns()}.json")
+        )
+    config_path.write_text(serialized_config)
 
     # Initialize wandb logger
     logger = wandb.init(

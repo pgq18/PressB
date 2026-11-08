@@ -14,25 +14,47 @@ import pytest
 
 SOURCE = Path(__file__).resolve().parents[1] / "src/pressb/model_sources/vlajepa"
 
+# Only these imported files differ from the preserved upstream snapshot.
+SFT_SOURCE_ADAPTATIONS = {
+    "scripts/configs/vlajepa_piper_ft.yaml",
+    "starVLA/dataloader/piper_lerobot.py",
+    "starVLA/dataloader/table_buttons_lerobot.py",
+    "starVLA/dataloader/table_buttons_multitask_lerobot.py",
+    "starVLA/training/train_piper.py",
+    "starVLA/training/train_table_buttons.py",
+    "starVLA/training/train_table_buttons_multitask.py",
+}
+SFT_TEST_ADAPTATIONS = {
+    "tests/test_piper_trainer.py",
+}
+FIXTURE_PATH_ADAPTATIONS = {
+    "tests/test_table_buttons_1000_training.py",
+    "tests/test_table_buttons_multitask_joint6_training.py",
+}
+
 
 def test_bundled_vlajepa_source_inventory():
     manifest = json.loads((SOURCE / "source_manifest.json").read_text())
     assert manifest["commit"] == "9c9dc71c8e199c7428b25d103ab666395832c001"
     assert set(manifest["profiles"]) == {
         "pose9", "joint6", "joint7", "joint6_multitask", "joint7_multitask"}
+    changed_sources = set()
     for relative, item in manifest["files"].items():
         path = SOURCE / relative
         assert path.is_file(), relative
         assert path.stat().st_size == item["bytes"], relative
         assert hashlib.sha256(path.read_bytes()).hexdigest() == item["sha256"], relative
         assert path.suffix not in (".pt", ".pth", ".so", ".safetensors")
+        if item["source_sha256"] is not None and item["sha256"] != item["source_sha256"]:
+            changed_sources.add(relative)
+        if relative in SFT_SOURCE_ADAPTATIONS | SFT_TEST_ADAPTATIONS:
+            assert item["adaptation"], relative
+    assert changed_sources == SFT_SOURCE_ADAPTATIONS | SFT_TEST_ADAPTATIONS | FIXTURE_PATH_ADAPTATIONS
     for relative in (
         "starVLA/model/framework/VLA_JEPA.py",
         "starVLA/model/modules/vlm/QWen3.py",
         "starVLA/model/modules/action_model/GR00T_ActionHeader.py",
         "starVLA/inference/piper_policy.py",
-        "starVLA/training/train_piper.py",
-        "starVLA/training/train_table_buttons.py",
         "starVLA/training/train_table_buttons_multitask_joint6.py",
     ):
         item = manifest["files"][relative]

@@ -98,9 +98,10 @@ class TableButtonsLeRobotDataset(PiperLeRobotDataset):
 
     def __init__(self, root, split="train", split_manifest=None, action_horizon=7,
                  video_horizon=8, resolution=224, seed=42, sample_stride=1,
-                 frame_cache_size=256, decoder_cache_size=4):
+                 frame_cache_size=256, decoder_cache_size=4, image_transforms=None):
         self.root = Path(root).resolve()
         _require(split in ("train", "val"), "split must be train or val")
+        self.image_transforms = image_transforms if split == "train" else None
         for name, value in (("action_horizon", action_horizon), ("video_horizon", video_horizon),
                             ("sample_stride", sample_stride), ("decoder_cache_size", decoder_cache_size)):
             _require(type(value) is int and value > 0, f"{name} must be a positive integer")
@@ -300,7 +301,8 @@ class TableButtonsLeRobotDataset(PiperLeRobotDataset):
         views = []
         for key in CAMERA_KEYS:
             path, offset = e["videos"][key]
-            views.append(self._video_frames(path, offset + v_indices))
+            views.append(self._augment_video(self._video_frames(path, offset + v_indices),
+                                             sample_key=(int(source_episode_id), i, key)))
         return dict(image=[Image.fromarray(view[0].copy()) for view in views], video=np.stack(views),
                     state=self._states[e["dataset_from_index"] + i:i + e["dataset_from_index"] + 1].copy(),
                     action=self._actions[a_indices].copy(), lang=self.instruction,

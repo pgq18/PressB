@@ -439,7 +439,10 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
     if args.probe_steps < 0 or (args.probe_steps and args.resume):
         raise ValueError("Probe requires positive steps and fresh initialization")
     from omegaconf import OmegaConf
+    from pressb.training.image_transforms import build_image_transforms, normalize_image_transforms_config
+
     cfg = OmegaConf.merge(OmegaConf.load(args.config), OmegaConf.from_dotlist(args.set))
+    cfg.image_transforms = normalize_image_transforms_config(cfg.get("image_transforms"))
     if args.run_id:
         cfg.run_id = args.run_id
     checkpoint_policy = configured_checkpoint_policy(cfg, args.resume)
@@ -472,8 +475,10 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
     common = dict(root=cfg.datasets.vla_data.data_root_dir, split_manifest=output / "split.json", action_horizon=7,
                   video_horizon=8, resolution=int(cfg.datasets.vla_data.resolution_size), seed=int(cfg.seed),
                   frame_cache_size=int(cfg.datasets.vla_data.frame_cache_size), decoder_cache_size=int(cfg.datasets.vla_data.decoder_cache_size))
-    train_data = dataset_class(split="train", sample_stride=int(cfg.datasets.vla_data.sample_stride), **common)
-    val_data = dataset_class(split="val", **common)
+    train_data = dataset_class(split="train", sample_stride=int(cfg.datasets.vla_data.sample_stride),
+                              image_transforms=build_image_transforms(cfg.get("image_transforms"), split="train", seed=int(cfg.seed)), **common)
+    val_data = dataset_class(split="val",
+                            image_transforms=build_image_transforms(cfg.get("image_transforms"), split="val", seed=int(cfg.seed)), **common)
     anchors = shared.validation_anchors(val_data, int(cfg.trainer.val_anchors_per_episode), int(cfg.trainer.val_max_samples))
     anchor_validator(val_data, anchors)
     batch_size, accumulation = int(cfg.datasets.vla_data.per_device_batch_size), int(cfg.trainer.gradient_accumulation_steps)
@@ -611,6 +616,8 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
     optimizer.zero_grad(set_to_none=True)
     started, checked_gradients = time.monotonic(), False
     while progress["step"] < maximum:
+        if train_data.image_transforms is not None:
+            train_data.image_transforms.set_epoch(progress["epoch"])
         sampler.set_epoch(progress["epoch"])
         sampler.set_start_index(progress["batch_in_epoch"] * batch_size)
         model.train()

@@ -251,6 +251,7 @@ class QwenVlAct_Trainer:
         """
         # Initialize training dataloader for current epoch
         if isinstance(self.dataset, PreprocessedDataset):
+            self.dataset.set_epoch(epoch)
             if getattr(self, "train_dataloader", None) is not None:
                 self.dataset._train()
                 self.train_sampler.set_epoch(epoch)

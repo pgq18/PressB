@@ -2,14 +2,15 @@
 LeRobot Dataset Loader - Distributed Version
 """
 
+from copy import copy
+
 import numpy as np
 import torch
-from torch.utils.data import DistributedSampler, random_split
+from torch.utils.data import DistributedSampler, Subset, random_split
 from lerobot.datasets.lerobot_dataset import LeRobotDataset, LeRobotDatasetMetadata
-from lerobot.datasets.transforms import (
-    ImageTransformConfig,
-    ImageTransforms,
-    ImageTransformsConfig,
+from pressb.training.image_transforms import (
+    build_image_transforms,
+    resolve_image_transforms_config,
 )
 from typing import Protocol, SupportsIndex, TypeVar
 from qwen_vl_utils.vision_process import smart_resize
@@ -25,26 +26,6 @@ from transformers import AutoProcessor
 from .utils import load_norm_stats, KEY_MAPPINGS
 
 T_co = TypeVar("T_co", covariant=True)
-
-
-def build_image_transforms(image_transforms_config):
-    if not image_transforms_config or not image_transforms_config.get("enable", False):
-        return None
-
-    config_kwargs = {
-        "enable": image_transforms_config.get("enable", False),
-        "max_num_transforms": image_transforms_config.get("max_num_transforms", 3),
-        "random_order": image_transforms_config.get("random_order", False),
-    }
-
-    transform_configs = image_transforms_config.get("tfs")
-    if transform_configs is not None:
-        config_kwargs["tfs"] = {
-            name: ImageTransformConfig(**transform_config)
-            for name, transform_config in transform_configs.items()
-        }
-
-    return ImageTransforms(ImageTransformsConfig(**config_kwargs))
 
 
 def split_lerobot_episodes(episodes_num, train_test_split=0.95, split_seed=42):
@@ -109,6 +90,12 @@ class PreprocessedDataset(Dataset[T_co]):
                 [0.95, 0.05],
                 torch.Generator().manual_seed(seed) if seed is not None else None,
             )
+            # Keep the same frame split and shared HF storage/metadata, with an
+            # independent transform setting for validation. Never toggle the
+            # training dataset's transform: workers may retain it across epochs.
+            validation_dataset = copy(dataset)
+            validation_dataset.image_transforms = None
+            self.val_dataset = Subset(validation_dataset, self.val_dataset.indices)
             self._train()
 
         self.seed = seed
@@ -210,6 +197,12 @@ class PreprocessedDataset(Dataset[T_co]):
     def _train(self):
         self._dataset = self.train_dataset
 
+    def set_epoch(self, epoch):
+        """Update training augmentation for this epoch, including worker copies."""
+        set_epoch = getattr(self.hf_dataset.image_transforms, "set_epoch", None)
+        if callable(set_epoch):
+            set_epoch(epoch)
+
     def get_train_dataloader(self):
         """
         Get distributed training dataloader
@@ -220,13 +213,16 @@ class PreprocessedDataset(Dataset[T_co]):
             seed: Random seed for reproducibility
         """
         self._train()
+        # Bind each loader and sampler to its own split view. The trainer still
+        # switches the parent dataset's mode between train and validation.
+        dataset_view = copy(self)
 
         batch_size = self.config.get("batch_size_per_gpu", 8)
         num_workers = self.config.get("num_workers", 4)
 
         # Create distributed sampler
         sampler = DistributedSampler(
-            self,
+            dataset_view,
             num_replicas=self.world_size,
             rank=self.rank,
             shuffle=True,
@@ -235,7 +231,7 @@ class PreprocessedDataset(Dataset[T_co]):
         )
 
         dataloader = torch.utils.data.DataLoader(
-            self,
+            dataset_view,
             batch_size=batch_size,
             sampler=sampler,  # Use distributed sampler instead of shuffle=True
             num_workers=num_workers,
@@ -244,7 +240,7 @@ class PreprocessedDataset(Dataset[T_co]):
             ),
             pin_memory=True,  # Enable for GPU training
             persistent_workers=num_workers > 0,  # Only if num_workers > 0
-            prefetch_factor=2,  # Reduce memory usage
+            prefetch_factor=2 if num_workers > 0 else None,
             drop_last=True,  # Avoid incomplete batches
         )
 
@@ -255,6 +251,7 @@ class PreprocessedDataset(Dataset[T_co]):
         Get distributed evaluation dataloader (no shuffling for consistent evaluation)
         """
         self._eval()
+        dataset_view = copy(self)
 
         batch_size = self.config.get(
             "eval_batch_size_per_gpu", self.config.get("batch_size_per_gpu", 8)
@@ -263,7 +260,7 @@ class PreprocessedDataset(Dataset[T_co]):
 
         # Create distributed sampler for evaluation (no shuffle)
         sampler = DistributedSampler(
-            self,
+            dataset_view,
             num_replicas=self.world_size,
             rank=self.rank,
             shuffle=False,  # No shuffling for evaluation
@@ -271,7 +268,7 @@ class PreprocessedDataset(Dataset[T_co]):
         )
 
         dataloader = torch.utils.data.DataLoader(
-            self,
+            dataset_view,
             batch_size=batch_size,
             sampler=sampler,
             num_workers=num_workers,
@@ -280,7 +277,7 @@ class PreprocessedDataset(Dataset[T_co]):
             ),
             pin_memory=True,
             persistent_workers=num_workers > 0,
-            prefetch_factor=2,
+            prefetch_factor=2 if num_workers > 0 else None,
             drop_last=False,
         )
 
@@ -533,7 +530,13 @@ def load_lerobot_data(
     train_episodes, test_episodes = split_lerobot_episodes(
         episodes_num, train_test_split=train_test_split, split_seed=split_seed
     )
-    image_transforms = build_image_transforms(lerobot_config.get("image_transforms"))
+    image_transforms = build_image_transforms(
+        resolve_image_transforms_config(
+            config, legacy_config=lerobot_config.get("image_transforms")
+        ),
+        split="train",
+        seed=seed,
+    )
 
     train_dataset = FixedLeRobotDataset(
         repo_id,
@@ -674,8 +677,12 @@ class FixedLeRobotDataset(LeRobotDataset):
 
         if self.image_transforms is not None:
             image_keys = self.meta.camera_keys
+            apply_to_sample = getattr(self.image_transforms, "apply_to_sample", None)
             for cam in image_keys:
-                item[cam] = self.image_transforms(item[cam])
+                if callable(apply_to_sample):
+                    item[cam] = apply_to_sample(item[cam], sample_key=(ep_idx, abs_idx, cam))
+                else:
+                    item[cam] = self.image_transforms(item[cam])
 
         # Add task as a string
         task_idx = item["task_index"].item()
@@ -761,6 +768,7 @@ def load_test_dataset(
         repo_id,
         episodes=[episode],
         delta_timestamps=delta_timestamps,
+        image_transforms=None,
         video_backend="pyav",
         root=root,
         tolerance_s=tolerance_s,

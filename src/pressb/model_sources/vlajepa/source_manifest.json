@@ -8,34 +8,39 @@
       "source_sha256": null
     },
     "configs/joint6.yaml": {
-      "bytes": 2412,
+      "bytes": 3130,
       "origin": "PressB local adaptation",
-      "sha256": "6be23d51231fa4d607a4205817a408bcd8c2b68f88ece79974fbbb423c6be318",
-      "source_sha256": null
+      "sha256": "ea8072fbc50a80df16cfecd60863826a970814f17d7d0fa9bad22445ed556452",
+      "source_sha256": null,
+      "adaptation": "Declare the shared PressB train-only SFT image augmentation preset."
     },
     "configs/joint6_multitask.yaml": {
-      "bytes": 2423,
+      "bytes": 3141,
       "origin": "PressB local adaptation",
-      "sha256": "509abe980e1df4e2577da3f808c6554b3152e708b5452abda1abab50a3c8c4ab",
-      "source_sha256": null
+      "sha256": "dc7ec85bd910fac8e2955f6f4255f0b8a3e1eba800cb175ec901f8295c843f2f",
+      "source_sha256": null,
+      "adaptation": "Declare the shared PressB train-only SFT image augmentation preset."
     },
     "configs/joint7.yaml": {
-      "bytes": 2363,
+      "bytes": 3081,
       "origin": "PressB local adaptation",
-      "sha256": "debd47ca07e2766429f3cac0a36eb83859447f06e726de5cd0bf8fc5db850a8b",
-      "source_sha256": null
+      "sha256": "5a7ea366100efd4ef0aaddedc7e79aedb46c501ac640e28c3fa4dcfe9c935eb4",
+      "source_sha256": null,
+      "adaptation": "Declare the shared PressB train-only SFT image augmentation preset."
     },
     "configs/joint7_multitask.yaml": {
-      "bytes": 2374,
+      "bytes": 3092,
       "origin": "PressB local adaptation",
-      "sha256": "03b1ee6cdfbcbeb1de871b6c58799bdc81a82ca691b1dd55957693d34e1a76bc",
-      "source_sha256": null
+      "sha256": "be4cdbb4933430e58edad307d70860aaa1d8ad470b7f1b488eb87dd661d5ca33",
+      "source_sha256": null,
+      "adaptation": "Declare the shared PressB train-only SFT image augmentation preset."
     },
     "configs/pose9.yaml": {
-      "bytes": 2258,
+      "bytes": 2976,
       "origin": "PressB local adaptation",
-      "sha256": "a82ee0fb49104288dbf821ada0899d78ee471ef0457f2eda0056aebfd8462157",
-      "source_sha256": null
+      "sha256": "5b967b4039e66d6ffd684e7e6d9f4bbe93574ef132bc7e72390ff55ec71c6d65",
+      "source_sha256": null,
+      "adaptation": "Declare the shared PressB train-only SFT image augmentation preset."
     },
     "docs/table_buttons_multitask_training.md": {
       "bytes": 4338,
@@ -62,10 +67,11 @@
       "source_sha256": "c44573a43d5859824e4aac7cb585db1fd61b6a67446e660cdd841970fb6d5307"
     },
     "scripts/configs/vlajepa_piper_ft.yaml": {
-      "bytes": 2268,
+      "bytes": 2986,
       "origin": "local_checkout",
-      "sha256": "4c9b21eea908af12f667ce180d3167d4192dc7a97bb0d838d9fb1dffc2115ac4",
-      "source_sha256": "4c9b21eea908af12f667ce180d3167d4192dc7a97bb0d838d9fb1dffc2115ac4"
+      "sha256": "3e2f1b4fe9a388391ea823315463db13e0500ac58af21a44342d88734ced57b9",
+      "source_sha256": "4c9b21eea908af12f667ce180d3167d4192dc7a97bb0d838d9fb1dffc2115ac4",
+      "adaptation": "Declare the shared PressB train-only SFT image augmentation preset in the native pose9 configuration."
     },
     "scripts/eval_piper_checkpoint.py": {
       "bytes": 13822,
@@ -104,10 +110,11 @@
       "source_sha256": "8d7d4b31507dba7a3a8d90c9634dbf391dc6bfee7c14ea97e2df93cbad77e550"
     },
     "starVLA/dataloader/piper_lerobot.py": {
-      "bytes": 23191,
+      "bytes": 24371,
       "origin": "local_checkout",
-      "sha256": "f7165f5d6e69aaeda513ad8abf6f72408d797e4b4bc774d8d8c57f1ffc421243",
-      "source_sha256": "f7165f5d6e69aaeda513ad8abf6f72408d797e4b4bc774d8d8c57f1ffc421243"
+      "sha256": "7f4aacd108c080d1b1a7913ce8ed8abe50db35583eaf21ed12ace9138a075f00",
+      "source_sha256": "f7165f5d6e69aaeda513ad8abf6f72408d797e4b4bc774d8d8c57f1ffc421243",
+      "adaptation": "Apply shared image transforms to decoded temporal frames after cache retrieval, keyed by training seed, epoch, sample and camera; derive the current image from the same augmented clip and keep evaluation data unaugmented."
     },
     "starVLA/dataloader/table_buttons_joint6_lerobot.py": {
       "bytes": 2986,
@@ -116,10 +123,11 @@
       "source_sha256": "ac99bf762981c560a2e62ac26740c992509df5bebc9556509daaa10e9e5dbb1e"
     },
     "starVLA/dataloader/table_buttons_lerobot.py": {
-      "bytes": 19711,
+      "bytes": 19924,
       "origin": "h200_worktree_addition",
-      "sha256": "abf275cd46769dfe20870d3a3641003c47900c605fdc20cddb65473a8e733821",
-      "source_sha256": "abf275cd46769dfe20870d3a3641003c47900c605fdc20cddb65473a8e733821"
+      "sha256": "e43f2c0e832f57456c258eafd6f5804eb4cba4572e639fa649fab03da3fee288",
+      "source_sha256": "abf275cd46769dfe20870d3a3641003c47900c605fdc20cddb65473a8e733821",
+      "adaptation": "Pass the shared train-only image transform callable to the common temporal image reader, including sample-keyed augmentation and epoch propagation."
     },
     "starVLA/dataloader/table_buttons_multitask_joint6_lerobot.py": {
       "bytes": 5186,
@@ -128,10 +136,11 @@
       "source_sha256": "9b47bf76f9e3a54182d32b78fb16c8406233fc6194c729484aa58e152238f659"
     },
     "starVLA/dataloader/table_buttons_multitask_lerobot.py": {
-      "bytes": 20664,
+      "bytes": 20877,
       "origin": "h200_worktree_addition",
-      "sha256": "d2f7d3347fe139503b81e5ac1adbb76336b2c39bec718f13848d86a00c5a62db",
-      "source_sha256": "d2f7d3347fe139503b81e5ac1adbb76336b2c39bec718f13848d86a00c5a62db"
+      "sha256": "d1c27faa13150262f45d4da97b6e7f83cce241b75bbcfcca73c7fdbf0275796b",
+      "source_sha256": "d2f7d3347fe139503b81e5ac1adbb76336b2c39bec718f13848d86a00c5a62db",
+      "adaptation": "Pass the shared train-only image transform callable to the common temporal image reader, including sample-keyed augmentation and epoch propagation."
     },
     "starVLA/inference/__init__.py": {
       "bytes": 81,
@@ -290,22 +299,25 @@
       "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "starVLA/training/train_piper.py": {
-      "bytes": 46546,
+      "bytes": 47534,
       "origin": "local_checkout",
-      "sha256": "5abcb63ff7ebfeea3a2eec64e5740620dda2accbd1abbc0a0e97459885263883",
-      "source_sha256": "5abcb63ff7ebfeea3a2eec64e5740620dda2accbd1abbc0a0e97459885263883"
+      "sha256": "d575aacb5353c36615381299266cddd494165007e3064bf243b5e169e0e65642",
+      "source_sha256": "5abcb63ff7ebfeea3a2eec64e5740620dda2accbd1abbc0a0e97459885263883",
+      "adaptation": "Resolve, save and fingerprint the common SFT augmentation preset and transform order; construct seeded split-specific readers and propagate epoch before resumed reads, keeping validation unaugmented."
     },
     "starVLA/training/train_table_buttons.py": {
-      "bytes": 43956,
+      "bytes": 44541,
       "origin": "h200_worktree_addition",
-      "sha256": "e0d78a0b0187f1b1ad65002bfe29920db743b7c0b0e65411f2ca029811eff579",
-      "source_sha256": "e0d78a0b0187f1b1ad65002bfe29920db743b7c0b0e65411f2ca029811eff579"
+      "sha256": "49739b3983572aa4e0dcb5bd83d82753d7dd2da34a1c1bd394bd340254f002e8",
+      "source_sha256": "e0d78a0b0187f1b1ad65002bfe29920db743b7c0b0e65411f2ca029811eff579",
+      "adaptation": "Resolve and save the shared SFT augmentation preset for joint6/joint7 and delegated multi-task joint6 training; use seeded train transforms and epoch propagation while disabling validation transforms."
     },
     "starVLA/training/train_table_buttons_multitask.py": {
-      "bytes": 23564,
+      "bytes": 24117,
       "origin": "h200_worktree_addition",
-      "sha256": "3f8493070a587b24979fbe442509ced3e40e196e54da64a482e0a68a788508be",
-      "source_sha256": "3f8493070a587b24979fbe442509ced3e40e196e54da64a482e0a68a788508be"
+      "sha256": "ee35d5d7f559757a6cd131471a26373f08f602fabc46f7c47e852a5f8b9b8265",
+      "source_sha256": "3f8493070a587b24979fbe442509ced3e40e196e54da64a482e0a68a788508be",
+      "adaptation": "Resolve and save the shared SFT augmentation preset for multi-task joint7 training; use seeded train transforms and epoch propagation while disabling validation transforms."
     },
     "starVLA/training/train_table_buttons_multitask_joint6.py": {
       "bytes": 6312,
@@ -368,10 +380,11 @@
       "source_sha256": "0c202d38fdcd0b16dd1b1e5f104469a1a6bde28f70a4dc402017e8aa18626e40"
     },
     "tests/test_piper_trainer.py": {
-      "bytes": 13825,
+      "bytes": 15609,
       "origin": "local_checkout",
-      "sha256": "12ff0b896b1917df52d0cc609ea7fc4aeac38679391935afc92da218dbc1e4fc",
-      "source_sha256": "12ff0b896b1917df52d0cc609ea7fc4aeac38679391935afc92da218dbc1e4fc"
+      "sha256": "813e62bb0054a8dee590f45174e1fc9033b863baec246b2de52b6a2944485fc1",
+      "source_sha256": "12ff0b896b1917df52d0cc609ea7fc4aeac38679391935afc92da218dbc1e4fc",
+      "adaptation": "Add regression checks for normalized augmentation configuration and transform-order sensitivity in the training contract fingerprint."
     },
     "tests/test_serve_piper_policy.py": {
       "bytes": 8593,
@@ -449,7 +462,8 @@
   "notes": [
     "One shared model implementation supports pose9 and joint6/joint7; table-specific data and training extensions were untracked in the H200 worktree.",
     "No original LICENSE file exists in either checkout; UPSTREAM_PYPROJECT.toml retains the upstream MIT declaration. Per-file notices (including Apache-2.0 flow matching code) remain intact.",
-    "Two upstream test configuration paths point to bundled fixtures; config templates replace machine paths with environment inputs."
+    "Two upstream test configuration paths point to bundled fixtures; config templates replace machine paths with environment inputs.",
+    "SFT configurations, data readers and trainer entrypoints use the shared PressB train-only image augmentation preset keyed by seed, epoch, sample and camera; the training fingerprint includes resolved settings and transform order. Original source_sha256 values, model architecture, parameter names and inference sources remain preserved."
   ],
   "profiles": [
     "pose9",

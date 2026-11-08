@@ -12,7 +12,7 @@ and CUDA toolkits remain separately provisioned inputs.
 | `src/pressb/model_sources/walloss` | Wall-X model, native batches, external noise, context/prefix caches, data readers, supervised trainer, original serving protocol, CUDA sources |
 | `src/pressb/model_sources/vlajepa` | PiPER VLA-JEPA model, pose9 and joint6/joint7 inference, data readers, single-task and multi-task supervised trainers |
 | `src/pressb/models` | Frozen-model adapters used by the common three-node runtime |
-| `src/pressb/training` | Common supervised-training launcher |
+| `src/pressb/training` | Common supervised-training launcher and image augmentation |
 | `configs/model_training` | Six native YAML training templates |
 | `configs/model_metadata` | Unchanged historical configuration paired with the deployed PAP checkpoint |
 
@@ -114,3 +114,32 @@ measured state. This import does not generalize those datasets implicitly.
 equivalent to `scripts/train_model.py`. DSRL and action-residual RL continue to
 use `scripts/run_experiment.py train`; supervised model training and online RL
 have separate configurations and entrypoints.
+
+### Shared SFT image augmentation
+
+All bundled SFT profiles use `pressb.training.image_transforms`. Augmentation
+defaults to enabled for training, including older configs without the block;
+validation, test and evaluation splits always disable it. Configure the
+top-level `image_transforms` block in a training YAML. The historical Wall-OSS
+`data.lerobot_config.image_transforms` block remains supported when the top-level
+block is absent. To opt out, set `image_transforms: {enable: false}`.
+
+The default preset samples up to three transforms without replacement, with
+equal weights, and applies the selected transforms in configuration order:
+
+| Transform | Default range |
+|---|---|
+| Brightness, contrast, saturation | Each `[0.8, 1.2]` |
+| Hue | `[-0.05, 0.05]` |
+| Sharpness | `[0.8, 1.2]` |
+| Affine | Rotation `[-3, 3]` degrees; translation up to `0.05` of each image axis |
+
+Set `max_num_transforms`, `random_order`, and each entry's `weight`, `type` and
+`kwargs` under `tfs` to customize the preset; a supplied `tfs` mapping replaces
+the candidate set. The training templates list all six entries, and trainers
+save the resolved configuration with each run.
+Transforms operate on decoded images after cache retrieval and before model
+image/video processors; one sample's temporal frames and current image share
+the sampled transforms. Parameters are keyed by training seed, epoch, sample
+and camera so worker scheduling does not change a sample's augmentation.
+State and action labels retain their original values.

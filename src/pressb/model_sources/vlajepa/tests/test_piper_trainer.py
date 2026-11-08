@@ -112,6 +112,43 @@ def test_resume_contract_rejects_changed_sampling_and_schedule():
     assert trainer.training_contract(cfg)[1] != before
 
 
+@pytest.mark.parametrize("setting", ["enable", "max_num_transforms", "random_order", "range", "weight", "order", "candidates"])
+def test_resume_contract_records_augmentation_parameters_and_order(setting):
+    import copy
+    from omegaconf import OmegaConf
+    from pressb.training.image_transforms import normalize_image_transforms_config
+
+    cfg = OmegaConf.to_container(OmegaConf.load(
+        Path(__file__).parents[1] / "scripts/configs/vlajepa_piper_ft.yaml"), resolve=True)
+    original, fingerprint = trainer.training_contract(cfg)
+    assert original["image_transforms"] == normalize_image_transforms_config()
+    assert original["image_transform_order"] == list(cfg["image_transforms"]["tfs"])
+    # Equivalent shorthand must record the same effective configuration.
+    shorthand = copy.deepcopy(cfg)
+    shorthand["image_transforms"] = {"enable": True}
+    assert trainer.training_contract(shorthand)[1] == fingerprint
+
+    transforms = cfg["image_transforms"]
+    if setting == "enable":
+        transforms["enable"] = False
+    elif setting == "max_num_transforms":
+        transforms["max_num_transforms"] = 2
+    elif setting == "random_order":
+        transforms["random_order"] = True
+    elif setting == "range":
+        transforms["tfs"]["brightness"]["kwargs"]["brightness"] = [.9, 1.1]
+    elif setting == "weight":
+        transforms["tfs"]["brightness"]["weight"] = 2.
+    elif setting == "order":
+        transforms["tfs"] = dict(reversed(list(transforms["tfs"].items())))
+    else:
+        del transforms["tfs"]["affine"]
+    changed, changed_fingerprint = trainer.training_contract(cfg)
+    assert changed_fingerprint != fingerprint
+    with pytest.raises(ValueError, match="semantics"):
+        trainer.validate_continuation_contract(original, changed)
+
+
 def tied_model():
     model = torch.nn.Module()
     model.embedding = torch.nn.Embedding(3, 2)

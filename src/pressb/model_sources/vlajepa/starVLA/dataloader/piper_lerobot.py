@@ -1,8 +1,9 @@
 """Native, read-only LeRobot v3 adapter for the PiPER press-only collection.
 
-Dependencies: NumPy, PyArrow, PyAV and Pillow; neither torch nor LeRobot is
-imported. Camera order is always global, wrist. Input poses are base_link TCP
-xyz (metres), quaternion wxyz, gripper opening. Output poses retain xyz exactly
+Dependencies: NumPy, PyArrow, PyAV and Pillow; torch is imported only when
+training image transforms are supplied. Camera order is always global, wrist.
+Input poses are base_link TCP xyz (metres), quaternion wxyz, gripper opening.
+Output poses retain xyz exactly
 and replace the quaternion with PyTorch3D's first-two-ROWS rotation 6D; opening
 is dropped. No normalization, relative-action conversion or IK is performed.
 
@@ -177,6 +178,8 @@ class PiperLeRobotDataset:
     ``get_frame(source_episode_id, frame_index)`` for any frame in this split.
     Numeric arrays occupy about 22 MB for this dataset and are loaded once;
     resized RGB and open decoders use bounded, process-local LRU caches.
+    Optional image transforms run after cache retrieval, once per camera clip.
+    Validation and readers created without transforms retain original RGB.
     """
 
     camera_keys = CAMERA_KEYS
@@ -184,9 +187,10 @@ class PiperLeRobotDataset:
 
     def __init__(self, root, split="train", split_manifest=None, action_horizon=7,
                  video_horizon=8, resolution=224, seed=42, sample_stride=1,
-                 frame_cache_size=256, decoder_cache_size=4):
+                 frame_cache_size=256, decoder_cache_size=4, image_transforms=None):
         self.root = Path(root).resolve()
         _require(split in ("train", "val"), "split must be train or val")
+        self.image_transforms = image_transforms if split == "train" else None
         for name, value in (("action_horizon", action_horizon), ("video_horizon", video_horizon),
                             ("sample_stride", sample_stride), ("decoder_cache_size", decoder_cache_size)):
             _require(type(value) is int and value > 0, f"{name} must be a positive integer")
@@ -377,6 +381,20 @@ class PiperLeRobotDataset:
             _require(not missing, f"Video does not contain requested frames {sorted(missing)}: {path}")
         return np.stack([found[int(i)] for i in frame_ids])
 
+    def _augment_video(self, frames, sample_key):
+        """Transform a camera's whole clip without changing cached decoded RGB."""
+        if self.split != "train" or self.image_transforms is None:
+            return frames
+        import torch
+
+        # A separate copy also protects against an in-place transform. A single
+        # TCHW call shares sampled parameters across all temporal frames.
+        tensor = torch.from_numpy(frames.transpose(0, 3, 1, 2).copy())
+        apply_to_sample = getattr(self.image_transforms, "apply_to_sample", None)
+        transformed = (apply_to_sample(tensor, sample_key=sample_key) if apply_to_sample is not None
+                       else self.image_transforms(tensor))
+        return transformed.permute(0, 2, 3, 1).contiguous().numpy()
+
     def get_frame(self, source_episode_id, frame_index):
         """Read any frame in this split, including anchors skipped by stride."""
         if source_episode_id not in self._episodes:
@@ -392,7 +410,8 @@ class PiperLeRobotDataset:
         views = []
         for key in CAMERA_KEYS:
             path, offset = e["videos"][key]
-            views.append(self._video_frames(path, offset + v_indices))
+            views.append(self._augment_video(self._video_frames(path, offset + v_indices),
+                                             sample_key=(int(source_episode_id), i, key)))
         video = np.stack(views)
         return dict(image=[Image.fromarray(view[0].copy()) for view in views], video=video,
                     state=self._states[e["dataset_from_index"] + i:i + e["dataset_from_index"] + 1].copy(),

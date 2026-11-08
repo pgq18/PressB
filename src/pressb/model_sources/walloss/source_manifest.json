@@ -364,8 +364,9 @@
       "path": "train_qact.py",
       "source_path": "train_qact.py",
       "source_sha256": "9e49a3aba960926c401a849c8dde36c84c401e130740b8ed6629747c46a798dd",
-      "bundled_sha256": "9e49a3aba960926c401a849c8dde36c84c401e130740b8ed6629747c46a798dd",
-      "bytes": 3920
+      "bundled_sha256": "2daadb2a5d0b35578dad0c7da2c6dae78be19479b7b2619ce767690f1e3b33ad",
+      "bytes": 4735,
+      "adaptation": "Resolve the shared SFT image augmentation preset, including the legacy nested configuration fallback; save the resolved training configuration and retain previous snapshots when it changes."
     },
     {
       "path": "wall_x/__init__.py",
@@ -392,8 +393,9 @@
       "path": "wall_x/data/load_lerobot_dataset.py",
       "source_path": "wall_x/data/load_lerobot_dataset.py",
       "source_sha256": "2e2db8dff3ad2ad5d56f12e1b94550972bed194365b1e26d50fd0c1e12f9bdb6",
-      "bundled_sha256": "2e2db8dff3ad2ad5d56f12e1b94550972bed194365b1e26d50fd0c1e12f9bdb6",
-      "bytes": 27493
+      "bundled_sha256": "5c5f5fedb3131912521915d1bfd61ebb7635b78dcf0a91e3e78e3f985958d62d",
+      "bytes": 28158,
+      "adaptation": "Use shared train-only SFT image transforms keyed by seed, epoch, sample and camera; propagate epoch to persistent workers, isolate unaugmented validation dataset/loader views, and support zero-worker loaders."
     },
     {
       "path": "wall_x/data/utils.py",
@@ -553,8 +555,9 @@
       "path": "wall_x/trainer/qwen_vl_act_trainer.py",
       "source_path": "wall_x/trainer/qwen_vl_act_trainer.py",
       "source_sha256": "a3450467e604557a2b15951ec862fcc96b30a4a03cf68d44ca066eb670711c1b",
-      "bundled_sha256": "a3450467e604557a2b15951ec862fcc96b30a4a03cf68d44ca066eb670711c1b",
-      "bytes": 36443
+      "bundled_sha256": "425e7a7831efae06a38d66cefaf32e0b516feee4d52e2adfe25f86f590b4902a",
+      "bytes": 36485,
+      "adaptation": "Forward each training epoch to the dataset so sample-keyed image augmentation remains reproducible across persistent workers."
     },
     {
       "path": "wall_x/utils/__init__.py",
@@ -633,7 +636,10 @@
     },
     {
       "path": "workspace/piper_pap_template/config_qact.yml",
-      "sha256": "3bf8fe44f7380d1b041bc3a4ead7ab670fabd8a3371f465d9e52dcd691bace8f"
+      "sha256": "28c259c6e55e98e8a094edb0fe7a217cec1a159ca8986dbb678fd01fd2878de4",
+      "bytes": 3143,
+      "adaptation": "Use the canonical root image_transforms block for the shared SFT preset; retain the six original transform settings."
     }
-  ]
+  ],
+  "adaptation_note": "The SFT entrypoint, data loader and trainer use shared PressB image augmentation keyed by training seed, epoch, sample and camera, with isolated unaugmented validation views. Original source_sha256 values and all model, serving and CUDA source bytes remain preserved."
 }

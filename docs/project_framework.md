@@ -52,7 +52,7 @@ src/pressb/
   model_sources/           # Preserved upstream model/data/training source bundles
     walloss/               # Wall-X modules, native training and CUDA sources
     vlajepa/               # Model plus pose/joint and multi-task trainers
-  training/                # Common supervised-training launcher
+  training/                # Common supervised-training launcher and augmentation
   experiments/             # Configuration inheritance, validation and commands
   compat/                  # Explicit historical application/protocol boundaries
     elevator_rl/           # Legacy elevator runners, inference bridge and logging
@@ -97,6 +97,19 @@ select task/model factories through `experiments` rather than branching the
 trainer. Historical runners and wire conventions belong in `compat`; new task
 implementations should not depend on them. The native elevator backend uses its
 own task-local engines, not a historical runner.
+
+Every new supervised model integration must reuse
+`pressb.training.image_transforms`: resolve and record its training preset with
+`resolve_image_transforms_config`, then create split-specific transforms with
+`build_image_transforms(config, split=..., seed=...)`. Apply them to decoded CHW images or
+TCHW clips after cache retrieval and before model processors, sharing sampled
+parameters across a sample's temporal frames and current image. Use
+`apply_to_sample(image, sample_key)` with stable sample/camera keys and propagate
+`set_epoch(epoch)` to persistent workers; identical seed/epoch/key combinations
+must reproduce the same augmentation. Training uses
+the shared defaults unless explicitly disabled; validation, test and evaluation
+always disable augmentation. Preserve state/action labels and cache unaugmented
+images. See the [SFT configuration contract](bundled_models.md#shared-sft-image-augmentation).
 
 ### Task package paths
 

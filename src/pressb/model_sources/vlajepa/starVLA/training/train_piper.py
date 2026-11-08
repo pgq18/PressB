@@ -77,6 +77,12 @@ def training_contract(config):
     result = dict(seed=config["seed"], framework=framework,
                   data={key: config["datasets"]["vla_data"][key] for key in data_keys},
                   trainer={key: config["trainer"][key] for key in trainer_keys})
+    if "image_transforms" in config:
+        from pressb.training.image_transforms import normalize_image_transforms_config
+
+        result["image_transforms"] = normalize_image_transforms_config(config["image_transforms"])
+        # JSON key sorting must not erase the order used when random_order is false.
+        result["image_transform_order"] = list(result["image_transforms"]["tfs"])
     # Preserve the original run's fingerprint when these options are absent.
     for key in ("target_epochs", "continuation_schedule"):
         if key in config["trainer"]:
@@ -496,7 +502,10 @@ def main():
     parser.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
     args = parser.parse_args()
     from omegaconf import OmegaConf
+    from pressb.training.image_transforms import build_image_transforms, normalize_image_transforms_config
+
     cfg = OmegaConf.merge(OmegaConf.load(args.config), OmegaConf.from_dotlist(args.set))
+    cfg.image_transforms = normalize_image_transforms_config(cfg.get("image_transforms"))
     if args.run_id:
         cfg.run_id = args.run_id
     if args.max_steps is not None:
@@ -528,8 +537,10 @@ def main():
     common = dict(root=cfg.datasets.vla_data.data_root_dir, split_manifest=output / "split.json",
                   action_horizon=7, video_horizon=8, resolution=int(cfg.datasets.vla_data.resolution_size), seed=int(cfg.seed),
                   frame_cache_size=int(cfg.datasets.vla_data.frame_cache_size), decoder_cache_size=int(cfg.datasets.vla_data.decoder_cache_size))
-    train_data = PiperLeRobotDataset(split="train", sample_stride=int(cfg.datasets.vla_data.sample_stride), **common)
-    val_data = PiperLeRobotDataset(split="val", **common)
+    train_data = PiperLeRobotDataset(split="train", sample_stride=int(cfg.datasets.vla_data.sample_stride),
+                                    image_transforms=build_image_transforms(cfg.get("image_transforms"), split="train", seed=int(cfg.seed)), **common)
+    val_data = PiperLeRobotDataset(split="val",
+                                  image_transforms=build_image_transforms(cfg.get("image_transforms"), split="val", seed=int(cfg.seed)), **common)
     if rank == 0:
         print(json.dumps(dict(event="dataset_ready", train_episodes=len(train_data.source_episode_ids),
                               validation_episodes=len(val_data.source_episode_ids), train_anchors=len(train_data),
@@ -709,6 +720,8 @@ def main():
     start = time.monotonic()
     checked_gradients = False
     while progress["step"] < maximum:
+        if train_data.image_transforms is not None:
+            train_data.image_transforms.set_epoch(progress["epoch"])
         sampler.set_epoch(progress["epoch"])
         sampler.set_start_index(progress["batch_in_epoch"] * batch_size)
         model.train()
