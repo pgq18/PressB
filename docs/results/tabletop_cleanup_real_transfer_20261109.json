@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "task": "tabletop_cleanup",
+  "date": "2026-11-09",
+  "experiment": "One scripted simulation-to-real cleanup replay; not a learned policy or a success-rate evaluation",
+  "objects": [
+    "gamepad",
+    "speaker"
+  ],
+  "calibration": "configs/calibration/playground_20261109_global_refined.json",
+  "run_directory": "outputs/tabletop_cleanup_transfer_20261109",
+  "layout_source": "outputs/tabletop_cleanup_transfer_20261109/before/measurements.json",
+  "simulation": {
+    "simulation": {
+      "status": "passed",
+      "actions": 1935,
+      "duration_s": 64.5,
+      "episode": {
+        "full_plan_executed": true,
+        "task_success": true,
+        "physical_success": true,
+        "objects": {
+          "gamepad": {
+            "max_lift_m": 0.09441381692886353,
+            "stable_position_excursion_m": 2.9802322387695312e-08,
+            "stable_rotation_excursion_rad": 2.550953165811098e-08,
+            "physical_outcome": {
+              "active": true,
+              "grasped_and_lifted": true,
+              "contained": true,
+              "supported": true,
+              "direct_floor_support": true,
+              "released": true,
+              "low_velocity": true,
+              "no_table_support": true,
+              "bottom_world_m": 0.7640001505247561,
+              "top_world_m": 0.8246824911507051,
+              "max_lift_m": 0.08803916362397157
+            },
+            "passed": true
+          },
+          "speaker": {
+            "max_lift_m": 0.11402004957199097,
+            "stable_position_excursion_m": 3.332000937312528e-08,
+            "stable_rotation_excursion_rad": 1.0847435032242678e-07,
+            "physical_outcome": {
+              "active": true,
+              "grasped_and_lifted": true,
+              "contained": true,
+              "supported": true,
+              "direct_floor_support": true,
+              "released": true,
+              "low_velocity": true,
+              "no_table_support": true,
+              "bottom_world_m": 0.7640000368205752,
+              "top_world_m": 0.7873200388389953,
+              "max_lift_m": 0.11061397811879092
+            },
+            "passed": true
+          }
+        },
+        "final_gripper_width_m": 0.06999622285366058,
+        "max_home_joint_error_rad": 0.0006457858729493893,
+        "passed": true
+      }
+    },
+    "simulation_wide_bridge": {
+      "status": "passed",
+      "actions": 1935,
+      "duration_s": 64.5,
+      "episode": {
+        "full_plan_executed": true,
+        "task_success": true,
+        "physical_success": true,
+        "objects": {
+          "gamepad": {
+            "max_lift_m": 0.09392046928405762,
+            "stable_position_excursion_m": 0.0,
+            "stable_rotation_excursion_rad": 3.8073682413111394e-08,
+            "physical_outcome": {
+              "active": true,
+              "grasped_and_lifted": true,
+              "contained": true,
+              "supported": true,
+              "direct_floor_support": true,
+              "released": true,
+              "low_velocity": true,
+              "no_table_support": true,
+              "bottom_world_m": 0.7640000737423487,
+              "top_world_m": 0.824682455010959,
+              "max_lift_m": 0.0874955057112421
+            },
+            "passed": true
+          },
+          "speaker": {
+            "max_lift_m": 0.11402016878128052,
+            "stable_position_excursion_m": 3.332000937312528e-08,
+            "stable_rotation_excursion_rad": 3.9287591950577806e-07,
+            "physical_outcome": {
+              "active": true,
+              "grasped_and_lifted": true,
+              "contained": true,
+              "supported": true,
+              "direct_floor_support": true,
+              "released": true,
+              "low_velocity": true,
+              "no_table_support": true,
+              "bottom_world_m": 0.764000036133138,
+              "top_world_m": 0.7873200393534108,
+              "max_lift_m": 0.11061407294623182
+            },
+            "passed": true
+          }
+        },
+        "final_gripper_width_m": 0.06999622285366058,
+        "max_home_joint_error_rad": 0.0006457858729493893,
+        "passed": true
+      }
+    }
+  },
+  "trajectory_package": "outputs/tabletop_cleanup_transfer_20261109/trajectory_package",
+  "final_source_simulation": "simulation_wide_bridge",
+  "real_execution": {
+    "actions": 1935,
+    "dispatch_complete": true,
+    "elapsed_s": 65.33456184796523,
+    "control_hz": 30,
+    "firmware_speed_percent": 30,
+    "execution_mode": "reference",
+    "automatic_smoothing": false,
+    "arrival_wait": false,
+    "contact_gating": false,
+    "same_recorded_simulation_actions": true,
+    "device_fault_observed": false,
+    "final_home_max_joint_error_deg": 0.05900000000000046,
+    "firmware_retains_last_home_target": true
+  },
+  "visual_outcome": {
+    "both_objects_picked_and_transferred_into_bin": true,
+    "review_basis": "Global and wrist recording inspected before first human contact; telemetry dispatch success is not used as task success",
+    "gamepad": "Released in bin, lying approximately flat",
+    "speaker": "Released inside bin, tilted against inner wall; not flat",
+    "stable_unassisted_interval_s": [
+      58.0274,
+      64.6323
+    ],
+    "strict_real_geometry_or_force_success_detector": null,
+    "human_intervention": {
+      "first_visible_hand_s": 64.7324,
+      "first_bin_contact_s": 64.8325,
+      "scope": "Post-placement inspection while terminal settling was still in progress. Both objects were already released, arm returned home. Later manually moved box frames are excluded from outcome evidence."
+    },
+    "bin_contact_shift": {
+      "approximate_interval_after_start_s": [
+        18.97,
+        19.77
+      ],
+      "phase": "gamepad:place",
+      "contacting_part": "Occluded: cannot distinguish gamepad shell from fingertip contact"
+    },
+    "containment_scope": "Visible object bodies and speaker mounting ears inside box in both views; full 3D volume below the rim is not established from RGB alone and not required by the simulated tall-object rule."
+  },
+  "observed_sim_real_differences": [
+    "Real box shifts/rotates during gamepad placement; simulated bin is static",
+    "Real speaker rests tilted; simulated speaker rests flat",
+    "Object shape, hidden grasp surfaces, friction and masses are approximations"
+  ],
+  "model_refinement": {
+    "gamepad_disc_top_m": 0.048,
+    "gamepad_total_height_m": 0.05965,
+    "gamepad_bridge_width_m": 0.055,
+    "bridge_width_visual_estimate_range_m": [
+      0.05,
+      0.06
+    ],
+    "speaker_approach_opening_m": 0.07,
+    "grasp_targets_unchanged_across_45mm_and_55mm_bridge_validation": true
+  },
+  "evidence_frames": {
+    "1140": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001140.jpg",
+      "unix_s": 1794238671.6899686,
+      "seconds_after_start": 11.960360050201416
+    },
+    "1240": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001240.jpg",
+      "unix_s": 1794238681.697257,
+      "seconds_after_start": 21.96764850616455
+    },
+    "1420": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001420.jpg",
+      "unix_s": 1794238699.7104914,
+      "seconds_after_start": 39.9808828830719
+    },
+    "1600": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001600.jpg",
+      "unix_s": 1794238717.7570539,
+      "seconds_after_start": 58.0274453163147
+    },
+    "1640": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001640.jpg",
+      "unix_s": 1794238721.760046,
+      "seconds_after_start": 62.03043746948242
+    },
+    "1666": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001666.jpg",
+      "unix_s": 1794238724.3618863,
+      "seconds_after_start": 64.63227772712708
+    },
+    "1667": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001667.jpg",
+      "unix_s": 1794238724.462021,
+      "seconds_after_start": 64.73241257667542
+    },
+    "1668": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001668.jpg",
+      "unix_s": 1794238724.5621314,
+      "seconds_after_start": 64.83252286911011
+    },
+    "1669": {
+      "file": "outputs/tabletop_cleanup_transfer_20261109/remote/cameras/frames/frame_001669.jpg",
+      "unix_s": 1794238724.6622453,
+      "seconds_after_start": 64.93263673782349
+    }
+  },
+  "artifacts": {
+    "comparison_video": "outputs/tabletop_cleanup_transfer_20261109/video/real_vs_sim_1x.mp4",
+    "real_video": "outputs/tabletop_cleanup_transfer_20261109/video/real_cleanup_30pct_1x.mp4",
+    "execution_audit": "outputs/tabletop_cleanup_transfer_20261109/execution_audit.json",
+    "video_manifest": "outputs/tabletop_cleanup_transfer_20261109/video/manifest.json",
+    "comparison_video_sha256": "5ca25b16dc0588f7a06dfc87eee7279412afef3460f0c8917df9f81252371448"
+  },
+  "software_validation": {
+    "cleanup_geometry_and_task_tests": {
+      "passed": 132,
+      "skipped": 2,
+      "skip_reason": "CPU environment lacks USD; full Isaac runs separately passed"
+    },
+    "canonical_planning_and_integration_tests": {
+      "passed": 23
+    },
+    "default_and_explicit_plan_only_passed": true,
+    "canonical_explicit_70mm_plan_identical_to_executed_source": true,
+    "remote_execution_and_recorders_closed": true
+  }
+}

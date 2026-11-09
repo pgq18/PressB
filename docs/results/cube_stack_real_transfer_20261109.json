@@ -1,0 +1,112 @@
+{
+  "task_id": "cube_stack",
+  "date": "2026-11-09",
+  "hardware": "PiPER + two D435i cameras",
+  "source_simulation": "outputs/cube_stack_20261109/stack_fixed_2env",
+  "execution": {
+    "driver_mode": "reference",
+    "device_speed_percent": 30,
+    "gripper_effort": 1000,
+    "target_hz": 30,
+    "planned_actions": 952,
+    "completed_actions": 952,
+    "elapsed_s": 32.4653012099443,
+    "dispatch_complete": true,
+    "error": null,
+    "automatic_smoothing": false,
+    "arrival_waits": false,
+    "contact_gating": false,
+    "home_device_speed_percent": 2,
+    "home_actions": 624
+  },
+  "physical_outcome": {
+    "success": true,
+    "assessment": "Visual review of global and wrist recordings: red cube was lifted, carried, released on blue, and remained stacked after the arm returned home. Confirmed again in a later stationary RGB-D capture.",
+    "episode_count": 1,
+    "automated_task_detector": false,
+    "post_capture_seconds_after_dispatch_end": 106.56609416007996
+  },
+  "final_state": {
+    "joints_deg": [
+      -10.646,
+      27.072,
+      -26.253,
+      -6.444,
+      42.887,
+      4.757
+    ],
+    "gripper_width_m": 0.0595,
+    "joint_range_deg_during_post_capture": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "trajectory_candidates": {
+    "executed": "trajectory_package/replay_plan_reference_30pct.json",
+    "not_executed_on_hardware": [
+      "trajectory_package/replay_plan_reference_2pct.json",
+      "trajectory_package/replay_plan_reference_2pct_retimed.json"
+    ],
+    "unused_retimed_simulation_passed": true
+  },
+  "local_output_root": "outputs/cube_stack_transfer_20261109",
+  "artifacts": {
+    "trajectory_package/replay_plan_reference_30pct.json": {
+      "path": "outputs/cube_stack_transfer_20261109/trajectory_package/replay_plan_reference_30pct.json",
+      "sha256": "8c0451d445ad5391eaaad9af53491523e52bc1e501e7167fa844ad5eb4724bc2"
+    },
+    "trajectory_package/actions_si.npy": {
+      "path": "outputs/cube_stack_transfer_20261109/trajectory_package/actions_si.npy",
+      "sha256": "df67da4a3bf21028b87a18f9ea04442f7aa2f476660a5d972841203fe6abcdf8"
+    },
+    "remote/stack_run_30pct/replay.jsonl": {
+      "path": "outputs/cube_stack_transfer_20261109/remote/stack_run_30pct/replay.jsonl",
+      "sha256": "6bbc56fd16956a5b7d49acc47319f736319048f031a436c1cbad92d2526f535b"
+    },
+    "remote/stack_run_30pct/summary.json": {
+      "path": "outputs/cube_stack_transfer_20261109/remote/stack_run_30pct/summary.json",
+      "sha256": "ec659cef25083c8f1321ac7334ad4a02d225494a49a8208fab9b65881bbae74c"
+    },
+    "after/capture.json": {
+      "path": "outputs/cube_stack_transfer_20261109/after/capture.json",
+      "sha256": "fd0211563eef34092f34bfd52eb2b99180fbe09b6d1b16491180aa95fffa274a"
+    },
+    "after/global.png": {
+      "path": "outputs/cube_stack_transfer_20261109/after/global.png",
+      "sha256": "ae53dbbcb9bc919a1c4a90f166c19c8ab430633388ad6c5819de27c455229a32"
+    },
+    "after/wrist.png": {
+      "path": "outputs/cube_stack_transfer_20261109/after/wrist.png",
+      "sha256": "30faf68af6b8f112dbcc1a4931fd4121b33cf091c0a4550b4b36e898f11b9915"
+    },
+    "execution_audit": {
+      "path": "outputs/cube_stack_transfer_20261109/execution_audit.json",
+      "sha256": "3fd5fa7df8cb3ed1ba67666c3dfefa81fd268ce4816e95a4e2f15713ba4c4faf"
+    },
+    "video/manifest.json": {
+      "path": "outputs/cube_stack_transfer_20261109/video/manifest.json",
+      "sha256": "23cb18dfae479c929df9538cc4c271c509f0c070f4386976219a0cae45a98b81"
+    },
+    "video/real_stack_30pct_1x.mp4": {
+      "path": "outputs/cube_stack_transfer_20261109/video/real_stack_30pct_1x.mp4",
+      "sha256": "544c95511b3ce00edfdc0c06505a38ea939b8b5f52937df071ae4d4868e1df23"
+    },
+    "video/real_vs_sim_1x.mp4": {
+      "path": "outputs/cube_stack_transfer_20261109/video/real_vs_sim_1x.mp4",
+      "sha256": "12bef52a7793b3f9cc9930664ea092687465ab9dfb1db166216a958a5876a331"
+    }
+  },
+  "video": "outputs/cube_stack_transfer_20261109/video/real_vs_sim_1x.mp4",
+  "execution_audit": "outputs/cube_stack_transfer_20261109/execution_audit.json",
+  "verified_execution": {
+    "real_targets_equal_sim_applied": true,
+    "boundary_clipped_frames": 0,
+    "delta_clipped_frames": 0,
+    "final_home_max_joint_error_deg": 0.075,
+    "no_fault_in_post_execution_readonly_samples": true
+  }
+}

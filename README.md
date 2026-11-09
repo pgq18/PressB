@@ -23,6 +23,8 @@ PressB connects robot environments with vision-language-action (VLA) models to s
 | [Pick-and-place](docs/piper_pick_place.md) | Pick up a tabletop object and place it in a box |
 | [Table buttons](docs/table_buttons.md) | Press a red, yellow, or blue button in randomized layouts |
 | [Playground](docs/playground.md) | Calibrated, empty PiPER workbench template for building new tasks |
+| [Cube stacking](docs/cube_stack.md) | Place the red cube on the blue cube in the Playground workspace |
+| [Tabletop cleanup](docs/tabletop_cleanup.md) | Put two distinct objects into a fixed box in the Playground workspace |
 
 ## Demo
 

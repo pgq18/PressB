@@ -1,0 +1,440 @@
+{
+  "schema_version": 1,
+  "state": "completed",
+  "date": "2026-11-09",
+  "task": "cube_stack",
+  "instruction": "Pick up the red cube and place it on top of the blue cube.",
+  "architecture": {
+    "backend": "pressb.runtime.parallel.SharedWorldBackend",
+    "factory": "pressb.tasks.cube_stack.parallel:create_backend",
+    "template": {
+      "path": "configs/calibration/playground_20261108_final.json",
+      "sha256": "446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21",
+      "bytes": 15476
+    },
+    "pinned_home_used_for_reset": true
+  },
+  "real_capture": {
+    "success": true,
+    "hardware_synchronized": false,
+    "can_access": "receive only; no send calls",
+    "can_tx_packets_before": 100342,
+    "can_tx_packets_after": 100342,
+    "can_tx_delta": 0,
+    "joint_range_deg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "capture_mode": "sequential RGB+aligned depth; 90 warmup frames then 30 measured frames per device",
+    "geometry": {
+      "red": {
+        "center_xy": [
+          0.3312629658375368,
+          0.10252150092820397
+        ],
+        "size": [
+          0.029,
+          0.029,
+          0.029
+        ],
+        "yaw_deg": -10.5066961998184,
+        "source": "global RGB corners + fixed playground top plane; size remains approximate"
+      },
+      "blue": {
+        "center_xy": [
+          0.3268508292221471,
+          -0.08340910373267266
+        ],
+        "size": [
+          0.03,
+          0.03,
+          0.03
+        ],
+        "yaw_deg": 30.36432793923011,
+        "source": "global RGB corners + fixed playground top plane; size remains approximate"
+      }
+    },
+    "cross_view": {
+      "red": {
+        "global_minus_wrist_xy_m": [
+          0.011524064651629418,
+          -0.0036704170118125046
+        ],
+        "discrepancy_xy_m": 0.012094462664192125
+      }
+    },
+    "limitations": [
+      "Corner annotations have approximately 1\u20132 pixel uncertainty; sizes are estimates, not caliper measurements.",
+      "Global stereo depth has object-edge/background contamination; its top median can underestimate cube height.",
+      "Wrist table-plane estimates depend on the working-area ROI; fitted plane residual is not absolute depth accuracy.",
+      "The existing calibrated global view defines suggested placement; wrist geometry is a cross-check, not silently fused.",
+      "The 6 mm effective simulated base mount and existing wrist registration are retained, not re-estimated.",
+      "Blue is clipped in the wrist view; no wrist blue size or position is inferred.",
+      "Measured joints are for offline optical reprojection only; they are not an authorized reset or motion target.",
+      "No geometry, lighting, camera calibration or real hardware state is changed by this analysis."
+    ],
+    "artifacts": {
+      "capture.json": {
+        "path": "outputs/cube_stack_20261109/real_capture/capture.json",
+        "sha256": "04e714970cd641b1de08074d9c2ac77f5ea1724e728cc688a1fcef0be79bad5d",
+        "bytes": 17102
+      },
+      "access_audit.json": {
+        "path": "outputs/cube_stack_20261109/real_capture/access_audit.json",
+        "sha256": "f24532749b64bc9cf06bf3e2f2b06c4ea7887c5699c5572eca5cab250f1931ee",
+        "bytes": 2183
+      },
+      "analysis_final/measurements.json": {
+        "path": "outputs/cube_stack_20261109/real_capture/analysis_final/measurements.json",
+        "sha256": "106c6555f8bda1673299530c1f42fad655a978ad4249f8d5c3a418bedc0c430d",
+        "bytes": 10536
+      }
+    }
+  },
+  "static_reference": {
+    "physics_steps": 0,
+    "hardware_access": false,
+    "policy_or_RL_evaluation": false,
+    "presentation": "Measured real joint feedback; zero-order hold at original elapsed times",
+    "artifact": {
+      "path": "outputs/cube_stack_20261109/static_real_pose_render/summary.json",
+      "sha256": "76cf4c42496c8246a922e3db0f2772464c34efbff5e921d277a04e400d1f2a3b",
+      "bytes": 41494
+    }
+  },
+  "cpu": {
+    "result": "passed",
+    "main": {
+      "passed": 3716,
+      "skipped": 27,
+      "failed": 0,
+      "warnings": 9,
+      "elapsed_seconds": 96.41,
+      "skips_by_reason": {
+        "collection skipped": 4,
+        "CUDA batch-kernel parity regression": 1,
+        "Native action-expert check requires torchdiffeq": 1,
+        "could not import 'pxr.Usd': No module named 'pxr'": 17,
+        "could not import 'pxr': No module named 'pxr'": 3,
+        "Official writer/reader integration runs in the separate LeRobot environment": 1
+      }
+    },
+    "unique_passing_tests": 3785,
+    "cube_stack_unit_passing_tests": 101,
+    "source_files": 762,
+    "source_manifest_sha256_before": "6af582fc90e46ec947943dc4fb6a7dd121053fd8bd4b15d2c3397dd206484915",
+    "source_manifest_sha256_after": "6af582fc90e46ec947943dc4fb6a7dd121053fd8bd4b15d2c3397dd206484915",
+    "changed_sources": {},
+    "cuda_visible_devices": "",
+    "real_devices_or_existing_training_services_contacted": false,
+    "usd_supplement": {
+      "passed": 156,
+      "skipped": 0,
+      "failed": 0,
+      "elapsed_seconds": 1.283,
+      "newly_exercised_passing_tests": 69
+    },
+    "artifact": {
+      "path": "outputs/cube_stack_20261109/cpu_regression/summary.json",
+      "sha256": "34d6a2f6f1cb4c233208c010d158c69ba0597d56b766ff6ba4f1f70c3b9b7899",
+      "bytes": 8687
+    }
+  },
+  "parallel_smoke": {
+    "num_envs": 8,
+    "gpu": 1,
+    "passed": true,
+    "backend": "SharedWorldBackend",
+    "source_revision": "sha256:88a8864994e0faea4fc918de44512decc929db6e900f73bed55487a3cfbe3de5",
+    "checks": {
+      "indexed_reset_zero_ticks": true,
+      "peer_snapshot_unchanged": true,
+      "independent_seed_repeatable": true
+    },
+    "artifact": {
+      "path": "outputs/cube_stack_20261109/parallel_8env/result.json",
+      "sha256": "df1aab024080fc1863aef4dd6e6064f73528687a8d6e6f229f6b4033a7ce0e55",
+      "bytes": 111707
+    },
+    "metadata": {
+      "path": "outputs/cube_stack_20261109/parallel_8env/metadata.json",
+      "sha256": "e0851b2a9ceca951f878e01c45e55a9b43a21c5d018688a084ab8fcd1470b48b",
+      "bytes": 10066
+    }
+  },
+  "fixed_layout_physical": {
+    "status": "passed",
+    "report_closed": false,
+    "operator_reported_exit_code": 0,
+    "simulation_only": true,
+    "hardware_access": false,
+    "learned_policy_evaluation": false,
+    "attachments_or_object_teleportation": false,
+    "num_envs": 2,
+    "source_revision": "sha256:88a8864994e0faea4fc918de44512decc929db6e900f73bed55487a3cfbe3de5",
+    "episodes": {
+      "0": {
+        "full_plan_executed": true,
+        "task_success": true,
+        "red_blue_xy_error_m": 0.00011857603701486601,
+        "center_height_separation_error_m": 2.307891845687582e-07,
+        "red_final_upright_cosine": 0.9999999992735911,
+        "stable_window_samples": 15,
+        "red_position_excursion_m": 3.725290298461914e-08,
+        "red_rotation_excursion_rad": 2.3534306903393977e-07,
+        "max_red_lift_m": 0.07800012826919556,
+        "final_gripper_width_m": 0.060000114142894745,
+        "max_home_joint_error_rad": 0.000646886843366945,
+        "passed": true
+      },
+      "1": {
+        "full_plan_executed": true,
+        "task_success": true,
+        "red_blue_xy_error_m": 0.00013005423443802308,
+        "center_height_separation_error_m": 1.1157989501797694e-07,
+        "red_final_upright_cosine": 0.9999999997972784,
+        "stable_window_samples": 15,
+        "red_position_excursion_m": 4.814712530792806e-07,
+        "red_rotation_excursion_rad": 1.6120105226250204e-06,
+        "max_red_lift_m": 0.07800030708312988,
+        "final_gripper_width_m": 0.060000188648700714,
+        "max_home_joint_error_rad": 0.000646886843366945,
+        "passed": true
+      }
+    },
+    "plan_duration_s": 31.733333333333334,
+    "artifact": {
+      "path": "outputs/cube_stack_20261109/stack_fixed_2env/report.json",
+      "sha256": "a201a4c2308e2c32c766dbaa272d4939c9b896b89f9ae2608e81f81d407c4dfb",
+      "bytes": 22295
+    }
+  },
+  "media": {
+    "demo": {
+      "published": {
+        "path": "docs/media/cube-stack-demo.mp4",
+        "sha256": "dde51f127b2c57cb96846cbde64bb2974d00528073eed9c13fea841ea365966c",
+        "bytes": 3142931
+      },
+      "source": {
+        "path": "outputs/cube_stack_20261109/stack_fixed_2env/env0_up_wrist.mp4",
+        "sha256": "dde51f127b2c57cb96846cbde64bb2974d00528073eed9c13fea841ea365966c",
+        "bytes": 3142931
+      },
+      "codec": "h264",
+      "width": 640,
+      "height": 960,
+      "fps": 30,
+      "frames": 953,
+      "duration_s": 31.766666666666666,
+      "playback_speed": 1,
+      "layout": "global above wrist",
+      "source_environment": 0,
+      "learned_policy": false,
+      "complete_decode_check": "passed, reported by publishing operator"
+    },
+    "demo_poster": {
+      "path": "docs/media/cube-stack-demo.jpg",
+      "sha256": "3449b4cf4670bca9e6242f77e4cffc59c6179fe5febf8bb5b860f8b246d0883d",
+      "bytes": 16503
+    },
+    "real_sim_reference": {
+      "path": "docs/media/cube-stack-real-sim.jpg",
+      "sha256": "1b6d144c4737814c4be11536515b63cff3f057116e974ca9b4ec28f0816b8d2b",
+      "bytes": 109328
+    },
+    "random_layout_examples": {
+      "path": "docs/media/cube-stack-random-layouts.jpg",
+      "sha256": "87918c0df4443d27b585e93ff8bc2488814474e792c75eddcb7e62c8870bb938",
+      "bytes": 178204
+    }
+  },
+  "limits": [
+    "Fixed-layout scripted physical execution is not a learned-policy success-rate evaluation.",
+    "Eight-environment randomized reset smoke does not establish successful stacking across the whole sampled domain.",
+    "No real robot grasp or movement command was issued.",
+    "Red cross-view XY disagreement is about 12.1 mm; simulation endpoint errors do not measure physical registration accuracy.",
+    "Current fixed-vertical planner accepts only 66/100 90mm-hover poses and 70/100 80mm-hover poses in the sampled CPU audit; no complete-domain motion or contact guarantee."
+  ],
+  "planning_attempts": [
+    {
+      "artifact": {
+        "path": "outputs/cube_stack_20261109/stack_alternate_2env/report.json",
+        "sha256": "268bf049b671e586563c4215ac83818bf170031a85031ab731dc20ae59e5e93b",
+        "bytes": 1419
+      },
+      "status": "failed",
+      "physical_execution": false,
+      "error": "ValueError: Unreachable PiPER tool target [0.38148707443780666, -0.05393690974182469, 0.08399999999999999]: best position error 0.000837 m, orientation error 0.013238 rad",
+      "plan_duration_s": null
+    },
+    {
+      "artifact": {
+        "path": "outputs/cube_stack_20261109/stack_alternate_cpu_075/report.json",
+        "sha256": "861cc324d3bbe2d8bafc3f693b8fa8db65b68a97cead3b56af402240ef8d3915",
+        "bytes": 1000
+      },
+      "status": "failed",
+      "physical_execution": false,
+      "error": "ValueError: Grasp/lift heights do not clear the objects",
+      "plan_duration_s": null
+    },
+    {
+      "artifact": {
+        "path": "outputs/cube_stack_20261109/stack_alternate_cpu_080/report.json",
+        "sha256": "fcfd76b8ffc64f75e424305d558d8895539e8971d23d8837394888b59561822e",
+        "bytes": 385
+      },
+      "status": "planned",
+      "physical_execution": false,
+      "error": null,
+      "plan_duration_s": 29.4
+    }
+  ],
+  "alternate_layout_physical": {
+    "status": "passed",
+    "report_closed": false,
+    "operator_reported_exit_code": 0,
+    "simulation_only": true,
+    "hardware_access": false,
+    "learned_policy_evaluation": false,
+    "attachments_or_object_teleportation": false,
+    "num_envs": 2,
+    "source_revision": "sha256:5523ee91064d1ccf3b0973706495e6c5a1ffd6af230d95645959a4f81a201b83",
+    "episodes": {
+      "0": {
+        "full_plan_executed": true,
+        "task_success": true,
+        "red_blue_xy_error_m": 0.00010194332817202135,
+        "center_height_separation_error_m": 1.7118453979336756e-07,
+        "red_final_upright_cosine": 0.9999999992815745,
+        "stable_window_samples": 15,
+        "red_position_excursion_m": 3.003425057343598e-08,
+        "red_rotation_excursion_rad": 3.9091542804231273e-07,
+        "max_red_lift_m": 0.06818032264709473,
+        "final_gripper_width_m": 0.06000011786818504,
+        "max_home_joint_error_rad": 0.000646886843366945,
+        "passed": true
+      },
+      "1": {
+        "full_plan_executed": true,
+        "task_success": true,
+        "red_blue_xy_error_m": 9.926860122729149e-05,
+        "center_height_separation_error_m": 5.197525024258631e-08,
+        "red_final_upright_cosine": 0.9999999997933907,
+        "stable_window_samples": 15,
+        "red_position_excursion_m": 8.940696716308594e-08,
+        "red_rotation_excursion_rad": 2.0281868379000618e-06,
+        "max_red_lift_m": 0.06818026304244995,
+        "final_gripper_width_m": 0.060000184923410416,
+        "max_home_joint_error_rad": 0.000646886843366945,
+        "passed": true
+      }
+    },
+    "plan_duration_s": 29.4,
+    "hover_height_m": 0.08,
+    "artifact": {
+      "path": "outputs/cube_stack_20261109/stack_alternate_2env_080/report.json",
+      "sha256": "c59d57211b7673dccb749bd8e03662e55a161bdeb77d2af814ca00e2e024aa4c",
+      "bytes": 21905
+    }
+  },
+  "physical_demonstrations": {
+    "layouts": 2,
+    "environments_per_layout": 2,
+    "completed_successful_demonstrations": 4,
+    "total_executed_demonstrations": 4,
+    "not_a_random_layout_or_learned_policy_success_rate": true
+  },
+  "ik_audit": {
+    "method": "Original bounded PiperKinematics.solve, unchanged 0.5mm / 0.01rad acceptance, initial-home seed and built-in alternatives",
+    "samples": 100,
+    "seed_range": [
+      2026110900,
+      2026110999
+    ],
+    "default_randomization": {
+      "enabled": true,
+      "x_range_m": [
+        0.25,
+        0.45
+      ],
+      "y_range_m": [
+        -0.16,
+        0.16
+      ],
+      "yaw_range_deg": [
+        0.0,
+        0.0
+      ],
+      "min_center_distance_m": 0.08,
+      "max_attempts": 1024
+    },
+    "physics_execution": false,
+    "joint_collision_clearance_checked": false,
+    "checks": {
+      "red_grasp_12mm": {
+        "reachable": 100,
+        "failed": 0,
+        "min_success_joint_margin_deg": 2.061044957606396,
+        "max_success_position_error_m": 4.6306767581034934e-11,
+        "max_success_orientation_error_rad": 3.691790162351565e-10
+      },
+      "blue_grasp_12mm": {
+        "reachable": 100,
+        "failed": 0,
+        "min_success_joint_margin_deg": 4.187053173685111,
+        "max_success_position_error_m": 2.9933632019406365e-11,
+        "max_success_orientation_error_rad": 2.612573746268477e-10
+      },
+      "blue_place_43mm": {
+        "reachable": 99,
+        "failed": 1,
+        "min_success_joint_margin_deg": 1.2722218725854067e-14,
+        "max_success_position_error_m": 0.00038084760983858075,
+        "max_success_orientation_error_rad": 0.006401449123778597
+      },
+      "red_hover_90mm": {
+        "reachable": 66,
+        "failed": 34,
+        "min_success_joint_margin_deg": 1.2722218725854067e-14,
+        "max_success_position_error_m": 0.00034452815683935507,
+        "max_success_orientation_error_rad": 0.005397275836483098
+      },
+      "red_hover_80mm": {
+        "reachable": 70,
+        "failed": 30,
+        "min_success_joint_margin_deg": 1.2722218725854067e-14,
+        "max_success_position_error_m": 0.0001548755145714384,
+        "max_success_orientation_error_rad": 0.0024817425232759502
+      }
+    },
+    "artifacts": {
+      "source_summary": {
+        "path": "outputs/cube_stack_20261109/ik_sampling_100/summary.json",
+        "sha256": "f95b3d1a58de6148ffec208e45c0662b476ffb0367bcb47ee868f9be0447e303",
+        "bytes": 8934
+      },
+      "source_samples": {
+        "path": "outputs/cube_stack_20261109/ik_sampling_100/samples.json",
+        "sha256": "4fc23d1eb3948ff8a6a6ac12e063cd118875da47c0946d1b0a0527aff57b9040",
+        "bytes": 246520
+      },
+      "portable_summary": {
+        "path": "docs/results/cube_stack_20261109/ik_summary.json",
+        "sha256": "f95b3d1a58de6148ffec208e45c0662b476ffb0367bcb47ee868f9be0447e303",
+        "bytes": 8934
+      },
+      "portable_samples": {
+        "path": "docs/results/cube_stack_20261109/ik_samples.json",
+        "sha256": "4fc23d1eb3948ff8a6a6ac12e063cd118875da47c0946d1b0a0527aff57b9040",
+        "bytes": 246520
+      }
+    }
+  },
+  "scope": "Read-only real capture, frozen-source CPU regression, eight-environment reset/step smoke, two layouts x two environments physical scripted stacking, and single-pose IK coverage."
+}

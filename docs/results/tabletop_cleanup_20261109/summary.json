@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "date": "2026-11-09",
+  "task_id": "tabletop_cleanup",
+  "task": {
+    "template": "configs/calibration/playground_20261108_final.json",
+    "core": "pressb.runtime.parallel.SharedWorldBackend",
+    "object_pool": [
+      "gamepad",
+      "speaker",
+      "lidar"
+    ],
+    "active_object_count": 2,
+    "selection": "without replacement",
+    "box_fixed": true,
+    "randomization": {
+      "enabled": true,
+      "pool": [
+        "gamepad",
+        "speaker",
+        "lidar"
+      ],
+      "fixed_subset": null,
+      "x_range_m": [
+        0.24,
+        0.48
+      ],
+      "y_range_m": [
+        -0.25,
+        0.19
+      ],
+      "yaw_range_deg": [
+        -180,
+        180
+      ],
+      "clearance_m": 0.01,
+      "max_attempts": 2048
+    },
+    "fixed_subset": [
+      "gamepad",
+      "speaker"
+    ],
+    "instruction": "Put all objects on the table into the black box.",
+    "action": "joint7: six radians plus full gripper opening in metres",
+    "example_max_episode_seconds": 120
+  },
+  "real_scene_reference": {
+    "capture": "real_capture_v2",
+    "prior_capture_retained": "real_capture",
+    "layout_estimates": {
+      "box": {
+        "center_xy": [
+          0.3441527951192578,
+          0.23270826761715033
+        ],
+        "yaw_deg": -3.3724965378022564
+      },
+      "gamepad": {
+        "center_xy": [
+          0.35015710183214516,
+          0.03815064763721521
+        ],
+        "yaw_deg": 1.3264577480589983
+      },
+      "speaker": {
+        "center_xy": [
+          0.3600054034686816,
+          -0.2129193381874609
+        ],
+        "yaw_deg": 1.4599493533086672
+      },
+      "lidar": {
+        "center_xy": [
+          0.3552321047291015,
+          -0.08718059751005713
+        ],
+        "yaw_deg": 0.5298065822685653
+      }
+    },
+    "box_outer_size_xyz_m": [
+      0.222,
+      0.148,
+      0.049
+    ],
+    "box_wall_thickness_estimate_m": 0.004,
+    "coordinates": "Base XY meters. yaw rotates local +X toward base +Y. Object dimensions priors remain approximate; all positions are layout estimates, not hardware motion targets.",
+    "calibration": {
+      "path": "configs/calibration/playground_20261108_final.json",
+      "sha256": "446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21",
+      "changed": false,
+      "effective_mount_m": 0.006,
+      "base_table_z_m": -0.006
+    },
+    "cross_view_xy_discrepancy_mm": {
+      "speaker": 16.029399283966068,
+      "lidar": 8.048485446107499
+    },
+    "can_tx_packets_delta": 0,
+    "camera_capture_only": true,
+    "limitations": [
+      "Object poses are layout estimates, not hardware motion targets or millimetre-accurate registration.",
+      "Gamepad depth/height, mounting ears, masses and box wall thickness include estimates.",
+      "Props are procedural meshes with compound convex collision approximations, not 3D scans."
+    ]
+  },
+  "cpu": {
+    "main": {
+      "passed": 3846,
+      "failed": 0,
+      "skipped": 29,
+      "skips_by_reason": {
+        "collection skipped": 4,
+        "CUDA batch-kernel parity regression": 1,
+        "Native action-expert check requires torchdiffeq": 1,
+        "could not import 'pxr.Usd': No module named 'pxr'": 19,
+        "could not import 'pxr': No module named 'pxr'": 3,
+        "Official writer/reader integration runs in the separate LeRobot environment": 1
+      }
+    },
+    "usd_supplement": {
+      "passed": 164,
+      "failed": 0,
+      "skipped": 0,
+      "skips_by_reason": {},
+      "newly_exercised_passing_tests": 71
+    },
+    "unique_passing_tests": 3917,
+    "task_unique_passing_tests": 132,
+    "python_source_files": 775,
+    "source_manifest_sha256_before": "0119d5a230b34a5b8121f05bad6d62e2507bf653265263dd4a9341d185e38eb6",
+    "source_manifest_sha256_after": "0119d5a230b34a5b8121f05bad6d62e2507bf653265263dd4a9341d185e38eb6",
+    "changed_sources": {},
+    "cuda_visible_devices": "",
+    "scope": "CPU main suite plus isolated OpenUSD; no GPU or physical hardware tests were launched by this regression."
+  },
+  "parallel_smoke": {
+    "passed": true,
+    "num_envs": 8,
+    "shared_backend": "SharedWorldBackend",
+    "indexed_reset_zero_ticks": true,
+    "peer_snapshot_unchanged": true,
+    "independent_seed_repeatable": true,
+    "initial_pair_counts": {
+      "gamepad+speaker": 5,
+      "speaker+lidar": 1,
+      "gamepad+lidar": 2
+    },
+    "world_ticks": 8,
+    "captures": 196,
+    "task_config_sha256": "37b49a18f3f4ad88856ec15dc71ab3945737e0475af2f02e1d875b5066859607",
+    "source_revision": "sha256:bd48ed4c00c3af7b8b012259bdc6e1d7cae261f90c6ee869bcf11d4cd012ae32",
+    "scope": "Final-source eight-environment reset/hold/image check, not complete manipulation or throughput evaluation."
+  },
+  "physical_demonstrations": [
+    {
+      "name": "physics_speaker_lidar",
+      "status": "passed",
+      "num_envs": 1,
+      "objects": [
+        "speaker",
+        "lidar"
+      ],
+      "action_count": 2149,
+      "simulation_duration_s": 71.63333333333334,
+      "video_frame_counts": {
+        "0": 2150
+      },
+      "video_fps": 30.0,
+      "video_duration_s": {
+        "0": 71.66666666666667
+      },
+      "video_initial_frame_included": true,
+      "simulation_only": true,
+      "hardware_access": false,
+      "attachments_or_object_teleportation": false,
+      "learned_policy_evaluation": false,
+      "episodes": {
+        "0": {
+          "full_plan_executed": true,
+          "task_success": true,
+          "physical_success": true,
+          "passed": true,
+          "objects": {
+            "speaker": {
+              "centre_z_rise_from_first_control_sample_m": 0.11385053396224976,
+              "max_bottom_height_above_table_m": 0.10713597262641894,
+              "stable_position_excursion_m": 1.228781230931777e-07,
+              "stable_rotation_excursion_rad": 5.056201753210562e-07,
+              "final_conditions": {
+                "grasped_and_lifted": true,
+                "contained": true,
+                "supported": true,
+                "direct_floor_support": true,
+                "released": true,
+                "low_velocity": true,
+                "no_table_support": true
+              },
+              "passed": true
+            },
+            "lidar": {
+              "centre_z_rise_from_first_control_sample_m": 0.11358010768890381,
+              "max_bottom_height_above_table_m": 0.11131398462973663,
+              "stable_position_excursion_m": 5.3726900748371916e-08,
+              "stable_rotation_excursion_rad": 1.0017815639459575e-07,
+              "final_conditions": {
+                "grasped_and_lifted": true,
+                "contained": true,
+                "supported": true,
+                "direct_floor_support": true,
+                "released": true,
+                "low_velocity": true,
+                "no_table_support": true
+              },
+              "passed": true
+            }
+          },
+          "final_gripper_width_m": 0.05200010538101196,
+          "max_home_joint_error_rad": 0.0006469166456893327
+        }
+      },
+      "task_config_sha256": "d0c85c20e1c3c86f448b5fa9629355e1ae33b1f6ee2a020b63b06da8110a99d9",
+      "source_revision": "sha256:ea6e30f7355686a5ff8dd8c24c6a40df903862433f6a4da35f420391449a885d",
+      "report_closed_field": false,
+      "report": {
+        "path": "outputs/tabletop_cleanup_20261109/physics_speaker_lidar/report.json",
+        "sha256": "af6667802db019d2662d2f227972a4531a76453d3555ddb5e6d13287de47faae",
+        "bytes": 20522
+      },
+      "plan": {
+        "path": "outputs/tabletop_cleanup_20261109/physics_speaker_lidar/plan.json",
+        "sha256": "817466961e154e0402e8c644eceb201b09f711fe813cd990c68a0c869442d188",
+        "bytes": 654550
+      }
+    },
+    {
+      "name": "physics_gamepad_speaker",
+      "status": "passed",
+      "num_envs": 1,
+      "objects": [
+        "gamepad",
+        "speaker"
+      ],
+      "action_count": 2098,
+      "simulation_duration_s": 69.93333333333334,
+      "video_frame_counts": {
+        "0": 2099
+      },
+      "video_fps": 30.0,
+      "video_duration_s": {
+        "0": 69.96666666666667
+      },
+      "video_initial_frame_included": true,
+      "simulation_only": true,
+      "hardware_access": false,
+      "attachments_or_object_teleportation": false,
+      "learned_policy_evaluation": false,
+      "episodes": {
+        "0": {
+          "full_plan_executed": true,
+          "task_success": true,
+          "physical_success": true,
+          "passed": true,
+          "objects": {
+            "gamepad": {
+              "centre_z_rise_from_first_control_sample_m": 0.10124003887176514,
+              "max_bottom_height_above_table_m": 0.09439148111105056,
+              "stable_position_excursion_m": 0.0,
+              "stable_rotation_excursion_rad": 7.583308681957972e-08,
+              "final_conditions": {
+                "grasped_and_lifted": true,
+                "contained": true,
+                "supported": true,
+                "direct_floor_support": true,
+                "released": true,
+                "low_velocity": true,
+                "no_table_support": true
+              },
+              "passed": true
+            },
+            "speaker": {
+              "centre_z_rise_from_first_control_sample_m": 0.11408179998397827,
+              "max_bottom_height_above_table_m": 0.11072632169558339,
+              "stable_position_excursion_m": 5.960464477539063e-08,
+              "stable_rotation_excursion_rad": 3.802546399655715e-07,
+              "final_conditions": {
+                "grasped_and_lifted": true,
+                "contained": true,
+                "supported": true,
+                "direct_floor_support": true,
+                "released": true,
+                "low_velocity": true,
+                "no_table_support": true
+              },
+              "passed": true
+            }
+          },
+          "final_gripper_width_m": 0.069996178150177,
+          "max_home_joint_error_rad": 0.000646886843366945
+        }
+      },
+      "task_config_sha256": "a3a2fcbfca78f1b2897bc4b7a5590f707cb24457c29b1adeaeaf7b268272ffcf",
+      "source_revision": "sha256:bd48ed4c00c3af7b8b012259bdc6e1d7cae261f90c6ee869bcf11d4cd012ae32",
+      "report_closed_field": false,
+      "report": {
+        "path": "outputs/tabletop_cleanup_20261109/physics_gamepad_speaker/report.json",
+        "sha256": "86fb983887d3f1b442b26216a2cb482beb663ae5a2659409342247ee441e4861",
+        "bytes": 20533
+      },
+      "plan": {
+        "path": "outputs/tabletop_cleanup_20261109/physics_gamepad_speaker/plan.json",
+        "sha256": "a808bdde624dc36e888ea0d784114c1cfa80c313dce3a62b85227f8c5082b302",
+        "bytes": 626545
+      }
+    }
+  ],
+  "interpretation": {
+    "completed_scripted_demonstrations": 2,
+    "learned_policy_success_rate": null,
+    "randomized_task_success_rate": null,
+    "full_cleanup_pairs_tested": [
+      [
+        "speaker",
+        "lidar"
+      ],
+      [
+        "gamepad",
+        "speaker"
+      ]
+    ],
+    "not_validated": [
+      "Full cleanup for gamepad+lidar",
+      "Grasp-planner coverage of the complete random layout domain",
+      "Learned-policy cleanup performance",
+      "Real-robot cleanup execution"
+    ],
+    "source_scope": "Each physical run retains its own source/configuration hashes; the final CPU and eight-environment checks cover the final boundary-validation changes."
+  },
+  "media": {
+    "files": [
+      {
+        "path": "docs/media/tabletop-cleanup-random-layouts.jpg",
+        "sha256": "ccdc9accc11bcf048bd45bd60e422b9cb59a6d7eec5a239dd3dc9a6ecf92e08f",
+        "bytes": 541511
+      },
+      {
+        "path": "docs/media/tabletop-cleanup-assets.jpg",
+        "sha256": "02c71ec18a7171b7a3e3fa017aae97dac1b3b12e9a0f02b13c0b098ae2af4d33",
+        "bytes": 323243
+      },
+      {
+        "path": "docs/media/tabletop-cleanup-demo.mp4",
+        "sha256": "22708a280485f812dd921ecc694e1daa1765172c2c812f6507231e930d0cec72",
+        "bytes": 8254763
+      },
+      {
+        "path": "docs/media/tabletop-cleanup-demo.jpg",
+        "sha256": "28339128fef2d2b15430b77f4f836814f3a530761184a4cc5f74f9ea73ec7df5",
+        "bytes": 25272
+      }
+    ],
+    "published_video_source": {
+      "path": "outputs/tabletop_cleanup_20261109/physics_gamepad_speaker/env0_up_wrist.mp4",
+      "sha256": "22708a280485f812dd921ecc694e1daa1765172c2c812f6507231e930d0cec72",
+      "bytes": 8254763
+    },
+    "video_identical_to_source": true,
+    "published_video": {
+      "objects": [
+        "gamepad",
+        "speaker"
+      ],
+      "fps": 30,
+      "frames": 2099,
+      "duration_s": 69.96666666666667,
+      "size_wh": [
+        640,
+        960
+      ],
+      "layout": "global above wrist",
+      "playback_speed": 1,
+      "scope": "Full scripted simulation; initial frame plus 2098 applied action frames."
+    },
+    "random_layouts_source_receipt": {
+      "path": "outputs/tabletop_cleanup_20261109/reference/docs_figure_sources.json",
+      "sha256": "6af57cba03a5794293786aa241f46890f18ead09f25fe81c40be6706e091836e",
+      "bytes": 1813
+    },
+    "assets_figure": "CPU mesh preview, not Isaac rendering or a three-object task episode."
+  },
+  "artifacts": [
+    {
+      "path": "outputs/tabletop_cleanup_20261109/real_capture_v2/capture.json",
+      "sha256": "661770bc5a91ce75c503b35b492740b8445bbb2e8d6a0d473194b5827052ba3d",
+      "bytes": 17118
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/real_capture_v2/measurements.json",
+      "sha256": "236cb6702370cb531391b5c7d1d6f6ab3c27da0b3bda46d1ef23a73c59371f4f",
+      "bytes": 11423
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/real_capture_v2/annotations.json",
+      "sha256": "e7f6e6f14d017b25bdd4fbaf6baf15cd46397faf87504f488bdf051462ac5952",
+      "bytes": 5224
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/real_capture_v2/access_audit.json",
+      "sha256": "fe2d8bb87905438a6b8645bb5ba27751b86d505652581688e8676a66af4979bb",
+      "bytes": 1157
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/parallel_8_final/result.json",
+      "sha256": "6f5aee3cbf114d60bb612067419eed02da038aa23b5f62d5deb882623351e936",
+      "bytes": 137188
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/parallel_8_final/metadata.json",
+      "sha256": "293d2d016e88e841a7d889cb97ec3340142c4e8cd8025fc9dbccb5fa6c5e0efb",
+      "bytes": 11003
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/parallel_8_final/config.json",
+      "sha256": "464fcac2c190a7b42a5a04eb04c3e5b17ee5929af2273742edb4477431ddf85f",
+      "bytes": 1506
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/cpu_regression/summary.json",
+      "sha256": "88c4c1b2d969f69b71c09597c9a2f5b8823f643b98c6acddaa8e0f22c53abf07",
+      "bytes": 10951
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/cpu_regression/full.xml",
+      "sha256": "8dd01348b1f89a80c1d74b93615e4e1976e04c3ac3673d507af0246ddba920ed",
+      "bytes": 558699
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/cpu_regression/usd.xml",
+      "sha256": "6812e65a1cef55cecf47fa5b2e7765e0f6a9ecb0d06566e768ec375116f812d3",
+      "bytes": 23399
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/cpu_regression/source_start.json",
+      "sha256": "0119d5a230b34a5b8121f05bad6d62e2507bf653265263dd4a9341d185e38eb6",
+      "bytes": 91729
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/cpu_regression/source_end.json",
+      "sha256": "0119d5a230b34a5b8121f05bad6d62e2507bf653265263dd4a9341d185e38eb6",
+      "bytes": 91729
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/physics_speaker_lidar/report.json",
+      "sha256": "af6667802db019d2662d2f227972a4531a76453d3555ddb5e6d13287de47faae",
+      "bytes": 20522
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/physics_speaker_lidar/plan.json",
+      "sha256": "817466961e154e0402e8c644eceb201b09f711fe813cd990c68a0c869442d188",
+      "bytes": 654550
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/physics_gamepad_speaker/report.json",
+      "sha256": "86fb983887d3f1b442b26216a2cb482beb663ae5a2659409342247ee441e4861",
+      "bytes": 20533
+    },
+    {
+      "path": "outputs/tabletop_cleanup_20261109/physics_gamepad_speaker/plan.json",
+      "sha256": "a808bdde624dc36e888ea0d784114c1cfa80c313dce3a62b85227f8c5082b302",
+      "bytes": 626545
+    },
+    {
+      "path": "configs/rl_nodes/tabletop_cleanup_simulation.json",
+      "sha256": "e3cee24264bdc6c90a3074aec181c388713253ac86c1ec76ff055b0e08abf91e",
+      "bytes": 2012
+    },
+    {
+      "path": "configs/rl_nodes/tabletop_cleanup_real_layout.json",
+      "sha256": "ca2896e875e76e2e67505bbd880658ab5ca225ad430a95c5342085411436ceb4",
+      "bytes": 2062
+    },
+    {
+      "path": "configs/experiments/tabletop_cleanup_walloss_eval.json",
+      "sha256": "f63fa14e01e182908716ff103920889f8d628dea7064fe1ba0193b1e543cd894",
+      "bytes": 2288
+    }
+  ]
+}

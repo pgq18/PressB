@@ -1,8 +1,8 @@
 # Configurable inference, simulation and RL nodes
 
 Service and learning code lives in `runtime`, task implementations in
-`tasks/{elevator,pap,table_buttons,playground}`, and model integration in `models`.
-The four native simulation plugins now use the common `SharedWorldBackend` with
+`tasks/{elevator,pap,table_buttons,playground,cube_stack,tabletop_cleanup}`, and model integration in `models`.
+The six native simulation plugins now use the common `SharedWorldBackend` with
 task hooks and PiPER robot drivers. PiPER hardware/control, generic filters and
 sensors live in `robots/piper`, `control` and `sensors`. The removed
 `pressb.rl_nodes` and `pressb.online_rl` packages have no aliases;
@@ -297,7 +297,8 @@ time within the chunk.
 
 ## Parallelism, recovery and logs
 
-The native `pap`, `elevator`, `table_buttons` and `playground` registry entries
+The native `pap`, `elevator`, `table_buttons`, `playground`, `cube_stack` and
+`tabletop_cleanup` registry entries
 resolve to `pressb.tasks.<task>.parallel:create_backend`. Each factory provides
 `ParallelTask` scene/reset/outcome hooks and a `ParallelRobot` driver to the
 common [`SharedWorldBackend`](../src/pressb/runtime/parallel.py).

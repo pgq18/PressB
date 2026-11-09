@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "capture": "outputs/tabletop_cleanup_bin_fixed_20261109/capture",
+  "capture_sha256": "3ea27717c63235b9d4e9628461fc3e5d0775b3184b7a9bb5e859477fa1c1bb18",
+  "source_global_sha256": "7b5dc9dda4debc435670060e0cb61b0c484ab0486014440653eddf3e791a1873",
+  "prior_config_sha256": "82c30085757d5e3866b18709fd456c415c862b7cebb74f9a22c0aacf2765aa2c",
+  "prior_config": "outputs/tabletop_cleanup_transfer_20261109/live_node_config.json",
+  "calibration": "configs/calibration/playground_20261109_global_refined.json",
+  "calibration_sha256": "7be0ddf409d7ba460533b364d2366baca65f9d160227aa94c578cb4a2e157042",
+  "coordinate_frame": "PiPER base: XY metres; yaw rotates local +X toward base +Y, degrees",
+  "bin": {
+    "center_xy": [
+      0.3396856,
+      0.21861745
+    ],
+    "yaw_deg": 2.070158,
+    "size_xyz_m": [
+      0.222,
+      0.148,
+      0.049
+    ],
+    "wall_thickness_m": 0.004
+  },
+  "method": "Fit XY and yaw of the known outer rim to three manually marked global-camera outer corners; fixed camera extrinsics/intrinsics, table and size priors unchanged.",
+  "annotation_uv": [
+    [
+      431.0,
+      108.0
+    ],
+    [
+      463.0,
+      289.0
+    ],
+    [
+      573.0,
+      100.0
+    ]
+  ],
+  "feature_order": [
+    "-X,-Y",
+    "+X,-Y",
+    "-X,+Y"
+  ],
+  "fitted_uv": [
+    [
+      431.0824291844121,
+      105.74107633268943
+    ],
+    [
+      463.58410436882326,
+      289.3579061396883
+    ],
+    [
+      572.1911035512002,
+      101.83794442719858
+    ]
+  ],
+  "reprojection_rms_per_coordinate_px": 1.2656459882891784,
+  "max_feature_error_px": 2.2604271068049666,
+  "projected_outer_rim_uv": [
+    [
+      431.0824291844121,
+      105.74107633268943
+    ],
+    [
+      463.58410436882326,
+      289.3579061396883
+    ],
+    [
+      638.7678835573358,
+      284.1695028347089
+    ],
+    [
+      572.1911035512002,
+      101.83794442719858
+    ]
+  ],
+  "delta_from_preceding_fixed_config": {
+    "xy_mm": [
+      3.0169759397841167,
+      -11.318922615963151
+    ],
+    "yaw_deg": 0.9654984062146506
+  },
+  "limitations": [
+    "Box dimensions are approximate user measurements. Pose is an image-based estimate, not a precision metrology result.",
+    "Far +X,+Y corner is clipped at the right edge and excluded from fitting.",
+    "Wrist camera does not see this box at the stationary pose and supplies no independent box-pose constraint."
+  ],
+  "hardware_access": "Capture was receive-only. CAN TX packets unchanged:118150 to118150; no robot movement or enable/reset command.",
+  "reset_behavior": "Fixed static bin pose across seeds; exactly two distinct manipulable objects remain randomized.",
+  "validation": {
+    "shared_isaac_smoke": {
+      "passed": true,
+      "num_envs": 2,
+      "indexed_reset_zero_ticks": true,
+      "peer_snapshot_unchanged": true,
+      "independent_seed_repeatable": true
+    },
+    "default_plan_only": {
+      "passed": true,
+      "actions": 1915,
+      "duration_s": 63.833333333333336
+    },
+    "scope": "Configuration and reset/hold verification; no new physical robot motion or cleanup replay.",
+    "cpu_tests": {
+      "passed": 135,
+      "skipped": 2,
+      "skips": "CPU environment has no USD; actual Isaac reset smoke separately passed"
+    }
+  },
+  "configuration_files": [
+    "src/pressb/tasks/tabletop_cleanup/configuration.py",
+    "configs/rl_nodes/tabletop_cleanup_real_layout.json",
+    "configs/rl_nodes/tabletop_cleanup_simulation.json",
+    "configs/experiments/tabletop_cleanup_walloss_eval.json"
+  ],
+  "configuration_sha256": {
+    "src/pressb/tasks/tabletop_cleanup/configuration.py": "4b5729a94c1549baebbd20f0081c97f8752e91911a94553b67e3fc1961f6fd00",
+    "configs/rl_nodes/tabletop_cleanup_real_layout.json": "28576dfc0a99731e680050712b42e3a5a4273c5d667cf2560d119e97fd67d514",
+    "configs/rl_nodes/tabletop_cleanup_simulation.json": "3d3c5db3172180dc848c94e173e48635e53cc0af892a29990bb38ebb3d105172",
+    "configs/experiments/tabletop_cleanup_walloss_eval.json": "f1aa5aa103f68ecc71633b6ad8717faf1e0472f727ae47dac2e1c5aa3690d923"
+  },
+  "artifacts": {
+    "overlay": "outputs/tabletop_cleanup_bin_fixed_20261109/bin_overlay.png",
+    "real_capture": "outputs/tabletop_cleanup_bin_fixed_20261109/capture",
+    "simulation_reset_check": "outputs/tabletop_cleanup_bin_fixed_20261109/simulation_smoke/result.json"
+  }
+}

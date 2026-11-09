@@ -1,5 +1,18 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-10 新任务与固定盒位整理
+
+- 新增 `cube_stack`（红块叠蓝块）和 `tabletop_cleanup`（手柄、扬声器、雷达中每次两个不同物体入盒），均复用 `SharedWorldBackend`。入口、配置和验证范围分别见 [堆叠任务](cube_stack.md) 与 [收纳任务](tabletop_cleanup.md)。
+- 两任务已做规划轨迹的仿真及真机回放；这不是学习策略成功率评估。收纳真机完整派发 1,935 帧、65.33 秒，两物均在人工介入前搬入盒中；盒子有受接触移动、扬声器倾斜的仿真实机差异。见 [收纳回放记录](results/tabletop_cleanup_real_transfer_20261109.json)。
+- 收纳盒在回放后重新测量并固定：底座坐标 `XY=[0.3396856, 0.21861745] m`、`yaw=2.070158°`，插件默认、固定/随机节点与实验配置一致。重置只随机物体；历史回放包保持原始盒位。见 [最终盒位](results/tabletop_cleanup_bin_fixed_20261109.json)。
+- 手柄高度和中央夹持宽度按 RGB-D/图像修正；旧演示视频保留原模型与相机来源。原始采集、轨迹、训练产物留在本地 `outputs/`，不纳入本轮提交。
+
+## 2026-11-09 Playground 全局相机版本升级
+
+- 当前模板升级为 `configs/calibration/playground_20261109_global_refined.json`，工作别名 `configs/piper_playground.json` 跟随新版本。只改变全局相机外参及来源元数据；两路实机内参、wrist、初始关节、底座高度、物体、灯光和动力学保留。
+- Playground 物体示例、cube_stack 与 tabletop_cleanup 的当前节点/实验配置及默认入口显式迁移。PAP、电梯、table_buttons 不受影响。旧 `playground_20261108_final.json` 保持原字节，下面所有历史结果和录像继续保留各自来源，不能改称新相机验证。
+- 迁移前的七份示例配置、两个派生任务loader和cube_stack示范脚本留在 `outputs/playground_global_review_20261109/migration/before/`，对应 `before_manifest.json`。新配置身份会变化；不自动迁移旧检查点或替换其来源声明。
+
 ## 2026-11-08 Playground 作为后续新任务的基础模板
 
 - 用户明确：未来在此工作台添加其他物体形成新任务。沿用现有 `scene_config + scene_overrides`，新任务固定引用 `configs/calibration/playground_20261108_final.json`；桌面、PiPER、双相机标定、初始姿态、灯光和动力学统一继承，各任务自己定义物体、随机化、语言、奖励/终止。新标定应另存模板版本，再显式升级派生任务。

@@ -21,7 +21,7 @@ sys.path.insert(0, str(ROOT/"src"))
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--task", required=True, choices=("pap", "elevator", "table_buttons", "playground"))
+    parser.add_argument("--task", required=True, choices=("pap", "elevator", "table_buttons", "playground", "cube_stack", "tabletop_cleanup"))
     parser.add_argument("--config", type=Path, required=True, help="Raw task config or resolved simulation node JSON")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--gpu", type=int, default=1)

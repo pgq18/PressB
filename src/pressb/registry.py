@@ -17,6 +17,8 @@ _PLUGINS = {
         "elevator_remote": "pressb.tasks.elevator.backend:create_backend",
         "table_buttons": "pressb.tasks.table_buttons.parallel:create_backend",
         "playground": "pressb.tasks.playground.parallel:create_backend",
+        "cube_stack": "pressb.tasks.cube_stack.parallel:create_backend",
+        "tabletop_cleanup": "pressb.tasks.tabletop_cleanup.parallel:create_backend",
         "piper_real": "pressb.runtime.real_robot:create_backend",
     },
     "model": {

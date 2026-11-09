@@ -1,6 +1,6 @@
 # PiPER playground workspace twin
 
-The independent `playground` plugin reconstructs the current PiPER workbench on
+The `playground` plugin reconstructs the PiPER workbench on
 `ssh piper`, using the 2026-11-07 reference video, stationary dual-D435i RGB-D
 captures and measured CAN joint feedback. The default workspace contains the
 table, PiPER, mounting hardware and camera tripod. **There are no task objects,
@@ -12,6 +12,18 @@ Playground is also the **base scene template for future tasks** on this workbenc
 Derived tasks reuse its calibrated table, robot, cameras, lights and dynamics,
 then add their own objects, reset distribution, instructions and outcome logic.
 The empty reference and its versioned calibration remain available independently.
+The [cube-stacking](cube_stack.md) and [tabletop-cleanup](tabletop_cleanup.md)
+plugins derive their own objects and physical success rules from this workspace.
+
+The current template is
+[`playground_20261109_global_refined.json`](../configs/calibration/playground_20261109_global_refined.json),
+also used by the working `piper_playground.json`. This revision changes only the
+global camera's optical pose and provenance. Both camera intrinsics, the wrist
+camera, home pose, base height, table, objects, lighting and physics are retained.
+The 2026-11-08 preset and the historical demonstrations below keep their original
+camera configuration and evidence.
+See the [global-refinement record](results/playground_global_refinement_20261109.json)
+and [camera comparison](media/playground-global-refinement-20261109.jpg).
 
 ![Initial reconstruction: clean playground overview, global and wrist views](media/playground-preview.jpg)
 
@@ -20,7 +32,7 @@ The empty reference and its versioned calibration remain available independently
 Use three layers:
 
 1. **Pinned scene template:**
-   [`playground_20261108_final.json`](../configs/calibration/playground_20261108_final.json)
+   [`playground_20261109_global_refined.json`](../configs/calibration/playground_20261109_global_refined.json)
    defines the calibrated workbench. Pin this file for reproducible tasks;
    `piper_playground.json` is the working default and can evolve in future revisions.
 2. **Scene additions:** the node's `scene_overrides` specifies new objects and
@@ -44,11 +56,13 @@ Start it with the normal simulation endpoint:
   --config configs/rl_nodes/playground_objects_example.json
 ```
 
-This example intentionally uses the workspace backend: it exposes the normal
-environment API, **one environment, zero reward and no automatic task success**.
-It demonstrates scene composition, not a completed grasp task. Its reset rebuilds
-the stage and restores the configured object positions; the seed does not yet
-randomize those positions. Through the service API, reset an environment after
+This example configures **one environment, zero reward and no automatic task
+success**, while the native plugin supports multiple scene copies through
+`SharedWorldBackend`. It demonstrates scene composition, not a completed grasp
+task. Indexed reset restores the selected robot/object state without rebuilding
+the stage or advancing physics. Configured object positions remain fixed unless
+explicit reset options or a derived task's sampler change them. Through the
+service API, reset an environment after
 its episode ends, or retire an active episode using `/end_episode` first.
 
 Configuration rules:
@@ -71,12 +85,12 @@ Its scene builder can compose
 [`playground.scene.build_scene`](../src/pressb/tasks/playground/scene.py), which
 returns the table/base coordinates, named object prim paths and collision paths,
 then add task-specific geometry. It should set its own scene/task identity and
-outcome semantics. Reuse the shared PiPER runtime and environment wire contract;
-the existing `PlaygroundBackend` still has the fixed workspace-only outcome.
+outcome semantics. Supply `ParallelTask` hooks and a robot driver to the common
+`SharedWorldBackend`; the empty `PlaygroundTask` retains workspace-only outcomes.
 An explicit `backend.factory: package.module:create_backend` supports new plugins
 without a registry edit. See [task plugin contracts](project_framework.md).
 
-The example passed 40 existing CPU/USD checks and an actual Isaac check using
+The original composition example passed 40 CPU/USD checks and an Isaac check using
 the node configuration. The cube remained displaced after a 72 mm XY move and
 physics stepping, then returned to its original pose after episode retirement
 and reset. Both cameras retained the template calibration, the reference files
@@ -102,16 +116,18 @@ The original wrist `link6_from_camera_usd` transform came from PAP. After the
 2026-11-07 real grasp attempt, the Playground transform was refined using
 pre-contact images and measured joint feedback. **Live focal lengths and
 principal points remain unchanged.** PAP's own configuration is unchanged.
-The latest refinement uses measured-opening finger contours to adjust only the
+The last wrist-specific refinement used measured-opening finger contours to adjust only the
 Playground wrist optical pose by approximately 0.707 degrees and 1.63 mm; see below.
 The current global optical centre is approximately
-`[0.71167, 0.01042, 0.48880]` metres in the robot-base frame. The fit04 revision
-jointly registered the two cameras and static reference cubes using the retry-08
-video, measured joint feedback and the global bare-table depth plane. The
-current simulation uses an **effective 6 mm mounting height**, reduced from the
-user-estimated 14 mm to improve grip depth under the same recorded commands.
-The fixed camera's world pose is unchanged; its base coordinates were re-expressed.
-This is an empirical correction, not a measurement of the physical mounting plate.
+`[0.710661, 0.040909, 0.486508]` metres in the robot-base frame, from the
+2026-11-09 global-only refinement using base landmarks, table depth and known
+robot poses. The camera's optical pose changes in that revision; its intrinsics,
+the wrist transform and physical scene remain fixed.
+The simulation retains the **effective 6 mm mounting height** established during
+the earlier contact-depth work, reduced from the user-estimated 14 mm under the
+same recorded commands. That mounting value is an empirical correction, not a
+measurement of the physical mounting plate, and was not adjusted by the later
+global-camera fit.
 These are approximate calibrated poses, not independent
 absolute world or tool metrology. Stationary global and wrist RGB-D captures
 were sequential.
@@ -128,7 +144,9 @@ not use a photograph as the camera background.
 
 The selected configuration is frozen in
 [`playground_20261108_final.json`](../configs/calibration/playground_20261108_final.json)
-and is also the active [`piper_playground.json`](../configs/piper_playground.json).
+and was the working default on that date. The current
+[`piper_playground.json`](../configs/piper_playground.json) follows the later
+global-only refinement; this frozen preset and its result record are unchanged.
 The review retained the existing runtime parameters: further joint calibration
 did not establish a sufficiently better combination. Only the final-selection
 provenance was added. This is the chosen reference for the available recording,
@@ -464,9 +482,15 @@ The node uses the existing HTTP environment service on loopback port 8101:
 seven-dimensional state, `up`/`wrist` RGB, bounded joint-position action chunks,
 optional `none`/`joint_ema` execution smoothing and a configurable time limit.
 Request retry handling and episode ownership remain in the common runtime.
-The initial implementation supports **one environment per node**.
+The native plugin now uses the common `SharedWorldBackend`, including tiled
+cameras and multiple scene copies. Steps include all active environments with
+equal-length action prefixes; selected environments reset independently with
+zero physics ticks and unchanged peer state. The supplied node JSON still
+defaults to one environment. The [parallel example](../configs/experiments/playground_parallel_walloss_eval.json)
+configures eight, and [shared-core validation](results/shared_parallel_refactor_20261109/README.md)
+records the completed two- and eight-environment checks.
 
-The real Isaac backend passed both unsmoothed and joint-EMA action tests,
+The original single-environment Isaac backend passed both unsmoothed and joint-EMA action tests,
 including measured arm/gripper motion, both camera streams, retry idempotency,
 timed truncation and a second reset. The final regression run passed 130 tests
 with no skips. Reproduce the physical simulation check with:
@@ -785,8 +809,8 @@ env -u PYTHONPATH .conda/envs/pressb/bin/python scripts/run_playground.py \
   --headless --gpu 0 --output outputs/playground_mount14_preview
 ```
 
-The default `configs/piper_playground.json` remains available for reproducing
-the earlier trials. The candidate contains no task objects; its optional
+The earlier trials retain their versioned presets and recorded configurations;
+`configs/piper_playground.json` follows the current template. The candidate contains no task objects; its optional
 `calibration_objects` are historical references, not current cube locations.
 Mount plate and clamp geometry remain visual-only, so contact with these
 parts is not modeled.

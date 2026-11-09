@@ -23,6 +23,8 @@ PressB 将机器人环境与视觉语言动作模型（VLA）连接起来，研�
 | [抓取放置（PAP）](docs/piper_pick_place.md) | 将桌面物体夹入纸盒 |
 | [桌面按键](docs/table_buttons.md) | 在随机布局下按红、黄、蓝指定颜色按键 |
 | [Playground](docs/playground.md) | 经过标定的空桌 PiPER 工作台，作为新任务的基础模板 |
+| [方块堆叠](docs/cube_stack.md) | 在 Playground 工作台上将红色方块叠到蓝色方块上 |
+| [桌面收纳](docs/tabletop_cleanup.md) | 在 Playground 工作台上将两个不同物品放入固定收纳盒 |
 
 ## 演示
 

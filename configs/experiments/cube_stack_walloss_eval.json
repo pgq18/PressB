@@ -1,0 +1,33 @@
+{
+  "extends": "playground_parallel_walloss_eval.json",
+  "name": "cube_stack_walloss_eval",
+  "description": "Eight shared-world cube-stacking environments using the existing PAP Wall-OSS joint7 model only as an observation/action integration example. The PAP checkpoint has not been trained or validated for stacking.",
+  "task": {
+    "plugin": "cube_stack",
+    "config": {
+      "scene_config": "${project_root}/configs/calibration/playground_20261109_global_refined.json",
+      "cubes": {
+        "red": {"edge_m": 0.029, "center_xy": [0.331263, 0.102522], "yaw_deg": -10.51},
+        "blue": {"edge_m": 0.030, "center_xy": [0.326851, -0.083409], "yaw_deg": 30.36}
+      },
+      "randomization": {
+        "enabled": true,
+        "x_range_m": [0.25, 0.45],
+        "y_range_m": [-0.16, 0.16],
+        "yaw_range_deg": [0, 0],
+        "min_center_distance_m": 0.08,
+        "max_attempts": 1024
+      },
+      "reward": {"success": 1.0, "failure": 0.0},
+      "terminate_on_success": true,
+      "log_dir": "${project_root}/outputs/cube_stack_walloss_eval/simulation"
+    }
+  },
+  "nodes": {
+    "inference": {"server": {"port": 18453}},
+    "simulation": {"server": {"port": 18423}}
+  },
+  "run": {
+    "output_dir": "${project_root}/outputs/cube_stack_walloss_eval/run"
+  }
+}

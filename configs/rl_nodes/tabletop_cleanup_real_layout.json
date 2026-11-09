@@ -1,0 +1,115 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 18424,
+    "transport": "http"
+  },
+  "service": {
+    "request_cache_size": 2
+  },
+  "backend": {
+    "plugin": "tabletop_cleanup",
+    "config": {
+      "scene_config": "configs/calibration/playground_20261109_global_refined.json",
+      "num_envs": 1,
+      "horizon": 32,
+      "gpu": 0,
+      "headless": true,
+      "max_episode_seconds": 120,
+      "gamma": 0.99,
+      "spacing_m": 6,
+      "render_resolution": [
+        640,
+        480
+      ],
+      "cpu_threads": 8,
+      "png_workers": 8,
+      "smoothing": {
+        "mode": "none",
+        "alpha": 0.8
+      },
+      "randomization": {
+        "enabled": false,
+        "pool": [
+          "gamepad",
+          "speaker",
+          "lidar"
+        ],
+        "fixed_subset": [
+          "gamepad",
+          "speaker"
+        ],
+        "x_range_m": [
+          0.24,
+          0.48
+        ],
+        "y_range_m": [
+          -0.25,
+          0.19
+        ],
+        "yaw_range_deg": [
+          -180,
+          180
+        ],
+        "clearance_m": 0.01,
+        "max_attempts": 2048
+      },
+      "reward": {
+        "success": 1.0,
+        "failure": 0.0
+      },
+      "terminate_on_success": true,
+      "log_dir": "outputs/tabletop_cleanup_real_layout/workers",
+      "objects": {
+        "gamepad": {
+          "scale": 1.0,
+          "center_xy": [
+            0.36584942,
+            0.03786663
+          ],
+          "yaw_deg": 5.66315
+        },
+        "speaker": {
+          "scale": 1.0,
+          "center_xy": [
+            0.371758,
+            -0.10155661
+          ],
+          "yaw_deg": 1.3502
+        },
+        "lidar": {
+          "scale": 1.0,
+          "center_xy": [
+            0.355232,
+            -0.087181
+          ],
+          "yaw_deg": 0.52981
+        }
+      },
+      "bin": {
+        "center_xy": [
+          0.3396856,
+          0.21861745
+        ],
+        "yaw_deg": 2.070158,
+        "size_xyz_m": [
+          0.222,
+          0.148,
+          0.049
+        ],
+        "wall_thickness_m": 0.004
+      },
+      "scene_overrides": {
+        "initial_state_joint_rad_m": [
+          -0.18580775216731635,
+          0.4724955350999049,
+          -0.45820128852607134,
+          -0.11393509357018983,
+          0.7485193563028081,
+          0.08302531251737025,
+          0.0595
+        ]
+      }
+    }
+  }
+}

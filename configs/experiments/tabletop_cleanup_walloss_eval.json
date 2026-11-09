@@ -1,0 +1,98 @@
+{
+  "extends": "playground_parallel_walloss_eval.json",
+  "name": "tabletop_cleanup_walloss_eval",
+  "description": "Eight shared-world tabletop-cleanup environments, each with exactly two distinct objects and a fixed box. The existing PAP Wall-OSS joint7 checkpoint is used only as an observation/action interface example; it has not been trained or validated for cleanup.",
+  "task": {
+    "plugin": "tabletop_cleanup",
+    "config": {
+      "scene_config": "${project_root}/configs/calibration/playground_20261109_global_refined.json",
+      "randomization": {
+        "enabled": true,
+        "pool": [
+          "gamepad",
+          "speaker",
+          "lidar"
+        ],
+        "fixed_subset": null,
+        "x_range_m": [
+          0.24,
+          0.48
+        ],
+        "y_range_m": [
+          -0.25,
+          0.19
+        ],
+        "yaw_range_deg": [
+          -180,
+          180
+        ],
+        "clearance_m": 0.01,
+        "max_attempts": 2048
+      },
+      "reward": {
+        "success": 1.0,
+        "failure": 0.0
+      },
+      "terminate_on_success": true,
+      "log_dir": "${project_root}/outputs/tabletop_cleanup_walloss_eval/simulation",
+      "objects": {
+        "gamepad": {
+          "scale": 1.0,
+          "center_xy": [
+            0.350157,
+            0.038151
+          ],
+          "yaw_deg": 1.32646
+        },
+        "speaker": {
+          "scale": 1.0,
+          "center_xy": [
+            0.360005,
+            -0.212919
+          ],
+          "yaw_deg": 1.45995
+        },
+        "lidar": {
+          "scale": 1.0,
+          "center_xy": [
+            0.355232,
+            -0.087181
+          ],
+          "yaw_deg": 0.52981
+        }
+      },
+      "bin": {
+        "center_xy": [
+          0.3396856,
+          0.21861745
+        ],
+        "yaw_deg": 2.070158,
+        "size_xyz_m": [
+          0.222,
+          0.148,
+          0.049
+        ],
+        "wall_thickness_m": 0.004
+      },
+      "max_episode_seconds": 120
+    }
+  },
+  "nodes": {
+    "inference": {
+      "server": {
+        "port": 18454
+      }
+    },
+    "simulation": {
+      "server": {
+        "port": 18424
+      }
+    }
+  },
+  "run": {
+    "output_dir": "${project_root}/outputs/tabletop_cleanup_walloss_eval/run",
+    "rollout": {
+      "max_transitions": 4096
+    }
+  }
+}

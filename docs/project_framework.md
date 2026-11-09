@@ -52,6 +52,8 @@ src/pressb/
     pap/                   # Object scene, outcomes, sampling and vector/process simulation
     table_buttons/         # Button scene, placement, motion, collection and evaluation
     playground/            # Calibrated empty workspace and optional object composition
+    cube_stack/            # Red-on-blue stacking on the pinned Playground template
+    tabletop_cleanup/      # Two-object cleanup into a fixed box on Playground
     <task>/parallel.py     # Native hooks and factory for the shared simulation engine
   models/                  # Model adapters and loading/inference wrappers
     walloss.py             # Frozen Wall-OSS encoder / flow decoder
@@ -194,6 +196,8 @@ Templates live in `configs/experiments/`:
 | `table_buttons_vlajepa_eval.json` | Medium table buttons / joint6 VLA-JEPA | Three-color evaluation, fixed gripper |
 | `table_buttons_parallel_vlajepa_eval.json` | Medium table buttons / joint6 VLA-JEPA | Eight shared-world environments; existing task/model settings |
 | `playground_parallel_walloss_eval.json` | Empty Playground / PAP Wall-OSS joint7 | Eight environments for observation/action integration; zero reward, no task-success detector |
+| `cube_stack_walloss_eval.json` | Cube stacking / PAP Wall-OSS joint7 | Eight-environment interface example; PAP weights are not validated for stacking |
+| `tabletop_cleanup_walloss_eval.json` | Tabletop cleanup / PAP Wall-OSS joint7 | Eight-environment interface example; PAP weights are not validated for cleanup |
 | `elevator_vlajepa_dsrl.json` | Elevator / original pose9 VLA-JEPA | DSRL |
 
 A template is a local deployment example, not a request to launch training.
@@ -299,7 +303,8 @@ randomization and explicit reset options.
 
 ### Shared-world simulation core
 
-The native `pap`, `elevator`, `table_buttons` and `playground` plugins each
+The native `pap`, `elevator`, `table_buttons`, `playground`, `cube_stack` and
+`tabletop_cleanup` plugins each
 resolve to `pressb.tasks.<task>.parallel:create_backend`. Their common engine
 owns one Isaac World, scene cloning, tensor-view indexing, contact dispatch,
 physics stepping, tiled-camera rendering, episode clocks and reset scheduling.
@@ -351,6 +356,8 @@ boundary, even when a historical model was trained in degrees/centimetres.
 | `table_buttons` | Shared core plus near/medium/far layout and target-color hooks; state7, action6 or action7 |
 | `elevator` | Shared core plus panel/contact outcome hooks and pose-action robot control |
 | `playground` | Shared core plus the calibrated workspace and optional composed objects; joint7, zero reward, no task-success detector |
+| `cube_stack` | Shared core plus red/blue cube sampling and physical stacking outcomes; joint7, pinned Playground cameras |
+| `tabletop_cleanup` | Shared core plus exactly two distinct objects, a fixed box and physical cleanup outcomes; joint7, pinned Playground cameras |
 | `pap_process` | Compatibility backend: independent Isaac processes for configured object variants |
 | `pap_recording` | Shared PAP core plus a read-only measured-state observer; no extra physics or render loop |
 | `elevator_remote` | Compatibility bridge to an already running historical elevator service |
