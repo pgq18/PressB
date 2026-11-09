@@ -118,14 +118,14 @@ def render_episode(backend, path, output, *, render_captures=None, render_subfra
     directory = output/path.stem
     directory.mkdir(exist_ok=False)
     recorded_names = manifest["joint_names"]
-    actual_names = list(backend.arms.view.shared_metatype.dof_names)
+    actual_names = list(backend.engine.robot.arms.view.shared_metatype.dof_names)
     if len(set(recorded_names)) != len(recorded_names) or set(actual_names) != set(recorded_names):
         raise ValueError("Recorded and rendered robot DOF names differ")
     order = [recorded_names.index(name) for name in actual_names]
     backend._reset([0], {0: copy.deepcopy(meta["reset"])}, capture_images=False)
-    world_time = float(backend.world.current_time)
+    world_time = float(backend.engine.world.current_time)
     offset = np.asarray(meta["source_env_offset"])
-    arm_rows, object_rows = backend.arm_rows[[0]], backend.object_rows[[0]]
+    arm_rows, object_rows = backend.engine.robot.arm_rows[[0]], backend.task.object_rows[[0]]
     captures = render_captures or backend.config["observation_render_frames"]
     subframes = render_subframes or backend.config["render_subframes"]
     pipes, frames = {}, []
@@ -135,33 +135,32 @@ def render_episode(backend, path, output, *, render_captures=None, render_subfra
         for frame, sample in enumerate(samples):
             q = data["joints"][sample, order][None]
             qv = data["joint_velocity"][sample, order][None]
-            p = (data["object_position_world"][sample]-offset+backend.offsets[0])[None]
+            p = (data["object_position_world"][sample]-offset+backend.engine.offsets[0])[None]
             quat = data["object_quaternion_wxyz"][sample][None]
             v = data["object_velocity"][sample][None]
-            backend.arms.set_joint_positions(q, arm_rows)
-            backend.arms.set_joint_velocities(qv, arm_rows)
-            backend.arms.set_joint_position_targets(q, arm_rows)
-            backend.bodies.set_world_poses(p, quat, object_rows)
-            backend.bodies.set_velocities(v, object_rows)
-            backend._begin_render_boundary()
+            backend.engine.robot.arms.set_joint_positions(q, arm_rows)
+            backend.engine.robot.arms.set_joint_velocities(qv, arm_rows)
+            backend.engine.robot.arms.set_joint_position_targets(q, arm_rows)
+            backend.task.bodies.set_world_poses(p, quat, object_rows)
+            backend.task.bodies.set_velocities(v, object_rows)
+            backend.engine.publish_transforms()
+            backend.engine.reset_render_history()
+            if backend.execution["renderer_profile"] == "rl_fast":
+                import carb.settings
+                carb.settings.get_settings().set_bool("/rtx-transient/post/dlss/forceParamReset", True)
             # Presentation-only quality override, after validating the source
-            # task identity. Restore the configuration even on failure; these
-            # extra zero-time samples never enter policy observations.
-            original_subframes = backend.config["render_subframes"]
-            try:
-                backend.config["render_subframes"] = subframes
-                for _ in range(captures-1):
-                    backend._capture(return_tiles=False)
-                tiles = backend._capture()
-            finally:
-                backend.config["render_subframes"] = original_subframes
-            got_p, got_quat = backend.bodies.get_world_poses()
-            current = dict(joint_position=float(np.max(np.abs(backend.arms.get_joint_positions()[arm_rows]-q))),
-                joint_velocity=float(np.max(np.abs(backend.arms.get_joint_velocities()[arm_rows]-qv))),
+            # task identity. Pass per-call options without changing runtime
+            # configuration; these samples never enter policy observations.
+            for _ in range(captures-1):
+                backend.engine._capture(return_tiles=False, subframes=subframes)
+            tiles = backend.engine._capture(subframes=subframes)
+            got_p, got_quat = backend.task.bodies.get_world_poses()
+            current = dict(joint_position=float(np.max(np.abs(backend.engine.robot.arms.get_joint_positions()[arm_rows]-q))),
+                joint_velocity=float(np.max(np.abs(backend.engine.robot.arms.get_joint_velocities()[arm_rows]-qv))),
                 object_position_m=float(np.max(np.abs(got_p[object_rows]-p))),
                 object_quaternion=float(np.max(np.abs(got_quat[object_rows]-quat))),
-                object_velocity=float(np.max(np.abs(backend.bodies.get_velocities()[object_rows]-v))))
-            if any(value > 2e-6 for value in current.values()) or float(backend.world.current_time) != world_time:
+                object_velocity=float(np.max(np.abs(backend.task.bodies.get_velocities()[object_rows]-v))))
+            if any(value > 2e-6 for value in current.values()) or float(backend.engine.world.current_time) != world_time:
                 raise RuntimeError(f"Measured state/clock changed during rendering: {current}")
             errors = {key: max(errors[key], current[key]) for key in errors}
             for camera, tile in zip(("up", "wrist"), tiles):
@@ -189,7 +188,7 @@ def render_episode(backend, path, output, *, render_captures=None, render_subfra
             recorded_captures_per_observation=backend.config["observation_render_frames"],
             recorded_subframes_per_capture=backend.config["render_subframes"],
             scope="Offline presentation only; source task and camera identity validated before overrides"),
-        world_time_before=world_time, world_time_after=float(backend.world.current_time),
+        world_time_before=world_time, world_time_after=float(backend.engine.world.current_time),
         presentation="Native 640x480 newly rendered measured-state replay; actual joints and free object pose. "
             "No policy execution, physics stepping, synthetic grasp, motion interpolation or time compression. "
             "Exact terminal tick appears at the next 30 Hz display slot (delay < 1/30 s).")
@@ -220,15 +219,15 @@ def main():
     from pressb.tasks.pap.vector import PAPVectorBackend
     backend = PAPVectorBackend(config)
     try:
-        if backend.identity["task_config_sha256"] != manifest["task_identity"]["task_config_sha256"]:
+        if backend.task.identity["task_config_sha256"] != manifest["task_identity"]["task_config_sha256"]:
             raise ValueError("Replay task semantics differ from the recorded rollout")
         def forbidden_step(*args, **kwargs):
             raise RuntimeError("Physics stepping is prohibited during measured-state replay")
-        backend.world.step = forbidden_step
+        backend.engine.world.step = forbidden_step
         results = [render_episode(backend, path.resolve(), args.output,
             render_captures=args.render_captures, render_subframes=args.render_subframes) for path in args.episodes]
         write_json(args.output/"render_manifest.json", dict(status="complete", episodes=results,
-            source_manifest=identity(args.episodes[0].parent/"manifest.json"), renderer_identity=backend.identity))
+            source_manifest=identity(args.episodes[0].parent/"manifest.json"), renderer_identity=backend.task.identity))
         print(json.dumps(dict(event="render_complete", output=str(args.output), episodes=len(results))), flush=True)
     except BaseException as error:
         # SimulationApp.close() can exit before Python propagates an exception.

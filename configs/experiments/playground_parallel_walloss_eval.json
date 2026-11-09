@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "name": "playground_parallel_walloss_eval",
+  "description": "Eight empty calibrated workspaces exercising the joint7 observation/action contract with an existing PAP policy. Playground supplies zero reward and no task-success detector; this is not a policy-transfer evaluation.",
+  "task": {
+    "plugin": "playground",
+    "config": {
+      "scene_config": "${project_root}/configs/piper_playground.json",
+      "num_envs": 8,
+      "horizon": 32,
+      "gpu": 0,
+      "headless": true,
+      "max_episode_seconds": 30,
+      "gamma": 0.99,
+      "spacing_m": 6,
+      "render_resolution": [640, 480],
+      "cpu_threads": 8,
+      "png_workers": 8,
+      "smoothing": {"mode": "none", "alpha": 0.8},
+      "log_dir": "${project_root}/outputs/playground_parallel_walloss_eval/simulation"
+    }
+  },
+  "model": {
+    "plugin": "walloss",
+    "config": {
+      "model_path": "/home/pengguanqi/Models/piper_pap_20260606",
+      "train_config": "${project_root}/configs/model_metadata/walloss_pap_20260606.yaml",
+      "norm_stats": "/home/pengguanqi/Models/piper_pap_20260606/norm_stats.json",
+      "device": "cuda:1",
+      "dtype": "bfloat16",
+      "horizon": 32,
+      "control_hz": 30,
+      "num_inference_timesteps": 10,
+      "input_image_resolution": 256,
+      "camera_mapping": {"up": "face_view", "wrist": "left_wrist_view"},
+      "flow_prefix_cache": true,
+      "flow_prefix_cache_mode": "full_attention"
+    }
+  },
+  "nodes": {
+    "inference": {
+      "server": {"host": "127.0.0.1", "port": 18452, "transport": "ws"},
+      "service": {"cache_size": 64, "batch_size": 8}
+    },
+    "simulation": {
+      "server": {"host": "127.0.0.1", "port": 18422, "transport": "http"},
+      "service": {"request_cache_size": 2}
+    }
+  },
+  "run": {
+    "method": "base",
+    "mode": "eval",
+    "device": "cpu",
+    "seed": 42,
+    "endpoints": {"timeout": 300},
+    "rollout": {
+      "num_envs": 8,
+      "max_transitions": 1000,
+      "eval_episodes": 16,
+      "execution_horizon": 32,
+      "action_bounds": "clip"
+    },
+    "output_dir": "${project_root}/outputs/playground_parallel_walloss_eval/run"
+  }
+}

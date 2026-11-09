@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the native elevator task through the schema-v2 service in one process.
+"""Exercise the shared parallel elevator task through the schema-v2 service.
 
 Checks measured-state holds, exact timeout duration, indexed reset isolation,
 and an optional recorded successful pose9 rollout. Does not contact a service.
@@ -40,7 +40,8 @@ def parser():
     result.add_argument("--replay-log", type=Path, default=DEFAULT_REPLAY)
     result.add_argument("--replay-episode-id", default=DEFAULT_EPISODE)
     result.add_argument("--skip-replay", action="store_true", help="Run timeout/reset checks only")
-    result.add_argument("--gpu-dynamics", action=argparse.BooleanOptionalAction, default=True)
+    result.add_argument("--gpu-dynamics", action=argparse.BooleanOptionalAction, default=False,
+        help="Shared backend currently requires --no-gpu-dynamics (CPU PhysX tensor control)")
     return result
 
 
@@ -86,18 +87,10 @@ def load_replay(path, episode_id):
 
 def raw_snapshot(backend, ids):
     """Read physical buffers directly without stepping or rendering."""
-    engine = backend._engine
-    q, velocity = engine._joint_arrays()
-    positions, orientations = engine.button_view.get_world_poses()
-    button_velocity = engine.button_view.get_velocities()
+    engine = backend.engine
     return dict(world_time=float(engine.world.current_time),
         world_tick=int(engine.world.current_time_step_index),
-        slots={str(i): dict(q=q[i].tolist(), velocity=velocity[i].tolist(),
-            commands=engine._commands[i].tolist(),
-            button_positions=positions[engine.button_rows[i]].tolist(),
-            button_orientations=orientations[engine.button_rows[i]].tolist(),
-            button_velocities=button_velocity[engine.button_rows[i]].tolist(),
-            episode_ticks=int(engine._items[i]["ticks"]), done=bool(engine._items[i]["done"])) for i in ids})
+        slots=backend.snapshot(ids))
 
 
 def save_images(rows, directory):
@@ -128,7 +121,7 @@ def run(args, *, backend_factory=None):
     else:
         output = args.output_dir.expanduser().resolve()
         output.mkdir(parents=True, exist_ok=False)
-    report = dict(kind="native_elevator_task_smoke", status="running", closed=False,
+    report = dict(kind="shared_parallel_elevator_task_smoke", status="running", closed=False,
         close_attempted=False, output_dir=str(output), num_envs=args.num_envs, gpu_id=args.gpu_id,
         max_seconds=args.max_seconds, gpu_dynamics=args.gpu_dynamics,
         timing={}, images={}, stages=[], source_identity={})
@@ -249,7 +242,7 @@ def run(args, *, backend_factory=None):
         raise
     finally:
         if backend is not None:
-            report["timing"]["backend"] = dict(getattr(backend._engine, "timing", {}))
+            report["timing"]["backend"] = dict(backend.timings)
             report["operations_status"] = report["status"]
             report["close_attempted"] = True
             if report["status"] == "passed":

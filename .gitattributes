@@ -2,4 +2,8 @@
 # Upstream whitespace is retained; first-party wrappers keep normal checks.
 src/pressb/model_sources/walloss/** -text -whitespace
 src/pressb/model_sources/vlajepa/** -text -whitespace
+src/pressb/model_sources/diffusion_policy/** -text -whitespace
 configs/model_metadata/** -text -whitespace
+# Preserve generated plot paths and CSV line endings in experiment artifacts.
+docs/results/**/*.svg -text -whitespace
+docs/results/**/*.csv -text -whitespace

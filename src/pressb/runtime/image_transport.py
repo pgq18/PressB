@@ -113,7 +113,7 @@ def prepare_wire_payload(path, payload, metadata, *, image_transport="legacy", p
     Call only for binary MessagePack transport. No negotiation means no change.
     No batching or retry behavior is altered by this image optimization.
     """
-    if (path.removeprefix("/") not in ("encode", "infer") or not isinstance(payload, dict)
+    if (path.removeprefix("/") not in ("encode", "infer", "sample_chain") or not isinstance(payload, dict)
             or not isinstance(payload.get("observations"), list) or not isinstance(metadata, dict)):
         return payload
     binary = image_transport == "auto" and "png_bytes" in metadata.get("image_encodings", [])

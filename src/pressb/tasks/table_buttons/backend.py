@@ -1,8 +1,7 @@
-"""Single-world physical button task with the task-independent runtime contract.
+"""Button configuration, reset sampling and legacy single-slot test backend.
 
-The backend owns task randomization and physical outcome rules. Isaac only
-supplies measured joints, cap travel and contact impulses. No target-distance
-reward, scripted press action or model-specific unit conversion is used here.
+The default factory delegates to the shared parallel runtime. The original
+single-slot classes remain for legacy telemetry tests and explicit callers.
 """
 from __future__ import annotations
 
@@ -16,7 +15,7 @@ import numpy as np
 
 from pressb.control.joint_actions import JointActionPostprocessor
 from pressb.robots.piper.kinematics import PiperKinematics
-from pressb.runtime.contract import (encode_image, finite_array, fingerprint,
+from pressb.runtime.contract import (encode_image, finite_array, fingerprint, normalize_env_seeds,
                                      validate_actions, validate_metadata)
 from .collision_policy import (
     DUAL_COLLISION_POLICY, STRICT_COLLISION_POLICY, collision_settings,
@@ -30,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[4]
 STATE_NAMES = [f"joint{i}" for i in range(1, 7)] + ["gripper_width"]
 STATE_UNITS = ["rad"] * 6 + ["m"]
 SOURCE_FILES = (
-    "tasks/table_buttons/backend.py", "robots/piper/isaac.py", "sensors/camera.py", "runtime/scene.py", "runtime/workbench.py",
+    "tasks/table_buttons/backend.py", "tasks/table_buttons/parallel.py", "robots/piper/isaac.py", "sensors/camera.py", "runtime/scene.py", "runtime/workbench.py",
     "tasks/table_buttons/task.py", "tasks/table_buttons/scene.py", "tasks/table_buttons/placement.py",
     "tasks/table_buttons/spacing.py", "tasks/table_buttons/camera_domain.py", "tasks/table_buttons/collision.py",
     "tasks/table_buttons/workspace.py", "tasks/table_buttons/motion.py", "tasks/table_buttons/motion_templates.py",
@@ -70,7 +69,9 @@ def load_config(config):
     allowed = {"scene_config", "scene_overrides", "num_envs", "action_dim", "fixed_gripper_width_m",
                "horizon", "control_hz", "physics_dt", "max_episode_seconds", "gamma", "gpu",
                "headless", "settling_ticks", "collision_policy", "randomization", "smoothing",
-               "model_inputs"}
+               "model_inputs", "spacing_m", "render_resolution", "renderer_profile", "render_subframes",
+               "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "log_dir",
+               "image_preprocessing", "image_output_resolution"}
     if not isinstance(config, dict) or set(config) - allowed:
         raise ValueError(f"Table buttons configuration supports only {sorted(allowed)}")
     result = deepcopy(config)
@@ -86,8 +87,6 @@ def load_config(config):
             raise FileNotFoundError(scene[key])
     result["scene_config"], result["scene"] = str(scene_path), scene
     result["num_envs"] = _integer(result.get("num_envs", 1), "num_envs")
-    if result["num_envs"] != 1:
-        raise ValueError("Table buttons currently supports num_envs=1; no vectorized execution is advertised")
     result["action_dim"] = result.get("action_dim", 6)
     if type(result["action_dim"]) is not int or result["action_dim"] not in (6, 7):
         raise ValueError("action_dim must be 6 (fixed gripper) or 7 (controlled full width)")
@@ -148,6 +147,31 @@ def load_config(config):
     for profile in randomization["profiles"]:
         resolve_spacing({**scene.get("position_sampling", {}), "spacing_profile": profile},
                         scene["button_geometry"]["base_radius_m"])
+    from pressb.runtime.parallel import execution_config
+    execution_keys = ("num_envs", "gpu", "horizon", "physics_dt", "control_hz", "max_episode_seconds",
+        "settling_ticks", "gamma", "headless", "spacing_m", "render_resolution", "renderer_profile",
+        "render_subframes", "observation_render_frames", "reset_render_frames", "cpu_threads",
+        "png_workers", "log_dir", "image_preprocessing", "image_output_resolution")
+    execution = execution_config({**{key: result[key] for key in execution_keys if key in result},
+        "render_resolution": result.get("render_resolution", scene["up_camera"]["resolution"]),
+        "reset_render_frames": result.get("reset_render_frames", scene.get("rendering", {}).get("warmup_frames", 8)),
+        "terminal_boundary": "control_interval"})
+    # Tiled rendering must preserve both calibrated camera sensor aspects.
+    # Post-render image_output_resolution is a separate transport resize.
+    render_width, render_height = execution["render_resolution"]
+    camera_resolutions = {"up": scene["up_camera"]["resolution"],
+        "wrist": scene.get("wrist_camera", {}).get("resolution", scene["wrist_camera_resolution"])}
+    for name, size in camera_resolutions.items():
+        if not isinstance(size, (list, tuple)) or len(size) != 2 or any(type(v) is not int or v <= 0 for v in size):
+            raise ValueError(f"{name} camera resolution must contain two positive integers")
+        if render_width * size[1] != render_height * size[0]:
+            raise ValueError(f"render_resolution must preserve the {name} camera aspect ratio {size[0]}:{size[1]}; use image_output_resolution for transport resizing")
+    if execution["renderer_profile"] not in ("calibrated", "rl_fast"):
+        raise ValueError("renderer_profile must be calibrated or rl_fast")
+    if execution["image_preprocessing"] is not None:
+        from pressb.runtime.image_transport import validate_image_preprocessing
+        validate_image_preprocessing(execution["image_preprocessing"])
+    result.update({key: execution[key] for key in execution_keys if key in execution})
     return result
 
 
@@ -173,6 +197,70 @@ def task_identity(config):
             "asset_scope": "URDF and root robot USD; external USD references are not recursively hashed"}
 
 
+def sample_reset_spec(self, seed, options, *, env_id=0):
+    if type(seed) is not int or seed < 0:
+        raise ValueError("seed must be a nonnegative integer")
+    if not isinstance(options, dict):
+        raise ValueError("reset options must be a mapping")
+    options = deepcopy(options)
+    per_env = options.pop("by_env", {})
+    if not isinstance(per_env, dict) or set(per_env) - {0, "0"}:
+        raise ValueError("options.by_env supports only environment 0")
+    selected = per_env.get("0", per_env.get(0, {}))
+    if not isinstance(selected, dict):
+        raise ValueError("options.by_env.0 must be a mapping")
+    options.update(selected)
+    if set(options) - {"profile", "target_color", "positions", "model_inputs"}:
+        raise ValueError("reset options supports profile, target_color, positions, model_inputs")
+    rng = np.random.default_rng(np.random.SeedSequence([seed, env_id]))
+    randomization = self.config["randomization"]
+    profile = options.get("profile", str(rng.choice(randomization["profiles"])))
+    color = options.get("target_color", str(rng.choice(randomization["colors"])))
+    if profile not in SPACING_PROFILES or color not in COLORS:
+        raise ValueError("Unknown spacing profile or target color")
+    cfg = self.config["scene"]
+    sample_seed = int(rng.integers(0, 2**32))
+    sampled = None
+    if "positions" in options:
+        positions = options["positions"]
+    elif randomization["positions"]:
+        sampled = self._sample(profile, sample_seed)
+        positions = sampled["positions"]
+    else:
+        positions = {name: cfg["buttons"][name]["center_xy"] for name in COLORS}
+    if not isinstance(positions, dict) or set(positions) != set(COLORS):
+        raise ValueError("positions must specify red, yellow and blue XY centres")
+    positions = {name: finite_array(positions[name], (2,), f"positions.{name}", dtype=np.float64).tolist()
+                 for name in COLORS}
+    geometry = cfg["button_geometry"]
+    band = resolve_spacing({**cfg["position_sampling"], "spacing_profile": profile}, geometry["base_radius_m"])
+    # Fixed legacy scene coordinates may span several named bands. Do not
+    # label them a sampled near/medium/far layout unless a band was requested.
+    enforce_band = randomization["positions"] or "positions" in options or "profile" in options
+    for i, name in enumerate(COLORS):
+        x, y = positions[name]
+        radius = geometry["base_radius_m"]
+        if not (cfg["table_x_min"] + radius <= x <= cfg["table_x_min"] + cfg["table_depth"] - radius
+                and abs(y) <= cfg["table_width"] / 2 - radius):
+            raise ValueError(f"{name} button must be fully supported by the tabletop")
+        if not button_in_camera(positions[name], cfg["up_camera"],
+                button_radius=geometry["base_radius_m"],
+                button_top_z=geometry["base_height_m"] + geometry["cap_height_m"],
+                margin_px=cfg["position_sampling"].get("pixel_margin", 16.)):
+            raise ValueError(f"{name} button must fit inside the configured camera")
+        for other in COLORS[i+1:]:
+            distance = float(np.linalg.norm(np.subtract(positions[name], positions[other])))
+            if distance < 2 * geometry["base_radius_m"] or (enforce_band and not band.accepts(distance)):
+                raise ValueError("Button positions violate the selected spacing or housing separation")
+    inputs = options.get("model_inputs", self.config["model_inputs"])
+    if not isinstance(inputs, dict):
+        raise ValueError("model_inputs must be a mapping")
+    return {"env_id": env_id, "seed": seed, "layout_seed": sample_seed,
+            "profile": profile if enforce_band else None, "target_color": color,
+            "positions": positions, "task": task_instruction(color), "model_inputs": deepcopy(inputs),
+            "layout_sampling": "reachable_camera_domain" if sampled is not None else "specified_positions"}
+
+
 class TableButtonsBackend:
     """Real single-world task, usable directly or through SimulationService.
 
@@ -182,6 +270,8 @@ class TableButtonsBackend:
 
     def __init__(self, config, *, environment_factory=None, layout_sampler=None):
         self.config = load_config(config)
+        if self.config["num_envs"] != 1:
+            raise ValueError("Legacy backend only supports num_envs=1; use create_backend for shared parallel execution")
         self.kin = PiperKinematics(self.config["scene"]["robot_urdf"], tip_offset=.1358)
         self.lower = np.r_[self.kin.lower, 0.]
         self.upper = np.r_[self.kin.upper, self.config["scene"]["gripper_max_width_m"]]
@@ -207,6 +297,7 @@ class TableButtonsBackend:
                     "lower": self.lower[:width].tolist(), "upper": self.upper[:width].tolist()},
             control_state_dim=7, task_features_dim=0,
             discount={"gamma": cfg["gamma"], "timebase_hz": cfg["control_hz"]}, reset_mode="indexed",
+            capabilities=["per_env_reset_seeds"],
             smoothing=deepcopy(cfg["smoothing"]),
             execution={"backend": "isaac_single_world", "workers": 1, "vectorized": False,
                        "gpu_ids": [cfg["gpu"]], "physics_hz": 1 / cfg["physics_dt"],
@@ -236,67 +327,7 @@ class TableButtonsBackend:
         return self._placements[profile].sample(seed)
 
     def _reset_spec(self, seed, options):
-        if type(seed) is not int or seed < 0:
-            raise ValueError("seed must be a nonnegative integer")
-        if not isinstance(options, dict):
-            raise ValueError("reset options must be a mapping")
-        options = deepcopy(options)
-        per_env = options.pop("by_env", {})
-        if not isinstance(per_env, dict) or set(per_env) - {0, "0"}:
-            raise ValueError("options.by_env supports only environment 0")
-        selected = per_env.get("0", per_env.get(0, {}))
-        if not isinstance(selected, dict):
-            raise ValueError("options.by_env.0 must be a mapping")
-        options.update(selected)
-        if set(options) - {"profile", "target_color", "positions", "model_inputs"}:
-            raise ValueError("reset options supports profile, target_color, positions, model_inputs")
-        rng = np.random.default_rng(seed)
-        randomization = self.config["randomization"]
-        profile = options.get("profile", str(rng.choice(randomization["profiles"])))
-        color = options.get("target_color", str(rng.choice(randomization["colors"])))
-        if profile not in SPACING_PROFILES or color not in COLORS:
-            raise ValueError("Unknown spacing profile or target color")
-        cfg = self.config["scene"]
-        sample_seed = int(rng.integers(0, 2**32))
-        sampled = None
-        if "positions" in options:
-            positions = options["positions"]
-        elif randomization["positions"]:
-            sampled = self._sample(profile, sample_seed)
-            positions = sampled["positions"]
-        else:
-            positions = {name: cfg["buttons"][name]["center_xy"] for name in COLORS}
-        if not isinstance(positions, dict) or set(positions) != set(COLORS):
-            raise ValueError("positions must specify red, yellow and blue XY centres")
-        positions = {name: finite_array(positions[name], (2,), f"positions.{name}", dtype=np.float64).tolist()
-                     for name in COLORS}
-        geometry = cfg["button_geometry"]
-        band = resolve_spacing({**cfg["position_sampling"], "spacing_profile": profile}, geometry["base_radius_m"])
-        # Fixed legacy scene coordinates may span several named bands. Do not
-        # label them a sampled near/medium/far layout unless a band was requested.
-        enforce_band = randomization["positions"] or "positions" in options or "profile" in options
-        for i, name in enumerate(COLORS):
-            x, y = positions[name]
-            radius = geometry["base_radius_m"]
-            if not (cfg["table_x_min"] + radius <= x <= cfg["table_x_min"] + cfg["table_depth"] - radius
-                    and abs(y) <= cfg["table_width"] / 2 - radius):
-                raise ValueError(f"{name} button must be fully supported by the tabletop")
-            if not button_in_camera(positions[name], cfg["up_camera"],
-                    button_radius=geometry["base_radius_m"],
-                    button_top_z=geometry["base_height_m"] + geometry["cap_height_m"],
-                    margin_px=cfg["position_sampling"].get("pixel_margin", 16.)):
-                raise ValueError(f"{name} button must fit inside the configured camera")
-            for other in COLORS[i+1:]:
-                distance = float(np.linalg.norm(np.subtract(positions[name], positions[other])))
-                if distance < 2 * geometry["base_radius_m"] or (enforce_band and not band.accepts(distance)):
-                    raise ValueError("Button positions violate the selected spacing or housing separation")
-        inputs = options.get("model_inputs", self.config["model_inputs"])
-        if not isinstance(inputs, dict):
-            raise ValueError("model_inputs must be a mapping")
-        return {"env_id": 0, "seed": seed, "layout_seed": sample_seed,
-                "profile": profile if enforce_band else None, "target_color": color,
-                "positions": positions, "task": task_instruction(color), "model_inputs": deepcopy(inputs),
-                "layout_sampling": "reachable_camera_domain" if sampled is not None else "specified_positions"}
+        return sample_reset_spec(self, seed, options)
 
     def _observe(self):
         state = finite_array(self.environment.state(), (7,), "measured joints", dtype=np.float64)
@@ -305,11 +336,14 @@ class TableButtonsBackend:
                 "task": self.spec["task"], "model_inputs": deepcopy(self.spec["model_inputs"]),
                 "control_state": self.last_sent.tolist(), "task_features": []}
 
-    def reset(self, env_ids, seed, options=None):
+    def reset(self, env_ids, seed, options=None, *, env_seeds=None):
         self._check()
         if env_ids != [0] or any(type(value) is not int for value in env_ids):
             raise ValueError("Table buttons reset requires env_ids=[0]")
-        spec = self._reset_spec(seed, {} if options is None else options)
+        if type(seed) is not int or seed < 0:
+            raise ValueError("seed must be a nonnegative integer")
+        env_seeds = normalize_env_seeds(env_ids, env_seeds)
+        spec = self._reset_spec(seed if env_seeds is None else env_seeds[0], {} if options is None else options)
         try:
             if self.environment is None:
                 self.environment = self._environment_factory(self.config)
@@ -517,4 +551,5 @@ class IsaacTableButtonsEnvironment:
 
 
 def create_backend(config):
-    return TableButtonsBackend(config)
+    from .parallel import create_backend as create_shared_backend
+    return create_shared_backend(config)

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "name": "pap_diffusion_policy_dppo",
+  "task": {
+    "plugin": "pap",
+    "config": {
+      "scene_config": "${project_root}/configs/piper_pick_place.json",
+      "trajectory": "${project_root}/outputs/pap_dataset_audit/episode_000000.npz",
+      "python": "${project_root}/.conda/envs/pressb/bin/python",
+      "num_envs": 8,
+      "gpu_ids": [
+        0
+      ],
+      "horizon": 16,
+      "render_resolution": [
+        640,
+        480
+      ],
+      "render_subframes": 1,
+      "reset_render_frames": 2,
+      "spacing_m": 6,
+      "cpu_threads": 8,
+      "png_workers": 8,
+      "gamma": 0.995,
+      "max_episode_seconds": 20,
+      "smoothing": {
+        "mode": "none",
+        "alpha": 0.8
+      },
+      "randomization": {
+        "position": "markers",
+        "colors": [
+          "red"
+        ]
+      },
+      "reward": {
+        "success": 1.0,
+        "failure": 0.0
+      },
+      "outcome": {
+        "stable_seconds": 0.5,
+        "lift_height": 0.04
+      },
+      "terminate_on_drop": true,
+      "drop_below_table_m": 0.05,
+      "startup_timeout": 300,
+      "command_timeout": 300,
+      "renderer_profile": "rl_fast",
+      "observation_render_frames": 2
+    }
+  },
+  "model": {
+    "plugin": "diffusion_policy",
+    "config": {
+      "checkpoint": "${project_root}/outputs/diffusion_policy_pap/sft/best.pt",
+      "device": "cuda:0",
+      "use_ema": true,
+      "kernel": "ddim",
+      "denoising_steps": 10,
+      "eta": 0.0,
+      "min_std": 0.0
+    }
+  },
+  "nodes": {
+    "simulation": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18301,
+        "transport": "http"
+      },
+      "service": {
+        "request_cache_size": 2
+      }
+    },
+    "inference": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18331,
+        "transport": "ws",
+        "max_message_bytes": 201326592
+      },
+      "service": {
+        "cache_size": 256,
+        "cache_ttl": 600,
+        "batch_size": 8,
+        "collect_timing": true,
+        "action_expert": {
+          "kernel": "ddim",
+          "denoising_steps": 10,
+          "eta": 0.0,
+          "min_std": 0.02
+        }
+      }
+    }
+  },
+  "run": {
+    "method": "dppo",
+    "mode": "train",
+    "device": "cuda:1",
+    "seed": 42,
+    "endpoints": {
+      "inference": "ws://127.0.0.1:18331",
+      "simulation": "http://127.0.0.1:18301",
+      "timeout": 300,
+      "max_message_bytes": 201326592
+    },
+    "rollout": {
+      "max_transitions": 100000,
+      "execution_horizon": 8,
+      "eval_episodes": 100,
+      "recent_window": 100,
+      "num_envs": 8,
+      "action_bounds": "clip"
+    },
+    "dppo": {
+      "rollout_steps": 96,
+      "epochs": 1,
+      "minibatch_size": 256,
+      "actor_lr": 1e-06,
+      "critic_lr": 0.0003,
+      "gae_lambda": 0.95,
+      "bootstrap_truncated": false,
+      "logprob_reduction": "upstream_mean",
+      "logprob_max": 5.0,
+      "gamma_denoising": 0.99,
+      "clip_epsilon": 0.01,
+      "clip_epsilon_min": 0.001,
+      "target_kl": 0.05,
+      "critic_warmup_iterations": 2,
+      "critic_continue_after_kl": true
+    },
+    "checkpoint": {
+      "interval": 100000,
+      "keep": null,
+      "include_replay": false
+    },
+    "output_dir": "${project_root}/outputs/pap_diffusion_policy_dppo/run",
+    "wandb": {
+      "enabled": false,
+      "project": "pressb-online-rl",
+      "name": "pap-diffusion-policy-dppo"
+    }
+  },
+  "description": "DPPO fine-tunes the bundled Diffusion Policy denoiser after supervised training; use the same stochastic sampler for baseline and trained-policy evaluation."
+}

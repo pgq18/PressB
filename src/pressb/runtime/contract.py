@@ -36,6 +36,41 @@ def _positive_int(value, name):
     return value
 
 
+def normalize_env_seeds(env_ids, env_seeds):
+    """Validate optional per-slot reset seeds without changing seed semantics.
+
+    JSON object keys arrive as strings, while direct Python callers may use
+    integer keys. Only their canonical forms are accepted, and aliases must not
+    name the same slot twice. ``None`` retains the legacy shared-seed reset.
+    Callers still validate environment bounds and the required shared seed.
+    """
+    if env_seeds is None:
+        return None
+    if (not isinstance(env_ids, list) or not env_ids
+            or any(type(i) is not int or i < 0 for i in env_ids)
+            or len(set(env_ids)) != len(env_ids)):
+        raise ValueError("env_ids must contain distinct nonnegative integer indices")
+    if not isinstance(env_seeds, dict):
+        raise ValueError("env_seeds must be an object mapping environment ids to seeds")
+    normalized = {}
+    for key, seed in env_seeds.items():
+        if type(key) is int and key >= 0:
+            env_id = key
+        elif (isinstance(key, str) and key.isascii() and key.isdecimal()
+              and str(int(key)) == key):
+            env_id = int(key)
+        else:
+            raise ValueError("env_seeds keys must be nonnegative integer ids or canonical decimal strings")
+        if env_id in normalized:
+            raise ValueError("env_seeds contains duplicate normalized environment ids")
+        if type(seed) is not int or seed < 0:
+            raise ValueError("env_seeds values must be nonnegative integer seeds")
+        normalized[env_id] = seed
+    if set(normalized) != set(env_ids):
+        raise ValueError("env_seeds must exactly cover env_ids")
+    return normalized
+
+
 def _named_vector(spec, name):
     if not isinstance(spec, dict):
         raise ValueError(f"{name} must declare names and units")
@@ -201,7 +236,7 @@ def negotiate(inference_metadata, simulation_metadata, method, execution_horizon
         producer_spec = validate_image_preprocessing(simulation["image_preprocessing"])
         if producer_spec != inference.get("image_preprocessing"):
             raise ValueError("Simulation image_preprocessing does not match inference image_preprocessing")
-    if method not in ("dsrl", "initial_noise", "action_residual", "base"):
+    if method not in ("dsrl", "initial_noise", "action_residual", "base", "dppo"):
         raise ValueError("Unknown training method")
     validate_terminal_observation_mode(terminal_observation_mode, simulation)
     if type(fused_step_reset) is not bool:
@@ -212,6 +247,8 @@ def negotiate(inference_metadata, simulation_metadata, method, execution_horizon
     required = {"encode", "decode", "features", "context_cache"}
     if method in ("dsrl", "initial_noise"):
         required.add("external_initial_noise")
+    if method == "dppo":
+        required.update(("sample_chain", "action_expert_update"))
     if not required.issubset(inference.get("capabilities", [])):
         raise ValueError(f"Inference missing capabilities: {sorted(required - set(inference.get('capabilities', [])))}")
     ia, sa = inference["action"], simulation["action"]
@@ -243,6 +280,11 @@ def negotiate(inference_metadata, simulation_metadata, method, execution_horizon
         "inference": {k: inference[k] for k in ("model_id", "checkpoint_sha256", "weights_sha256", "source_revision", "normalization_sha256", "model_config_sha256", "image_preprocessing") if k in inference},
         "simulation": {k: simulation[k] for k in ("task_id", "task_config_sha256", "source_revision", "smoothing", "image_preprocessing") if k in simulation},
     }
+    if method == "dppo":
+        expert = inference.get("action_expert", {})
+        if not isinstance(expert.get("spec"), dict):
+            raise ValueError("DPPO requires a declared action expert sampler specification")
+        result["identity"]["action_expert"] = {key: expert[key] for key in ("spec", "config") if key in expert}
     if terminal_observation_mode != "full":
         result["terminal_observation_mode"] = terminal_observation_mode
     if fused_step_reset:

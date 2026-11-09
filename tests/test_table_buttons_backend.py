@@ -200,7 +200,7 @@ def test_randomization_really_varies_profile_and_color_by_seed():
 
 
 @pytest.mark.parametrize("config,match", [
-    ({"num_envs": 64}, "num_envs=1"), ({"action_dim": 8}, "action_dim"),
+    ({"num_envs": 0}, "num_envs"), ({"action_dim": 8}, "action_dim"),
     ({"fixed_gripper_width_m": .2}, "gripper"), ({"physics_dt": .01}, "divide"),
     ({"gamma": 1.1}, "gamma"), ({"randomization": {"profiles": ["unknown"]}}, "profiles"),
     ({"scene_overrides": {"success": {"min_contact_force_n": 0.}}}, "contact force"),

@@ -222,6 +222,10 @@ class JointVLAJEPABackend:
     def describe(self):
         return deepcopy(self._metadata)
 
+    def create_action_expert(self, config=None):
+        from .flow_experts import create_vlajepa_expert
+        return create_vlajepa_expert(self, config)
+
     def _prepare(self, observation):
         validate_observation(observation, self._metadata["observation"])
         instruction = observation["task"]

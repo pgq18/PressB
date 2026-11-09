@@ -14,6 +14,7 @@
 | VLA-JEPA PiPER 适配 | 来源版本 `9c9dc71c8e199c7428b25d103ab666395832c001`，另含 H200 的 joint／多任务工作区模块 | 推理、训练和数据代码已内置 `src/pressb/model_sources/vlajepa`，来源和逐文件 SHA 见其中清单；不含权重 |
 | Wall-X / Wall-OSS | 来源和本地修改摘要见 `src/pressb/model_sources/walloss/source_manifest.json` | 模型、推理、训练、数据和 CUDA 源码已内置；原源码版权头保留；不含权重或编译二进制 |
 | NVIDIA CUTLASS | `e51efbfe18fe4f4cbb66ab814c55bf4aa0185491` | 仅构建 Wall-OSS CUDA 扩展时获取到缓存；原许可文本保留于 Wall-OSS 源码包的 `licenses/` |
+| DPPO / Diffusion Policy | `cc7234ad7ff39a8f32de3af903606723a16f0648` | MIT；`src/pressb/model_sources/diffusion_policy` 内置条件 UNet、DDPM/DDIM 公式及依赖模块，保留 LICENSE 和逐文件原始／适配后 SHA-256；PressB 添加视觉编码、LeRobot 训练和节点接口，不包含上游模型权重 |
 
 `prepare_wrist_asset.py` 在隔离的 OpenUSD 24.11 中提取官方支架与相机子树，以兼容 Isaac Sim 4.5。它保留网格点与拓扑，生成文件及来源记录位于 `assets/generated/official_wrist/`，不提交 Git。
 
@@ -34,3 +35,4 @@ Wall-X 源树也无顶层 LICENSE，原 `setup.py` 只有 BSD classifier。
 - [AgileX robot_lab](https://github.com/agilexrobotics/robot_lab/tree/b868140eeb1459acefef24a865587ec39a5278c3)
 - [AgileX piper_isaac_sim](https://github.com/agilexrobotics/piper_isaac_sim/tree/8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2)
 - [NVIDIA Omniverse 软件许可](https://docs.omniverse.nvidia.com/platform/latest/common/NVIDIA_Omniverse_License_Agreement.html)
+- [DPPO](https://github.com/irom-princeton/dppo/tree/cc7234ad7ff39a8f32de3af903606723a16f0648)

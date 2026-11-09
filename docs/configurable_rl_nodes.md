@@ -1,8 +1,16 @@
 # Configurable inference, simulation and RL nodes
 
-**2026-11-07 ownership update:** service and learning code lives in `runtime`, task implementations in `tasks/{elevator,pap,table_buttons}`, and model integration in `models`. PiPER hardware/control, generic filters and sensors live in `robots/piper`, `control` and `sensors`. The `pressb.rl_nodes` and `pressb.online_rl` packages are removed without aliases; `configs/rl_nodes/` remains the per-node template directory. New experiments use [the unified configuration/entry point and path map](project_framework.md). Historical elevator orchestration lives in `compat/elevator_rl`.
+Service and learning code lives in `runtime`, task implementations in
+`tasks/{elevator,pap,table_buttons,playground}`, and model integration in `models`.
+The four native simulation plugins now use the common `SharedWorldBackend` with
+task hooks and PiPER robot drivers. PiPER hardware/control, generic filters and
+sensors live in `robots/piper`, `control` and `sensors`. The removed
+`pressb.rl_nodes` and `pressb.online_rl` packages have no aliases;
+`configs/rl_nodes/` remains the per-node template directory. New experiments use
+[the unified configuration/entry point and path map](project_framework.md).
+Historical elevator orchestration lives in `compat/elevator_rl`.
 
-The current ownership refactor has passed 2,210 unique tests, installed-package checks, physical replay for all three tasks, the two-environment Wall train/resume/eval/collect pipeline and native batch64 checks. See the [current verification summary](results/component_ownership_20261107.json) for scope and evidence. Strict checkpoint migration passed; the local resume configuration at `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json` is validated but unlaunched, retaining 64 environments, batch64 and the original 200,000 total budget (183,296 remaining). Formal PAP residual training remains paused at 16,704 transitions. Earlier test and GPU results below retain their original dates and scope.
+The **2026-11-07 ownership refactor** passed 2,210 unique tests, installed-package checks, physical replay for the three tasks then present, the two-environment Wall train/resume/eval/collect pipeline and native batch64 checks. See its [verification summary](results/component_ownership_20261107.json) for scope and evidence. Its strict checkpoint migration and local resume configuration at `outputs/component_ownership_20261107/checkpoint_migration/resume_experiment.json` were validated but unlaunched, retaining 64 environments, batch64 and the original 200,000 total budget (183,296 remaining). That PAP residual run remains paused at 16,704 transitions. These historical tests do not validate the later shared-core implementation; each result retains its recorded source and scope.
 
 This interface separates frozen model inference, physical environment execution
 and online learning. Public `method="dsrl"` means learning the flow model's
@@ -289,7 +297,61 @@ time within the chunk.
 
 ## Parallelism, recovery and logs
 
-PAP offers two simulation backends. The original `pap_simulation.json` runs
+The native `pap`, `elevator`, `table_buttons` and `playground` registry entries
+resolve to `pressb.tasks.<task>.parallel:create_backend`. Each factory provides
+`ParallelTask` scene/reset/outcome hooks and a `ParallelRobot` driver to the
+common [`SharedWorldBackend`](../src/pressb/runtime/parallel.py).
+[`isaac_parallel.py`](../src/pressb/runtime/isaac_parallel.py) initializes the
+task-authored World and owns cloning, tensor access and tiled rendering; hooks
+do not own another physics or camera-capture loop. Robot drivers handle joint/pose commands, interpolation,
+IK and smoothing; task hooks interpret contacts and success. Task-specific
+physics-tick versus control-interval termination boundaries remain explicit.
+
+Each shared-world step includes **all active environments with equal-length
+action prefixes**. Environment count does not imply independently advancing
+World clocks or asynchronous per-slot stepping. Selected environments can reset
+independently: reset changes only their state, advances zero physics ticks and
+preserves peer state and episode identities. Startup settling and render-only
+reset warmup are separate operations. The `per_env_reset_seeds` capability
+accepts an exact environment-ID-to-seed mapping, allowing DPPO to batch resets
+without changing each episode's random stream. Full terminal observations and
+any subsequent reset observation retain separate identities.
+
+The task template retains its camera intrinsics, poses and optical-center
+configuration when cloned. PAP's dataset-aligned view, table buttons'
+elevator-aligned wrist view and Playground's calibrated real-workspace view do
+not become interchangeable because they share the execution engine. Render
+resolution, transmitted image preprocessing and inference microbatch size are
+configured separately. See the
+[shared-core ownership and task hooks](project_framework.md#shared-world-simulation-core).
+
+Eight-environment examples are provided for
+[table buttons](../configs/experiments/table_buttons_parallel_vlajepa_eval.json)
+and [Playground](../configs/experiments/playground_parallel_walloss_eval.json).
+For a two-environment smoke check, set both `task.config.num_envs` and
+`run.rollout.num_envs` to `2`. Validation prepares configuration without launching
+Isaac or loading a model. The empty Playground returns zero reward and has no
+task-success detector; its example exercises the existing PAP policy's joint7
+interface, not a verified transfer or learned task.
+
+Completed checks for this refactor are recorded in the
+[shared-core validation report](results/shared_parallel_refactor_20261109/README.md).
+
+### Compatibility backends and historical PAP measurements
+
+`pap_process` and `elevator_remote` retain their process backend and remote bridge.
+The public `pressb.tasks.pap.vector:create_backend` and
+`pressb.tasks.elevator.native:create_backend` paths now construct the shared core.
+`pap_recording` uses the same core with a read-only observer: it records initial
+state, each control boundary and exact terminal state, without extra physics
+ticks, rendering or a separate episode scheduler. The previous native elevator
+implementation is available explicitly at
+`pressb.tasks.elevator.legacy_native:create_backend`. Standalone replay and
+collection scripts retain their entry points. Prior capacity numbers in this
+section describe their recorded implementations, not a new four-task capacity
+test.
+
+The original `pap_simulation.json` runs
 independent Isaac processes concurrently; each owns one environment
 and renderer. Startup is serial to limit initialization pressure. Requests
 dispatch to selected workers together and return after those workers finish.
@@ -299,20 +361,21 @@ GPU vector backend or a fully asynchronous per-environment rollout scheduler.
 Increasing `num_envs` increases Isaac memory usage per environment; no automatic
 GPU-memory tuning is claimed.
 
-For higher parallelism, [`pap_vector_simulation.json`](../configs/rl_nodes/pap_vector_simulation.json)
-uses one Isaac process, a shared World, batched PhysX tensor access and tiled
-cameras. **64 environments with 128 native 640×480 views passed a real GPU
+The [`pap_vector_simulation.json`](../configs/rl_nodes/pap_vector_simulation.json)
+template retains its public factory path, which now uses the common core. Its
+earlier implementation used one Isaac process, a shared World, batched PhysX
+tensor access and tiled cameras. **64 environments with 128 native 640×480 views passed a real GPU
 capacity test**, using about 15 GiB of simulator GPU memory. A recorded successful
 grasp-and-place trajectory also succeeded in all 64 environments; this checks
 physical execution rather than learned-policy success rates. See the
 [capacity report](pap_parallel_capacity.md) for settings, timings and limitations.
 
-This backend requires every active environment to receive an equal-length action
+That recorded backend required every active environment to receive an equal-length action
 prefix in each step. Episodes still reset independently, with zero physics ticks
 during indexed reset. Startup-settled joints are restored and the object is placed
 on its support surface; this reset contract has a different task fingerprint from
 the process backend. One object geometry is configured per service, with position
-and color randomization. The default keeps 48 render-only warmup captures after
+and color randomization. That template keeps 48 render-only warmup captures after
 reset; lowering this count can leave image-history artifacts. Physics currently
 uses CPU PhysX with tensor access, not GPU-native dynamics. Wall-OSS model batch
 size is configured separately from simulation parallelism, as described above.
@@ -406,8 +469,8 @@ finished. Endpoint URLs and the RPC token are excluded from uploaded configurati
 
 ## Existing elevator and new adapters
 
-The `elevator` experiment plugin selects the native task engine at
-`pressb.tasks.elevator.native:create_backend`. The separate `elevator_remote`
+The `elevator` experiment plugin selects the shared-engine task factory at
+`pressb.tasks.elevator.parallel:create_backend`. The separate `elevator_remote`
 plugin selects `pressb.tasks.elevator.backend:create_backend` for historical
 service bridging. `elevator_inference.json` selects the canonical
 `pressb.models.vlajepa:create_backend` adapter; its explicit source override, if
@@ -421,12 +484,17 @@ restart the legacy simulator and the generic simulation node before another
 run. Legacy RL checkpoints should continue to use their original experiment
 entry points; the new runner requires its negotiated schema fingerprint.
 
-To add another task/model, implement a factory `module:function(config)` and
-select it in JSON. Model backends provide `describe`, `encode_batch`,
-`decode_batch`; environment backends provide `describe`, `reset`, `step`,
-`close`. See [`contract.py`](../src/pressb/runtime/contract.py),
+To add a native simulation task, implement the hooks in
+[`parallel_contract.py`](../src/pressb/runtime/parallel_contract.py) under
+`tasks/<task>/parallel.py`, reuse or supply a robot driver, and return a
+`SharedWorldBackend` from `create_backend(config)`. A task owns template authoring,
+reset sampling/object placement and outcome rules; the engine owns stepping and
+rendering. Other external backends may still implement `describe`, `reset`,
+`step`, `close` directly and select their explicit factory in JSON. Model
+backends provide `describe`, `encode_batch`, `decode_batch`.
+See [`contract.py`](../src/pressb/runtime/contract.py),
 [`walloss.py`](../src/pressb/models/walloss.py) and
-[`backend.py`](../src/pressb/tasks/pap/backend.py). Metadata cannot supply missing physics
+[`parallel.py`](../src/pressb/tasks/pap/parallel.py). Metadata cannot supply missing physics
 or model decoding logic: a new task still needs its success/reward/reset adapter.
 The tabletop-buttons six-joint checkpoint now uses the `vlajepa_joint` model
 adapter and the `table_buttons` task plugin. Historical commands retain their

@@ -46,7 +46,14 @@ def test_pap_uses_the_shared_calibrated_camera_builders():
 def cpu_vector_config(tmp_path, monkeypatch):
     trajectory = tmp_path / "episode_000000.npz"
     np.savez(trajectory, state_raw=np.zeros((1, 7)))
-    monkeypatch.setattr(vector.PAPVectorBackend, "_initialize", lambda self: None)
+    from pressb.runtime import isaac_parallel
+    from pressb.robots.piper.parallel import PiperJointDriver
+    class MetadataEngine:
+        def __init__(self, task, backend):
+            self.robot = object.__new__(PiperJointDriver)
+        def initialize(self): pass
+        def close(self): pass
+    monkeypatch.setattr(isaac_parallel, "IsaacParallelWorld", MetadataEngine)
     return {"python": sys.executable, "trajectory": str(trajectory),
             "num_envs": 1, "log_dir": str(tmp_path / "worker_logs")}
 
@@ -55,13 +62,15 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
     assert backend.ROOT == Path(__file__).resolve().parents[1]
     instance = vector.PAPVectorBackend(cpu_vector_config)
     try:
-        sources = instance.identity["source_identity"]
+        sources = instance.describe()["source_identity"]
         assert not any(name.startswith(("pick_place/", "table_buttons/", "rl_nodes/", "online_rl/"))
                        for name in sources)
         for name in ("tasks/pap/backend.py", "tasks/pap/worker.py", "tasks/pap/vector.py",
                      "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
                      "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
                      "runtime/physics.py", "runtime/image_transport.py",
+                     "runtime/parallel.py", "runtime/parallel_contract.py", "runtime/isaac_parallel.py",
+                     "robots/piper/parallel.py", "tasks/pap/parallel.py",
                      "robots/piper/wrist_camera.py", "robots/piper/kinematics.py",
                      "control/joint_actions.py", "sensors/camera.py", "sensors/tiled.py"):
             assert name in sources
@@ -77,6 +86,8 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
 @pytest.mark.parametrize("changed_source", [
     "tasks/pap/backend.py", "tasks/pap/worker.py", "tasks/pap/vector.py",
     "runtime/physics.py", "runtime/image_transport.py",
+    "runtime/parallel.py", "runtime/parallel_contract.py", "runtime/isaac_parallel.py",
+    "robots/piper/parallel.py", "tasks/pap/parallel.py",
     "robots/piper/wrist_camera.py", "robots/piper/kinematics.py", "control/joint_actions.py",
     "sensors/camera.py", "sensors/tiled.py",
     "runtime/scene.py", "runtime/workbench.py", "tasks/pap/scene.py",
@@ -85,7 +96,7 @@ def test_repository_paths_and_provenance_follow_real_implementation(cpu_vector_c
 def test_source_revision_detects_implementation_and_shared_dependency_changes(
         cpu_vector_config, monkeypatch, changed_source):
     first = vector.PAPVectorBackend(cpu_vector_config)
-    original = first.identity
+    original = first.describe()
     first.close()
     source_path = backend.ROOT / "src/pressb" / changed_source
     read_bytes = Path.read_bytes
@@ -98,7 +109,7 @@ def test_source_revision_detects_implementation_and_shared_dependency_changes(
     monkeypatch.setattr(Path, "read_bytes", changed_contents)
     updated = vector.PAPVectorBackend(cpu_vector_config)
     try:
-        assert updated.identity["source_revision"] != original["source_revision"]
-        assert updated.identity["task_config_sha256"] == original["task_config_sha256"]
+        assert updated.describe()["source_revision"] != original["source_revision"]
+        assert updated.describe()["task_config_sha256"] == original["task_config_sha256"]
     finally:
         updated.close()

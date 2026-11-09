@@ -478,7 +478,7 @@ class FastIsaacVectorBackend(IsaacVectorBackend):
                 lit=set(), events=[], solver=_SolverSlot(self.batched_controller, eid),
                 history=deque((initial.copy() for _ in range(self.window)), maxlen=self.window),
                 min_target_distance=float("inf"), max_tracking_error=0., max_target_force=0., max_target_travel=0.,
-                reset_episode=copy.deepcopy(episode), directory=directory, seed=seed,
+                reset_episode=copy.deepcopy(episode), directory=directory, seed=episode.get("seed", seed),
                 layout_evidence=validate_panel_layout(self.world, env))
             self.collisions[eid] = []
             self.forces[eid] = 0.
@@ -504,7 +504,7 @@ class FastIsaacVectorBackend(IsaacVectorBackend):
             observation, info = self._observation(eid, tiles, encoded[eid]), self._info(eid)
             info["reset_physics_steps"] = 0
             output.append(dict(env_id=eid, observation=observation, info=info))
-            _write_json(directory / f"env_{eid:03d}_reset.json", dict(env_id=eid, seed=seed,
+            _write_json(directory / f"env_{eid:03d}_reset.json", dict(env_id=eid, seed=episodes[eid].get("seed", seed),
                 run_id=self._run_id, episode=episodes[eid], initial_state=observation["state"],
                 layout=self._items[eid]["layout_evidence"], info=info))
         self.timing["reset_calls"] += 1

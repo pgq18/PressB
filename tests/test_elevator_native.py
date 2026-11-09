@@ -1,4 +1,4 @@
-"""CPU checks for native elevator ownership and the unchanged legacy adapter."""
+"""CPU compatibility checks for the explicitly selected historical adapter."""
 from copy import deepcopy
 import hashlib
 import json
@@ -11,7 +11,7 @@ import pytest
 from pressb.tasks.elevator.fast_simulation import IndexedSimulationService
 from pressb.control.pose_protocol import pose8_to_pose9
 from pressb.runtime.simulation import SimulationService
-from pressb.tasks.elevator import backend, native
+from pressb.tasks.elevator import backend, legacy_native as native
 from test_rl_nodes_elevator import PhysicsFixture, STATE
 
 

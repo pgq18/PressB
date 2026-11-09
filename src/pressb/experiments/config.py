@@ -102,6 +102,14 @@ def load_experiment(path):
     if not isinstance(run, dict):
         raise ValueError("run must be a trainer configuration object")
     run = deepcopy(run)
+    if run.get("method") == "dppo":
+        # The learner loads the same model/normalization as inference, but owns
+        # trainable action-expert parameters. Paths may be overridden explicitly
+        # for machines with a different filesystem layout; weight hashes still
+        # have to match at runtime.
+        run.setdefault("model", deepcopy(model))
+        run.setdefault("action_expert", deepcopy(compiled["inference"]["service"].get("action_expert", {})))
+        compiled["inference"]["service"].setdefault("action_expert", deepcopy(run["action_expert"]))
     run.setdefault("output_dir", str(PROJECT_ROOT / "outputs" / data["name"] / "run"))
     endpoints = run.setdefault("endpoints", {})
     if not isinstance(endpoints, dict):

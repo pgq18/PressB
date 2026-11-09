@@ -224,6 +224,10 @@ class WallOSSBackend:
             "image_preprocessing": getattr(self, "image_preprocessing", None),
         }
 
+    def create_action_expert(self, config=None):
+        from .flow_experts import create_walloss_expert
+        return create_walloss_expert(self, config)
+
     def _prepare_observation(self, observation):
         if isinstance(observation, ValidatedObservation) and observation.prepared_walloss is not None:
             return observation.prepared_walloss

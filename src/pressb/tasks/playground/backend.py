@@ -1,8 +1,9 @@
-"""Single-world workspace twin using the common environment wire contract.
+"""Workspace configuration and legacy single-slot telemetry implementation.
 
 This plugin exposes measured robot state, camera images and configurable action
 execution. It intentionally has no task-success detector: reward is always zero,
 and an episode ends only at the configured time limit or external retirement.
+The default factory delegates to the shared parallel runtime.
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ from pressb.runtime.contract import encode_image, finite_array, fingerprint, val
 ROOT = Path(__file__).resolve().parents[4]
 STATE_NAMES = [f"joint{i}" for i in range(1, 7)] + ["gripper_width"]
 STATE_UNITS = ["rad"] * 6 + ["m"]
-SOURCE_FILES = ("tasks/playground/backend.py", "tasks/playground/scene.py", "runtime/workbench.py",
+SOURCE_FILES = ("tasks/playground/backend.py", "tasks/playground/parallel.py", "tasks/playground/scene.py", "runtime/workbench.py",
                 "runtime/scene.py", "robots/piper/isaac.py", "robots/piper/wrist_camera.py",
                 "robots/piper/kinematics.py", "sensors/camera.py", "control/joint_actions.py")
 
@@ -54,7 +55,9 @@ def _integer(value, name, minimum=1):
 def load_config(config):
     """Resolve configuration without importing USD, CUDA or Isaac Sim."""
     allowed = {"scene_config", "scene_overrides", "num_envs", "horizon", "control_hz", "physics_dt",
-               "max_episode_seconds", "gamma", "gpu", "headless", "settling_ticks", "smoothing", "model_inputs"}
+               "max_episode_seconds", "gamma", "gpu", "headless", "settling_ticks", "smoothing", "model_inputs", "spacing_m", "render_resolution", "renderer_profile", "render_subframes",
+               "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "log_dir",
+               "image_preprocessing", "image_output_resolution"}
     if not isinstance(config, dict) or set(config)-allowed:
         raise ValueError(f"Playground configuration supports only {sorted(allowed)}")
     result = deepcopy(config)
@@ -87,8 +90,6 @@ def load_config(config):
     scene.setdefault("static_props", [])
     result.update(scene_config=str(path), scene=scene)
     result["num_envs"] = _integer(result.get("num_envs", 1), "num_envs")
-    if result["num_envs"] != 1:
-        raise ValueError("Playground currently supports num_envs=1; vectorized execution is not advertised")
     result["horizon"] = _integer(result.get("horizon", 32), "horizon")
     result["physics_dt"] = _number(result.get("physics_dt", scene["physics_dt"]), "physics_dt")
     result["control_hz"] = _number(result.get("control_hz", scene["fps"]), "control_hz")
@@ -118,6 +119,30 @@ def load_config(config):
     result.setdefault("model_inputs", {})
     if not isinstance(result["model_inputs"], dict):
         raise ValueError("model_inputs must be a mapping")
+    from pressb.runtime.parallel import execution_config
+    execution_keys = ("num_envs", "gpu", "horizon", "physics_dt", "control_hz", "max_episode_seconds",
+        "settling_ticks", "gamma", "headless", "spacing_m", "render_resolution", "renderer_profile",
+        "render_subframes", "observation_render_frames", "reset_render_frames", "cpu_threads",
+        "png_workers", "log_dir", "image_preprocessing", "image_output_resolution")
+    execution = execution_config({**{key: result[key] for key in execution_keys if key in result},
+        "render_resolution": result.get("render_resolution", scene["up_camera"]["resolution"]),
+        "reset_render_frames": result.get("reset_render_frames", scene.get("rendering", {}).get("warmup_frames", 8)),
+        "terminal_boundary": "control_interval"})
+    # The renderer's aspect controls the sensor view; output resizing does not.
+    render_width, render_height = execution["render_resolution"]
+    camera_resolutions = {"up": scene["up_camera"]["resolution"],
+        "wrist": scene.get("wrist_camera", {}).get("resolution", scene["wrist_camera_resolution"])}
+    for name, size in camera_resolutions.items():
+        if not isinstance(size, (list, tuple)) or len(size) != 2 or any(type(v) is not int or v <= 0 for v in size):
+            raise ValueError(f"{name} camera resolution must contain two positive integers")
+        if render_width * size[1] != render_height * size[0]:
+            raise ValueError(f"render_resolution must preserve the {name} camera aspect ratio {size[0]}:{size[1]}; use image_output_resolution for transport resizing")
+    if execution["renderer_profile"] not in ("calibrated", "rl_fast"):
+        raise ValueError("renderer_profile must be calibrated or rl_fast")
+    if execution["image_preprocessing"] is not None:
+        from pressb.runtime.image_transport import validate_image_preprocessing
+        validate_image_preprocessing(execution["image_preprocessing"])
+    result.update({key: execution[key] for key in execution_keys if key in execution})
     return result
 
 
@@ -134,9 +159,30 @@ def task_identity(config):
             "asset_scope": "URDF and root robot USD; external USD references are not recursively hashed"}
 
 
+def sample_reset_spec(self, seed, options):
+    if type(seed) is not int or seed < 0:
+        raise ValueError("seed must be a nonnegative integer")
+    if not isinstance(options, dict) or set(options)-{"task", "initial_state_joint_rad_m", "model_inputs"}:
+        raise ValueError("Playground reset options support task, initial_state_joint_rad_m, model_inputs")
+    initial = finite_array(options.get("initial_state_joint_rad_m", self.config["scene"]["initial_state_joint_rad_m"]),
+                           (7,), "initial_state_joint_rad_m", dtype=np.float64)
+    if np.any(initial < self.lower) or np.any(initial > self.upper):
+        raise ValueError("Initial state exceeds robot joint/gripper limits")
+    task = options.get("task", self.config["scene"].get("task_instruction", "Explore the tabletop workspace."))
+    if not isinstance(task, str) or not task.strip():
+        raise ValueError("task must be a nonempty string")
+    model_inputs = options.get("model_inputs", self.config["model_inputs"])
+    if not isinstance(model_inputs, dict):
+        raise ValueError("model_inputs must be a mapping")
+    return {"env_id": 0, "seed": seed, "task": task, "initial_state_joint_rad_m": initial.tolist(),
+            "model_inputs": deepcopy(model_inputs)}
+
+
 class PlaygroundBackend:
     def __init__(self, config, *, environment_factory=None):
         self.config = load_config(config)
+        if self.config["num_envs"] != 1:
+            raise ValueError("Legacy backend only supports num_envs=1; use create_backend for shared parallel execution")
         kin = PiperKinematics(self.config["scene"]["robot_urdf"], tip_offset=.1358)
         self.lower = np.r_[kin.lower, 0.]
         self.upper = np.r_[kin.upper, self.config["scene"]["gripper_max_width_m"]]
@@ -167,22 +213,7 @@ class PlaygroundBackend:
             raise RuntimeError(f"Playground backend is closed or faulted: {self._fault}")
 
     def _reset_spec(self, seed, options):
-        if type(seed) is not int or seed < 0:
-            raise ValueError("seed must be a nonnegative integer")
-        if not isinstance(options, dict) or set(options)-{"task", "initial_state_joint_rad_m", "model_inputs"}:
-            raise ValueError("Playground reset options support task, initial_state_joint_rad_m, model_inputs")
-        initial = finite_array(options.get("initial_state_joint_rad_m", self.config["scene"]["initial_state_joint_rad_m"]),
-                               (7,), "initial_state_joint_rad_m", dtype=np.float64)
-        if np.any(initial < self.lower) or np.any(initial > self.upper):
-            raise ValueError("Initial state exceeds robot joint/gripper limits")
-        task = options.get("task", self.config["scene"].get("task_instruction", "Explore the tabletop workspace."))
-        if not isinstance(task, str) or not task.strip():
-            raise ValueError("task must be a nonempty string")
-        model_inputs = options.get("model_inputs", self.config["model_inputs"])
-        if not isinstance(model_inputs, dict):
-            raise ValueError("model_inputs must be a mapping")
-        return {"env_id": 0, "seed": seed, "task": task, "initial_state_joint_rad_m": initial.tolist(),
-                "model_inputs": deepcopy(model_inputs)}
+        return sample_reset_spec(self, seed, options)
 
     def _observe(self):
         state = finite_array(self.environment.state(), (7,), "measured joints", dtype=np.float64)
@@ -335,4 +366,5 @@ class IsaacPlaygroundEnvironment:
 
 
 def create_backend(config):
-    return PlaygroundBackend(config)
+    from .parallel import create_backend as create_shared_backend
+    return create_shared_backend(config)

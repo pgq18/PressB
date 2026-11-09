@@ -9,6 +9,8 @@ import pytest
 from pressb.control.joint_actions import JointActionPostprocessor
 from pressb.tasks.pap.backend import ROOT
 from pressb.tasks.pap.vector import PAPVectorBackend, _path_rows, load_config, renderer_profile, _encode_png
+from pressb.tasks.pap.parallel import PAPTask
+from pressb.runtime.parallel import execution_config
 from pressb.runtime.image_transport import walloss_resize_spec, resize_for_transport
 from pressb.runtime.contract import decode_image
 
@@ -64,12 +66,19 @@ def test_tensor_mapping_uses_actual_paths():
 
 
 def fake_backend():
+    # Exercise the common slot loop with PAP outcome hooks and measured fake
+    # physics. No task-local step/reset implementation remains.
     backend = object.__new__(PAPVectorBackend)
     backend.num_envs = 2
+    backend._observers = []
     backend._check = lambda: None
     backend.config = dict(horizon=32, physics_ticks_per_action=1, physics_dt=.1,
         gamma=.9, terminate_on_drop=False, scene={"table_height": .76},
         drop_below_table_m=.05, reward={"success": 1., "failure": -1.})
+    backend.execution = execution_config(dict(num_envs=2, horizon=32, physics_dt=.1,
+        control_hz=10., gamma=.9, max_episode_seconds=.3))
+    backend._metadata = {"action": {"horizon": 32, "names": [f"a{i}" for i in range(7)],
+                                    "lower": [-1.]*7, "upper": [1.]*7}}
     backend.ready = np.ones(2, dtype=bool)
     backend.lower, backend.upper = np.full(7, -1.), np.ones(7)
     backend.ticks = np.zeros(2, dtype=np.int64)
@@ -98,6 +107,21 @@ def fake_backend():
                         SimpleNamespace(update=lambda *a, **kw: {"success": False})]
     backend.max_ticks = 3
     backend.timings = dict(physics_seconds=0., world_ticks=0, step_seconds=0.)
+    def begin_action(ids, values):
+        for i, value in zip(ids, values):
+            backend.last_sent[i] = backend.postprocessors[i].apply(value)
+        return {i: backend.last_sent[i].copy() for i in ids}
+    robot = SimpleNamespace(begin_action=begin_action, before_tick=lambda *args: None,
+        observations=lambda ids: {i: {"state": backend._states()[i].tolist(),
+                                     "control_state": backend.last_sent[i].tolist()} for i in ids})
+    backend.engine = SimpleNamespace(world=backend.world, robot=robot, backend=backend,
+        tick=lambda ids: backend.world.step(render=False), offsets=np.zeros((2, 3)))
+    task = object.__new__(PAPTask)
+    task.config = backend.config
+    task.engine = backend.engine
+    for name in ("bodies", "object_rows", "outcomes", "contact_counts", "finger_contact"):
+        setattr(task, name, getattr(backend, name))
+    backend.task = task
     backend._observations = lambda ids: {i: {"captured_at_world_tick": backend.world.count,
                                            "episode_tick": int(backend.ticks[i])} for i in ids}
     return backend
@@ -164,7 +188,7 @@ def test_state_only_terminal_keeps_exact_state_and_reward_without_render():
 
 def test_state_only_mode_preserves_rgb_for_live_slots_and_rejects_bad_mode_before_step():
     backend = fake_backend()
-    with pytest.raises(ValueError, match="terminal_observation_mode"):
+    with pytest.raises(ValueError, match="terminal observation mode"):
         backend.step(actions(), terminal_observation_mode="skip_everything")
     assert backend.world.count == 0
     rows = backend.step(actions(prefix=1), terminal_observation_mode="state_only_if_no_bootstrap")
@@ -179,6 +203,9 @@ def fused_backend():
     settings.update({key: value for key, value in backend.config.items() if key != "scene"})
     settings.update(observation_render_frames=2, reset_render_frames=48)
     backend.config = settings
+    backend.execution.update(observation_render_frames=2, reset_render_frames=48)
+    backend.task.config = settings
+    backend.timings.update(fused_steps=0, fused_step_reset_seconds=0.)
     backend.render_calls, backend.reset_calls = [], []
     backend._states = lambda: np.c_[backend.ticks, np.zeros((2, 6))]
     def reset(ids, specs, *, capture_images):

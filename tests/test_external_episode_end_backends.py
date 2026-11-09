@@ -7,7 +7,7 @@ import pytest
 
 from pressb.tasks.elevator.backend import ElevatorBackend
 from pressb.tasks.elevator.fast_simulation import IndexedSimulationService
-from pressb.tasks.elevator.native import NativeElevatorBackend, _LocalLegacyClient
+from pressb.tasks.elevator.legacy_native import NativeElevatorBackend, _LocalLegacyClient
 from pressb.tasks.pap.backend import PAPParallelBackend
 from test_rl_nodes_elevator import PhysicsFixture, actions as elevator_actions
 from test_rl_nodes_pap import FakeWorker
@@ -114,13 +114,13 @@ def test_invalid_ids_rejected_before_any_slot_changes(kind, ids):
 def test_uninitialized_and_already_ended_slots_are_rejected(kind):
     node = make_backend(kind, initialized=False)
     before = snapshot(node, kind)
-    with pytest.raises(ValueError, match="initialized active"):
+    with pytest.raises(ValueError, match="Only active" if kind == "vector" else "initialized active"):
         node.end_episode([0])
     assert snapshot(node, kind) == before
     node = make_backend(kind)
     node.end_episode([0])
     before = snapshot(node, kind)
-    with pytest.raises(ValueError, match="initialized active"):
+    with pytest.raises(ValueError, match="Only active" if kind == "vector" else "initialized active"):
         node.end_episode([0])
     assert snapshot(node, kind) == before
 
@@ -130,7 +130,7 @@ def test_active_subset_is_fully_validated_before_mutating(kind):
     node = make_backend(kind)
     node.end_episode([1])
     before = snapshot(node, kind)
-    with pytest.raises(ValueError, match="initialized active"):
+    with pytest.raises(ValueError, match="Only active" if kind == "vector" else "initialized active"):
         node.end_episode([0, 1])
     assert snapshot(node, kind) == before
 

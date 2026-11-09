@@ -25,6 +25,7 @@ import numpy as np
 
 from pressb.control.joint_actions import JointActionPostprocessor
 from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.runtime.contract import normalize_env_seeds
 from pressb.tasks.pap.evaluation import COLORS, placement_region, sample_polygon
 from pressb.tasks.pap.task import object_geometry
 
@@ -38,7 +39,7 @@ _TASK_SOURCE_FILES = (
     "tasks/pap/task.py", "tasks/pap/scene.py", "tasks/pap/evaluation.py",
     "tasks/pap/initialization.py", "runtime/scene.py", "runtime/workbench.py",
     "robots/piper/wrist_camera.py", "robots/piper/kinematics.py",
-    "control/joint_actions.py", "sensors/camera.py",
+    "control/joint_actions.py", "sensors/camera.py", "runtime/contract.py", "runtime/simulation.py",
 )
 
 
@@ -383,6 +384,7 @@ class PAPParallelBackend:
                     "lower": self.lower.tolist(), "upper": self.upper.tolist()},
             control_state_dim=7, task_features_dim=0,
             discount={"gamma": cfg["gamma"], "timebase_hz": cfg["control_hz"]}, reset_mode="indexed",
+            capabilities=["per_env_reset_seeds"],
             execution={"backend": "isaac_process_parallel", "workers": cfg["num_envs"],
                 "gpu_ids": [w["gpu"] for w in cfg["workers"]], "shared_renderer": False,
                 "memory_note": "Each environment owns a separate Isaac application and renderer",
@@ -423,8 +425,12 @@ class PAPParallelBackend:
             self._broken = True
             raise
 
-    def reset(self, env_ids, seed, options=None):
+    def reset(self, env_ids, seed, options=None, *, env_seeds=None):
         self._ids(env_ids)
+        _integer(seed, "reset seed", 0)
+        seeds = normalize_env_seeds(env_ids, env_seeds)
+        if options is not None and not isinstance(options, dict):
+            raise ValueError("reset options must be a mapping")
         options = {} if options is None else copy.deepcopy(options)
         per_env = options.pop("by_env", {})
         if not isinstance(per_env, dict):
@@ -433,7 +439,7 @@ class PAPParallelBackend:
         for i in env_ids:
             selected = {**options, **per_env.get(str(i), per_env.get(i, {}))}
             # Sampling and all reset validation happen before any worker mutates.
-            requests.append((i, "reset", sample_reset(self.config, seed, i, selected)))
+            requests.append((i, "reset", sample_reset(self.config, seed if seeds is None else seeds[i], i, selected)))
         results = self._parallel(requests)
         for i in env_ids:
             self._ready[i] = True

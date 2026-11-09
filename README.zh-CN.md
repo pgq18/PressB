@@ -11,8 +11,8 @@
 PressB 将机器人环境与视觉语言动作模型（VLA）连接起来，研究如何通过环境交互改善预训练策略。框架采用 **通用运行核心＋任务插件＋模型适配器＋实验配置**，基于 Python、PyTorch 和 NVIDIA Isaac Sim 构建。
 
 - **独立节点：** 推理端、训练端以及仿真或真机交互端，可在单机或多机上部署。
-- **模型支持：** 内置 Wall-OSS 和 VLA-JEPA 的推理代码，以及基于 LeRobot 数据集的监督训练代码。
-- **在线学习：** 支持冻结基础模型的初始噪声优化（DSRL）和动作残差 RL，包含经验回放、异步更新与检查点。
+- **模型支持：** 内置 Wall-OSS、VLA-JEPA 和 Diffusion Policy，支持 LeRobot 数据集监督训练。
+- **在线学习：** 支持冻结模型的 DSRL、动作残差，以及直接更新动作专家并同步权重版本的 [DPPO](docs/dppo.md)。
 - **机器人工作流：** 支持并行仿真、轨迹采集与回放、可选动作平滑，以及搭配双 RealSense 相机的 PiPER 真机后端。
 
 ### 任务环境
@@ -62,8 +62,9 @@ python scripts/run_experiment.py eval --config /path/to/experiment.json
 | 指南 | 内容 |
 |---|---|
 | [框架说明](docs/project_framework.md) | 架构、配置方式与任务／模型扩展 |
-| [模型接入](docs/bundled_models.md) | Wall-OSS / VLA-JEPA 推理和监督训练 |
+| [模型接入](docs/bundled_models.md) | 模型适配器与监督训练 |
 | [在线强化学习](docs/configurable_rl_nodes.md) | 节点接口、DSRL、动作残差与检查点 |
+| [DPPO](docs/dppo.md) | Diffusion Policy 与随机 flow 动作专家优化 |
 | [真机交互](docs/real_robot.md) | PiPER、相机配置及可选的人类成功／失败标注 |
 | [实验结果](docs/results/) | 评估结果与验证记录 |
 

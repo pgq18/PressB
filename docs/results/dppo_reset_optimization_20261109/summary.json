@@ -1,0 +1,458 @@
+{
+  "schema_version": 1,
+  "state": "completed",
+  "created_utc": "2026-11-08T18:46:19.453305+00:00",
+  "scope": "Same-source capability-on/off A/B of production DPPOTrainer._reset and SimulationService, backed by real Isaac PAP. Timed in-process service calls only; no network, model inference, learning or end-to-end training.",
+  "protocol": {
+    "baseline": "same new source, per_env_reset_seeds capability hidden: singleton reset requests",
+    "candidate": "same new source, per_env_reset_seeds capability advertised: one reset request per set",
+    "counts": [
+      1,
+      8,
+      32,
+      64
+    ],
+    "paired_repeats_per_count": 2,
+    "orders": [
+      "singleton then batched",
+      "batched then singleton"
+    ],
+    "selection": "shared seeded permutation; same selected env_ids and mixed episode_serial for both branches",
+    "branch_preparation": "same shared initial layout and rendering warmup; excluded from measured service calls",
+    "ratio_definition": "mean(singleton service seconds) / mean(batched service seconds), not the mean of pairwise ratios",
+    "pixel_checks_timing": "live-tile audit and post-branch common-final-scene diagnostic render are outside timed service calls"
+  },
+  "hardware_and_scene": {
+    "gpu": {
+      "index": 1,
+      "uuid": "GPU-31b897fc-548e-cd82-0c37-474535b5d5d9",
+      "name": "NVIDIA GeForce RTX 5090",
+      "memory_total_mib": 32607.0
+    },
+    "num_envs": 64,
+    "camera_views": 128,
+    "render_resolution_width_height": [
+      640,
+      480
+    ],
+    "reset_render_frames": 2,
+    "render_subframes": 1,
+    "renderer_profile": "rl_fast",
+    "cpu_threads": 8,
+    "png_workers": 8,
+    "physics_backend": "CPU PhysX tensor views",
+    "smoothing": {
+      "mode": "none",
+      "alpha": 0.8
+    }
+  },
+  "measurements": [
+    {
+      "reset_environment_count": 1,
+      "paired_repeats": 2,
+      "order_per_repeat": [
+        [
+          "singleton",
+          "batched"
+        ],
+        [
+          "batched",
+          "singleton"
+        ]
+      ],
+      "singleton": {
+        "mean_service_seconds": 0.9461962200584821,
+        "service_seconds_per_repeat": [
+          0.9345430340617895,
+          0.9578494060551748
+        ],
+        "calls_per_branch": 1,
+        "full_tiled_render_captures_per_branch": 2,
+        "mean_render_seconds": 0.9223036635085009,
+        "mean_encode_seconds": 0.015537090483121574
+      },
+      "batched": {
+        "mean_service_seconds": 0.9630216900259256,
+        "service_seconds_per_repeat": [
+          0.9597239880822599,
+          0.9663193919695914
+        ],
+        "calls_per_branch": 1,
+        "full_tiled_render_captures_per_branch": 2,
+        "mean_render_seconds": 0.9391466749948449,
+        "mean_encode_seconds": 0.01563658152008429
+      },
+      "ratio_of_mean_service_seconds_singleton_over_batched": 0.9825284620879198,
+      "cross_branch_pixel_comparison": {
+        "returned": {
+          "mean_image_mae_rgb_0_to_255": 3.938994411892361,
+          "min_image_mae_rgb_0_to_255": 3.472006293402778,
+          "max_image_mae_rgb_0_to_255": 4.423039279513889,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 159,
+          "image_comparisons": 4,
+          "mean_image_mae_by_camera": {
+            "up": 4.297957356770834,
+            "wrist": 3.580031467013889
+          }
+        },
+        "common_final_scene": {
+          "mean_image_mae_rgb_0_to_255": 4.350789116753472,
+          "min_image_mae_rgb_0_to_255": 4.025872395833333,
+          "max_image_mae_rgb_0_to_255": 4.771162109375,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 157,
+          "image_comparisons": 4,
+          "mean_image_mae_by_camera": {
+            "up": 4.620238172743056,
+            "wrist": 4.081340060763889
+          }
+        }
+      }
+    },
+    {
+      "reset_environment_count": 8,
+      "paired_repeats": 2,
+      "order_per_repeat": [
+        [
+          "singleton",
+          "batched"
+        ],
+        [
+          "batched",
+          "singleton"
+        ]
+      ],
+      "singleton": {
+        "mean_service_seconds": 7.583263957523741,
+        "service_seconds_per_repeat": [
+          7.59885509184096,
+          7.567672823206522
+        ],
+        "calls_per_branch": 8,
+        "full_tiled_render_captures_per_branch": 16,
+        "mean_render_seconds": 7.402694441960193,
+        "mean_encode_seconds": 0.12388917896896601
+      },
+      "batched": {
+        "mean_service_seconds": 0.9848067790153436,
+        "service_seconds_per_repeat": [
+          0.9848618529504165,
+          0.9847517050802708
+        ],
+        "calls_per_branch": 1,
+        "full_tiled_render_captures_per_branch": 2,
+        "mean_render_seconds": 0.9352413260494359,
+        "mean_encode_seconds": 0.036239416047465056
+      },
+      "ratio_of_mean_service_seconds_singleton_over_batched": 7.700255643148442,
+      "cross_branch_pixel_comparison": {
+        "returned": {
+          "mean_image_mae_rgb_0_to_255": 3.8771184624565973,
+          "min_image_mae_rgb_0_to_255": 1.000691189236111,
+          "max_image_mae_rgb_0_to_255": 7.481736111111111,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 179,
+          "image_comparisons": 32,
+          "mean_image_mae_by_camera": {
+            "up": 3.9858416069878473,
+            "wrist": 3.7683953179253473
+          }
+        },
+        "common_final_scene": {
+          "mean_image_mae_rgb_0_to_255": 3.8442586263020835,
+          "min_image_mae_rgb_0_to_255": 0.9895182291666667,
+          "max_image_mae_rgb_0_to_255": 7.006090494791667,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 199,
+          "image_comparisons": 32,
+          "mean_image_mae_by_camera": {
+            "up": 3.91801513671875,
+            "wrist": 3.770502115885417
+          }
+        }
+      }
+    },
+    {
+      "reset_environment_count": 32,
+      "paired_repeats": 2,
+      "order_per_repeat": [
+        [
+          "singleton",
+          "batched"
+        ],
+        [
+          "batched",
+          "singleton"
+        ]
+      ],
+      "singleton": {
+        "mean_service_seconds": 30.747930145415012,
+        "service_seconds_per_repeat": [
+          30.91098208387848,
+          30.584878206951544
+        ],
+        "calls_per_branch": 32,
+        "full_tiled_render_captures_per_branch": 64,
+        "mean_render_seconds": 30.0523867761367,
+        "mean_encode_seconds": 0.5002152915694751
+      },
+      "batched": {
+        "mean_service_seconds": 1.0951304284390062,
+        "service_seconds_per_repeat": [
+          1.104100200929679,
+          1.0861606559483334
+        ],
+        "calls_per_branch": 1,
+        "full_tiled_render_captures_per_branch": 2,
+        "mean_render_seconds": 0.9305434884736314,
+        "mean_encode_seconds": 0.1341150039806962
+      },
+      "ratio_of_mean_service_seconds_singleton_over_batched": 28.076957179651163,
+      "cross_branch_pixel_comparison": {
+        "returned": {
+          "mean_image_mae_rgb_0_to_255": 4.117143156263563,
+          "min_image_mae_rgb_0_to_255": 0.9329513888888888,
+          "max_image_mae_rgb_0_to_255": 10.651063368055556,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 197,
+          "image_comparisons": 128,
+          "mean_image_mae_by_camera": {
+            "up": 4.475706108940972,
+            "wrist": 3.7585802035861544
+          }
+        },
+        "common_final_scene": {
+          "mean_image_mae_rgb_0_to_255": 4.109114557902018,
+          "min_image_mae_rgb_0_to_255": 0.9539659288194444,
+          "max_image_mae_rgb_0_to_255": 9.898537326388889,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 227,
+          "image_comparisons": 128,
+          "mean_image_mae_by_camera": {
+            "up": 4.43820553249783,
+            "wrist": 3.780023583306207
+          }
+        }
+      }
+    },
+    {
+      "reset_environment_count": 64,
+      "paired_repeats": 2,
+      "order_per_repeat": [
+        [
+          "singleton",
+          "batched"
+        ],
+        [
+          "batched",
+          "singleton"
+        ]
+      ],
+      "singleton": {
+        "mean_service_seconds": 61.89938107476337,
+        "service_seconds_per_repeat": [
+          61.979167528566904,
+          61.81959462095983
+        ],
+        "calls_per_branch": 64,
+        "full_tiled_render_captures_per_branch": 128,
+        "mean_render_seconds": 60.46585064608371,
+        "mean_encode_seconds": 1.0202687931596301
+      },
+      "batched": {
+        "mean_service_seconds": 1.2395601604948752,
+        "service_seconds_per_repeat": [
+          1.2509055169066414,
+          1.228214804083109
+        ],
+        "calls_per_branch": 1,
+        "full_tiled_render_captures_per_branch": 2,
+        "mean_render_seconds": 0.930920664104633,
+        "mean_encode_seconds": 0.2556051790015772
+      },
+      "ratio_of_mean_service_seconds_singleton_over_batched": 49.93656866968926,
+      "cross_branch_pixel_comparison": {
+        "returned": {
+          "mean_image_mae_rgb_0_to_255": 4.226112531026204,
+          "min_image_mae_rgb_0_to_255": 0.9293098958333333,
+          "max_image_mae_rgb_0_to_255": 11.308140190972223,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 222,
+          "image_comparisons": 256,
+          "mean_image_mae_by_camera": {
+            "up": 4.696814295450847,
+            "wrist": 3.7554107666015626
+          }
+        },
+        "common_final_scene": {
+          "mean_image_mae_rgb_0_to_255": 4.037464811537001,
+          "min_image_mae_rgb_0_to_255": 0.9699956597222222,
+          "max_image_mae_rgb_0_to_255": 10.710583767361111,
+          "maximum_absolute_channel_difference_rgb_0_to_255": 219,
+          "image_comparisons": 256,
+          "mean_image_mae_by_camera": {
+            "up": 4.356220915052626,
+            "wrist": 3.7187087080213757
+          }
+        }
+      }
+    }
+  ],
+  "validation": {
+    "cpu": {
+      "passed": 598,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "test_files": 19,
+      "source_and_tests_unchanged": true
+    },
+    "initial_shared_seed_preserved": true,
+    "all_pairs_physical_state_reset_spec_and_non_image_observation_equal": true,
+    "all_pairs_per_environment_seed_matches_unchanged_blake2b_schedule": true,
+    "all_measured_resets_advance_zero_physics_ticks": true,
+    "all_nonreset_peer_states_and_service_slots_unchanged_when_peers_exist": true,
+    "all_returned_images_match_corresponding_current_live_tile_exactly": true,
+    "measured_returned_image_checks": 840,
+    "cross_branch_images_pixel_identical": false,
+    "evidence_boundary": "Real-state/peer/clock/seed/live-tile comparisons are runtime assertions in the hashed benchmark; full state snapshots and every compared image are not archived for independent offline reconstruction."
+  },
+  "limitations": [
+    "Two paired repeats per k; descriptive timing results, not uncertainty estimates.",
+    "k=1 keeps the same single-call schedule in both branches and is a variation reference; no cause is assigned to its timing or pixel differences.",
+    "Cross-render pixels differ even with equal audited physical state. This benchmark does not establish exact visual equivalence or unchanged policy success.",
+    "Service-time ratios are not end-to-end RL training speedups; real reset group sizes, inference, updates and network costs remain unmeasured here.",
+    "Historical 200k training stop/checkpoint transfer status is tracked separately and is not established by this reset benchmark."
+  ],
+  "source_artifacts": {
+    "benchmark_report": {
+      "path": "outputs/dppo_reset_optimization_20261109/isaac64/report.json",
+      "sha256": "c06658259d65729fae5129f3dad7d8e6718cf0b56683e904ba1f8a6fadaa4059"
+    },
+    "cpu_validation": {
+      "path": "outputs/dppo_reset_optimization_20261109/cpu_validation/validation.json",
+      "sha256": "cdc809120d89119133d8b269688f6deffa290c6105da66066339372ad565f362"
+    },
+    "benchmark_script": {
+      "path": "scripts/benchmark_pap_reset_batching.py",
+      "sha256": "511c6827eff26bd7c7857811a16c10dfe4a1428ea57a7a03cb4e3939d529424c"
+    },
+    "dppo_trainer": {
+      "path": "src/pressb/runtime/dppo_trainer.py",
+      "sha256": "a84e1af8fa1fba4970a5c4ffa0ac57d12e72175e39afeaa9e9853214291b0020"
+    },
+    "simulation_source_revision": "sha256:fc756e2d9c01428a9b8c14d462cfd1d4de1753fb10308959402aad05aa9c7478",
+    "simulation_source_identity": {
+      "tasks/pap/backend.py": {
+        "sha256": "a88495622b684e1984231536bcbcee95157bd4ce36f00e896a24890573d58099",
+        "bytes": 26401
+      },
+      "tasks/pap/worker.py": {
+        "sha256": "ed954d7e9bba3fc5dd4caa1fe76fdbff0b3b39e2a7f12efeb292a6a814f94312",
+        "bytes": 23228
+      },
+      "tasks/pap/task.py": {
+        "sha256": "8cc7ede413a706d80501b92e90d781e8e3721c47c095020f2a0de31a786c4af7",
+        "bytes": 11580
+      },
+      "tasks/pap/scene.py": {
+        "sha256": "214bd19fc1078bbe75226ddfc1416c38e47abf99557171c45643492bac955d91",
+        "bytes": 18395
+      },
+      "tasks/pap/evaluation.py": {
+        "sha256": "b335e8dbf15e48ab60fd8dfa71814d85dee698646a36429cf224e9899e6bdc10",
+        "bytes": 23253
+      },
+      "tasks/pap/initialization.py": {
+        "sha256": "59892060b1648508d3bb305e06078e4a350bfa5dcc4d3078af186534ec9819ad",
+        "bytes": 1085
+      },
+      "runtime/scene.py": {
+        "sha256": "b67802bac1717f9aaf8a70f55bb0f3268905c4be150f3f2be235f6b6462f1e95",
+        "bytes": 5922
+      },
+      "runtime/workbench.py": {
+        "sha256": "a2bf3ca40b0f5ea20f5bda8ccb74cfaad20ccb50f77a5ebcde3c6fb6a93d5ffd",
+        "bytes": 25966
+      },
+      "robots/piper/wrist_camera.py": {
+        "sha256": "68662fbe999e21a4b8631619464150b2d17c78a658e31a85936a151af5b28813",
+        "bytes": 17573
+      },
+      "robots/piper/kinematics.py": {
+        "sha256": "453ed25302b1e01049899d9b089817a3aff4bab7601ec3e6a6d092b9cd48bdd1",
+        "bytes": 9341
+      },
+      "control/joint_actions.py": {
+        "sha256": "3f2cdee0fce457fb982280705376fd29382873c7d830e03801cbc73258f3aa03",
+        "bytes": 2972
+      },
+      "sensors/camera.py": {
+        "sha256": "f3731428f8167a78898e3d4d1ce3b80bbb9e9d82a29527383dc7e5c2b74426a6",
+        "bytes": 2273
+      },
+      "runtime/contract.py": {
+        "sha256": "c3ab9abe85736993a902ca1c54633cd63eb3b3d5222fdd0a9746428ed92989fd",
+        "bytes": 17032
+      },
+      "runtime/simulation.py": {
+        "sha256": "d7f4198ff4ae5ca8f668fec51bbfc78d9711751dfd1e4ee5cd5a6087f078ad0b",
+        "bytes": 18417
+      },
+      "tasks/pap/vector.py": {
+        "sha256": "107df7b2960408da668c727c6bc0a4fcfc4eca175552fae89a784a1583f5ab85",
+        "bytes": 41744
+      },
+      "sensors/tiled.py": {
+        "sha256": "db43fff549ba4f5d788f2cdd97220acc43709f576ac6658608fcd4da5cc1db47",
+        "bytes": 3423
+      },
+      "runtime/physics.py": {
+        "sha256": "9881bd842f9f1750135c940429a90ef944071a7a87f10d9d61af04fd7e3a4995",
+        "bytes": 6069
+      },
+      "runtime/image_transport.py": {
+        "sha256": "b1d4bc34bbec8c16aac00db3699140723d66d2f4971c7c123bc4f9dcc364f485",
+        "bytes": 8846
+      }
+    },
+    "simulation_config": {
+      "path": "/mnt/data/pengguanqi/Data/PressB/outputs/pap_walloss_dppo_200k_20261109/simulation.json",
+      "sha256": "9836a8937c9263e6b8aee3f070a5320c75875e8bc17d4e39b5f7ca763a45453e"
+    },
+    "hardware_identity_sample": {
+      "path": "outputs/dppo_reset_optimization_20261109/resources.jsonl",
+      "sample_index": 0,
+      "first_line_sha256": "a2ec211c461cc3e21a18b609da62de7b7c540a38576ebc0230cdbe413d450667",
+      "scope": "GPU identity only; resources file may continue growing during cleanup, no whole-file checksum claimed."
+    }
+  },
+  "stopped_training": {
+    "transitions": 7424,
+    "updates": 2320,
+    "iterations": 29,
+    "policy_version": 29,
+    "bytes": 6526982982,
+    "sha256": "caeb589a9211f77524fa62e49353ad97abf12c613cd0b14b9baed379e2ba5936",
+    "expert_sha256": "e1d71ddc6fea710ea0641261758776f21bfca878072658c47987bbefa8510f15",
+    "matches_last_acknowledged_publication": true,
+    "state": "stopped",
+    "all_owned_services_exited": true,
+    "source_archive_preserved": true,
+    "checkpoint_migrated": false,
+    "training_restarted": false,
+    "verification_receipt_sha256": "f5563cb1558d59f069a55c4327a2eedaf5497e48fa2be248c6ba14ac8ab2ed6c"
+  },
+  "h200_deployment": {
+    "state": "deployed",
+    "source_sha256": {
+      "src/pressb/runtime/contract.py": "c3ab9abe85736993a902ca1c54633cd63eb3b3d5222fdd0a9746428ed92989fd",
+      "src/pressb/runtime/simulation.py": "d7f4198ff4ae5ca8f668fec51bbfc78d9711751dfd1e4ee5cd5a6087f078ad0b",
+      "src/pressb/runtime/dppo_trainer.py": "a84e1af8fa1fba4970a5c4ffa0ac57d12e72175e39afeaa9e9853214291b0020",
+      "src/pressb/runtime/dppo.py": "f0a2791474260ce1d142f0bbf79d2c22e96c48aae269d3967147e0c01c78589f",
+      "src/pressb/tasks/pap/backend.py": "a88495622b684e1984231536bcbcee95157bd4ce36f00e896a24890573d58099",
+      "src/pressb/tasks/pap/vector.py": "107df7b2960408da668c727c6bc0a4fcfc4eca175552fae89a784a1583f5ab85",
+      "src/pressb/tasks/elevator/backend.py": "5616a6db908bb027ddc26f876f2143994d5d63d58092da4306d9d90bd46ebad3",
+      "src/pressb/tasks/elevator/simulation.py": "7be5d2347e513999b961502a0d539e371409efa460b7af159bddf8f838e885c4",
+      "src/pressb/tasks/elevator/fast_simulation.py": "b0652174c5ff60b496959ca4c3b33b9a485ecbb61f7cb70c7f350207ab7bab88",
+      "src/pressb/tasks/table_buttons/backend.py": "70aa78a392199e38238c90075eceeff59446e22f0dbf3ab2dae94de624af5fda"
+    },
+    "cpu_tests_passed": 52,
+    "receipt_sha256": "8068aba42386c8feae3a074e803dbd7f3fb7138edb3af0a5088c39a1b27edfe5",
+    "training_restarted": false
+  }
+}

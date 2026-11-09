@@ -13,7 +13,7 @@ from copy import deepcopy
 import math
 import uuid
 
-from .contract import (finite_array, fingerprint, validate_actions, validate_metadata,
+from .contract import (finite_array, fingerprint, normalize_env_seeds, validate_actions, validate_metadata,
                        validate_observation, validate_terminal_observation_mode)
 
 
@@ -102,6 +102,18 @@ class SimulationService:
             raise RuntimeError("Backend returned reordered or wrong environment indices")
 
     def reset(self, payload):
+        env_seeds = None
+        if isinstance(payload, dict) and "env_seeds" in payload:
+            # Reject unsupported/invalid extensions before entering the backend
+            # fault boundary. Canonical keys also make direct int-key requests
+            # fingerprint identically to their JSON wire representation.
+            if "per_env_reset_seeds" not in self.metadata.get("capabilities", []):
+                raise ValueError("Simulation does not advertise per_env_reset_seeds support")
+            self._ids(payload.get("env_ids"))
+            if payload["env_seeds"] is None:
+                raise ValueError("env_seeds must be an object when provided")
+            env_seeds = normalize_env_seeds(payload["env_ids"], payload["env_seeds"])
+            payload = {**payload, "env_seeds": {str(i): seed for i, seed in env_seeds.items()}}
         key, digest, previous = self._request(payload, "reset")
         if previous is not None:
             return previous
@@ -118,7 +130,8 @@ class SimulationService:
         if any(i in self.slots and not self.slots[i]["done"] for i in env_ids):
             raise ValueError("Cannot reset an active episode; close the run to abandon it explicitly")
         try:
-            rows = self.backend.reset(env_ids, seed, options)
+            rows = (self.backend.reset(env_ids, seed, options) if env_seeds is None else
+                    self.backend.reset(env_ids, seed, options, env_seeds=env_seeds))
             self._rows(rows, env_ids)
             results, slots = [], {}
             for row in rows:

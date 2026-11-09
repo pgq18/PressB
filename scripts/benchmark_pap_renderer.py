@@ -103,7 +103,7 @@ def main():
         for scenario, xy in (("old", [.28, -.09]), ("new", [.44, .02])):
             for key, value in report["reset_settings"].items():
                 settings.set(key, value)
-            before_time = backend.world.current_time
+            before_time = backend.engine.world.current_time
             start = time.perf_counter()
             rows = backend.reset(ids, 20261104, {"center_xy": xy, "color": "red", "yaw_deg": 0.})
             elapsed = time.perf_counter() - start
@@ -111,10 +111,10 @@ def main():
             snapshot = backend.snapshot()
             captures = [1, 2, 4, 8, 16, 48]
             for frame in range(1, max(captures)+1):
-                tiles = backend._capture(return_tiles=frame in captures)
+                tiles = backend.engine._capture(return_tiles=frame in captures)
                 if frame in captures:
                     frames[frame] = [np.asarray(tiles[j]).copy() for j in (0, 1)]
-            assert backend.world.current_time == before_time
+            assert backend.engine.world.current_time == before_time
             assert backend.snapshot() == snapshot
             comparisons = []
             for frame, images in frames.items():
@@ -148,7 +148,7 @@ def main():
         report["peer_snapshot_unchanged"] = not peer_ids or backend.snapshot(peer_ids) == before
         assert report["peer_snapshot_unchanged"]
         start = time.perf_counter()
-        commands = [{"env_id": i, "actions": np.repeat(backend.initial[None], 32, axis=0).tolist()} for i in ids]
+        commands = [{"env_id": i, "actions": np.repeat(backend.task.initial[None], 32, axis=0).tolist()} for i in ids]
         if args.profile_python:
             import cProfile
             import pstats

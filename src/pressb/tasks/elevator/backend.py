@@ -16,7 +16,8 @@ import numpy as np
 from pressb.control.pose_protocol import pose8_to_pose9, pose9_to_pose8
 from .semantics import task_floor
 from pressb.runtime.rpc import RPCClient
-from pressb.runtime.contract import finite_array, fingerprint, validate_actions, validate_metadata, validate_observation
+from pressb.runtime.contract import (finite_array, fingerprint, normalize_env_seeds,
+                                     validate_actions, validate_metadata, validate_observation)
 
 
 class ElevatorBackend:
@@ -82,6 +83,7 @@ class ElevatorBackend:
             num_envs=self.num_envs, observation=observation, action=action,
             control_state_dim=health.get("control_state_dim"), task_features_dim=12,
             discount=dict(gamma=health.get("single_gamma"), timebase_hz=30), reset_mode="indexed",
+            capabilities=["per_env_reset_seeds"],
             scheduling="all_active", initial_reset="all_envs", execution_horizons=[7],
             requires_restart_after_active_close=True,
             fixed_gripper_width_m=.008, quaternion_order="wxyz", rotation6d="first_two_matrix_rows_row_major",
@@ -189,10 +191,11 @@ class ElevatorBackend:
             self._fault = str(error)
             raise
 
-    def reset(self, env_ids, seed, options=None):
+    def reset(self, env_ids, seed, options=None, *, env_seeds=None):
         self._ids(env_ids)
         if type(seed) is not int or not 0 <= seed < 2**63:
             raise ValueError("seed must be an integer in [0,2**63)")
+        env_seeds = normalize_env_seeds(env_ids, env_seeds)
         initial = self._cohort is None
         if initial and set(env_ids) != set(range(self.num_envs)):
             raise ValueError("Initial elevator reset must include all environments")
@@ -215,7 +218,15 @@ class ElevatorBackend:
             if not 0 <= env_id < self.num_envs or env_id in normalized:
                 raise ValueError("reset options.by_env keys contain a duplicate or unknown environment")
             normalized[env_id] = value
-        episodes = {i: self._episode(i, seed, {**options, **normalized.get(i, {})}) for i in env_ids}
+        # Match reset([eid], seed=individual_seed) exactly, including its
+        # SeedSequence([seed, eid]); reset ordering never changes a layout.
+        episodes = {i: self._episode(i, seed if env_seeds is None else env_seeds[i],
+                                    {**options, **normalized.get(i, {})}) for i in env_ids}
+        if env_seeds is not None:
+            # The legacy engine consumes explicit floor/offsets; its seed is
+            # only a receipt field. Preserve each sampling seed in those logs.
+            for i, episode in episodes.items():
+                episode["seed"] = env_seeds[i]
         if initial:
             response = self._request("/reset", dict(seed=seed, episodes=[episodes[i] for i in range(self.num_envs)]))
         else:

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/irom-princeton/dppo",
+  "commit": "cc7234ad7ff39a8f32de3af903606723a16f0648",
+  "license": "MIT",
+  "files": [
+    {
+      "path": "unet.py",
+      "source_path": "model/diffusion/unet.py",
+      "source_sha256": "92f65038686697b3fcd1e963717a49e072fd7d004bd103a884c89c83aaa5acdf",
+      "bundled_sha256": "a5599fa1df95bc7619f204dfcb02fb43e35e3a708dd2c533da0d705be3c4b1f0",
+      "adaptation": "Package-relative imports only; upstream architecture and equations retained."
+    },
+    {
+      "path": "modules.py",
+      "source_path": "model/diffusion/modules.py",
+      "source_sha256": "3b6b2efae0bb67cc30a061a8dd7c6b2d8d6905dac7cecac92b3dbfa5da0067cd",
+      "bundled_sha256": "3b6b2efae0bb67cc30a061a8dd7c6b2d8d6905dac7cecac92b3dbfa5da0067cd",
+      "adaptation": "Package-relative imports only; upstream architecture and equations retained."
+    },
+    {
+      "path": "sampling.py",
+      "source_path": "model/diffusion/sampling.py",
+      "source_sha256": "c3fe8037bc5fb11228c27a65e9d31906dc6fa114b506ae327bb76156d10a0b82",
+      "bundled_sha256": "c3fe8037bc5fb11228c27a65e9d31906dc6fa114b506ae327bb76156d10a0b82",
+      "adaptation": "Package-relative imports only; upstream architecture and equations retained."
+    },
+    {
+      "path": "mlp.py",
+      "source_path": "model/common/mlp.py",
+      "source_sha256": "8db7ccc456bfa7e7c6cc8ba59e33f142dda99cc98b8fcd232a021a56542b508d",
+      "bundled_sha256": "8db7ccc456bfa7e7c6cc8ba59e33f142dda99cc98b8fcd232a021a56542b508d",
+      "adaptation": "Package-relative imports only; upstream architecture and equations retained."
+    },
+    {
+      "path": "vision_modules.py",
+      "source_path": "model/common/modules.py",
+      "source_sha256": "0303328c3b715b5246ee2379e445dc6c8a947b2afb3bd525cacbe40936ea3285",
+      "bundled_sha256": "0303328c3b715b5246ee2379e445dc6c8a947b2afb3bd525cacbe40936ea3285",
+      "adaptation": "Package-relative imports only; upstream architecture and equations retained."
+    },
+    {
+      "path": "diffusion.py",
+      "source_path": "model/diffusion/diffusion.py",
+      "source_sha256": "44ea4bdd2de868e773cd2b23e40aafed9c01e2985ddfc3d2e5f4011ea1c0443f",
+      "bundled_sha256": "74589ab9e73530cb07f9892919faf72f194a52a1513f46321c5ac0f8dacdc642",
+      "adaptation": "Package-relative imports only; upstream architecture and equations retained."
+    }
+  ]
+}

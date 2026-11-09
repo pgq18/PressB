@@ -22,8 +22,11 @@ def main():
     parser.add_argument("--replay-episode", type=Path,
                         default=ROOT / "outputs/wallx_pap_eval_20261023/run/episodes/red_000")
     parser.add_argument("--num-envs", type=int, default=64)
+    parser.add_argument("--gpu-id", type=int, default=0)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.gpu_id < 0:
+        parser.error("gpu-id must be nonnegative")
     if args.output.exists():
         parser.error("output must be new")
     args.output.mkdir(parents=True)
@@ -34,7 +37,7 @@ def main():
     from pressb.runtime.contract import decode_image
     from pressb.runtime.image_transport import resize_for_transport
     cfg = json.loads(args.config.read_text())["backend"]["config"]
-    cfg.update(num_envs=args.num_envs, gpu_ids=[0], scene_config=str(args.replay_episode / "config.json"),
+    cfg.update(num_envs=args.num_envs, gpu_ids=[args.gpu_id], scene_config=str(args.replay_episode / "config.json"),
                smoothing={"mode": "none", "alpha": .8}, randomization={"position": "fixed", "colors": ["red"]},
                max_episode_seconds=20., log_dir=str(args.output / "worker"))
     report = {"config": cfg, "chunks": [], "source_episode": str(args.replay_episode)}
@@ -54,7 +57,7 @@ def main():
         assert backend.timings["captures"]-before == cfg["reset_render_frames"]
         print(json.dumps({"event": "initial_reset", "captures": backend.timings["captures"]-before}), flush=True)
         # Read the already rendered native tiles: do not trigger another frame.
-        tiles = backend.split_rgb(backend.annotator.get_data())
+        tiles = backend.engine.split_rgb(backend.engine.annotator.get_data())
         checked = []
         for i in sorted(set([0, args.num_envs//2, args.num_envs-1])):
             for j, view in enumerate(("up", "wrist")):
@@ -74,10 +77,10 @@ def main():
         for chunk in range(24):
             indices = np.minimum(np.arange(cursor, cursor+32), len(commands)-1)
             items = [{"env_id": i, "actions": (commands[indices] if generations[i] == 0 else
-                     np.repeat(backend.initial[None], 32, axis=0)).tolist()} for i in ids]
+                     np.repeat(backend.task.initial[None], 32, axis=0)).tolist()} for i in ids]
             old_ticks = backend.ticks.copy()
-            old_clock, captures = backend.world.current_time, backend.timings["captures"]
-            old_world_tick = backend.world.current_time_step_index
+            old_clock, captures = backend.engine.world.current_time, backend.timings["captures"]
+            old_world_tick = backend.engine.world.current_time_step_index
             started = time.perf_counter()
             response = backend.step_and_reset(items, reset_seed=42+chunk, reset_options=options, max_active_envs=args.num_envs)
             seconds = time.perf_counter()-started
@@ -96,7 +99,7 @@ def main():
                     assert row["info"]["episode_physics_steps"] > 0
                 else:
                     assert row["info"]["episode_physics_steps"] == backend.ticks[i]
-                    assert row["observation"]["state"] == backend._states()[i].tolist()
+                    assert row["observation"]["state"] == backend.engine.robot.states()[i].tolist()
             assert [row["env_id"] for row in response["reset_items"]] == done
             for row in response["reset_items"]:
                 i = row["env_id"]
@@ -104,13 +107,13 @@ def main():
                 assert backend.ticks[i] == 0
                 assert row["observation"]["images"]
             max_ticks = max(row["info"]["physics_steps"] for row in response["items"])
-            assert backend.world.current_time_step_index-old_world_tick == max_ticks
+            assert backend.engine.world.current_time_step_index-old_world_tick == max_ticks
             # PhysX stores dt in float32; compare clock duration with tolerance,
             # and enforce the actual number of ticks exactly above. Backend
             # capture/reset already require the clock itself to remain exactly
             # unchanged before/after all rendering and indexed state writes.
-            clock_error = backend.world.current_time-old_clock-max_ticks*backend.config["physics_dt"]
-            assert np.isclose(backend.world.current_time-old_clock, max_ticks*backend.config["physics_dt"], rtol=1e-6, atol=1e-7)
+            clock_error = backend.engine.world.current_time-old_clock-max_ticks*backend.config["physics_dt"]
+            assert np.isclose(backend.engine.world.current_time-old_clock, max_ticks*backend.config["physics_dt"], rtol=1e-6, atol=1e-7)
             report["chunks"].append({"chunk": chunk, "seconds": seconds, "captures": backend.timings["captures"]-captures,
                 "reset_count": len(done), "remaining_original": args.num_envs-len(original_outcomes),
                 "clock_float_error_seconds": clock_error,
@@ -127,12 +130,12 @@ def main():
         # Separate terminal-only protocol probe. The diagnostic override makes
         # all newly reset slots timeout on the next tick; it is not part of the
         # expert replay or production task settings.
-        original_max_ticks = backend.max_ticks
-        backend.max_ticks = 1
+        original_max_ticks = backend.execution["max_ticks"]
+        backend.execution["max_ticks"] = 1
         captures = backend.timings["captures"]
-        response = backend.step_and_reset([{"env_id": i, "actions": [backend.initial.tolist()]} for i in ids],
+        response = backend.step_and_reset([{"env_id": i, "actions": [backend.task.initial.tolist()]} for i in ids],
                                          reset_seed=1, reset_options=options, max_active_envs=0)
-        backend.max_ticks = original_max_ticks
+        backend.execution["max_ticks"] = original_max_ticks
         assert all(row["truncated"] for row in response["items"])
         assert response["reset_items"] == []
         assert backend.timings["captures"] == captures
@@ -147,9 +150,27 @@ def main():
         report["state"] = "failed"
         report["error"] = f"{type(error).__name__}: {error}"
         report["traceback"] = traceback.format_exc()
-        record()
+        # Emit the original failure before attempting to serialize task values.
+        # Isaac fast shutdown can exit inside finally and hide Python errors.
         traceback.print_exc()
         sys.stderr.flush()
+        failure = {key: report[key] for key in ("state", "error", "traceback")}
+        try:
+            (args.output / "failure.json").write_text(json.dumps(failure, indent=2)+"\n")
+            record()
+        except BaseException as reporting_error:
+            failure["report_error"] = f"{type(reporting_error).__name__}: {reporting_error}"
+            print(json.dumps(failure), file=sys.stderr, flush=True)
+            try:
+                # Diagnostic only: preserve unsupported values with their types;
+                # never silently normalize production RL messages this way.
+                def diagnostic(value):
+                    return {"python_type": type(value).__name__, "repr": repr(value)}
+                (args.output / "failure.json").write_text(json.dumps(failure, indent=2)+"\n")
+                (args.output / "report_diagnostic.json").write_text(
+                    json.dumps(report, indent=2, default=diagnostic)+"\n")
+            except BaseException as diagnostic_error:
+                print(f"Could not persist diagnostic report: {diagnostic_error}", file=sys.stderr, flush=True)
         raise
     finally:
         if backend is not None:

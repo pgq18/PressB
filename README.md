@@ -11,8 +11,8 @@ A modular framework for robot policy evaluation, data collection, and online rei
 PressB connects robot environments with vision-language-action (VLA) models to study how pretrained policies can improve through interaction. It uses a **shared runtime, task plugins, model adapters, and experiment configurations**, built with Python, PyTorch, and NVIDIA Isaac Sim.
 
 - **Independent nodes:** inference, training, and simulation or real-robot interaction can run on one machine or across multiple machines.
-- **Model support:** bundled Wall-OSS and VLA-JEPA inference and LeRobot supervised-training code.
-- **Online learning:** initial-noise optimization (DSRL) and action-residual RL with frozen base models, replay buffers, asynchronous updates, and checkpoints.
+- **Model support:** bundled Wall-OSS, VLA-JEPA, and Diffusion Policy with LeRobot supervised training.
+- **Online learning:** frozen-model DSRL and action residuals, plus [DPPO](docs/dppo.md) action-expert updates with versioned weight synchronization.
 - **Robot workflows:** parallel simulation, trajectory collection and replay, optional action smoothing, and a PiPER hardware backend with dual RealSense cameras.
 
 ### Environments
@@ -62,8 +62,9 @@ Use `train` for online RL or `collect` for trajectory recording. With a real-rob
 | Guide | Contents |
 |---|---|
 | [Framework](docs/project_framework.md) | Architecture, configuration, and adding tasks or models |
-| [Models](docs/bundled_models.md) | Wall-OSS / VLA-JEPA inference and supervised training |
+| [Models](docs/bundled_models.md) | Model adapters and supervised training |
 | [Online RL](docs/configurable_rl_nodes.md) | Node interfaces, DSRL, action residuals, and checkpoints |
+| [DPPO](docs/dppo.md) | Diffusion Policy and stochastic-flow action-expert optimization |
 | [Real robots](docs/real_robot.md) | PiPER setup, cameras, and optional human success/failure labels |
 | [Experiments](docs/results/) | Evaluation results and validation records |
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06",
+  "updated_at": "2026-11-08",
   "layout": "Model source is bundled in PressB; independent ignored clones remain optional legacy overrides, not Git submodules",
   "repositories": {
     "VLA-JEPA": {
@@ -13,7 +13,7 @@
       "pin_reason": "Existing RL checkpoints bind the VLA Git commit, absolute source path, model/addon source hashes and model weights. Documentation publication must not silently change runtime identity.",
       "bundled_path": "src/pressb/model_sources/vlajepa",
       "bundled_manifest": "src/pressb/model_sources/vlajepa/source_manifest.json",
-      "bundled_manifest_sha256": "a59dd7caf235e00afb13add5d2e6cd662ea08c743bc8e2f4a8abe27524c900ea"
+      "bundled_manifest_sha256": "cd9a6aa0a49b588675a177adef1f2024e18174e57d100a2d61b6569607e9bed4"
     },
     "ZPRL": {
       "url": "https://github.com/pgq18/ZPRL-PressB.git",
@@ -32,7 +32,16 @@
       "pin_reason": "Bundled manifest preserves the deployed native-batch/noise/context/prefix-cache and CUDA changes. Explicit legacy clone remains supported. Model weights, statistics and datasets are external inputs.",
       "bundled_path": "src/pressb/model_sources/walloss",
       "bundled_manifest": "src/pressb/model_sources/walloss/source_manifest.json",
-      "bundled_manifest_sha256": "a457eff77e6c6a8be3bb39fc5d9310f3b36f60897176b9a68ec4f1079c950423"
+      "bundled_manifest_sha256": "a7ec53837ae74bb05f64a1cbcea3f541dc1c70e72b76f9633cf3830c72e63ff9"
+    },
+    "DPPO": {
+      "url": "https://github.com/irom-princeton/dppo.git",
+      "runtime_commit": "cc7234ad7ff39a8f32de3af903606723a16f0648",
+      "bundled_path": "src/pressb/model_sources/diffusion_policy",
+      "bundled_manifest": "src/pressb/model_sources/diffusion_policy/source_manifest.json",
+      "bundled_manifest_sha256": "7759ee53b7db04d06ca8e568fe97cc187e36f1959a4fae9010a8ae84e035a520",
+      "license": "MIT",
+      "required_for": "Bundled diffusion policy architecture and denoising math; no separate clone required"
     }
   }
 }

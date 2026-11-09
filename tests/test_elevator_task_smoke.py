@@ -1,4 +1,4 @@
-"""CPU-only smoke checks using real schema-v2 and legacy service state machines."""
+"""CPU-only smoke checks using the real shared scheduler and schema-v2 service."""
 
 import importlib.util
 import json
@@ -10,10 +10,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from pressb.tasks.elevator.fast_simulation import IndexedSimulationService
 from pressb.control.pose_protocol import pose8_to_pose9
-from pressb.tasks.elevator.backend import ElevatorBackend
-from test_rl_nodes_elevator import LocalClient, PhysicsFixture, STATE
+from pressb.runtime.contract import encode_image
+from pressb.runtime.parallel import SharedWorldBackend
+from pressb.runtime.parallel_contract import ParallelTask
+
+STATE = [0.3, 0., 0.4, 1., 0., 0., 0., .008]
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/smoke_elevator_task_backend.py"
@@ -22,79 +24,111 @@ smoke = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(smoke)
 
 
-class TimedPhysics(PhysicsFixture):
-    def __init__(self, config, *, leak=False):
-        super().__init__()
-        self.config = config
-        self.leak = leak
+class FixtureRobot:
+    def __init__(self, engine):
+        self.engine = engine
+        self.q = np.zeros((engine.num_envs, 8))
+        self.commands = np.zeros((engine.num_envs, 9))
+
+    def cache_initial_state(self):
+        pass
+
+    def reset(self, ids, specs):
+        self.q[ids] = 0.
+        self.commands[ids] = 0.
+
+    def begin_action(self, ids, actions):
+        self.commands[ids] = actions
+        return {i: self.commands[i].tolist() for i in ids}
+
+    def before_tick(self, ids, substep, ticks_per_action):
+        pass
+
+    def observations(self, ids):
+        return {i: dict(state=STATE, control_state=[0.]*25) for i in ids}
+
+    def diagnostic_state(self, ids):
+        return {i: dict(q=self.q[i].tolist(), commands=self.commands[i].tolist()) for i in ids}
+
+    def close(self):
+        pass
+
+
+class TimedPhysics:
+    def __init__(self, task, backend):
+        self.task, self.backend = task, backend
+        self.num_envs = backend.num_envs
         self.world = SimpleNamespace(current_time=0., current_time_step_index=0)
-        self.q = np.zeros((2, 8))
-        self.velocity = self.q.copy()
-        self._commands = self.q.copy()
-        self.button_rows = np.arange(24).reshape(2, 12)
-        self.positions = np.zeros((24, 3))
-        self.orientations = np.tile([1., 0., 0., 0.], (24, 1))
-        self.button_velocity = np.zeros((24, 6))
-        self.button_view = SimpleNamespace(
-            get_world_poses=lambda: (self.positions.copy(), self.orientations.copy()),
-            get_velocities=lambda: self.button_velocity.copy())
-        self._items = {i: {"ticks": 0, "done": False} for i in range(2)}
-        self.generations = [0, 0]
-        self.timing = {"chunks": 0}
+        self.robot = FixtureRobot(self)
 
-    def health(self):
-        return {**super().health(), "max_seconds": self.config["max_seconds"]}
+    def initialize(self):
+        self.task.bind(self)
 
-    def _joint_arrays(self):
-        return self.q.copy(), self.velocity.copy()
+    def check(self):
+        pass
 
-    def _reset_slots(self, ids):
-        for i in ids:
-            self._items[i] = {"ticks": 0, "done": False}
-            self.generations[i] += 1
-            self.q[i] = self.generations[i]
-        if self.leak and len(ids) == 1:
-            self.q[1 - ids[0], 0] += 1
-
-    def reset(self, episodes, seed):
-        self._reset_slots([0, 1])
-        return super().reset(episodes, seed)
-
-    def reset_envs(self, episodes, seed):
-        self._reset_slots(list(episodes))
-        return super().reset_envs(episodes, seed)
-
-    def step(self, actions):
-        self.calls.append(("step", actions))
-        rows, advances = [], []
-        for i in actions:
-            success_episode = self.generations[i] > 1 and self.episodes[i]["floor"] == 33
-            limit = 148 if success_episode else round(self.config["max_seconds"] * 120)
-            ticks = min(28, limit - self._items[i]["ticks"])
-            self._items[i]["ticks"] += ticks
-            done = self._items[i]["ticks"] == limit
-            self._items[i]["done"] = done
-            row = self.observe(i)
-            row.update(terminated=bool(done and success_episode), truncated=bool(done and not success_episode),
-                executed_physics_steps=ticks, info={"success": bool(done and success_episode),
-                    "termination": "target_pressed" if done and success_episode else "time_limit" if done else None})
-            rows.append(row)
-            advances.append(ticks)
-        self.world.current_time_step_index += max(advances)
+    def tick(self, ids):
+        self.world.current_time_step_index += 1
         self.world.current_time = self.world.current_time_step_index / 120
-        self.timing["chunks"] += 1
+
+    def publish_transforms(self):
+        pass
+
+    def reset_render_history(self):
+        pass
+
+    def capture(self, ids, render_frames, reset_history=True):
+        image = encode_image(np.zeros((8,8,3),np.uint8))
+        return {i: {"global": image, "wrist": image} for i in ids}
+
+    def close(self):
+        pass
+
+
+class FixtureTask(ParallelTask):
+    def __init__(self, config, leak=False):
+        self.config, self.leak = config, leak
+        self.execution = dict(num_envs=config["num_envs"], gpu=0, physics_dt=1/120,
+            control_hz=30., horizon=7, max_episode_seconds=config["max_seconds"], gamma=.99,
+            terminal_boundary="physics_tick", timeout_reason="time_limit")
+        self.generations = [0]*config["num_envs"]
+
+    def metadata(self):
+        return dict(schema_version=2, node_type="simulation", task_id="elevator", num_envs=2,
+            observation=dict(state=dict(names=["x","y","z","qw","qx","qy","qz","gripper"],
+                units=["m"]*3+["unitless"]*4+["m"]), cameras=["global","wrist"]),
+            action=dict(representation="pose9",frame="robot_base",names=[f"p{i}" for i in range(9)],
+                units=["m"]*3+["unitless"]*6,horizon=7,control_hz=30.),
+            control_state_dim=25,task_features_dim=0,discount=dict(gamma=.99,timebase_hz=30.),
+            reset_mode="indexed")
+
+    def sample_reset(self, eid, seed, options):
+        floor = options.get("floor",24)
+        return {**options,"floor":floor,"task":f"Press {floor} floor."}
+
+    def reset_task(self, ids, specs):
+        for i in ids:
+            self.generations[i] += 1
+        if self.leak and len(ids) == 1:
+            self.engine.robot.q[1-ids[0],0] += 1
+        return {i:{} for i in ids}
+
+    def after_tick(self, ids):
+        rows = {}
+        for i in ids:
+            success = bool(self.generations[i]>1 and self.engine.backend.reset_specs[i]["floor"]==33
+                           and self.engine.backend.ticks[i]>=148)
+            reason = "target_pressed" if success else "time_limit" if self.engine.backend.ticks[i]>=round(
+                self.config["max_seconds"]*120) else None
+            rows[i] = dict(success=success,terminated=success,reward=float(success),reason=reason,
+                info={"termination":reason})
         return rows
 
 
-class FakeNative(ElevatorBackend):
+class FakeNative(SharedWorldBackend):
     def __init__(self, config, *, leak=False):
-        self._engine = TimedPhysics(config, leak=leak)
-        client = LocalClient()
-        client.physics = self._engine
-        client.service = IndexedSimulationService(self._engine, single_gamma=.99)
-        self._legacy_service = client.service
-        super().__init__({"endpoint": "http://unused", "floors": [24, 33]}, client=client)
         self.was_closed = False
+        super().__init__(FixtureTask(config,leak=leak),engine_factory=TimedPhysics)
 
     def close(self):
         self.was_closed = True
@@ -136,7 +170,7 @@ runpy.run_path(sys.argv[0], run_name="__main__")
     assert result.returncode == 0, result.stderr
     assert "--replay-log" in result.stdout
     args = smoke.parser().parse_args([])
-    assert (args.gpu_id, args.num_envs, args.max_seconds, args.gpu_dynamics) == (1, 2, 2., True)
+    assert (args.gpu_id, args.num_envs, args.max_seconds, args.gpu_dynamics) == (1, 2, 2., False)
 
 
 def test_replay_loader_keeps_complete_chunks_and_source_layout(replay_log):
@@ -183,7 +217,7 @@ def test_peer_mutation_fails_smoke_and_still_closes(tmp_path, replay_log):
     assert smoke.run(args, backend_factory=factory) == 1
     assert instances[0].was_closed
     report = json.loads((args.output_dir / "report.json").read_text())
-    assert "peer physical buffers" in report["error"]
+    assert "Indexed reset changed a peer" in report["error"]
 
 
 def test_report_survives_fast_shutdown_before_close_returns(tmp_path, replay_log):

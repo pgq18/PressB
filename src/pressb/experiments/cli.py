@@ -19,9 +19,10 @@ def main(argv=None):
     parser.add_argument("--resolved-dir", type=Path, help="Output directory for immutable resolved node configs")
     parser.add_argument("--output", type=Path, help="Runner output directory")
     parser.add_argument("--device")
+    parser.add_argument("--seed", type=int, help="Runner seed; use matching held-out seeds for before/after evaluation")
     parser.add_argument("--episodes", type=int)
     parser.add_argument("--max-transitions", type=int)
-    parser.add_argument("--resume", type=Path, help="Trusted full RL checkpoint, with optimizer/replay")
+    parser.add_argument("--resume", help="Full RL checkpoint path, or DPPO checkpoint-sink HTTP(S) URL")
     parser.add_argument("--inference", help="Override runner inference endpoint")
     parser.add_argument("--simulation", "--environment", dest="simulation",
                         help="Override runner environment endpoint (simulation or real robot)")
@@ -38,6 +39,8 @@ def main(argv=None):
         run["output_dir"] = str(args.output.expanduser().resolve())
     if args.device:
         run["device"] = args.device
+    if args.seed is not None:
+        run["seed"] = args.seed
     for key in ("inference", "simulation"):
         value = getattr(args, key)
         if value:
@@ -47,7 +50,10 @@ def main(argv=None):
     if args.max_transitions is not None:
         run.setdefault("rollout", {})["max_transitions"] = args.max_transitions
     if args.resume:
-        run.setdefault("checkpoint", {})["resume"] = str(args.resume.expanduser().resolve())
+        remote = args.resume.startswith(("http://", "https://"))
+        if remote and run.get("method") != "dppo":
+            parser.error("HTTP(S) checkpoint resume is currently supported by DPPO only")
+        run.setdefault("checkpoint", {})["resume"] = args.resume if remote else str(Path(args.resume).expanduser().resolve())
     if args.command in ("eval", "collect"):
         run["mode"] = "eval"
         run.setdefault("rollout", {}).update(terminal_observation_mode="full", fused_step_reset=False)
@@ -56,7 +62,10 @@ def main(argv=None):
     # Validate before writing resolved configs or launching GPU processes. The
     # service-only environments don't need torch/training dependencies to start.
     if args.command in ("validate", "prepare", "train", "eval", "collect"):
-        from pressb.runtime.trainer import TrainerConfig
+        if run.get("method") == "dppo":
+            from pressb.runtime.dppo_trainer import DPPOTrainerConfig as TrainerConfig
+        else:
+            from pressb.runtime.trainer import TrainerConfig
         TrainerConfig(**deepcopy(run))
     if args.command == "validate":
         print(json.dumps({"valid": True, "name": experiment["name"], "factories": experiment["factories"],
@@ -74,7 +83,10 @@ def main(argv=None):
         node_key = "simulation" if args.command == "real_robot" else args.command
         run_service(args.command, paths[node_key])
         return 0
-    from pressb.runtime.trainer import GenericTrainer
+    if run.get("method") == "dppo":
+        from pressb.runtime.dppo_trainer import DPPOTrainer as GenericTrainer
+    else:
+        from pressb.runtime.trainer import GenericTrainer
     if os.environ.get(args.token_env):
         run.setdefault("endpoints", {})["token"] = os.environ[args.token_env]
     observer = None

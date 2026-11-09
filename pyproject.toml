@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pressb"
 version = "0.1.0"
-description = "PiPER manipulation, frozen VLA inference and online RL with simulation or physical robot environments"
+description = "Modular robot policy inference, supervised training and online RL with simulated or physical environments"
 requires-python = ">=3.10,<3.12"
 dependencies = ["numpy<2", "scipy", "Pillow", "matplotlib"]
 
@@ -18,6 +18,7 @@ online-rl = ["torch>=2.6", "threadpoolctl>=3", "websockets>=12,<16", "msgpack>=1
 inference-server = ["websockets>=14,<16", "msgpack>=1,<2"]
 real-robot = ["piper_sdk", "pyrealsense2", "websockets>=14,<16", "msgpack>=1,<2"]
 pap = ["av", "pyarrow", "websockets>=12,<16", "msgpack>=1,<2"]
+diffusion-policy = ["torch>=2.6", "torchvision", "einops", "PyYAML", "pyarrow", "av"]
 table-buttons = ["pin==2.7.0", "hpp-fcl==2.4.4"]
 
 [tool.setuptools.packages.find]

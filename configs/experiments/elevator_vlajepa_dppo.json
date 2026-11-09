@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "name": "elevator_vlajepa_dppo",
+  "task": {
+    "plugin": "elevator",
+    "config": {
+      "output": "${project_root}/outputs/elevator_vlajepa_dppo/simulation",
+      "gpu": 0,
+      "num_envs": 16,
+      "max_seconds": 15,
+      "smoothing_window": 3,
+      "single_gamma": 0.99,
+      "camera_resolution": 224,
+      "floors": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "panel_randomization": true
+    }
+  },
+  "model": {
+    "plugin": "vlajepa",
+    "config": {
+      "checkpoint": "${project_root}/.cache/vlajepa/piper_panel_stratified_press30hz_pose9_3epochs_20260929/checkpoints/step_010600",
+      "device": "cuda:1",
+      "image_preprocess_device": "cpu",
+      "base_vlm": "${project_root}/.cache/vlajepa/Qwen3-VL-2B-Instruct",
+      "base_encoder": "${project_root}/.cache/vlajepa/vjepa2-vitl-fpc64-256"
+    }
+  },
+  "nodes": {
+    "simulation": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18401,
+        "transport": "http"
+      },
+      "service": {
+        "request_cache_size": 8
+      }
+    },
+    "inference": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18431,
+        "transport": "ws"
+      },
+      "service": {
+        "cache_size": 128,
+        "cache_ttl": 600,
+        "batch_size": 4,
+        "action_expert": {
+          "transition_std": 0.002,
+          "denoising_steps": 4
+        }
+      }
+    }
+  },
+  "run": {
+    "method": "dppo",
+    "mode": "train",
+    "device": "cuda:1",
+    "seed": 42,
+    "endpoints": {
+      "inference": "ws://127.0.0.1:18431",
+      "simulation": "http://127.0.0.1:18401",
+      "timeout": 300,
+      "max_message_bytes": 201326592
+    },
+    "rollout": {
+      "max_transitions": 100000,
+      "execution_horizon": 7,
+      "eval_episodes": 100,
+      "recent_window": 100,
+      "num_envs": 16,
+      "action_bounds": "error"
+    },
+    "dppo": {
+      "rollout_steps": 96,
+      "epochs": 1,
+      "minibatch_size": 128,
+      "actor_lr": 1e-06,
+      "critic_lr": 0.0003,
+      "gae_lambda": 0.95,
+      "bootstrap_truncated": false,
+      "logprob_reduction": "upstream_mean",
+      "logprob_max": 10.0,
+      "gamma_denoising": 0.99,
+      "clip_epsilon": 0.01,
+      "clip_epsilon_min": 0.001,
+      "target_kl": 0.05,
+      "critic_warmup_iterations": 2,
+      "critic_continue_after_kl": true
+    },
+    "checkpoint": {
+      "interval": 100000,
+      "keep": null,
+      "include_replay": false
+    },
+    "output_dir": "${project_root}/outputs/elevator_vlajepa_dppo/run",
+    "wandb": {
+      "enabled": false,
+      "project": "pressb-online-rl",
+      "name": "elevator-vlajepa-dppo"
+    }
+  },
+  "description": "Stochastic-flow PPO action-expert tuning for VLA-JEPA; this sampler is an explicit extension of DDPM DPPO."
+}

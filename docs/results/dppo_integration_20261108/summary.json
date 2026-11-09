@@ -1,0 +1,358 @@
+{
+  "schema": "pressb.dppo.published_validation.v1",
+  "date": "2026-11-08",
+  "evidence_root": "outputs/dppo_integration_20261108",
+  "upstream_revision": "cc7234ad7ff39a8f32de3af903606723a16f0648",
+  "sft": {
+    "dataset": "piper_pap_20260606_offset",
+    "training_episodes": 450,
+    "validation_episodes": 50,
+    "steps": 30000,
+    "validation_selected_step": 27500,
+    "best_validation_loss": 0.009903370635583997,
+    "native_evaluation_checkpoint_step": 16000,
+    "native_evaluation_successes": 23,
+    "native_evaluation_episodes": 100,
+    "native_evaluation_is_dppo_comparator": false
+  },
+  "trials": [
+    {
+      "label": "DP / PAP: initial pilot (10k)",
+      "report": "dp_pap/dppo_fp32_report/summary.json",
+      "report_sha256": "8a1db6589399357e1dcbc56687d62974ab11c912abd38a0cf53516a1259df44f",
+      "training_transitions": 10000,
+      "baseline": {
+        "episodes": 100,
+        "successes": 7,
+        "success_rate": 0.07,
+        "wilson_95": [
+          0.03431926106727268,
+          0.137495147390735
+        ],
+        "termination_counts": {
+          "timeout": 93,
+          "success": 7
+        },
+        "sources": {
+          "config.json": "22b200c9a5de4d8f1658029ae4699f5aafeb0865d72732ae195d1ae6e9c223bc",
+          "status.json": "bcacf0a8d8f211cabb31360e0cdbde176f4d6a7d3bf706e146e84d3ece3a203b",
+          "negotiated.json": "3874580dd37fc4071a88f208765953f46220427affe34719fefb02472e84ac7d",
+          "episodes.jsonl": "697d66b8198214a1440c57a9a9a695b553390e2361def241b77ad7ecb9247930",
+          "resets.jsonl": "73f6862fb43639d95423bdb80d86cde09cafba941bff4f37fe19f7bc8df2be3c",
+          "metrics.jsonl": "bc6d9774d79879a894ca2a25fd35f91222f01cc0854808c385cc78a6ca9a9a95"
+        }
+      },
+      "after": {
+        "episodes": 100,
+        "successes": 0,
+        "success_rate": 0.0,
+        "wilson_95": [
+          0.0,
+          0.03699349820698568
+        ],
+        "termination_counts": {
+          "timeout": 96,
+          "object_dropped": 4
+        },
+        "sources": {
+          "config.json": "f63eeb7bd59d8776a108745b898a853ecd50ae819d2c1d56ece225191fe294f4",
+          "status.json": "9041b36796ec524d7dab1360e2c004e3f7069eb42e320ab99f635bd4e63d39f7",
+          "negotiated.json": "3874580dd37fc4071a88f208765953f46220427affe34719fefb02472e84ac7d",
+          "episodes.jsonl": "d74f4063e845e36c53ff0eca08d65bbcf626a4fa6103df802376fd4929400567",
+          "resets.jsonl": "99d88cd09fa305ce6bb112ea241d0adcc4c8522cf014b003af56548082b8bdaa",
+          "metrics.jsonl": "cbaf8fe3f1be936bf3e458d2d6e155004653c99c1fb49f494348df9bd8e4f959"
+        }
+      },
+      "comparison": {
+        "settings_equal": true,
+        "setting_differences": [],
+        "completed_comparison_supported": true,
+        "paired": true,
+        "reasons": [],
+        "observed_delta_percentage_points": -7.000000000000001,
+        "matched_episodes": 100,
+        "both_success": 0,
+        "both_failure": 93,
+        "improved": 0,
+        "worsened": 7,
+        "mcnemar_exact_two_sided_p": 0.015625,
+        "pairing_evidence": "same settings, stable episode keys, reset seeds, actual reset info and policy seeds/schedule"
+      }
+    },
+    {
+      "label": "DP / PAP: conservative (20k)",
+      "report": "dp_pap/dppo_conservative_report/summary.json",
+      "report_sha256": "900730fceebcfc88b3b0238e6ea8f2eff7f6ba8f93c07de2f1f8ea78c4014357",
+      "training_transitions": 20000,
+      "baseline": {
+        "episodes": 100,
+        "successes": 13,
+        "success_rate": 0.13,
+        "wilson_95": [
+          0.07757167427240512,
+          0.20980351440076428
+        ],
+        "termination_counts": {
+          "object_dropped": 2,
+          "timeout": 85,
+          "success": 13
+        },
+        "sources": {
+          "config.json": "96e953491e910535ad55650899e4a850983115155cca46aad899c296745c412b",
+          "status.json": "c237abde07fe0ae148aef86f8add88ff363b745fcbd6f11747b062de75867ade",
+          "negotiated.json": "accf244541a4d415d307fb26b120a631e3a8582f8d47efb67e23934678619e4a",
+          "episodes.jsonl": "d7038c370d54e76887313139d29d861395bab15d8d1cb6832a6a297673b23065",
+          "resets.jsonl": "29d99df72602a9d6759b27c456745bfa25d5b21ef69b62f9151e750b0b7b9ee5",
+          "metrics.jsonl": "731f1b335c54345d19b81ffc5c016496dc81b5a9fdf0dcc84c1fba1ad3c87e90"
+        }
+      },
+      "after": {
+        "episodes": 100,
+        "successes": 16,
+        "success_rate": 0.16,
+        "wilson_95": [
+          0.10095288488804782,
+          0.24420269389270244
+        ],
+        "termination_counts": {
+          "object_dropped": 4,
+          "success": 16,
+          "timeout": 80
+        },
+        "sources": {
+          "config.json": "2b95ccf7e08893baaa0af48c83b6ceaf29ee134cf80970ba5f43debec5e9001e",
+          "status.json": "a2b73d7b06aa19a60e6103962abb0cb1b505e22f6d0d15e68945f90de708ebd9",
+          "negotiated.json": "accf244541a4d415d307fb26b120a631e3a8582f8d47efb67e23934678619e4a",
+          "episodes.jsonl": "a5d5371040cf0a83aba4d6c251fbbbdc08e0c7bef1762664c5369f92f69890fc",
+          "resets.jsonl": "f686bea8e08aa83cb35542eae3d31af36c132830cdbe8c3aebdaff7a90f61a8a",
+          "metrics.jsonl": "e943c73dd666f12bff781c64a6f75ad1928b103fbbdb97f877ed6af32fcfc990"
+        }
+      },
+      "comparison": {
+        "settings_equal": true,
+        "setting_differences": [],
+        "completed_comparison_supported": true,
+        "paired": true,
+        "reasons": [],
+        "observed_delta_percentage_points": 3.0,
+        "matched_episodes": 100,
+        "both_success": 7,
+        "both_failure": 78,
+        "improved": 9,
+        "worsened": 6,
+        "mcnemar_exact_two_sided_p": 0.60723876953125,
+        "pairing_evidence": "same settings, stable episode keys, reset seeds, actual reset info and policy seeds/schedule"
+      }
+    },
+    {
+      "label": "VLA-JEPA / elevator: K10 (10k)",
+      "report": "elevator/report/summary.json",
+      "report_sha256": "b40d4113f78c21ed3b88b61224d2f81b3a8fbc18aefa3c8c63d2d7c4846b98b2",
+      "training_transitions": 10000,
+      "baseline": {
+        "episodes": 100,
+        "successes": 30,
+        "success_rate": 0.3,
+        "wilson_95": [
+          0.2189488529493276,
+          0.3958485463334666
+        ],
+        "termination_counts": {
+          "target_pressed": 30,
+          "wrong_button_pressed": 36,
+          "time_limit": 34
+        },
+        "sources": {
+          "config.json": "748f5039f307006d83a76bbd4dc522c695f64a71133cb2129fdfd1885621cfeb",
+          "status.json": "222ba2d4832a6b41c56e91e60bd5ca173acc046113876b21778e4d2265ab27c4",
+          "negotiated.json": "f315a2ff620e632c64a7e09e2a10f6eb60acb4c6bf7d4cb8e057e47797c601b3",
+          "episodes.jsonl": "8118617c930129d0b6f0e66a165e5e9316146e74bd645ecd5ef4834943cf9d98",
+          "resets.jsonl": "b286691e958fb2ee17c2107b1487215b1197f5e27ecaf8181cfb79d4d9f2e639",
+          "metrics.jsonl": "a55b6704107cd13c73427cb4bc4d042ad98b79ef0f8968d3a8745396e5f56ee1"
+        }
+      },
+      "after": {
+        "episodes": 100,
+        "successes": 16,
+        "success_rate": 0.16,
+        "wilson_95": [
+          0.10095288488804782,
+          0.24420269389270244
+        ],
+        "termination_counts": {
+          "wrong_button_pressed": 30,
+          "unexpected_collision": 47,
+          "target_pressed": 16,
+          "time_limit": 7
+        },
+        "sources": {
+          "config.json": "437c6fc63a861899a5d7959731c1fd797a0406bba2351cccb1ea34dcb8d3b50c",
+          "status.json": "3de30eb3d1b0a5d2c14fc54cfbfc6ef790dc981df4ddeb1161bcbec83086f469",
+          "negotiated.json": "f315a2ff620e632c64a7e09e2a10f6eb60acb4c6bf7d4cb8e057e47797c601b3",
+          "episodes.jsonl": "ed35cdbe052236303e4a74e15cd2c6cf268f41d7bd0fabf5099015ebf36e07fd",
+          "resets.jsonl": "af2de1988d6ea81c45574b1d8323e3ab2fa23758dc4e772ef1ad582482950cab",
+          "metrics.jsonl": "f17a0eaf881e9ec8cc6ff9baa704e7d4bfdfc46cedcb98d407ca72a679055f4b"
+        }
+      },
+      "comparison": {
+        "settings_equal": true,
+        "setting_differences": [],
+        "completed_comparison_supported": true,
+        "paired": true,
+        "reasons": [],
+        "observed_delta_percentage_points": -13.999999999999998,
+        "matched_episodes": 100,
+        "both_success": 4,
+        "both_failure": 58,
+        "improved": 12,
+        "worsened": 26,
+        "mcnemar_exact_two_sided_p": 0.03355243967962451,
+        "pairing_evidence": "same settings, stable episode keys, reset seeds, actual reset info and policy seeds/schedule"
+      }
+    },
+    {
+      "label": "VLA-JEPA / elevator: native K4 (20k)",
+      "report": "elevator/candidate20k/report/summary.json",
+      "report_sha256": "d1a621090f48be502d3325513b688ef2678997b50c32db55812c257bf2633199",
+      "training_transitions": 20000,
+      "baseline": {
+        "episodes": 100,
+        "successes": 33,
+        "success_rate": 0.33,
+        "wilson_95": [
+          0.24563122734128034,
+          0.4269465620490947
+        ],
+        "termination_counts": {
+          "wrong_button_pressed": 58,
+          "target_pressed": 33,
+          "time_limit": 9
+        },
+        "sources": {
+          "config.json": "dd0ce12a3dfac03dc6095ae81db7d86e68abe8651de6cf3bcce757a35312fd70",
+          "status.json": "6157a94dba79d32d48d6c83abb766c84545ec8036339144c3d9013f6ad35291a",
+          "negotiated.json": "c7d9525d55b18d3ebbcdf56c7986aba28abc9537f4c5388bd45fba12dff4d042",
+          "episodes.jsonl": "94bcf151e39bbc8f5aac863208a053345be4aa5d369288a0a24cb0785b2803f7",
+          "resets.jsonl": "6a4b65ae7bd02716541cf856e68ca29a829ed484a6c77a3217dc3fbd1a1c297d",
+          "metrics.jsonl": "24e38a6799299a25142f3a566cbc260a84b16115655aef1cda2fc7bf20a8071e"
+        }
+      },
+      "after": {
+        "episodes": 100,
+        "successes": 39,
+        "success_rate": 0.39,
+        "wilson_95": [
+          0.3001687400639441,
+          0.4879698295415926
+        ],
+        "termination_counts": {
+          "target_pressed": 39,
+          "wrong_button_pressed": 51,
+          "time_limit": 10
+        },
+        "sources": {
+          "config.json": "87624b563b7009e6a64b88b4499836a6319f56b55c7efd0be04dd8207eeb4279",
+          "status.json": "20fee1df9be6e0f8fce0c2d4e406fec83c49854ced6dc2a2fa5f46fb289996fc",
+          "negotiated.json": "c7d9525d55b18d3ebbcdf56c7986aba28abc9537f4c5388bd45fba12dff4d042",
+          "episodes.jsonl": "cb39ec3f77ed78caf86fcb083f80c096ceacda9b325ac3b5b742ed44752a26e1",
+          "resets.jsonl": "ea58c3c13238d9d8b9bc1266727d22b4b85c41021266cd888ed9ceabe701ad47",
+          "metrics.jsonl": "e2b512275e7b717ad6ffae7f623d152fd19e56701bf77c88e10d384df050589f"
+        }
+      },
+      "comparison": {
+        "settings_equal": true,
+        "setting_differences": [],
+        "completed_comparison_supported": true,
+        "paired": true,
+        "reasons": [],
+        "observed_delta_percentage_points": 6.0,
+        "matched_episodes": 100,
+        "both_success": 29,
+        "both_failure": 57,
+        "improved": 10,
+        "worsened": 4,
+        "mcnemar_exact_two_sided_p": 0.1795654296875,
+        "pairing_evidence": "same settings, stable episode keys, reset seeds, actual reset info and policy seeds/schedule"
+      }
+    },
+    {
+      "label": "Wall-OSS / PAP: canonical B8 (10k)",
+      "report": "walloss_pap/b8_mb32_lr1e6_report/summary.json",
+      "report_sha256": "600cd9cbeaaf110e180520b4e28b3730f346bcf741d51bef38e8ca092c225d07",
+      "training_transitions": 10000,
+      "baseline": {
+        "episodes": 100,
+        "successes": 63,
+        "success_rate": 0.63,
+        "wilson_95": [
+          0.5322052958094291,
+          0.7181763946567546
+        ],
+        "termination_counts": {
+          "success": 63,
+          "object_dropped": 1,
+          "timeout": 36
+        },
+        "sources": {
+          "config.json": "2be3abd23cd568db8203269507dfc378c51f6036e257a52b3d5619fa311783f0",
+          "status.json": "91d162d768039a3bd4ee74a4bb1a8ea2bbb2f03117924e5d11230593912e81cf",
+          "negotiated.json": "9d9a0476dbc0b47e22a28b52d3715a3e80099e416f753d169053839fda123c40",
+          "episodes.jsonl": "9acccf6974c62571dc9ea40a39f2893e72145b8f4eb75f65cdd1dfe6ecb5f291",
+          "resets.jsonl": "9038dc7a6b4371363cbc67cc607eb89ece1eb3f5a372fbd9c2e725246f49dae1",
+          "metrics.jsonl": "e44ffb5ec30b92809647156a9caa555a301b4b9275e894a03b0055bb8935e4df"
+        }
+      },
+      "after": {
+        "episodes": 100,
+        "successes": 8,
+        "success_rate": 0.08,
+        "wilson_95": [
+          0.041093461484380624,
+          0.14998107700948735
+        ],
+        "termination_counts": {
+          "timeout": 92,
+          "success": 8
+        },
+        "sources": {
+          "config.json": "715076e24498d4cfef825d1ed7112d96a1c8313baf74806b00ac0295e1f5541d",
+          "status.json": "58bc3feb15d904b413fb7428f7b6b91bd47b76abfeb48e3e35d3ae9337372a23",
+          "negotiated.json": "4ae3405444c467ad6dcb2799a7a17dc18138fecd87d19f3ebcab389e1cf0c9ad",
+          "episodes.jsonl": "76fd263842462b2ec41d3a2c9c62db19ed11baf05ec945457cbe512639ad158e",
+          "resets.jsonl": "4d32d2986703e9ff7baa3c5698d72049ae95eef2742093cd302bc2fb0bbac54d",
+          "metrics.jsonl": "dbbf07c74ebbfe23c7d7f2ee1de5692c3d57eb0e5f5b55bd63e1bb8a8722dd7f"
+        }
+      },
+      "comparison": {
+        "settings_equal": true,
+        "setting_differences": [],
+        "completed_comparison_supported": true,
+        "paired": true,
+        "reasons": [],
+        "observed_delta_percentage_points": -55.00000000000001,
+        "matched_episodes": 100,
+        "both_success": 8,
+        "both_failure": 37,
+        "improved": 0,
+        "worsened": 55,
+        "mcnemar_exact_two_sided_p": 5.551115123125783e-17,
+        "pairing_evidence": "same settings, stable episode keys, reset seeds, actual reset info and policy seeds/schedule"
+      }
+    }
+  ],
+  "notes": [
+    "Each row is its own matched 100-episode comparison. Rows use different tasks, seeds and/or configurations.",
+    "Bars show Wilson 95% intervals for each rate, not intervals for the paired change.",
+    "McNemar exact two-sided p values are unadjusted; single training seeds do not establish robust improvement.",
+    "Native SFT checkpoint step16000 achieved23/100 under a different protocol; it is not the DPPO comparator."
+  ],
+  "tests": {
+    "broad_suite_passed": 690,
+    "skipped": 2,
+    "followup_cli_report_passed": 81,
+    "counts_overlap": true,
+    "receipt": "final_regression.json",
+    "receipt_sha256": "edc638da5e408029076b8c2427bfe6a740cf5d45f0fb7e198dd0e2496add60dc"
+  },
+  "figure_sha256": "a8ed6202c9b84e21ec6b1bea6d92e432d5ee99e83f8d059f9ebb37c683e7f867"
+}

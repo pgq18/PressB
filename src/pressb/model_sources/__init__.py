@@ -17,6 +17,7 @@ import sysconfig
 
 
 _FAMILIES = {
+    "diffusion_policy": ("policy.py", ("pressb.model_sources.diffusion_policy",)),
     "walloss": ("wall_x/serving/policy/wall_x_policy.py", ("wall_x", "openpi_client")),
     "vlajepa": ("starVLA/inference/piper_policy.py", ("starVLA",)),
 }

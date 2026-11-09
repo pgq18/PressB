@@ -9,10 +9,10 @@ runtime, model adapters and training loop remain reusable. The supplied
 it retains the workspace backend's zero-reward semantics.
 
 PressB uses one runtime for inference services, environment services, DSRL,
-action-residual learning, policy evaluation and chunk trajectory recording.
-Choose a task, a frozen model and execution settings in an experiment JSON.
+action-residual learning, DPPO, policy evaluation and chunk trajectory recording.
+Choose a task, a model and execution settings in an experiment JSON.
 Task physics and outcome rules remain explicit task code.
-Wall-OSS and VLA-JEPA inference and supervised-training implementations are now
+Wall-OSS, VLA-JEPA and Diffusion Policy inference and supervised-training implementations are
 bundled in PressB; new experiments do not need their separate source clones.
 See [bundled models](bundled_models.md) for training profiles and CUDA builds.
 
@@ -29,7 +29,13 @@ src/pressb/
     server.py, client.py    # HTTP / binary MessagePack WebSocket services
     inference.py           # Batching and observation-context lifetime
     simulation.py          # reset/step identities, ordering and request validation
+    parallel_contract.py   # SceneTemplate, ParallelTask and ParallelRobot hooks
+    parallel.py            # SharedWorldBackend active-slot and episode execution
+    isaac_parallel.py      # Shared World, cloning, tensor views and tiled rendering
     trainer.py, learner.py  # Rollout, replay, SAC, evaluation and checkpoints
+    dppo_trainer.py, dppo.py # On-policy denoising PPO, GAE and FP32 master updates
+    denoising.py            # Sample and score the same Gaussian latent chain
+    expert_inference.py, expert_sync.py # Versioned action-expert weight transfer
     physics.py, assets.py  # PhysX access and verified USD asset relocation
     scene.py, workbench.py # Shared USD primitives, room, table and tripod
     recording.py           # Original-time camera video utilities
@@ -38,20 +44,26 @@ src/pressb/
   sensors/                 # Camera calibration, RGB-D recording and tiled RGB
   robots/piper/            # PiPER FK/IK, pose control, batching and D435 hardware
     isaac.py               # PiPER articulation assembly and cleanup
+    parallel.py            # Shared-engine PiPER joint/pose drivers
   tasks/
     base.py                # Structural TaskPlugin interface
     elevator/              # Panel scene, floors, planning, collection and simulators
       wire_protocol.py     # Legacy fixed-640x480 RGB PNG helpers
     pap/                   # Object scene, outcomes, sampling and vector/process simulation
     table_buttons/         # Button scene, placement, motion, collection and evaluation
-  models/                  # Frozen-model adapters and loading/inference wrappers
+    playground/            # Calibrated empty workspace and optional object composition
+    <task>/parallel.py     # Native hooks and factory for the shared simulation engine
+  models/                  # Model adapters and loading/inference wrappers
     walloss.py             # Frozen Wall-OSS encoder / flow decoder
     vlajepa.py             # Cartesian VLA-JEPA adapter
     vlajepa_backend.py     # Frozen pose-model loading and cached flow execution
     vlajepa_joint.py       # Native joint6 / joint7 VLA-JEPA adapters
+    diffusion_policy.py    # Visual diffusion policy and joint action contract
+    flow_experts.py        # Trainable flow action heads, frozen observation encoders
   model_sources/           # Preserved upstream model/data/training source bundles
     walloss/               # Wall-X modules, native training and CUDA sources
     vlajepa/               # Model plus pose/joint and multi-task trainers
+    diffusion_policy/      # DPPO upstream denoiser and diffusion implementation
   training/                # Common supervised-training launcher and augmentation
   experiments/             # Configuration inheritance, validation and commands
   compat/                  # Explicit historical application/protocol boundaries
@@ -60,6 +72,14 @@ src/pressb/
     wallx.py               # Historical PAP WebSocket client
     table_buttons_policy.py # Historical tabletop HTTP policy clients
 ```
+
+DSRL and action residuals keep the base model frozen. DPPO uses a separate
+on-policy runner: one weight version produces a rollout, the learner optimizes
+the actual action expert, and the inference node acknowledges an atomic,
+checksummed weight update before the next rollout. VLA-JEPA and Wall-OSS use an
+explicit stochastic-flow extension of the Gaussian denoising policy; their
+original deterministic flow has no Gaussian transition density. See
+[DPPO](dppo.md) for the sampler and evaluation contracts.
 
 A component's assumptions determine its owner. Floors, panel geometry, button
 success rules, task prompts and fixed task camera placement belong to the task.
@@ -95,8 +115,9 @@ hardware or kinematics under `robots/<robot>/`, and task-independent filtering
 or sensors under `control` or `sensors`. Add model adapters under `models`, and
 select task/model factories through `experiments` rather than branching the
 trainer. Historical runners and wire conventions belong in `compat`; new task
-implementations should not depend on them. The native elevator backend uses its
-own task-local engines, not a historical runner.
+implementations should not depend on them. Native simulation factories supply
+task and robot hooks to the shared parallel engine; they do not introduce another
+physics or rendering loop.
 
 Every new supervised model integration must reuse
 `pressb.training.image_transforms`: resolve and record its training preset with
@@ -171,6 +192,8 @@ Templates live in `configs/experiments/`:
 | `pap_walloss_residual.json` | PAP / Wall-OSS | Fresh action residual |
 | `pap_walloss_eval.json` | PAP / Wall-OSS | Frozen base-policy evaluation |
 | `table_buttons_vlajepa_eval.json` | Medium table buttons / joint6 VLA-JEPA | Three-color evaluation, fixed gripper |
+| `table_buttons_parallel_vlajepa_eval.json` | Medium table buttons / joint6 VLA-JEPA | Eight shared-world environments; existing task/model settings |
+| `playground_parallel_walloss_eval.json` | Empty Playground / PAP Wall-OSS joint7 | Eight environments for observation/action integration; zero reward, no task-success detector |
 | `elevator_vlajepa_dsrl.json` | Elevator / original pose9 VLA-JEPA | DSRL |
 
 A template is a local deployment example, not a request to launch training.
@@ -206,6 +229,14 @@ An experiment may `extends` another JSON file; objects merge recursively and
 lists replace. `${project_root}`, `${experiment_dir}` and `${env:NAME}` are
 expanded, including parent-file-relative variables. Unknown plugin names,
 inheritance cycles and unresolved variables fail before loading a model.
+
+The table-button and Playground parallel examples configure eight environments,
+not an automatically chosen capacity. For a two-environment smoke run, override
+both `task.config.num_envs` and `run.rollout.num_envs` to `2`; the inference
+service batch size is a separate limit. The Playground example reuses an
+existing PAP checkpoint only to demonstrate the joint7 interface. An empty
+workspace has no grasp/place success rule, so its success metric is not a policy
+transfer result. Neither template starts services during validation.
 
 `prepare` emits `simulation.json`, `inference.json`, `trainer.json` and a source
 manifest. Existing different resolved files are never overwritten. The three
@@ -248,11 +279,64 @@ remain available through their original commands. Set
 
 ## Task and model contracts
 
-A task plugin provides `describe`, `reset(env_ids, seed, options)`, `step` and
-`close`. Optional `step_and_reset` must be explicitly advertised. It owns scene
-objects, randomization, measured observations, physical success/reward and
-termination. The runtime owns run/episode/step IDs, retry idempotency, validation,
-networking and learner scheduling. Time discounts use actual simulated duration.
+A backend exposes `describe`, `reset(env_ids, seed, options)`, `step` and `close`.
+Optional `step_and_reset` must be explicitly advertised. The service owns
+run/episode/step IDs, retry idempotency, wire validation and networking. Native
+task factories create a `SharedWorldBackend` with task hooks and a robot driver;
+external or compatibility factories can still implement the backend interface
+directly. Time discounts use actual simulated duration.
+
+Plugins can advertise `per_env_reset_seeds` and accept
+`reset(env_ids, seed, options, *, env_seeds=None)`. The optional `/reset`
+`env_seeds` object must map every requested environment ID to its own seed;
+unrequested or missing IDs are rejected. The scalar `seed` remains required
+for compatibility. Without the extension, the existing shared-seed behavior
+is unchanged. DPPO negotiates this capability to reset all ended environments
+in one request while preserving each episode's random stream; legacy plugins
+continue receiving singleton resets. The native shared-world tasks use the
+same per-environment seed contract; task-specific samplers retain their own
+randomization and explicit reset options.
+
+### Shared-world simulation core
+
+The native `pap`, `elevator`, `table_buttons` and `playground` plugins each
+resolve to `pressb.tasks.<task>.parallel:create_backend`. Their common engine
+owns one Isaac World, scene cloning, tensor-view indexing, contact dispatch,
+physics stepping, tiled-camera rendering, episode clocks and reset scheduling.
+It receives a task object and a robot driver through the interfaces in
+[`parallel_contract.py`](../src/pressb/runtime/parallel_contract.py).
+The execution loop is in [`parallel.py`](../src/pressb/runtime/parallel.py),
+Isaac access in [`isaac_parallel.py`](../src/pressb/runtime/isaac_parallel.py),
+and the PiPER drivers in
+[`robots/piper/parallel.py`](../src/pressb/robots/piper/parallel.py).
+
+| Component | Owns |
+|---|---|
+| `SharedWorldBackend` | World lifecycle, cloned environments, tensor/renderer access, active slots, reset/step timing and time limits |
+| `ParallelTask` | Template scene, pure reset sampling, selected task-object reset, contact interpretation, measured reward/success, task observation fields |
+| `ParallelRobot` | Robot/joint mapping, initial state, executable action conversion, IK where needed, interpolation, filtering and measured robot state |
+
+Task hooks do not step or render the world. `sample_reset` validates and samples
+before any mutation; `reset_task` changes only the selected task objects;
+`after_tick` interprets measured physics. The engine retains the task's declared
+termination boundary, either a physics tick or the end of a control interval,
+rather than forcing every task to use the same success timing. A robot driver
+does not decide whether a task succeeded or schedule episodes.
+
+Shared-world stepping is **all-active**: each request contains every active
+environment, with an equal-length action prefix and a task-supported length.
+This batches execution inside one World; it is not an independent per-slot
+physics scheduler. Episodes can finish separately. Indexed reset restores only
+the selected slots, advances zero physics ticks and leaves peer state and
+episode identities unchanged. Physical settling occurs at startup; reset-time
+rendering warmup does not advance the physics clock. State observations and
+terminal outcomes describe the executed transition, before any subsequent reset.
+
+Sharing the engine does not share camera calibration. PAP keeps its
+dataset-aligned cameras; table buttons keeps its elevator-aligned wrist camera;
+elevator and Playground keep their own camera poses and intrinsics. Environment
+offsets relocate each scene copy. `render_resolution`, image transport resizing
+and inference batching remain separate from those camera definitions.
 
 A model adapter provides `describe`, `encode_batch`, `decode_batch` and `close`.
 It owns frozen weights, normalization, feature extraction and external initial
@@ -263,17 +347,30 @@ boundary, even when a historical model was trained in degrees/centimetres.
 
 | Plugin | Execution contract |
 |---|---|
-| `pap` | Shared world, indexed zero-tick resets, equal prefixes across active slots, tested 64-environment profile |
-| `pap_process` | Independent Isaac processes for configured object variants |
-| `pap_recording` | PAP vector backend with task-specific measured trajectory capture |
-| `table_buttons` | One environment per node, near/medium/far and red/yellow/blue randomization, state7 with native action6 or action7 |
-| `elevator` | Native shared-world execution, all active slots and full seven-action chunks |
-| `elevator_remote` | Explicit bridge to an already running historical elevator service |
+| `pap` | Shared core plus grasp/place object sampling and physical outcome hooks; joint7 |
+| `table_buttons` | Shared core plus near/medium/far layout and target-color hooks; state7, action6 or action7 |
+| `elevator` | Shared core plus panel/contact outcome hooks and pose-action robot control |
+| `playground` | Shared core plus the calibrated workspace and optional composed objects; joint7, zero reward, no task-success detector |
+| `pap_process` | Compatibility backend: independent Isaac processes for configured object variants |
+| `pap_recording` | Shared PAP core plus a read-only measured-state observer; no extra physics or render loop |
+| `elevator_remote` | Compatibility bridge to an already running historical elevator service |
 
-Table buttons currently validates `num_envs=1`; it does not silently pretend to
-vectorize. PAP's calibrated cameras and table-buttons' elevator-aligned wrist
-camera retain their distinct task configurations. Changing a task/model pair is
-allowed only when the negotiated observation and action contracts agree.
+The `pap_process` and `elevator_remote` plugins retain their explicit legacy
+implementations. The public `pap.vector` and `elevator.native` entry points now
+construct the shared core; `pap_recording` attaches observer hooks to that core.
+Its recorder reads initial state, control boundaries and exact terminal state
+without advancing physics or rendering. The previous native elevator
+implementation remains explicit at `tasks.elevator.legacy_native`; standalone
+task replay and collection scripts retain their own entry points. Changing a
+task/model pair is allowed only when observation and action contracts agree.
+Historical capacity and task-success measurements below describe their recorded
+source revisions; they are not evidence that every new shared-core task has
+passed the same scale or policy evaluation.
+
+The [2026-11-09 shared-core validation](results/shared_parallel_refactor_20261109/README.md)
+records the final CPU suite, four-task two-environment checks, task-specific
+physical replay/recording checks and eight-environment table-button/Playground
+checks, with each result's source identity and scope.
 
 ## Compatibility and checkpoints
 

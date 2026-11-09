@@ -1,6 +1,6 @@
 # Model inference and supervised training inside PressB
 
-PressB includes the model code needed for its Wall-OSS and VLA-JEPA experiments.
+PressB includes model code for Wall-OSS, VLA-JEPA and Diffusion Policy experiments.
 The default model adapters no longer require `ref/wall-x`, `src/VLA-JEPA`, or
 access to the H200 workspace. Weights, backbone assets, datasets, Python packages
 and CUDA toolkits remain separately provisioned inputs.
@@ -11,9 +11,10 @@ and CUDA toolkits remain separately provisioned inputs.
 |---|---|
 | `src/pressb/model_sources/walloss` | Wall-X model, native batches, external noise, context/prefix caches, data readers, supervised trainer, original serving protocol, CUDA sources |
 | `src/pressb/model_sources/vlajepa` | PiPER VLA-JEPA model, pose9 and joint6/joint7 inference, data readers, single-task and multi-task supervised trainers |
-| `src/pressb/models` | Frozen-model adapters used by the common three-node runtime |
+| `src/pressb/model_sources/diffusion_policy` | Pinned DPPO denoiser/diffusion sources and visual conditioning |
+| `src/pressb/models` | Model adapters and trainable action-expert wrappers |
 | `src/pressb/training` | Common supervised-training launcher and image augmentation |
-| `configs/model_training` | Six native YAML training templates |
+| `configs/model_training` | Supervised-training YAML templates |
 | `configs/model_metadata` | Unchanged historical configuration paired with the deployed PAP checkpoint |
 
 The bundles preserve upstream `wall_x`, `openpi_client` and `starVLA` module names
@@ -37,6 +38,13 @@ Use separate processes/environments for Wall-OSS and VLA-JEPA. An explicit
 `--source-root` still selects a historical checkout. The default is bundled code.
 Source identities hash live model files; a source migration does not silently
 bypass the normal RL checkpoint identity checks.
+
+Diffusion Policy uses `--model diffusion_policy` with
+`configs/model_training/diffusion_policy_pap.yaml`. Its native LeRobot reader
+uses episode-disjoint validation, training-only normalization and the shared
+image augmentation pipeline. The visual encoder and diffusion denoiser are
+trained by SFT; online DPPO subsequently freezes the encoder and updates only
+the denoiser. See [DPPO setup and contracts](dppo.md).
 
 ## Inference
 

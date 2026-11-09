@@ -23,9 +23,52 @@ def save(path, value):
 
 
 def test_discovery_lazy_in_fresh_process():
-    script = "from pressb.registry import available; import sys; assert len(available()['task']) >= 3; assert not any(x in sys.modules for x in ['torch','isaacsim','pressb.tasks.pap.vector','pressb.models.walloss'])"
+    script = "from pressb.registry import available; import sys; assert len(available()['task']) >= 4; assert not any(x in sys.modules for x in ['torch','isaacsim']); assert not any(x.startswith(('pressb.tasks.', 'pressb.models.')) for x in sys.modules)"
     subprocess.run([sys.executable, "-c", script], check=True,
                    env={**__import__('os').environ, "PYTHONPATH": str(PROJECT_ROOT/'src')})
+
+
+def test_native_parallel_defaults_do_not_replace_compatibility_plugins():
+    tasks = available("task")
+    for name in ("pap", "elevator", "table_buttons", "playground"):
+        assert tasks[name] == f"pressb.tasks.{name}.parallel:create_backend"
+    assert tasks["pap_process"] == "pressb.tasks.pap.backend:create_backend"
+    assert tasks["pap_recording"] == "pressb.tasks.pap.recording:create_backend"
+    assert tasks["elevator_remote"] == "pressb.tasks.elevator.backend:create_backend"
+    assert tasks["piper_real"] == "pressb.runtime.real_robot:create_backend"
+    tasks["pap"] = "external:factory"
+    assert resolve("task", "pap") == "pressb.tasks.pap.parallel:create_backend"
+
+
+@pytest.mark.parametrize("task,filename,sim_port,inference_port", [
+    ("table_buttons", "table_buttons_parallel_vlajepa_eval.json", 18421, 18451),
+    ("playground", "playground_parallel_walloss_eval.json", 18422, 18452),
+])
+def test_parallel_examples_keep_camera_calibration_and_matching_env_counts(task, filename, sim_port, inference_port):
+    """Compile both node sides and resolve task inputs without starting Isaac."""
+    import importlib
+    compiled = load_experiment(PROJECT_ROOT / "configs/experiments" / filename)
+    nodes = compiled["nodes"]
+    simulation, inference, trainer = (nodes[key] for key in ("simulation", "inference", "trainer"))
+    assert compiled["factories"]["task"] == resolve("task", task)
+    config = importlib.import_module(f"pressb.tasks.{task}.backend").load_config(simulation["backend"]["config"])
+    assert config["num_envs"] == trainer["rollout"]["num_envs"] == 8
+    assert inference["service"]["batch_size"] == 8
+    assert config["render_resolution"] == [640, 480]
+    assert config["horizon"] == trainer["rollout"]["execution_horizon"]
+    assert trainer["endpoints"]["simulation"] == f"http://127.0.0.1:{sim_port}"
+    assert trainer["endpoints"]["inference"] == f"ws://127.0.0.1:{inference_port}"
+    scene = json.loads(Path(config["scene_config"]).read_text())
+    camera_fields = {key: value for key, value in scene.items() if "camera" in key}
+    assert "up_camera" in camera_fields
+    assert any("wrist_camera" in key for key in camera_fields)
+    assert {key: config["scene"][key] for key in camera_fields} == camera_fields
+    if task == "table_buttons":
+        assert config["action_dim"] == 6
+        assert config["randomization"] == {"profiles": ["medium"], "colors": ["red", "yellow", "blue"], "positions": True}
+    else:
+        assert not config["scene"]["objects"]
+        assert config["scene"]["static_props"] == scene["static_props"]
 
 
 @pytest.mark.parametrize("kind,name", [(k, n) for k, rows in available().items() for n in rows])

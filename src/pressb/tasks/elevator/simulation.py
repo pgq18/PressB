@@ -186,6 +186,10 @@ class SimulationService:
             if floor > 35:
                 raise ValueError("floor must be in 24..35")
             row = {"floor": floor}
+            if "seed" in episode:
+                # Optional per-slot sampling provenance. Geometry is fully
+                # specified below; this seed does not drive hidden physics RNG.
+                row["seed"] = _integer(episode["seed"], "episode.seed")
             for axis in "xy":
                 value = _finite(episode.get(f"offset_{axis}_m"), f"offset_{axis}_m")
                 if randomization.get("enabled") is True:
@@ -655,7 +659,7 @@ class IsaacVectorBackend:
                 lit=set(), events=[], solver=solver, smoother=JointCommandSmoother(initial, window=self.window),
                 history=deque((initial.copy() for _ in range(self.window)), maxlen=self.window),
                 min_target_distance=float("inf"), max_tracking_error=0., max_target_force=0., max_target_travel=0.,
-                reset_episode=copy.deepcopy(episode), directory=cohort_dir, seed=seed,
+                reset_episode=copy.deepcopy(episode), directory=cohort_dir, seed=episode.get("seed", seed),
                 layout_evidence=evidence[env.env_id]))
             self.recording.add(env.env_id)
         tiles = None
@@ -672,7 +676,7 @@ class IsaacVectorBackend:
             observation = self._observation(eid, tiles)
             info = self._info(eid)
             rows.append(dict(env_id=eid, observation=observation, info=info))
-            _write_json(cohort_dir / f"env_{eid:03d}_reset.json", dict(env_id=eid, seed=seed,
+            _write_json(cohort_dir / f"env_{eid:03d}_reset.json", dict(env_id=eid, seed=episodes[eid].get("seed", seed),
                 run_id=self._run_id, episode=episodes[eid], initial_state=observation["state"], initial_control_state=observation["control_state"],
                 layout=evidence[eid], info=info))
         self._status("ready", active_env_ids=list(range(self.num_envs)))

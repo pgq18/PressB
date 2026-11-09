@@ -33,7 +33,7 @@ class InferenceService:
     """
 
     def __init__(self, backend, *, cache_size=256, cache_ttl=600.0,
-                 batch_size=1, clock=time.monotonic, collect_timing=False):
+                 batch_size=1, clock=time.monotonic, collect_timing=False, action_expert=None):
         if type(cache_size) is not int or cache_size < 1:
             raise ValueError("cache_size must be a positive integer")
         if isinstance(cache_ttl, bool) or not isinstance(cache_ttl, (int, float)) \
@@ -61,6 +61,10 @@ class InferenceService:
         self.collect_timing = collect_timing
         self.last_timing = {}
         self._timing = {}
+        self.action_expert = None
+        if action_expert is not None:
+            from .expert_inference import ExpertInference
+            self.action_expert = ExpertInference(self, action_expert)
 
     def _timed_result(self, result, started):
         if self.collect_timing:
@@ -170,7 +174,10 @@ class InferenceService:
             if payload is not None:
                 self._fields(payload, set())
             self._purge()
-            return dict(deepcopy(self.metadata), ready=True,
+            metadata = deepcopy(self.metadata)
+            if self.action_expert is not None:
+                metadata["action_expert"] = self.action_expert.metadata()
+            return dict(metadata, ready=True,
                         cache=dict(size=len(self.contexts), capacity=self.cache_size,
                                    ttl_seconds=self.cache_ttl, eviction="oldest_created",
                                    ttl_refresh_on_decode=False),
@@ -259,10 +266,15 @@ class InferenceService:
                 return
             self.contexts.clear()
             self._closed = True
+            if self.action_expert is not None:
+                self.action_expert.close()
             if callable(getattr(self.backend, "close", None)):
                 self.backend.close()
 
     @property
     def handlers(self):
-        return {"/health": self.health, "/encode": self.encode, "/decode": self.decode,
-                "/release": self.release, "/infer": self.infer}
+        handlers = {"/health": self.health, "/encode": self.encode, "/decode": self.decode,
+                    "/release": self.release, "/infer": self.infer}
+        if self.action_expert is not None:
+            handlers.update(self.action_expert.handlers)
+        return handlers

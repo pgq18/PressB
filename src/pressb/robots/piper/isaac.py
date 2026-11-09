@@ -7,7 +7,8 @@ import numpy as np
 from pressb.sensors.camera import make_camera, set_intrinsics
 
 
-def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_builder=None):
+def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_builder=None,
+                        initialize=True):
     """Build a scene with the common PiPER drives and camera registration.
 
     ``scene_builder(stage, cfg)`` owns task geometry and returns root_path and
@@ -15,13 +16,13 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
     explicit historical wrist registration remains supported for replay. The
     caller must own an active SimulationApp and an empty stage. Optional camera
     hardware is visual geometry supplied by the scene's builder callback.
+    ``initialize=False`` authors a cloneable template without resetting physics,
+    creating camera render products, or accessing articulation state. The shared
+    parallel engine subsequently owns initialization and rendering.
     """
     from pxr import Gf, Usd, UsdGeom, UsdPhysics, UsdShade, PhysxSchema
     from isaacsim.core.api import World
-    from isaacsim.core.prims import SingleArticulation
     from isaacsim.core.utils.stage import add_reference_to_stage
-    from isaacsim.core.utils.types import ArticulationAction
-    from isaacsim.sensors.camera import Camera
     from .wrist_camera import apply_black_materials, attach_wrist_camera
     import carb
 
@@ -125,11 +126,21 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
         scene["table_camera_hardware"] = camera_hardware_builder(stage, np.asarray(camera_cfg["eye_base_m"])+base,
                      np.asarray(camera_cfg["target_base_m"])+base, cfg["table_height"],
                      root_path=scene["root_path"] + "/Tripod")
-    robot = world.scene.add(SingleArticulation(prim_path="/World/Piper", name="piper"))
     camera_specs = {
         "up": (up_path, cfg["up_camera"]["resolution"]),
         "wrist": (wrist_info["camera_path"], cfg.get("wrist_camera", {}).get("resolution", cfg["wrist_camera_resolution"])),
     }
+    camera_paths = {name: path for name, (path, _) in camera_specs.items()}
+    if not initialize:
+        return SimpleNamespace(world=world, stage=stage, scene=scene, base=base,
+            robot_path="/World/Piper", robot=None, controller=None, indices=None,
+            cameras={}, camera_paths=camera_paths, camera_specs=camera_specs,
+            wrist_info=wrist_info, initial_state=initial_state, dt=dt, fps=fps,
+            stride=stride, warmup_frames=warmup_frames, subframes=subframes)
+    from isaacsim.core.prims import SingleArticulation
+    from isaacsim.core.utils.types import ArticulationAction
+    from isaacsim.sensors.camera import Camera
+    robot = world.scene.add(SingleArticulation(prim_path="/World/Piper", name="piper"))
     cameras = {name: Camera(prim_path=path, name=name, resolution=tuple(size), frequency=-1)
                for name, (path, size) in camera_specs.items()}
     world.reset()
@@ -158,6 +169,7 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
     controller.apply_action(ArticulationAction(joint_positions=initial))
     return SimpleNamespace(world=world, stage=stage, scene=scene, base=base,
         robot=robot, controller=controller, indices=indices, cameras=cameras,
+        robot_path="/World/Piper", camera_paths=camera_paths,
         camera_specs=camera_specs, wrist_info=wrist_info, initial=initial,
         initial_state=initial_state, full_command=full_command, dt=dt, fps=fps,
         stride=stride, warmup_frames=warmup_frames, subframes=subframes)

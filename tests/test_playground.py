@@ -215,7 +215,7 @@ def test_invalid_reset_options_rejected_before_environment_creation(scene_config
 
 
 @pytest.mark.parametrize("changes", [
-    {"num_envs": 2}, {"action_dim": 6}, {"physics_dt": .01},
+    {"num_envs": 0}, {"action_dim": 6}, {"physics_dt": .01},
     {"max_episode_seconds": .05}, {"gamma": 1.1}, {"gamma": 0.},
     {"headless": "true"}, {"settling_ticks": -1},
     {"scene_overrides": {"initial_state_joint_rad_m": [0.] * 6}},

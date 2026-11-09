@@ -43,8 +43,9 @@ class PAPStateRecorder:
         self.config = copy.deepcopy(backend.config)
         self.config.pop("trajectory_recording", None)
         self.manifest = dict(schema_version=1, format="pap_measured_state", env_ids=self.ids,
-            max_episodes_per_env=self.maximum, task_identity=backend.identity,
-            joint_names=list(backend.arms.view.shared_metatype.dof_names),
+            max_episodes_per_env=self.maximum, task_identity=copy.deepcopy(backend.task.identity),
+            runtime_identity=copy.deepcopy(backend.describe()),
+            joint_names=list(backend.engine.robot.arms.view.shared_metatype.dof_names),
             physics_dt=backend.config["physics_dt"], control_hz=backend.config["control_hz"],
             sample_contract="initial, each control boundary, exact terminal tick; read-only tensor reads",
             config=self.config, recorder_source=_identity(Path(__file__)))
@@ -58,7 +59,7 @@ class PAPStateRecorder:
         for i in selected:
             self.slots[i] = dict(samples=[], episode_index=self.counts[i],
                 reset=copy.deepcopy(self.backend.reset_specs[i]),
-                source_env_offset=self.backend.offsets[i].tolist())
+                source_env_offset=self.backend.engine.offsets[i].tolist())
             self.counts[i] += 1
         self.append(selected)
 
@@ -69,10 +70,12 @@ class PAPStateRecorder:
         snapshots = self.backend.snapshot(selected)
         for i in selected:
             row = snapshots[str(i)]
-            row["command"] = self.backend.commands[i].tolist()
-            row["contact_counts"] = self.backend.contact_counts[i].tolist()
+            row["command"] = self.backend.engine.robot.commands[i].tolist()
+            row["contact_counts"] = self.backend.task.contact_counts[i].tolist()
             row["success"] = bool((endings or {}).get(i) == "success")
-            row["physical_success"] = bool((results or {}).get(i, {}).get("success", False))
+            outcome = (results or {}).get(i, {})
+            row["physical_success"] = bool(outcome.get("info", {}).get("physical_outcome", {}).get(
+                "success", outcome.get("success", False)))
             samples = self.slots[i]["samples"]
             tick = row["episode_physics_steps"]
             if samples and tick <= samples[-1]["episode_physics_steps"]:
@@ -108,67 +111,51 @@ class PAPStateRecorder:
                 env_id=env_id, episode_index=slot["episode_index"], complete=bool(complete),
                 success=bool(info.get("success", False)), duration_seconds=meta["duration_seconds"]))+"\n")
 
+    def on_reset(self, backend, env_ids, rows):
+        self.begin(env_ids)
+
+    def after_tick(self, backend, live_ids, outcomes):
+        # The shared runtime calls this after outcome/ready updates, before a
+        # peer can advance the world or fused reset can replace the terminal.
+        stride = backend.execution["physics_ticks_per_action"]
+        selected = []
+        for i in live_ids:
+            if i not in self.slots:
+                continue
+            tick = int(backend.ticks[i])
+            samples = self.slots[i]["samples"]
+            last = samples[-1]["episode_physics_steps"] if samples else -1
+            if tick > last and (tick % stride == 0 or not backend.ready[i]):
+                selected.append(i)
+        self.append(selected, outcomes, {i: outcomes[i].get("reason") for i in selected})
+
+    def after_step(self, backend, rows):
+        for row in rows:
+            if row["terminated"] or row["truncated"]:
+                self.finish(row["env_id"], complete=True, info=row["info"])
+
     def close(self):
         for i in list(self.slots):
             self.finish(i, complete=False, info={"termination_reason": "recorder_closed_before_terminal"})
 
 
-# Recording wraps the task backend without modifying its physics or rendering.
-# Its source is separately identified in the manifest and describe() extension.
+# Recording subscribes to the common runtime; it never wraps world.step or
+# duplicates the episode scheduler. Source identity is recorded separately.
 from .vector import PAPVectorBackend
 
 
 class PAPRecordingVectorBackend(PAPVectorBackend):
-    """Read-only instrumentation around the unchanged production backend.
+    """Shared simulation with read-only measured-state observer hooks."""
 
-    The pre-step hook sees the *previous* completed physics tick, after the
-    production loop has updated episode ticks, contact reports and outcomes.
-    Therefore exact terminal states are saved before peers advance the world.
-    _step's final hook saves the last boundary when no following step exists.
-    """
-
-    def __init__(self, config):
+    def __init__(self, config, *, engine_factory=None):
         self.recorder = None
-        self._original_world_step = None
-        super().__init__(config)
+        super().__init__(config, engine_factory=engine_factory)
         try:
             self.recorder = PAPStateRecorder(self, self.config.get("trajectory_recording"))
-            self._original_world_step = self.world.step
-            self.world.step = self._record_before_world_step
+            self.add_observer(self.recorder)
         except BaseException:
             self.close()
             raise
-
-    def _record_due_states(self):
-        if self.recorder is None:
-            return
-        stride = self.config["physics_ticks_per_action"]
-        selected = []
-        for i, slot in self.recorder.slots.items():
-            tick = int(self.ticks[i])
-            last = slot["samples"][-1]["episode_physics_steps"] if slot["samples"] else -1
-            if tick > last and (tick % stride == 0 or not self.ready[i]):
-                selected.append(i)
-        self.recorder.append(selected)
-
-    def _record_before_world_step(self, *args, **kwargs):
-        self._record_due_states()
-        return self._original_world_step(*args, **kwargs)
-
-    def _reset(self, env_ids, specs, *, capture_images=True):
-        rows = super()._reset(env_ids, specs, capture_images=capture_images)
-        if self.recorder is not None:
-            self.recorder.begin(env_ids)
-        return rows
-
-    def _step(self, items, *, terminal_observation_mode="full", defer_live_images=False):
-        rows = super()._step(items, terminal_observation_mode=terminal_observation_mode,
-                             defer_live_images=defer_live_images)
-        self._record_due_states()
-        for row in rows:
-            if row["terminated"] or row["truncated"]:
-                self.recorder.finish(row["env_id"], complete=True, info=row["info"])
-        return rows
 
     def describe(self):
         result = super().describe()
@@ -177,14 +164,6 @@ class PAPRecordingVectorBackend(PAPVectorBackend):
                 "env_ids": self.recorder.ids, "manifest": _identity(self.recorder.directory/"manifest.json"),
                 "source": _identity(Path(__file__)), "additional_render_or_physics_calls": 0}
         return result
-
-    def close(self):
-        if self.recorder is not None:
-            self.recorder.close()
-        if self._original_world_step is not None and self.world is not None:
-            self.world.step = self._original_world_step
-            self._original_world_step = None
-        super().close()
 
 
 def create_backend(config):

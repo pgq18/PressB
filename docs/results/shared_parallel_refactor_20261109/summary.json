@@ -1,0 +1,730 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "date": "2026-11-09",
+  "architecture": {
+    "native_tasks": [
+      "pap",
+      "elevator",
+      "table_buttons",
+      "playground"
+    ],
+    "backend": "pressb.runtime.parallel.SharedWorldBackend",
+    "task_contract": "pressb.runtime.parallel_contract.ParallelTask",
+    "robot_contract": "pressb.runtime.parallel_contract.ParallelRobot",
+    "scheduling": "all_active_equal_prefix",
+    "indexed_reset_physics_ticks": 0,
+    "task_camera_calibrations_preserved": true,
+    "pap_recording": "read_only_shared_core_observer",
+    "legacy_implementations": [
+      "pap_process",
+      "elevator_remote",
+      "pressb.tasks.elevator.legacy_native:create_backend"
+    ]
+  },
+  "cpu": {
+    "passed": 3600,
+    "skipped": 27,
+    "failed": 0,
+    "usd_passed": 156,
+    "usd_new_unique_passes": 69,
+    "unique_passing_tests": 3669,
+    "counting": "Deduplicated final main + final USD test identities; earlier and targeted overlapping runs excluded.",
+    "source_files": 752,
+    "source_manifest_sha256_before": "a0e6491893a618a7bdfe7ce0d2cf2271400891ca91acb7b5712fd1c35e3e7123",
+    "source_manifest_sha256_after": "a0e6491893a618a7bdfe7ce0d2cf2271400891ca91acb7b5712fd1c35e3e7123",
+    "changed_sources": {},
+    "skips_by_reason": {
+      "collection skipped": 4,
+      "CUDA batch-kernel parity regression": 1,
+      "Native action-expert check requires torchdiffeq": 1,
+      "could not import 'pxr.Usd': No module named 'pxr'": 17,
+      "could not import 'pxr': No module named 'pxr'": 3,
+      "Official writer/reader integration runs in the separate LeRobot environment": 1
+    },
+    "artifact": {
+      "path": "outputs/parallel_core_regression_20261109/cpu_release_summary.json",
+      "sha256": "bda1d5c8c358c10367f39d86cc017602526dafc5c53aa90633fbb83db02d51a4",
+      "bytes": 8749
+    }
+  },
+  "isaac_generic_smoke": [
+    {
+      "task": "pap",
+      "num_envs": 2,
+      "gpu": 1,
+      "passed": true,
+      "backend": "SharedWorldBackend",
+      "backend_module": "pressb.runtime.parallel",
+      "checks": {
+        "indexed_reset_zero_ticks": true,
+        "peer_snapshot_unchanged": true,
+        "independent_seed_repeatable": true
+      },
+      "source_revision": "sha256:22355aa317fe65d23de10ea1052d875eea4ce8de387ec7698b610580a2440658",
+      "task_config_sha256": "28bcbc7161243cea2ab94d3b3b24696314a9dceb9dd70c58a84e250d7113adbe",
+      "cameras": [
+        "up",
+        "wrist"
+      ],
+      "artifacts": {
+        "report": {
+          "path": "outputs/shared_parallel_refactor_20261109/pap_2env/result.json",
+          "sha256": "efd3c9688ead330e6180f89739693d448fa657e01f220234867d4cc5e3be3d69",
+          "bytes": 39979
+        },
+        "metadata": {
+          "path": "outputs/shared_parallel_refactor_20261109/pap_2env/metadata.json",
+          "sha256": "df8b30967900c16c05c4029dd6cf03e927268011ba0077d0704ebdf3425f8536",
+          "bytes": 7767
+        },
+        "config": {
+          "path": "outputs/shared_parallel_refactor_20261109/pap_2env/config.json",
+          "sha256": "f44b106f8c6951e9257f294f7416c6b0247281d116bbd57fcd61c652d8440def",
+          "bytes": 1207
+        }
+      }
+    },
+    {
+      "task": "elevator",
+      "num_envs": 2,
+      "gpu": 1,
+      "passed": true,
+      "backend": "SharedWorldBackend",
+      "backend_module": "pressb.runtime.parallel",
+      "checks": {
+        "indexed_reset_zero_ticks": true,
+        "peer_snapshot_unchanged": true,
+        "independent_seed_repeatable": true
+      },
+      "source_revision": "sha256:3fa3cc4c042e9f0d83222374ec56317b8cd410974d861c1f058da167bc7dd2b1",
+      "task_config_sha256": "171ec2858800ea0562ce6edbace2a0823094b81dbfa821331e3c2217cc5717cc",
+      "cameras": [
+        "global",
+        "wrist"
+      ],
+      "artifacts": {
+        "report": {
+          "path": "outputs/shared_parallel_refactor_20261109/elevator_2env/result.json",
+          "sha256": "2117bea0e70b6658b6e2ba62c054c06117d5c84c504a58ba2800c9fbe1725e62",
+          "bytes": 48031
+        },
+        "metadata": {
+          "path": "outputs/shared_parallel_refactor_20261109/elevator_2env/metadata.json",
+          "sha256": "d04fca9702b7f379c803d88fdd89acd54ba2bb396d007844931a3cde65177a8a",
+          "bytes": 5605
+        },
+        "config": {
+          "path": "outputs/shared_parallel_refactor_20261109/elevator_2env/config.json",
+          "sha256": "6ac8d366181d4ec2327e91bdb5503ff2cb4946fadbdb41697dd39dc1e0a6073c",
+          "bytes": 386
+        }
+      }
+    },
+    {
+      "task": "playground",
+      "num_envs": 2,
+      "gpu": 1,
+      "passed": true,
+      "backend": "SharedWorldBackend",
+      "backend_module": "pressb.runtime.parallel",
+      "checks": {
+        "indexed_reset_zero_ticks": true,
+        "peer_snapshot_unchanged": true,
+        "independent_seed_repeatable": true
+      },
+      "source_revision": "sha256:7c3602cd7a1a66dea236047c3a59fc91b2f417a470229257ad65f0a4b8fbef36",
+      "task_config_sha256": "d5c2c9208425817cae3964e58cb517ce77cabb6b022b64bba8db11ab092acd9c",
+      "cameras": [
+        "up",
+        "wrist"
+      ],
+      "artifacts": {
+        "report": {
+          "path": "outputs/shared_parallel_refactor_20261109/playground_2env/result.json",
+          "sha256": "19248deda21c34145abdccccc0f6526e6967486378c9dbd5bceee29938c469e3",
+          "bytes": 17776
+        },
+        "metadata": {
+          "path": "outputs/shared_parallel_refactor_20261109/playground_2env/metadata.json",
+          "sha256": "b6f1c83cfa7f70fab67e85d442ccd20079e08c3d5b1ac90acfd366f65ae35598",
+          "bytes": 5980
+        },
+        "config": {
+          "path": "outputs/shared_parallel_refactor_20261109/playground_2env/config.json",
+          "sha256": "285a5d04cc5ec28db05a3c23cc5a4b2bbb4f62a6466fa03a404107343df781fc",
+          "bytes": 488
+        }
+      }
+    },
+    {
+      "task": "table_buttons",
+      "num_envs": 2,
+      "gpu": 1,
+      "passed": true,
+      "backend": "SharedWorldBackend",
+      "backend_module": "pressb.runtime.parallel",
+      "checks": {
+        "indexed_reset_zero_ticks": true,
+        "peer_snapshot_unchanged": true,
+        "independent_seed_repeatable": true
+      },
+      "source_revision": "sha256:4a623033d4bd2c75a5e5765e1710ddbaad9b4479e979849403983c1c49ec2328",
+      "task_config_sha256": "89da66c6839877d2d424ecde0d6559e1e369d7a46dff8176b7e38e599ce0bc17",
+      "cameras": [
+        "up",
+        "wrist"
+      ],
+      "artifacts": {
+        "report": {
+          "path": "outputs/shared_parallel_refactor_20261109/table_buttons_2env_fixed/result.json",
+          "sha256": "15c218c9461ccec387c6e689b5f8e25770aacd03861b54ac635a5b69a5286f93",
+          "bytes": 38541
+        },
+        "metadata": {
+          "path": "outputs/shared_parallel_refactor_20261109/table_buttons_2env_fixed/metadata.json",
+          "sha256": "1524697560b8b22f6fae5300425cd8164b59db62337eb783281a86932c759f1e",
+          "bytes": 9805
+        },
+        "config": {
+          "path": "outputs/shared_parallel_refactor_20261109/table_buttons_2env_fixed/config.json",
+          "sha256": "92fb750b9985b5ef72935eebc7b8984888cc5e4c820d1fd705ffc35363433d90",
+          "bytes": 634
+        }
+      }
+    },
+    {
+      "task": "playground",
+      "num_envs": 8,
+      "gpu": 1,
+      "passed": true,
+      "backend": "SharedWorldBackend",
+      "backend_module": "pressb.runtime.parallel",
+      "checks": {
+        "indexed_reset_zero_ticks": true,
+        "peer_snapshot_unchanged": true,
+        "independent_seed_repeatable": true
+      },
+      "source_revision": "sha256:342719e9640ce4a6e4abab9587ac34125efe82243b3a27a581b328ac76ef7fe9",
+      "task_config_sha256": "d5c2c9208425817cae3964e58cb517ce77cabb6b022b64bba8db11ab092acd9c",
+      "cameras": [
+        "up",
+        "wrist"
+      ],
+      "artifacts": {
+        "report": {
+          "path": "outputs/shared_parallel_refactor_20261109/playground_8env/result.json",
+          "sha256": "5c2cea6e2913ac1b10f3e741b9b3a0f110f3334e1f52b20dad2244a006933222",
+          "bytes": 62951
+        },
+        "metadata": {
+          "path": "outputs/shared_parallel_refactor_20261109/playground_8env/metadata.json",
+          "sha256": "d3efb44a9879cd68e97c561bf54ed9b3198ebd9653fcc8a8e0ae83560c8e4308",
+          "bytes": 7388
+        },
+        "config": {
+          "path": "outputs/shared_parallel_refactor_20261109/playground_8env/config.json",
+          "sha256": "eaf88ced50b0c2f420522e46d3f590a0cf7a1e0f516941b0befb50c6ef4469f3",
+          "bytes": 488
+        }
+      }
+    },
+    {
+      "task": "table_buttons",
+      "num_envs": 8,
+      "gpu": 1,
+      "passed": true,
+      "backend": "SharedWorldBackend",
+      "backend_module": "pressb.runtime.parallel",
+      "checks": {
+        "indexed_reset_zero_ticks": true,
+        "peer_snapshot_unchanged": true,
+        "independent_seed_repeatable": true
+      },
+      "source_revision": "sha256:27147f993075d62de5f4e68bfd6540ab2f1045bf28527ea70b9c8a648e3b5907",
+      "task_config_sha256": "eed96445bc7dc6ddee2d866f0d92d78a9d2ff9010c518ba095837ed768ae07df",
+      "cameras": [
+        "up",
+        "wrist"
+      ],
+      "reset_render_frames": 48,
+      "world_ticks": 8,
+      "captures": 156,
+      "artifacts": {
+        "report": {
+          "path": "outputs/shared_parallel_refactor_20261109/table_buttons_8env/result.json",
+          "sha256": "0f1036d9b60f24dffc826b208400699140b5644ca66ee4c1596429200bca2b9d",
+          "bytes": 144044
+        },
+        "metadata": {
+          "path": "outputs/shared_parallel_refactor_20261109/table_buttons_8env/metadata.json",
+          "sha256": "0a8f2f1aa142ad2734141715052d07c1e9f005f683cdb7399d732c359f0c9637",
+          "bytes": 9801
+        },
+        "config": {
+          "path": "outputs/shared_parallel_refactor_20261109/table_buttons_8env/config.json",
+          "sha256": "6ea090f84f6497145c9bc0eaed783545963d3f9871e3e11c19091fae3d998564",
+          "bytes": 628
+        }
+      }
+    }
+  ],
+  "elevator_contact": {
+    "num_envs": 2,
+    "gpu": 1,
+    "operations_status": "passed",
+    "report_status": "closing",
+    "report_closed": false,
+    "close_run": {
+      "closed": true,
+      "restart_required": false
+    },
+    "operator_reported_process_exit_code": 0,
+    "source_revision": "sha256:25383df80e14bafb17de418d1e0d98b9fe6261c302c3c26acf0100356de7da14",
+    "physics_hz": 120,
+    "stages": [
+      {
+        "name": "hold_timeout",
+        "episodes": [
+          {
+            "env_id": 0,
+            "task": "Press 28 floor.",
+            "success": false,
+            "terminated": false,
+            "truncated": true,
+            "physics_steps": 240,
+            "termination": "time_limit"
+          },
+          {
+            "env_id": 1,
+            "task": "Press 25 floor.",
+            "success": false,
+            "terminated": false,
+            "truncated": true,
+            "physics_steps": 240,
+            "termination": "time_limit"
+          }
+        ]
+      },
+      {
+        "name": "success_replay",
+        "episodes": [
+          {
+            "env_id": 0,
+            "task": "Press 33 floor.",
+            "success": true,
+            "terminated": true,
+            "truncated": false,
+            "physics_steps": 148,
+            "termination": "target_pressed"
+          },
+          {
+            "env_id": 1,
+            "task": "Press 33 floor.",
+            "success": true,
+            "terminated": true,
+            "truncated": false,
+            "physics_steps": 148,
+            "termination": "target_pressed"
+          }
+        ]
+      }
+    ],
+    "artifact": {
+      "path": "outputs/shared_parallel_refactor_20261109/elevator_contact_2env/report.json",
+      "sha256": "73e8cd95c4d4f5e073d5fdaa415fc0fffcf6f0f21f55835bb7abb58f7985dec2",
+      "bytes": 18587
+    }
+  },
+  "pending": [],
+  "limits": [
+    "No learned-policy success-rate evaluation.",
+    "No end-to-end training speed claim.",
+    "No claim that all four tasks passed 64 environments.",
+    "Stage-specific source identities retained; earlier smoke checks do not certify later source edits.",
+    "No changes to ongoing DP/Wall training processes or old checkpoint identities are implied."
+  ],
+  "pap_recording": {
+    "status": "passed",
+    "kind": "pap_shared_recording_audit",
+    "episodes": [
+      {
+        "env_id": 0,
+        "episode_index": 0,
+        "complete": true,
+        "ticks": [
+          0,
+          4,
+          8
+        ],
+        "metadata": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/trajectories/env_000_episode_000.json"
+      },
+      {
+        "env_id": 0,
+        "episode_index": 1,
+        "complete": false,
+        "ticks": [
+          0
+        ],
+        "metadata": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/trajectories/env_000_episode_001.json"
+      },
+      {
+        "env_id": 1,
+        "episode_index": 0,
+        "complete": true,
+        "ticks": [
+          0,
+          4,
+          8
+        ],
+        "metadata": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/trajectories/env_001_episode_000.json"
+      },
+      {
+        "env_id": 1,
+        "episode_index": 1,
+        "complete": false,
+        "ticks": [
+          0
+        ],
+        "metadata": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/trajectories/env_001_episode_001.json"
+      }
+    ],
+    "world_ticks": 8,
+    "captures": 6,
+    "expected_captures": 6,
+    "additional_physics_or_render_calls": 0,
+    "source_revision": "sha256:fa1a5dcfc80494ffceaeac587ed2d47fddf71c8bf9751b2e6d1496df040d5638",
+    "report_status": "closing",
+    "report_closed": false,
+    "operator_reported_process_exit_code": 0,
+    "artifacts": {
+      "recording_audit.json": {
+        "path": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/recording_audit.json",
+        "sha256": "0f1332e8bdc081b7ddbcdb954651db90e1b2260ffdd039ed58a0449e3080db31",
+        "bytes": 1317
+      },
+      "report.json": {
+        "path": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/report.json",
+        "sha256": "c0ed5c641147e610147106cb88d4cd2e376faaced7a41cbbab526b2f711bb5f0",
+        "bytes": 8271
+      },
+      "metadata.json": {
+        "path": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/metadata.json",
+        "sha256": "2c59dc3df033404a41d2781eef880d48a233bd9ae482266b7127dbe2f8ab6eba",
+        "bytes": 10544
+      },
+      "recording_config.json": {
+        "path": "outputs/shared_parallel_refactor_20261109/pap_recording_2env/recording_config.json",
+        "sha256": "74ef1db335207e7a342215e66e8897c443af804db5d2134aa4d90007587a46a7",
+        "bytes": 1520
+      }
+    }
+  },
+  "pap_physical_replay": {
+    "state": "completed",
+    "num_envs": 2,
+    "source_revision": "sha256:5cccad0c5b2bd413283a4eab51e9dad02a420229d7eabee82bc31368155fc6b2",
+    "expert_successes": 2,
+    "source_control_commands": 224,
+    "command_sha256": "4499f38e298ffb978c474991d88aafad1aa14a551dba71ec1b633b41eb3d30f4",
+    "already_smoothed": true,
+    "continuation": "hold final command until terminal/timeout",
+    "outcomes": {
+      "0": {
+        "physical_outcome": {
+          "inside_box": true,
+          "gripper_released": true,
+          "object_stable": true,
+          "resting_on_box_floor": true,
+          "finger_contact": false,
+          "lifted": true,
+          "max_lift_m": 0.12491146326065063,
+          "max_bottom_clearance_m": 0.12197345343739396,
+          "success": true,
+          "first_success_time_s": 7.45
+        },
+        "contact_counts": {
+          "link7": 360,
+          "link8": 376
+        },
+        "object_teleport_after_reset": false,
+        "success": true,
+        "termination_reason": "success",
+        "episode_physics_steps": 894,
+        "episode_seconds": 7.45
+      },
+      "1": {
+        "physical_outcome": {
+          "inside_box": true,
+          "gripper_released": true,
+          "object_stable": true,
+          "resting_on_box_floor": true,
+          "finger_contact": false,
+          "lifted": true,
+          "max_lift_m": 0.12490848302841186,
+          "max_bottom_clearance_m": 0.12197204505396442,
+          "success": true,
+          "first_success_time_s": 7.483333333333333
+        },
+        "contact_counts": {
+          "link7": 360,
+          "link8": 376
+        },
+        "object_teleport_after_reset": false,
+        "success": true,
+        "termination_reason": "success",
+        "episode_physics_steps": 898,
+        "episode_seconds": 7.483333333333333
+      }
+    },
+    "producer_pixel_audit": [
+      {
+        "env_id": 0,
+        "camera": "up",
+        "shape": [
+          192,
+          256,
+          3
+        ],
+        "max_pixel_difference": 0
+      },
+      {
+        "env_id": 0,
+        "camera": "wrist",
+        "shape": [
+          192,
+          256,
+          3
+        ],
+        "max_pixel_difference": 0
+      },
+      {
+        "env_id": 1,
+        "camera": "up",
+        "shape": [
+          192,
+          256,
+          3
+        ],
+        "max_pixel_difference": 0
+      },
+      {
+        "env_id": 1,
+        "camera": "wrist",
+        "shape": [
+          192,
+          256,
+          3
+        ],
+        "max_pixel_difference": 0
+      }
+    ],
+    "all_timeout_budget_zero_probe": {
+      "diagnostic_max_ticks_override": 1,
+      "restored_max_ticks": 2400,
+      "terminal_rows": 2,
+      "captures": 0,
+      "resets": 0
+    },
+    "artifact": {
+      "path": "outputs/shared_parallel_refactor_20261109/pap_fused_2env_fixed/report.json",
+      "sha256": "6660e47afe6e6811945eff30223084a22b9c89d2103d3bcd0cc62a7daa200bfd",
+      "bytes": 25865
+    }
+  },
+  "table_button_contact": {
+    "status": "passed",
+    "report_closed": false,
+    "physical_execution": true,
+    "learned_policy_evaluation": false,
+    "num_envs": 2,
+    "source_revision": "sha256:27147f993075d62de5f4e68bfd6540ab2f1045bf28527ea70b9c8a648e3b5907",
+    "reset_render_frames": 2,
+    "rounds": [
+      {
+        "round_id": 0,
+        "physics_samples": 920,
+        "maximum_fixture_errors": {
+          "fixture_drift_m": 0.0,
+          "anchor_drift_m": 0.0,
+          "anchor_rest_error_m": 1.447404498478022e-07,
+          "cap_lateral_error_m": 1.447404498478022e-07,
+          "fixture_lateral_error_m": 1.447404498478022e-07
+        },
+        "maximum_target_depth_m": {
+          "0": 0.0039998707771301545,
+          "1": 0.0039998707771301545
+        },
+        "maximum_target_force_n": {
+          "0": 11.720943671322726,
+          "1": 10.482676494889137
+        },
+        "episodes": [
+          {
+            "env_id": 0,
+            "task": "Press the red button.",
+            "success": true,
+            "episode_physics_steps": 460,
+            "episode_seconds": 3.8333333333333335,
+            "physical_outcome": {
+              "target_color": "red",
+              "success": true,
+              "wrong_button": null,
+              "terminated": true,
+              "reward": 1.0,
+              "press_events": [],
+              "pressed_colors": [
+                "red"
+              ],
+              "travel_m": {
+                "red": 0.0039998707771301545,
+                "yellow": -1.811981198418522e-08,
+                "blue": -1.811981198418522e-08
+              },
+              "finger_contact_force_n": {
+                "red": 11.720943671322726,
+                "yellow": 0.0,
+                "blue": 0.0
+              },
+              "first_success_time_s": 3.8249999999999997,
+              "failure_time_s": null
+            }
+          },
+          {
+            "env_id": 1,
+            "task": "Press the blue button.",
+            "success": true,
+            "episode_physics_steps": 460,
+            "episode_seconds": 3.8333333333333335,
+            "physical_outcome": {
+              "target_color": "blue",
+              "success": true,
+              "wrong_button": null,
+              "terminated": true,
+              "reward": 1.0,
+              "press_events": [],
+              "pressed_colors": [
+                "blue"
+              ],
+              "travel_m": {
+                "red": -1.811981198418522e-08,
+                "yellow": -1.811981198418522e-08,
+                "blue": 0.0039998707771301545
+              },
+              "finger_contact_force_n": {
+                "red": 0.0,
+                "yellow": 0.0,
+                "blue": 10.482676494889137
+              },
+              "first_success_time_s": 3.8249999999999997,
+              "failure_time_s": null
+            }
+          }
+        ]
+      },
+      {
+        "round_id": 1,
+        "physics_samples": 920,
+        "maximum_fixture_errors": {
+          "fixture_drift_m": 0.0,
+          "anchor_drift_m": 0.0,
+          "anchor_rest_error_m": 1.2964172757534698e-07,
+          "cap_lateral_error_m": 1.2964172757534698e-07,
+          "fixture_lateral_error_m": 1.2964172757534698e-07
+        },
+        "maximum_target_depth_m": {
+          "0": 0.0039998707771301545,
+          "1": 0.0039186892509460725
+        },
+        "maximum_target_force_n": {
+          "0": 10.377336802917169,
+          "1": 1.2038079277567408
+        },
+        "episodes": [
+          {
+            "env_id": 0,
+            "task": "Press the red button.",
+            "success": true,
+            "episode_physics_steps": 460,
+            "episode_seconds": 3.8333333333333335,
+            "physical_outcome": {
+              "target_color": "red",
+              "success": true,
+              "wrong_button": null,
+              "terminated": true,
+              "reward": 1.0,
+              "press_events": [],
+              "pressed_colors": [
+                "red"
+              ],
+              "travel_m": {
+                "red": 0.0039998707771301545,
+                "yellow": -1.811981198418522e-08,
+                "blue": -1.811981198418522e-08
+              },
+              "finger_contact_force_n": {
+                "red": 10.377336802917169,
+                "yellow": 0.0,
+                "blue": 0.0
+              },
+              "first_success_time_s": 3.808333333333333,
+              "failure_time_s": null
+            }
+          },
+          {
+            "env_id": 1,
+            "task": "Press the blue button.",
+            "success": true,
+            "episode_physics_steps": 460,
+            "episode_seconds": 3.8333333333333335,
+            "physical_outcome": {
+              "target_color": "blue",
+              "success": true,
+              "wrong_button": null,
+              "terminated": true,
+              "reward": 1.0,
+              "press_events": [],
+              "pressed_colors": [
+                "blue"
+              ],
+              "travel_m": {
+                "red": -1.811981198418522e-08,
+                "yellow": -1.811981198418522e-08,
+                "blue": 0.0039186892509460725
+              },
+              "finger_contact_force_n": {
+                "red": 0.0,
+                "yellow": 0.0,
+                "blue": 1.2038079277567408
+              },
+              "first_success_time_s": 3.8249999999999997,
+              "failure_time_s": null
+            }
+          }
+        ]
+      }
+    ],
+    "artifact": {
+      "path": "outputs/shared_parallel_refactor_20261109/table_contact_2env/report.json",
+      "sha256": "bc7f69313d5c195d3ce2f5891847ac014100f8cf1503e2a6dcbfa2678dd52754",
+      "bytes": 22691
+    }
+  },
+  "cpu_history": [
+    {
+      "passed": 3582,
+      "skipped": 27,
+      "usd_passed": 156,
+      "usd_new_unique_passes": 69,
+      "unique_passing_tests": 3651,
+      "counting": "Deduplicated main + USD test identities; targeted overlapping runs excluded.",
+      "artifact": {
+        "path": "outputs/parallel_core_regression_20261109/summary.json",
+        "sha256": "e46667c9ab328c08a2fb381f5e58269c247273a8b5f3dce61a56620e1a003730",
+        "bytes": 8892
+      }
+    }
+  ],
+  "state": "completed",
+  "completion_scope": "CPU source-frozen release validation plus the recorded Isaac smoke/replay/recording checks; no policy success-rate or 64-environment throughput evaluation."
+}

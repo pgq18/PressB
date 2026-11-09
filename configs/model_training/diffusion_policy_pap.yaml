@@ -1,0 +1,46 @@
+# Visual DPPO Diffusion Policy, LeRobot PAP joint7 contract. All public values use SI.
+seed: 42
+device: cuda:0
+precision: bfloat16
+cpu_threads: 8
+output_dir: outputs/diffusion_policy_pap/sft
+image_cache_dir: outputs/diffusion_policy_pap/rgb128
+batch_size: 128
+num_workers: 8
+max_steps: 30000
+learning_rate: 0.0001
+warmup_steps: 500
+weight_decay: 0.000001
+ema_decay: 0.999
+max_grad_norm: 1.0
+eval_every: 500
+validation_samples: 1024
+save_every: 2000
+milestone_every: 100000
+log_every: 25
+validation_fraction: 0.1
+# Omitted candidate definitions select the standard PressB SFT augmentation preset.
+image_transforms:
+  enable: true
+dataset:
+  root: /home/pengguanqi/Datasets/piper_pap_20260606_offset
+  cameras: [up, wrist]
+  resolution: 128
+  video_timestamp_mode: packed_validated
+  metadata_timestamp_offset_s: 0.03
+  # Dataset degrees and full gripper width centimetres -> radians/metres.
+  state_to_si_scale: [0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.01]
+  action_to_si_scale: [0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.01]
+model:
+  horizon: 16
+  diffusion_steps: 100
+  inference_steps: 10
+  unet_dim: 64
+  unet_dim_mults: [1, 2, 4]
+  time_embedding_dim: 64
+  keypoints: 32
+  task_embedding_dim: 32
+  state_names: [joint1, joint2, joint3, joint4, joint5, joint6, gripper_width]
+  state_units: [rad, rad, rad, rad, rad, rad, m]
+  action_names: [joint1, joint2, joint3, joint4, joint5, joint6, gripper_width]
+  action_units: [rad, rad, rad, rad, rad, rad, m]
