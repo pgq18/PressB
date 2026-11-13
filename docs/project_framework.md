@@ -14,7 +14,9 @@ Choose a task, a model and execution settings in an experiment JSON.
 Task physics and outcome rules remain explicit task code.
 Wall-OSS, VLA-JEPA and Diffusion Policy inference and supervised-training implementations are
 bundled in PressB; new experiments do not need their separate source clones.
-See [bundled models](bundled_models.md) for training profiles and CUDA builds.
+The π₀.₅ adapter uses a pinned LeRobot package with PressB's shared SFT data
+and augmentation pipeline. See [bundled models](bundled_models.md) for training
+profiles and CUDA builds, and [Ascend π₀.₅](ascend_pi05.md) for NPU training.
 
 ## Code ownership
 
@@ -40,6 +42,9 @@ src/pressb/
     scene.py, workbench.py # Shared USD primitives, room, table and tripod
     recording.py           # Original-time camera video utilities
     trajectory.py          # Validated chunk transition recorder
+    demonstrations.py      # Synchronized demonstration frames and bounded command noise
+    sharded_eval.py        # Evaluation workers sharing an inference service
+    trajectory_metrics.py  # Motion and stationary-interval diagnostics
   control/                 # Joint filters, finite-array validation and pose math
   sensors/                 # Camera calibration, RGB-D recording and tiled RGB
   robots/piper/            # PiPER FK/IK, pose control, batching and D435 hardware
@@ -61,12 +66,13 @@ src/pressb/
     vlajepa_backend.py     # Frozen pose-model loading and cached flow execution
     vlajepa_joint.py       # Native joint6 / joint7 VLA-JEPA adapters
     diffusion_policy.py    # Visual diffusion policy and joint action contract
+    pi05.py                # Pinned LeRobot policy, native processors, CUDA/NPU support
     flow_experts.py        # Trainable flow action heads, frozen observation encoders
   model_sources/           # Preserved upstream model/data/training source bundles
     walloss/               # Wall-X modules, native training and CUDA sources
     vlajepa/               # Model plus pose/joint and multi-task trainers
     diffusion_policy/      # DPPO upstream denoiser and diffusion implementation
-  training/                # Common supervised-training launcher and augmentation
+  training/                # Common SFT launcher, augmentation and model-specific data adapters
   experiments/             # Configuration inheritance, validation and commands
   compat/                  # Explicit historical application/protocol boundaries
     elevator_rl/           # Legacy elevator runners, inference bridge and logging
@@ -262,9 +268,11 @@ python scripts/run_experiment.py collect --config configs/experiments/pap_wallos
 ```
 
 For a learned policy, use its matching DSRL or action-residual experiment with
-`eval --resume /absolute/checkpoint.pt`. Evaluation automatically selects full
-terminal observations and disables the training-only fused reset optimization;
-it does not update weights. The source model/task/normalization/action contract
+`eval --resume /absolute/checkpoint.pt`. Evaluation defaults to full terminal
+observations; explicitly configured fast evaluation can use state-only terminal
+observations and fused resets when no bootstrapping is required. See
+[evaluation performance](evaluation_performance.md) for configuration and limits.
+Evaluation does not update weights. The source model/task/normalization/action contract
 must still match. Set `task.config.smoothing` to `{"mode":"joint_ema","alpha":0.8}`
 for PAP/table joint smoothing, or `{"mode":"none"}` to disable it. Elevator
 retains its task-specific pose/control smoothing configuration. There is no

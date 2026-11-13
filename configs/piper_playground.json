@@ -84,21 +84,21 @@
     "Mat": {
       "color": [
         0.001,
-        0.08,
-        0.12
+        0.13,
+        0.09
       ],
-      "roughness": 0.68,
+      "roughness": 0.82,
       "metallic": 0.0,
       "specular": 0.08
     }
   },
   "lighting": {
     "ambient": {
-      "intensity": 180,
+      "intensity": 260,
       "color": [
-        0.92,
-        0.96,
-        1.0
+        1,
+        1,
+        1
       ]
     },
     "area_lights": [
@@ -114,13 +114,13 @@
           0.02,
           -0.006
         ],
-        "width": 0.5,
-        "height": 0.35,
-        "intensity": 45000,
+        "width": 0.9,
+        "height": 0.7,
+        "intensity": 12500,
         "color": [
-          0.92,
-          0.97,
-          1.0
+          1,
+          1,
+          1
         ]
       },
       {
@@ -137,11 +137,11 @@
         ],
         "width": 1.0,
         "height": 0.8,
-        "intensity": 500,
+        "intensity": 900,
         "color": [
-          0.94,
-          0.98,
-          1.0
+          1,
+          1,
+          1
         ]
       },
       {
@@ -158,11 +158,11 @@
         ],
         "width": 0.7,
         "height": 0.6,
-        "intensity": 1500.0,
+        "intensity": 800,
         "color": [
-          0.88,
-          0.95,
-          1.0
+          1,
+          1,
+          1
         ]
       }
     ]
@@ -203,7 +203,7 @@
       "collision": true
     }
   ],
-  "gripper_max_width_m": 0.07,
+  "gripper_max_width_m": 0.1,
   "initial_state_joint_rad_m": [
     -0.18537141985431774,
     0.47251298839242484,
@@ -329,7 +329,7 @@
     "clean_workspace": "Blue and green cubes are registration references only; omitted by default. No PAP box, tape, or table buttons.",
     "scope": "Workspace twin; no task reward, success detector, policy evaluation or learned controller.",
     "wrist_extrinsics_sha256": "90bcaf07b790140a756e5a5473162b4fed2ee21d1f91b18b4c51ec2bce7c887f",
-    "appearance": "Image-guided matte tabletop PBR approximation; no fabricated camera background and no photometric calibration.",
+    "appearance": "Recorded-image appearance fit: matte green-blue tabletop, broad neutral area light, black polymer materials and fixed per-camera color responses. No texture/background photograph or automatic exposure simulation.",
     "multiview_revision": {
       "status": "Historical prior revision, superseded by video_registration_revision below",
       "report": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/report.json",
@@ -488,11 +488,78 @@
       "heldout_finger_coordinate_rmse_px": 3.6933813454671593,
       "prior_final_revision": "The 2026-11-08 final_revision below remains historical provenance. Current camera preset is global_refinement_revision.frozen_preset.",
       "limitations": [
-        "Official rounded flange endpoints have approximately 2–3 px annotation uncertainty.",
+        "Official rounded flange endpoints have approximately 2\u20133 px annotation uncertainty.",
         "Outer mounting plate is approximate visual geometry and was not used as a known-size target.",
         "Historical holdout frames were previously inspected; these are within-recording checks, not a blind external calibration test."
       ]
+    },
+    "appearance_revision": {
+      "id": "playground_20261113_appearance",
+      "previous_preset": "configs/calibration/playground_20261109_global_refined.json",
+      "previous_sha256": "72459732f9ad32b04287bb08ad6a25e398047a636f9d739af1ba10e5ba5581c3",
+      "frozen_preset": "configs/calibration/playground_20261113_appearance.json",
+      "report": "docs/results/playground_appearance_20261113.json",
+      "reference_recordings": [
+        "outputs/tabletop_cleanup_transfer_20261109/remote/cameras",
+        "outputs/cube_stack_transfer_20261109/remote/cameras"
+      ],
+      "scope": "Visual appearance only; exact existing optics, geometry, physics and home pose retained. Child task workspace-centered homes remain task-owned.",
+      "response_note": "Fixed empirical display-RGB approximation. Real cameras used automatic exposure/white balance, which varies with view; fitted gains are not measured hardware settings.",
+      "hardware_access": false
     }
   },
-  "robot_base_height_above_table_m": 0.006
+  "robot_base_height_above_table_m": 0.006,
+  "cleanup_materials": {
+    "cover": {
+      "color": [
+        0.035,
+        0.035,
+        0.045
+      ],
+      "roughness": 0.5,
+      "metallic": 0.02,
+      "specular": 0.3
+    },
+    "plastic": {
+      "color": [
+        0.015,
+        0.011,
+        0.015
+      ],
+      "roughness": 0.43,
+      "specular": 0.25
+    },
+    "bin": {
+      "color": [
+        0.012,
+        0.016,
+        0.02
+      ],
+      "roughness": 0.86
+    },
+    "housing": {
+      "specular": 0.3,
+      "roughness": 0.46
+    }
+  },
+  "camera_color_response": {
+    "up": {
+      "exposure_ev": 0.0,
+      "linear_rgb_gain": [
+        0.85,
+        0.96,
+        2.3
+      ],
+      "saturation": 1.0
+    },
+    "wrist": {
+      "exposure_ev": 0.0,
+      "linear_rgb_gain": [
+        1.6,
+        1.05,
+        1.2
+      ],
+      "saturation": 0.82
+    }
+  }
 }

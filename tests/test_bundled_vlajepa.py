@@ -37,7 +37,7 @@ def test_bundled_vlajepa_source_inventory():
     manifest = json.loads((SOURCE / "source_manifest.json").read_text())
     assert manifest["commit"] == "9c9dc71c8e199c7428b25d103ab666395832c001"
     assert set(manifest["profiles"]) == {
-        "pose9", "joint6", "joint7", "joint6_multitask", "joint7_multitask"}
+        "pose9", "joint6", "joint7", "joint6_multitask", "joint7_multitask", "joint7_generic"}
     changed_sources = set()
     for relative, item in manifest["files"].items():
         path = SOURCE / relative

@@ -10,6 +10,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial.transform import Rotation
 
 from pressb.runtime.contract import finite_array, fingerprint
+from pressb.robots.piper.workspace_pose import apply_workspace_home
 from pressb.tasks.playground.backend import ROOT, SOURCE_FILES as WORKSPACE_SOURCES, load_config as workspace_config
 from .geometry import KINDS, asset_spec
 from .task import INSTRUCTION, number, outcome_config
@@ -25,7 +26,7 @@ DEFAULT_RANDOMIZATION = dict(enabled=True, pool=list(KINDS), fixed_subset=None,
     x_range_m=[.24, .48], y_range_m=[-.25, .19], yaw_range_deg=[-180., 180.], clearance_m=.01, max_attempts=2048)
 SOURCE_FILES = (*WORKSPACE_SOURCES, "tasks/tabletop_cleanup/__init__.py", "tasks/tabletop_cleanup/configuration.py",
     "tasks/tabletop_cleanup/task.py", "tasks/tabletop_cleanup/parallel.py", "tasks/tabletop_cleanup/scene.py",
-    "tasks/tabletop_cleanup/assets.py", "tasks/tabletop_cleanup/geometry.py")
+    "tasks/tabletop_cleanup/assets.py", "tasks/tabletop_cleanup/geometry.py", "robots/piper/workspace_pose.py")
 
 
 def finite_yaw(value):
@@ -100,6 +101,7 @@ def load_config(config):
     if not isinstance(config, dict):
         raise ValueError("Cleanup config must be a mapping")
     raw = deepcopy(config)
+    initial_pose = raw.pop("initial_pose", None)
     options = raw.pop("objects", {})
     if not isinstance(options, dict) or set(options)-set(KINDS):
         raise ValueError("objects must map gamepad/speaker/lidar to asset settings")
@@ -162,7 +164,7 @@ def load_config(config):
     terminate = raw.pop("terminate_on_success", True)
     if type(terminate) is not bool:
         raise ValueError("terminate_on_success must be boolean")
-    raw.setdefault("scene_config", "configs/calibration/playground_20261109_global_refined.json")
+    raw.setdefault("scene_config", "configs/calibration/playground_20261113_appearance.json")
     overrides = deepcopy(raw.get("scene_overrides", {}))
     if not isinstance(overrides, dict) or "objects" in overrides:
         raise ValueError("Configure cleanup objects through top-level objects")
@@ -171,6 +173,9 @@ def load_config(config):
     raw.setdefault("log_dir", str(ROOT/"outputs/tabletop_cleanup_parallel"))
     raw.setdefault("max_episode_seconds", 120.)
     result = workspace_config(raw)
+    result["initial_pose"] = apply_workspace_home(result["scene"], random, initial_pose,
+        explicit_joint_override=any(key in overrides for key in
+            ("initial_state_joint_rad_m", "initial_joint_positions_rad", "initial_gripper_width_m")))
     result.update(objects=objects, asset_specs=assets, bin=box, randomization=random,
                   outcome=outcome, reward=reward, terminate_on_success=terminate)
     result["scene"].update(cleanup_objects=deepcopy(objects), cleanup_bin=deepcopy(box))

@@ -123,12 +123,16 @@ def test_execution_metadata_records_owned_effective_pool_settings():
     runtime.config.update(render_resolution=[640, 480], renderer_profile="calibrated",
                           observation_render_frames=1, reset_render_frames=1, render_subframes=1)
     runtime.camera_names = ["up", "wrist"]
+    from pressb.sensors.color_response import ColorResponse
+    runtime.camera_color_responses = [ColorResponse(), ColorResponse()]
     runtime.image_preprocessing = None
     runtime.renderer_settings = {}
     runtime.directory = "/tmp/unused-settings-test"
     runtime.blas_threadpools = [dict(user_api="blas", num_threads=1)]
     metadata = runtime.execution_metadata()
     assert metadata["blas_thread_limit"] == 1
+    assert metadata["camera_color_response"] == {}
+    assert metadata["color_response_workers"] == 0
     assert metadata["blas_threadpools"] == runtime.blas_threadpools
     metadata["blas_threadpools"][0]["num_threads"] = 32
     assert runtime.blas_threadpools[0]["num_threads"] == 1

@@ -1,16 +1,21 @@
 # Cube stacking on the PiPER workbench
 
 `cube_stack` adds a red cube and a blue cube to the pinned
-[Playground workspace](../configs/calibration/playground_20261109_global_refined.json).
+[Playground workspace](../configs/calibration/playground_20261113_appearance.json).
 The instruction is **“Pick up the red cube and place it on top of the blue cube.”**
 The red cube is the manipulated object; the blue cube is its support.
 
 The task is separate from the empty Playground. It retains the pinned table,
-PiPER, initial joint pose, base-height convention, materials, lights and camera
+PiPER, base-height convention, materials, lights and camera
 calibration. The original Playground configuration is not rewritten. Cube
 geometry, initial layout and randomization belong to this task; they are
 adjustable task parameters rather than measurements inferred from a successful
 simulation.
+
+The current task start is above the centre of its configured X/Y sampling
+region, 16 cm above the table, with 15-degree outward tool tilt and full gripper
+opening. It is resolved with bounded IK; camera intrinsics and mounting
+extrinsics are unchanged. See the [centred-start settings](manipulation_collection.md#centred-start-poses).
 
 [![Full physical stacking trajectory](media/cube-stack-demo.jpg)](media/cube-stack-demo.mp4)
 
@@ -19,8 +24,10 @@ The fixed-layout simulation completed the entire grasp/stack/release/return
 trajectory in two environments. This is a physics validation, not learned-policy
 performance. See the [validation record](results/cube_stack_20261109/README.md).
 That recording uses the preserved 2026-11-08 camera preset. Current task defaults
-use the 2026-11-09 global-camera refinement; wrist, object layout and physical
-parameters remain the same. The older result is not relabelled as a new-camera
+use the 2026-11-13 appearance preset with the 2026-11-09 camera registration;
+optics and physical parameters remain the same. See the
+[recorded-image appearance comparison](playground.md#appearance-calibration-2026-11-13).
+The older result is not relabelled as a new-camera
 validation.
 The [global-camera refinement](results/playground_global_refinement_20261109.json)
 records the later camera-specific checks.
@@ -146,7 +153,6 @@ The default outcome requires all of the following:
 |---|---|
 | Grasp/lift history | Both fingers simultaneously exert at least 0.02 N on the red cube while its bottom is at least 12 mm above the tabletop |
 | Upright cubes | Both local Z axes within 10° of world up |
-| Horizontal support | At least 75% of the red cube's projected footprint overlaps the blue cube |
 | Stack height | Red bottom within 3 mm of blue top, with red centre above blue centre |
 | Physical support | Red-on-blue and blue-on-table support forces each at least 0.02 N; near-vertical, near-surface contact filtering |
 | Blue base | Blue bottom within 3 mm of the tabletop |
@@ -154,6 +160,8 @@ The default outcome requires all of the following:
 | Low motion | Both cubes at most 0.025 m/s linear speed and 0.25 rad/s angular speed |
 | Stability | All current conditions remain valid continuously for 0.5 s |
 
+The projected footprint overlap is logged for diagnostics. A stable off-center
+placement counts when the blue cube physically supports the released red cube.
 Two unrelated historical finger touches cannot satisfy the simultaneous grasp
 condition. Support contact filtering uses a maximum normal tilt of 20° and a
 3 mm contact-separation tolerance. The default success reward is sparse and

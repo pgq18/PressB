@@ -27,7 +27,7 @@ ASSEMBLY_SOURCE = f"https://raw.githubusercontent.com/agilexrobotics/piper_isaac
 ASSEMBLY_SHA256 = "7561a29c320017aab66ca8a067af48722e6644e47598a2315bde8eb8e9738ec4"
 
 
-def _material(stage, name, color, metallic=0.0, roughness=0.4):
+def _material(stage, name, color, metallic=0.0, roughness=0.4, *, specular=None):
     """Author both MDL and PreviewSurface so RTX and plain USD agree."""
     mat = UsdShade.Material.Define(stage, "/World/Looks/" + name)
     mdl = UsdShade.Shader.Define(stage, str(mat.GetPath()) + "/Mdl")
@@ -37,6 +37,8 @@ def _material(stage, name, color, metallic=0.0, roughness=0.4):
     mdl.CreateInput("diffuse_color_constant", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(*color))
     mdl.CreateInput("metallic_constant", Sdf.ValueTypeNames.Float).Set(metallic)
     mdl.CreateInput("reflection_roughness_constant", Sdf.ValueTypeNames.Float).Set(roughness)
+    if specular is not None:
+        mdl.CreateInput("specular_level", Sdf.ValueTypeNames.Float).Set(float(specular))
     mdl.CreateOutput("out", Sdf.ValueTypeNames.Token)
     mat.CreateSurfaceOutput("mdl").ConnectToSource(mdl.ConnectableAPI(), "out")
     preview = UsdShade.Shader.Define(stage, str(mat.GetPath()) + "/Preview")
@@ -44,6 +46,9 @@ def _material(stage, name, color, metallic=0.0, roughness=0.4):
     preview.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(*color))
     preview.CreateInput("metallic", Sdf.ValueTypeNames.Float).Set(metallic)
     preview.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(roughness)
+    if specular is not None:
+        sqrt_f0 = math.sqrt(.08 * float(specular))
+        preview.CreateInput("ior", Sdf.ValueTypeNames.Float).Set((1 + sqrt_f0) / (1 - sqrt_f0))
     mat.CreateSurfaceOutput().ConnectToSource(preview.ConnectableAPI(), "surface")
     return mat
 
@@ -58,14 +63,20 @@ def _bind(prim, material, color=None):
         mesh.GetDisplayColorPrimvar().SetInterpolation("constant")
 
 
-def apply_black_materials(stage, robot_path="/World/Piper"):
+def apply_black_materials(stage, robot_path="/World/Piper", *, material_overrides=None):
     """De-instance visual meshes only and apply a verified dark MDL finish.
 
     Collision meshes, masses and joint properties are untouched. Explicit
     per-mesh bindings avoid RTX retaining the stock white prototype material.
+    Optional appearance properties affect only this scene's visual material;
+    omitting them preserves the original finish and authored shader inputs.
     """
-    black = (0.018, 0.022, 0.028)
-    matte = _material(stage, "PiperGraphiteBlack", black, 0.22, 0.37)
+    from pressb.runtime.scene import _material_settings
+    settings = _material_settings(dict(color=(0.018, 0.022, 0.028), metallic=.22, roughness=.37),
+        {} if material_overrides is None else material_overrides, "robot_material")
+    black = settings["color"]
+    matte = _material(stage, "PiperGraphiteBlack", black, settings["metallic"], settings["roughness"],
+        specular=settings["specular"] if settings["specular_authored"] else None)
     deinstanced, meshes = [], []
     robot = stage.GetPrimAtPath(robot_path)
     if not robot:

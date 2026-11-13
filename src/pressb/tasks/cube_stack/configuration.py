@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from pressb.runtime.contract import finite_array, fingerprint
+from pressb.robots.piper.workspace_pose import apply_workspace_home
 from pressb.tasks.playground.backend import ROOT, SOURCE_FILES as WORKSPACE_SOURCES, load_config as workspace_config
 from .task import COLORS, INSTRUCTION, _number, footprint, intersection_area, outcome_config
 
@@ -19,7 +20,7 @@ DEFAULT_CUBES = {
 DEFAULT_RANDOMIZATION = dict(enabled=True, x_range_m=[.25, .45], y_range_m=[-.16, .16],
     yaw_range_deg=[0., 0.], min_center_distance_m=.08, max_attempts=1024)
 SOURCE_FILES = (*WORKSPACE_SOURCES, "tasks/cube_stack/__init__.py", "tasks/cube_stack/configuration.py",
-                "tasks/cube_stack/task.py", "tasks/cube_stack/parallel.py")
+                "tasks/cube_stack/task.py", "tasks/cube_stack/parallel.py", "robots/piper/workspace_pose.py")
 
 
 def _range(value, name, *, equal=False):
@@ -64,6 +65,7 @@ def load_config(config):
     if not isinstance(config, dict):
         raise ValueError("cube_stack configuration must be a mapping")
     raw = deepcopy(config)
+    initial_pose = raw.pop("initial_pose", None)
     cube_options = raw.pop("cubes", {})
     if not isinstance(cube_options, dict) or set(cube_options)-set(COLORS):
         raise ValueError("cubes supports red and blue only")
@@ -110,7 +112,7 @@ def load_config(config):
     terminate = raw.pop("terminate_on_success", True)
     if type(terminate) is not bool:
         raise ValueError("terminate_on_success must be boolean")
-    raw.setdefault("scene_config", "configs/calibration/playground_20261109_global_refined.json")
+    raw.setdefault("scene_config", "configs/calibration/playground_20261113_appearance.json")
     scene_overrides = deepcopy(raw.get("scene_overrides", {}))
     if not isinstance(scene_overrides, dict):
         raise ValueError("scene_overrides must be a mapping")
@@ -123,6 +125,9 @@ def load_config(config):
     raw["scene_overrides"] = scene_overrides
     raw.setdefault("log_dir", str(ROOT/"outputs/cube_stack_parallel"))
     result = workspace_config(raw)
+    result["initial_pose"] = apply_workspace_home(result["scene"], random, initial_pose,
+        explicit_joint_override=any(key in scene_overrides for key in
+            ("initial_state_joint_rad_m", "initial_joint_positions_rad", "initial_gripper_width_m")))
     result.update(cubes=cubes, randomization=random, outcome=outcome, reward=reward, terminate_on_success=terminate)
     if cubes["red"]["edge_m"]+outcome["gripper_release_margin_m"] > result["scene"]["gripper_max_width_m"]:
         raise ValueError("Red cube is too wide for the configured gripper release margin")

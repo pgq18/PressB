@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "benchmarks": [
+    {
+      "task": "cube_stack",
+      "baseline": {
+        "case": "cube_stack_legacy_1x8_v2",
+        "transitions": 512,
+        "seconds": 60.84050139109604,
+        "transitions_per_second": 8.41544675492978,
+        "peak_gpu0_mib": 16772.0,
+        "cache_entries_after": 0,
+        "weights": "44c81ff1e2e33628fb0a26b5e0b828c3a763e777122814eea5e132d0ead03f39",
+        "model_config": "f4bc89fa8411f15ec5246945886681107699eb8150267e463a4d85b56cacf3f6",
+        "task_config": "60b3e5490f4be335960b7cf54d866b8c36aff7f8d4ca1644cf39398caa9f88f0",
+        "release_seconds_worker_sum": 0.05481130164116621
+      },
+      "fast": {
+        "case": "cube_stack_fast_2x8_v3",
+        "transitions": 512,
+        "seconds": 36.782782438909635,
+        "transitions_per_second": 13.91955600015716,
+        "peak_gpu0_mib": 21869.0,
+        "cache_entries_after": 0,
+        "weights": "44c81ff1e2e33628fb0a26b5e0b828c3a763e777122814eea5e132d0ead03f39",
+        "model_config": "f4bc89fa8411f15ec5246945886681107699eb8150267e463a4d85b56cacf3f6",
+        "task_config": "60b3e5490f4be335960b7cf54d866b8c36aff7f8d4ca1644cf39398caa9f88f0",
+        "release_seconds_worker_sum": 0.12379827885888517
+      },
+      "speedup": 1.6540483714667986,
+      "time_reduction_percent": 39.54227595452925
+    },
+    {
+      "task": "tabletop_cleanup",
+      "baseline": {
+        "case": "tabletop_cleanup_legacy_1x8_v2",
+        "transitions": 512,
+        "seconds": 180.510500845965,
+        "transitions_per_second": 2.8364000853163933,
+        "peak_gpu0_mib": 16658.0,
+        "cache_entries_after": 0,
+        "weights": "1bfdc407e7eb5d37f556af842a5bb34a2574f05098eb61b79fe56e284382068b",
+        "model_config": "beb45b5a82b8846397a3eaacf44ccf2079905ca40fa126a30c7cae71f27bc095",
+        "task_config": "c3cbbcce6d062c062dbe6eefb326bf349a8f6cd03a2bc9e81fb182f92aa6b651",
+        "release_seconds_worker_sum": 0.0560893714427948
+      },
+      "fast": {
+        "case": "tabletop_cleanup_fast_2x8_v2",
+        "transitions": 512,
+        "seconds": 90.05585211794823,
+        "transitions_per_second": 5.6853606729457375,
+        "peak_gpu0_mib": 22332.0,
+        "cache_entries_after": 0,
+        "weights": "1bfdc407e7eb5d37f556af842a5bb34a2574f05098eb61b79fe56e284382068b",
+        "model_config": "beb45b5a82b8846397a3eaacf44ccf2079905ca40fa126a30c7cae71f27bc095",
+        "task_config": "c3cbbcce6d062c062dbe6eefb326bf349a8f6cd03a2bc9e81fb182f92aa6b651",
+        "release_seconds_worker_sum": 0.002469215076416731
+      },
+      "speedup": 2.0044283253191164,
+      "time_reduction_percent": 50.11046354871311
+    }
+  ],
+  "formal_success_rate_evaluation": false,
+  "conditions": "512 executed chunk transitions per case, 7 actions/chunk, 30Hz, pi05 bf16 10 inference steps. Model and simulator colocated on physical GPU0; separate collection on GPU1. Excludes model/simulator startup, includes initial reset and trainer lifecycle. Different worker and fused RNG streams; unpaired throughput probes, not success-rate estimates.",
+  "tests": {
+    "primary_passed": 349,
+    "adapters_passed": 121,
+    "skipped_websockets": 2
+  }
+}

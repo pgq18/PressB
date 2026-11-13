@@ -44,7 +44,7 @@ def test_tabletop_cleanup_node_and_experiment_compile_to_matching_contracts():
     assert trainer["rollout"]["eval_episodes"] == 16
     assert trainer["rollout"]["max_transitions"] == 4096  # Allows all 16 to reach the 120 s limit.
     assert Path(experiment["scene_config"]) == PROJECT_ROOT / local["scene_config"]
-    assert Path(experiment["scene_config"]).name == "playground_20261109_global_refined.json"
+    assert Path(experiment["scene_config"]).name == "playground_20261113_appearance.json"
     for key in ("objects", "bin", "smoothing", "render_resolution", "randomization", "reward", "terminate_on_success"):
         assert local[key] == experiment[key]
     assert "scene_overrides" not in experiment
@@ -96,18 +96,15 @@ def test_example_samplers_keep_exactly_two_distinct_objects_and_fixed_bin(entryp
 
 def test_fixed_layout_keeps_two_objects_and_calibration_without_mutating_template():
     from pressb.tasks.tabletop_cleanup.configuration import load_config, sample_objects
-    path = PROJECT_ROOT / "configs/calibration/playground_20261109_global_refined.json"
+    path = PROJECT_ROOT / "configs/calibration/playground_20261113_appearance.json"
     original = path.read_bytes()
     scene = json.loads(original)
-    expected_initial = (scene["initial_state_joint_rad_m"] if "initial_state_joint_rad_m" in scene else
-                        [*scene["initial_joint_positions_rad"], scene["initial_gripper_width_m"]])
     for name in ("simulation", "real_layout"):
         raw = _node_config(name)
         config = load_config(raw)
-        # A fixed capture may pin measured home feedback without modifying
-        # the shared calibration's cameras or its template initial state.
-        selected_initial = raw.get("scene_overrides", {}).get("initial_state_joint_rad_m", expected_initial)
-        assert config["scene"]["initial_state_joint_rad_m"] == selected_initial
+        assert raw["initial_pose"] == {"mode": "workspace_center"}
+        assert config["initial_pose"]["mode"] == "workspace_center"
+        assert config["scene"]["initial_state_joint_rad_m"] == config["initial_pose"]["state_joint_rad_m"]
         for camera in ("up_camera", "wrist_camera"):
             assert config["scene"][camera] == scene[camera]
         assert config["reset_render_frames"] == scene["rendering"]["warmup_frames"]

@@ -2,6 +2,11 @@
 
 这些文件汇总已完成的本地评估和功能验收记录，不需要下载模型或运行 Isaac 即可查看。
 
+- [Ascend 910C π₀.₅ 接入验证（2026-11-13）](pi05_ascend_20261113.json)：真实基础权重的单卡训练／推理，以及六卡训练、验证、检查点导出通过；包含输入版本与校验摘要，不代表完整训练已完成或仿真成功率。
+- [Stack／Cleanup 评估提速（2026-11-13）](evaluation_performance_20261113.json)：同一模型／任务配置下的 512-transition 性能探针，两个任务吞吐约提升 1.65／2.00 倍；不同 worker 随机流，不作为配对成功率结果。
+- [紧凑轨迹](compact_manipulation_20261112.json)与[工作区居中初始位姿](centered_manipulation_20261112.json)：规划与物理验证摘要；末尾撤离代替回初始位姿，稳定性检查帧不进入监督数据。
+- [Playground 外观匹配（2026-11-13）](playground_appearance_20261113.json)：颜色、材质和光照调整，含选用配置与验证范围。
+
 - [DPPO reset 优化后与 DSRL 的速度／资源对照（2026-11-09）](dppo_batched_reset_vs_dsrl_20261109/README.md)：三组 64 环境 DPPO 重新实测，与历史同配置 DSRL 比较；DP／VLA-JEPA／Wall-OSS 吞吐为 21.73／6.18／1.93 transitions/s，较旧 DPPO 提高 26.6%／4.9%／11.9%。包含完整训练耗时、分项耗时、显存、利用率、功率与 CPU／内存记录；DSRL 本次未重跑，不作为收敛速度比较。
 
 - [DPPO 批量 reset 优化（2026-11-09）](dppo_reset_optimization_20261109/README.md)：64 环境真实 Isaac 对照，一次重置 8／32／64 个环境的服务耗时分别减少至原来的约 1/7.70、1/28.08、1/49.94；逐环境 seed 与物理状态保持，598 项回归通过。该结果仅测 reset 环节，不代表整场训练提速。

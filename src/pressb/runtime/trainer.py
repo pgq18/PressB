@@ -200,8 +200,8 @@ class TrainerConfig:
         mode = self.rollout.terminal_observation_mode
         if mode not in ("full", "state_only_if_no_bootstrap"):
             raise ValueError("Unknown rollout.terminal_observation_mode")
-        if mode != "full" and (self.mode != "train" or self.learner.get("bootstrap_truncated", False) is not False):
-            raise ValueError("State-only terminal observations require training with bootstrap_truncated=false")
+        if mode != "full" and self.learner.get("bootstrap_truncated", False) is not False:
+            raise ValueError("State-only terminal observations require bootstrap_truncated=false")
         if type(self.rollout.fused_step_reset) is not bool:
             raise ValueError("rollout.fused_step_reset must be boolean")
         if self.rollout.fused_step_reset and mode != "state_only_if_no_bootstrap":
@@ -778,6 +778,10 @@ class GenericTrainer:
         self.initial_reset_all = self.simulation_metadata.get("initial_reset") == "all_envs"
         if self.initial_reset_all and self.num_envs != available:
             raise ValueError("This simulation requires all environments in its initial reset")
+        if (self.config.mode == "eval" and self.config.rollout.terminal_observation_mode != "full"
+                and self.initial_reset_all and self.config.rollout.eval_episodes < self.num_envs):
+            raise ValueError("State-only evaluation requires eval_episodes >= num_envs when the simulation "
+                             "requires all environments in its initial reset")
         if self.config.method == "base":
             return
         values = copy.deepcopy(self.config.learner)
@@ -860,21 +864,27 @@ class GenericTrainer:
         vector = np.concatenate(parts)
         return _finite(vector, (self.contract["obs_dim"],), "learner observation")
 
-    def _encode(self, rows, *, seeds=None):
+    def _encode(self, rows, *, seeds=None, release_context_ids=None):
         if not rows:
             return []
         if seeds is None:
             seeds = self.rng.integers(0, 2**31 - 1, size=len(rows)).tolist()
-        result = self._call(self.inference, "/encode", {
+        payload = {
             "observations": [row["observation"] for row in rows], "seeds": seeds,
             "include_base_actions": self.config.method in ("base", "action_residual")
-                                    and self.frozen_dsrl is None})
+                                    and self.frozen_dsrl is None}
+        release_ids = sorted(set(release_context_ids or ()) & self.live_contexts)
+        if release_ids:
+            payload["release_context_ids"] = release_ids
+        result = self._call(self.inference, "/encode", payload)
         items = result.get("items", [])
         previous_contexts = self.live_contexts.copy()
         # Track all server-created contexts before validating any item, so an
         # invalid response still gets best-effort cache cleanup.
         self.live_contexts.update(item["context_id"] for item in items
                                   if isinstance(item, dict) and isinstance(item.get("context_id"), str))
+        if release_ids and result.get("released_context_ids") != release_ids:
+            raise ValueError("Inference encode released_context_ids acknowledgement differs from request")
         if len(items) != len(rows):
             raise ValueError("Inference encode returned the wrong number of items")
         contexts = [item.get("context_id") for item in items]
@@ -893,6 +903,7 @@ class GenericTrainer:
             bases = self._decode_noise(slots, normalized, self.frozen_dsrl.config)
             for slot, base in zip(slots, bases, strict=True):
                 slot["base"] = base
+        self.live_contexts.difference_update(release_ids)
         return slots
 
     def _next_slots(self, rows, *, reset_rows=None):
@@ -901,6 +912,15 @@ class GenericTrainer:
         # Consume the same seed stream as the full path. No terminal image or
         # cache entry is needed when the Bellman continuation mask is exactly 0.
         seeds = self.rng.integers(0, 2**31 - 1, size=len(rows)).tolist()
+        remaining = self.config.rollout.max_transitions - self.transitions - len(rows)
+        if self.config.mode == "eval":
+            completed = sum(row["terminated"] or row["truncated"] for row in rows)
+            remaining = min(remaining, self.config.rollout.eval_episodes - self.episodes - completed)
+            if remaining <= 0 or self.stop_event.is_set():
+                # Evaluation has no replay/next-action consumer after this
+                # boundary. Keep the actual final state and outcome, including
+                # unfinished rows at the transition limit, without encoding it.
+                return rows, {}
         terminal_slots = {}
         to_encode = {}
         for row, seed in zip(rows, seeds, strict=True):
@@ -917,7 +937,6 @@ class GenericTrainer:
         # Reset only ended environments, then encode their new initial images
         # together with continuing observations. This usually keeps one full
         # batch per rollout and avoids a second, small vision-model invocation.
-        remaining = self.config.rollout.max_transitions - self.transitions - len(rows)
         continuing = len(self.slots) - len(terminal_slots)
         if reset_rows is None:
             reset_ids = list(terminal_slots)[:max(0, remaining - continuing)]
@@ -931,7 +950,14 @@ class GenericTrainer:
             to_encode.update({row["env_id"]: (row, seed)
                               for row, seed in zip(reset_rows, reset_seeds, strict=True)})
         ordered = [to_encode[eid] for eid in sorted(to_encode)]
-        encoded = self._encode([item[0] for item in ordered], seeds=[item[1] for item in ordered])
+        release_ids = None
+        if (self.config.mode == "eval"
+                and "encode_release_contexts" in self.inference_metadata.get("capabilities", [])):
+            # Only the observations used by this completed physics batch are
+            # retired. Unselected slots and other workers keep their contexts.
+            release_ids = [self.slots[row["env_id"]]["encoded"]["context_id"] for row in rows]
+        encoded = self._encode([item[0] for item in ordered], seeds=[item[1] for item in ordered],
+                               release_context_ids=release_ids)
         encoded_by_id = {slot["env_id"]: slot for slot in encoded}
         next_slots = [terminal_slots[row["env_id"]] if row["env_id"] in terminal_slots
                       else encoded_by_id[row["env_id"]] for row in rows]
@@ -940,8 +966,14 @@ class GenericTrainer:
     def _release(self, contexts):
         contexts = sorted(set(contexts) & self.live_contexts)
         if contexts:
-            self._call(self.inference, "/release", {"context_ids": contexts})
-            self.live_contexts.difference_update(contexts)
+            # An invalid replacement response retains both generations for
+            # cleanup, which can exceed the server's bounded release request.
+            capacity = self.inference_metadata.get("cache", {}).get("capacity")
+            batch_size = capacity if type(capacity) is int and capacity > 0 else len(contexts)
+            for offset in range(0, len(contexts), batch_size):
+                batch = contexts[offset:offset + batch_size]
+                self._call(self.inference, "/release", {"context_ids": batch})
+                self.live_contexts.difference_update(batch)
 
     def _reset_rows(self, env_ids):
         self._simulation_claim_attempted = True
@@ -1176,6 +1208,10 @@ class GenericTrainer:
                 step_path = "/step"
                 if self.config.rollout.fused_step_reset:
                     step_path = "/step_and_reset"
+                    # The server decides resets before returning outcomes. In
+                    # eval, reserve room for every submitted slot to end; using
+                    # the transition allowance alone can start excess episodes.
+                    # This conservative cap can underfill the final eval cohort.
                     maximum = min(self.num_envs, max(0, self._budget_remaining() - len(slots)))
                     payload.update(reset_seed=int(self.rng.integers(0, 2**31 - 1)),
                                    reset_options=self.config.rollout.reset_options,

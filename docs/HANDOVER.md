@@ -1,5 +1,15 @@
 # PressB / VLA-JEPA 工作交接
 
+## 2026-11-13 采集、评估与 π₀.₅／Ascend 训练整理
+
+- π₀.₅ 推理与 LeRobot SFT 接入通用模型／训练入口，使用固定 LeRobot 提交、训练集专属归一化与公共随机图像增强；验证集不增强。增加 Ascend 原生 NPU、HCCL 多卡、BF16、实例级 FP32 时间嵌入及 ARM CPU 锐度增强兼容处理。见 [π₀.₅](pi05.md) 和 [Ascend 部署](ascend_pi05.md)。
+- Stack／Cleanup 改用工作区中间上方初始位姿、100 mm 最大夹爪开度与 `compact` 规划，取消最终回初始位姿及固定路点等待；保留松爪和向上撤离。Cleanup 根据物体落稳姿态规划手柄夹取，两个物体间直接转移。末尾 0.6 秒稳定性检查不写入训练数据。历史 500 条数据保持原始动作，不能用新配置解释旧数据。
+- 最新两份数据各 100 条成功示范、30 Hz、双相机；Stack 43,798 帧、Cleanup 132,793 帧。通过两卡、每卡两个进程、每进程八环境采集和官方 LeRobot v3 导出；每条 provenance、帧数与动作时序均保留在本地原始采集包。见 [采集说明](manipulation_collection.md)。
+- 共享评估支持多仿真进程共用推理服务、状态终帧与合并 reset、观测缓存替换时同步释放。π₀.₅ 的两任务 512-transition 吞吐探针分别约提速 1.65／2.00 倍；属于性能探针，不是新成功率。见 [评估性能](evaluation_performance.md)。
+- Playground 新增基于已有真机录像的颜色、材质及光照配置，版本化场景为 `playground_20261113_appearance.json`；不改相机几何来拟合颜色。见 [外观记录](results/playground_appearance_20261113.json)。
+- 910C 两份私有数据集及 π₀.₅ base 均在服务器直接下载并校验，使用隔离 Conda 环境；六卡按 Stack→Cleanup 顺序各训练 40,000 步、chunk 16、总 batch 144，只微调动作专家。真实单卡训练／推理、六卡训练／验证／检查点导出已通过；本轮整理时 Stack 已进入正式更新，不能把启动测试当作收敛或任务成功率结果。运行状态位于远端 `/root/workspace/PressB-910c/logs/queue_status.json`；运行产物不提交 Git。
+- 本轮提交前全量回归 **4,606 passed / 34 skipped**；跳过项需要 USD、指定 LeRobot 版本等可选运行依赖。116 个变更 Python 文件语法检查、模型注册／训练 dry-run、Ascend shell 语法检查通过；没有在整理过程中重启远端训练或操作真机。
+
 ## 2026-11-10 新任务与固定盒位整理
 
 - 新增 `cube_stack`（红块叠蓝块）和 `tabletop_cleanup`（手柄、扬声器、雷达中每次两个不同物体入盒），均复用 `SharedWorldBackend`。入口、配置和验证范围分别见 [堆叠任务](cube_stack.md) 与 [收纳任务](tabletop_cleanup.md)。

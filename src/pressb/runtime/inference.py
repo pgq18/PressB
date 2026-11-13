@@ -45,6 +45,8 @@ class InferenceService:
             raise ValueError("collect_timing must be a boolean")
         self.backend = backend
         self.metadata = deepcopy(validate_metadata(backend.describe(), node_type="inference"))
+        self.metadata["capabilities"] = list(dict.fromkeys([
+            *self.metadata.get("capabilities", []), "encode_release_contexts"]))
         self.cache_size = cache_size
         self.cache_ttl = float(cache_ttl)
         self.batch_size = batch_size
@@ -99,7 +101,7 @@ class InferenceService:
     def _requests(self, payload, *, infer=False):
         started = time.perf_counter()
         allowed = {"observations", "seeds", "initial_noises"} if infer else {
-            "observations", "seeds", "include_base_actions"}
+            "observations", "seeds", "include_base_actions", "release_context_ids"}
         self._fields(payload, allowed, {"observations", "seeds"})
         observations, seeds = payload["observations"], payload["seeds"]
         if not isinstance(observations, list) or not 1 <= len(observations) <= self.cache_size:
@@ -107,6 +109,11 @@ class InferenceService:
         if not isinstance(seeds, list) or len(seeds) != len(observations) or any(
                 type(seed) is not int or not 0 <= seed < 2**63 for seed in seeds):
             raise ValueError("seeds must contain one integer in [0, 2**63) per observation")
+        if not infer and "release_context_ids" in payload:
+            keys = payload["release_context_ids"]
+            if not isinstance(keys, list) or len(keys) > self.cache_size or any(
+                    not isinstance(key, str) or not key for key in keys):
+                raise ValueError("release_context_ids must be a bounded list of nonempty strings")
         observations = [validate_observation(item, self.metadata["observation"]) for item in observations]
         # Validate compressed payloads before any microbatch reaches the GPU.
         # Retain request-local decoded pixels so backend preflight and encode
@@ -189,6 +196,7 @@ class InferenceService:
             started, self._timing = time.perf_counter(), {}
             self._ensure_open()
             observations, seeds = self._requests(payload)
+            release_ids = list(dict.fromkeys(payload.get("release_context_ids", [])))
             encoded = self._encode(observations, seeds)
             actions = self._decode([context for context, _ in encoded], [None] * len(encoded)) \
                 if payload.get("include_base_actions", False) else None
@@ -201,6 +209,11 @@ class InferenceService:
                     item["base_actions"] = actions[index].tolist()
                 pending.append((key, context, item))
             self._purge()
+            # Retire only after every replacement feature/action validates.
+            # Do this before eviction so another client's older cache entries
+            # are not displaced by contexts this request already relinquished.
+            for key in release_ids:
+                self.contexts.pop(key, None)
             while len(self.contexts) + len(pending) > self.cache_size:
                 self.contexts.popitem(last=False)
             deadline = self.clock() + self.cache_ttl
@@ -209,7 +222,11 @@ class InferenceService:
             self.encoded_count += len(encoded)
             if actions is not None:
                 self.decoded_count += len(actions)
-            return self._timed_result(dict(items=[item for _, _, item in pending]), started)
+            result = dict(items=[item for _, _, item in pending])
+            if "release_context_ids" in payload:
+                # Acknowledge unknown/expired IDs too: retirement is idempotent.
+                result["released_context_ids"] = release_ids
+            return self._timed_result(result, started)
 
     def decode(self, payload):
         with self._lock:

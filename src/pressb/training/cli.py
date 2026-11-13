@@ -15,6 +15,7 @@ VLA_TRAINERS = {
     "pose9": "starVLA.training.train_piper",
     "joint6": "starVLA.training.train_table_buttons",
     "joint7": "starVLA.training.train_table_buttons",
+    "joint7_generic": "starVLA.training.train_joint7",
     "joint6_multitask": "starVLA.training.train_table_buttons_multitask_joint6",
     "joint7_multitask": "starVLA.training.train_table_buttons_multitask",
 }
@@ -22,7 +23,7 @@ VLA_TRAINERS = {
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", choices=("walloss", "vlajepa", "diffusion_policy"), required=True)
+    parser.add_argument("--model", choices=("walloss", "vlajepa", "diffusion_policy", "pi05"), required=True)
     parser.add_argument("--profile", choices=tuple(VLA_TRAINERS), help="VLA-JEPA training contract; defaults to pose9")
     parser.add_argument("--config", type=Path, required=True, help="Native training YAML configuration")
     parser.add_argument("--source-root", type=Path, help="Explicit legacy checkout override; default is bundled code")
@@ -34,16 +35,17 @@ def main(argv=None):
     config = args.config.expanduser().resolve(strict=True)
     if not config.is_file():
         parser.error("--config must name a YAML file")
-    if args.model == "diffusion_policy":
+    if args.model in ("diffusion_policy", "pi05"):
         if args.source_root is not None:
-            parser.error("Diffusion Policy uses the bundled PressB trainer; --source-root is not supported")
-        module = "pressb.training.diffusion_policy"
-        entry = Path(__file__).with_name("diffusion_policy.py")
+            parser.error(f"--source-root is not supported for {args.model}")
+        module = f"pressb.training.{args.model}"
+        entry = Path(__file__).with_name(f"{args.model}.py")
         native_args = args.native_args[1:] if args.native_args[:1] == ["--"] else args.native_args
         command_args = [str(entry), "--config", str(config), *native_args]
         if args.dry_run:
-            print(json.dumps(dict(model=args.model, profile=None, source_root=str(builtin_source_root(args.model)),
-                source="bundled", entry=str(entry), module=module, argv=command_args,
+            root = builtin_source_root(args.model) if args.model == "diffusion_policy" else None
+            print(json.dumps(dict(model=args.model, profile=None, source_root=str(root) if root else None,
+                source="bundled" if root else "pinned_lerobot_package", entry=str(entry), module=module, argv=command_args,
                 config_sha256=hashlib.sha256(config.read_bytes()).hexdigest(), launches_training=False), indent=2))
             return 0
         previous = sys.argv

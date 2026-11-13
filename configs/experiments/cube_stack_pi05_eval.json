@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "name": "cube_stack_pi05_eval",
+  "description": "Evaluate a supervised LeRobot Pi0.5 checkpoint on held-out randomized cube-stack layouts.",
+  "task": {
+    "plugin": "cube_stack",
+    "config": {
+      "scene_config": "${project_root}/configs/calibration/playground_20261113_appearance.json",
+      "num_envs": 8,
+      "gpu": 0,
+      "horizon": 7,
+      "control_hz": 30,
+      "headless": true,
+      "max_episode_seconds": 45,
+      "terminate_on_success": true,
+      "settling_ticks": 120,
+      "spacing_m": 6.0,
+      "render_resolution": [
+        640,
+        480
+      ],
+      "image_output_resolution": [
+        640,
+        480
+      ],
+      "observation_render_frames": 1,
+      "reset_render_frames": 2,
+      "cpu_threads": 8,
+      "png_workers": 8,
+      "smoothing": {
+        "mode": "none"
+      },
+      "randomization": {
+        "enabled": true,
+        "x_range_m": [
+          0.28,
+          0.4
+        ],
+        "y_range_m": [
+          -0.14,
+          0.14
+        ],
+        "yaw_range_deg": [
+          -45,
+          45
+        ],
+        "min_center_distance_m": 0.08,
+        "max_attempts": 2048
+      },
+      "reward": {
+        "success": 1.0,
+        "failure": 0.0
+      },
+      "scene_overrides": {
+        "rendering": {
+          "warmup_frames": 8
+        }
+      },
+      "log_dir": "${project_root}/outputs/cube_stack_pi05_eval/simulation"
+    }
+  },
+  "model": {
+    "plugin": "pi05",
+    "config": {
+      "checkpoint": "${project_root}/outputs/pi05_cube_stack/sft/checkpoints/last/pretrained_model",
+      "device": "cuda:1"
+    }
+  },
+  "nodes": {
+    "inference": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18654,
+        "transport": "http"
+      },
+      "service": {
+        "cache_size": 64,
+        "batch_size": 4
+      }
+    },
+    "simulation": {
+      "server": {
+        "host": "127.0.0.1",
+        "port": 18624,
+        "transport": "http"
+      },
+      "service": {
+        "request_cache_size": 2
+      }
+    }
+  },
+  "run": {
+    "method": "base",
+    "mode": "eval",
+    "device": "cpu",
+    "seed": 2026111101,
+    "endpoints": {
+      "timeout": 300,
+      "preprocess_images": false
+    },
+    "rollout": {
+      "max_transitions": 100000,
+      "eval_episodes": 100,
+      "num_envs": 8,
+      "execution_horizon": 7,
+      "action_bounds": "clip",
+      "terminal_observation_mode": "full",
+      "fused_step_reset": false
+    },
+    "output_dir": "${project_root}/outputs/cube_stack_pi05_eval/run"
+  }
+}

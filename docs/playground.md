@@ -16,14 +16,14 @@ The [cube-stacking](cube_stack.md) and [tabletop-cleanup](tabletop_cleanup.md)
 plugins derive their own objects and physical success rules from this workspace.
 
 The current template is
-[`playground_20261109_global_refined.json`](../configs/calibration/playground_20261109_global_refined.json),
-also used by the working `piper_playground.json`. This revision changes only the
-global camera's optical pose and provenance. Both camera intrinsics, the wrist
-camera, home pose, base height, table, objects, lighting and physics are retained.
-The 2026-11-08 preset and the historical demonstrations below keep their original
-camera configuration and evidence.
-See the [global-refinement record](results/playground_global_refinement_20261109.json)
-and [camera comparison](media/playground-global-refinement-20261109.jpg).
+[`playground_20261113_appearance.json`](../configs/calibration/playground_20261113_appearance.json),
+also used by the working `piper_playground.json`. It retains the November 9
+camera registration and updates tabletop color/roughness, area lighting, cleanup
+plastic materials and each simulated camera's fixed color response against the
+recorded real Stack/Cleanup runs. Geometry, optics, drives and contact physics
+are unchanged. Earlier templates and recordings retain their original settings.
+See [appearance calibration](#appearance-calibration-2026-11-13) and the earlier
+[global-camera refinement](results/playground_global_refinement_20261109.json).
 
 ![Initial reconstruction: clean playground overview, global and wrist views](media/playground-preview.jpg)
 
@@ -32,7 +32,7 @@ and [camera comparison](media/playground-global-refinement-20261109.jpg).
 Use three layers:
 
 1. **Pinned scene template:**
-   [`playground_20261109_global_refined.json`](../configs/calibration/playground_20261109_global_refined.json)
+   [`playground_20261113_appearance.json`](../configs/calibration/playground_20261113_appearance.json)
    defines the calibrated workbench. Pin this file for reproducible tasks;
    `piper_playground.json` is the working default and can evolve in future revisions.
 2. **Scene additions:** the node's `scene_overrides` specifies new objects and
@@ -97,13 +97,58 @@ and reset. Both cameras retained the template calibration, the reference files
 were unchanged, and the simulator shut down cleanly. Evidence:
 [`playground_template_20261108`](../outputs/playground_template_20261108/isaac/report.json).
 
+## Appearance calibration, 2026-11-13
+
+The current preset uses six recorded pre-contact poses across Stack and Cleanup.
+Each view is rendered at its nearest recorded **measured** joint state; dynamic
+RGB/feedback timestamp differences are at most 15.3 ms. Table patches and inset
+object faces are compared separately, so geometry differences are not treated as
+color errors. The comparison is an appearance check, not a task success rate.
+
+- The tabletop is brighter, with a rough matte finish. A larger, lower-intensity
+  key light and more ambient fill soften shadows.
+- Cleanup's cover, housing and bin retain their collision models; optional
+  `cleanup_materials` changes only PBR properties. `robot_material` similarly
+  supports visual-only PiPER finish overrides without changing other tasks.
+- `camera_color_response` models the different recorded global/wrist color
+  responses using exposure, linear RGB gain and saturation. The common simulation
+  camera path applies it once, before image transport/resizing, in both the native
+  Camera and shared tiled renderer. Dataset recording and inference see the same
+  images. An omitted response is a byte-identical identity operation.
+
+```json
+"camera_color_response": {
+  "up": {"exposure_ev": 0, "linear_rgb_gain": [0.85, 0.96, 2.3], "saturation": 1},
+  "wrist": {"exposure_ev": 0, "linear_rgb_gain": [1.6, 1.05, 1.2], "saturation": 0.82}
+}
+```
+
+These are empirical display-image corrections, not measured D435i hardware
+white-balance settings. Real auto exposure/white balance changes during movement;
+the simulation uses a stable fixed approximation. Fine tabletop wear, sensor
+noise, object labels and some view-dependent highlights remain approximate.
+No real image is used as a scene background, and no hardware was accessed.
+
+Across 18 tabletop patches the mean DeltaE76 decreased from **16.07 to 4.72**;
+9 of 10 selected object-face patches improved. These are within-recording
+diagnostics, not an independent color benchmark. Regression checks passed
+378 tests, and full compact trajectories passed physical checks for two Stack
+episodes and one Cleanup episode. The native camera response also matched the
+shared transformation exactly; camera optics and planned actions were retained.
+
+See the [validation record](results/playground_appearance_20261113.json) and
+[real / previous / updated comparison](media/playground-appearance-20261113.jpg).
+New task presets and collection defaults use this version. Existing datasets and
+archived run configurations are not regenerated; explicitly select the old scene
+template to reproduce their appearance.
+
 ## Configuration and camera registration
 
 [`configs/piper_playground.json`](../configs/piper_playground.json) owns the
 workspace geometry, appearance, robot initial pose, cameras and optional props.
 The robot starts at the pose actually observed during the capture, rather than
 at a newly invented home pose. State/action units are six joint angles in radians
-and full gripper opening in metres; the configured opening limit is 70 mm.
+and full gripper opening in metres. The shared simulation opening limit is 100 mm.
 
 Both RGB cameras use their **live device intrinsics** at 640×480:
 

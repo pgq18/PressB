@@ -24,7 +24,7 @@ def parser():
     p.add_argument("--output",type=Path,required=True)
     p.add_argument("--gpu",type=int,default=1)
     p.add_argument("--num-envs",type=int,default=2)
-    p.add_argument("--scene-config",default="configs/calibration/playground_20261109_global_refined.json")
+    p.add_argument("--scene-config",default="configs/calibration/playground_20261113_appearance.json")
     p.add_argument("--red-xy",type=float,nargs=2,help="Override the plugin's red cube centre")
     p.add_argument("--blue-xy",type=float,nargs=2,help="Override the plugin's blue cube centre")
     p.add_argument("--red-edge",type=float,help="Override the plugin's red cube size")

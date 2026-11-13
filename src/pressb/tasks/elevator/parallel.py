@@ -98,7 +98,8 @@ class ElevatorTask(ParallelTask):
             render_subframes=cfg["render_subframes"], observation_render_frames=1,
             reset_render_frames=1 + cfg["light_settle_captures"],
             reset_render_subframes=cfg["light_settle_subframes"],
-            cpu_threads=cfg["cpu_threads"], png_workers=cfg["png_workers"], log_dir=str(cfg["output"]),
+            cpu_threads=cfg["cpu_threads"], png_workers=cfg["png_workers"],
+            color_response_workers=cfg["color_response_workers"], log_dir=str(cfg["output"]),
             gamma=cfg["single_gamma"], terminal_boundary="physics_tick", timeout_reason="time_limit",
             headless=True, renderer_profile="calibrated", anti_aliasing=DATASET_ANTI_ALIASING,
             renderer_settings={**RENDER_HISTORY_CONTROLS, **RENDER_EXPOSURE_CONTROLS})

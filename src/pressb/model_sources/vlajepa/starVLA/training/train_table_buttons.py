@@ -45,6 +45,102 @@ def configured_checkpoint_policy(cfg, resume=None):
     return policy
 
 
+def warm_start_configuration(cfg, resume=None):
+    """Explicit model-only continuation; optimizer/schedule restart in a new run."""
+    trainer = cfg["trainer"]
+    keys = ("warm_start_checkpoint", "warm_start_sha256", "warm_start_step")
+    present = [key for key in keys if key in trainer]
+    if not present:
+        return None
+    if len(present) != len(keys):
+        raise ValueError("Warm start requires checkpoint, SHA256 and source step together")
+    if resume is not None:
+        raise ValueError("Model-only warm start and exact --resume are mutually exclusive")
+    checkpoint, sha, step = (trainer[key] for key in keys)
+    if not isinstance(checkpoint, str) or not Path(checkpoint).is_absolute() or Path(checkpoint).name != "model.pt":
+        raise ValueError("warm_start_checkpoint must be an absolute model.pt path")
+    if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdef" for c in sha):
+        raise ValueError("warm_start_sha256 must be a lowercase SHA256 digest")
+    if type(step) is not int or step < 1:
+        raise ValueError("warm_start_step must be a positive completed optimizer step")
+    return dict(zip(keys, (checkpoint, sha, step)))
+
+
+def inspect_warm_start(cfg, *, schema="vlajepa.joint7.v1", provenance=None, normalization=None, output=None):
+    """CPU-only validation shared by launcher preflight and the actual trainer."""
+    settings = warm_start_configuration(cfg)
+    if settings is None:
+        return None
+    if schema != "vlajepa.joint7.v1":
+        raise ValueError("Model-only warm start is supported only by generic joint7 SFT")
+    path = Path(settings["warm_start_checkpoint"]).resolve(strict=True)
+    checkpoint = path.parent
+    if path.name != "model.pt" or checkpoint.parent.name != "checkpoints":
+        raise ValueError("Warm start requires run/checkpoints/<generation>/model.pt")
+    source_run = path.parents[2]
+    if output is not None and Path(output).resolve() == source_run:
+        raise ValueError("Warm start must write to a new run; the source run is immutable")
+    manifest_path = checkpoint / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    step = settings["warm_start_step"]
+    if (manifest.get("complete") is not True or manifest.get("schema") != schema
+            or type(manifest.get("step")) is not int or manifest["step"] != step):
+        raise ValueError("Warm-start manifest schema, completion or source step differs")
+    if path.stat().st_size != manifest.get("model_bytes"):
+        raise ValueError("Warm-start model size differs from complete manifest")
+    sha = shared.sha256(path)
+    if sha != settings["warm_start_sha256"]:
+        raise ValueError("Warm-start model SHA256 differs from the configured source")
+    source_schema = json.loads((source_run / "action_schema.json").read_text())
+    if (source_schema.get("schema") != schema or source_schema.get("state_dim") != 7
+            or source_schema.get("action_dim") != 7):
+        raise ValueError("Warm-start source action/state schema differs from generic joint7")
+    for key in ("dataset_sha256", "split_sha256", "dataset_fingerprint_sha256", "task_id"):
+        if provenance is not None and key in provenance:
+            if manifest.get(key) != provenance[key] or source_schema.get(key) != provenance[key]:
+                raise ValueError(f"Warm-start source data contract differs: {key}")
+    split = json.loads((source_run / "split.json").read_text())
+    split_fingerprint = hashlib.sha256(json.dumps(split, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    if (split_fingerprint != manifest.get("split_sha256") or source_schema.get("split_sha256") != split_fingerprint
+            or split.get("source_export_manifest_sha256") != manifest.get("dataset_sha256")
+            or split.get("task_id") != manifest.get("task_id")
+            or split.get("camera_keys") != ["observation.images.up", "observation.images.wrist"]):
+        raise ValueError("Warm-start source split, dataset identity or camera order differs")
+    source_normalization = json.loads((source_run / "normalization.json").read_text())
+    if source_schema.get("normalization") != source_normalization:
+        raise ValueError("Warm-start source normalization metadata is inconsistent")
+    if normalization is not None and source_normalization != normalization:
+        raise ValueError("Warm-start source normalization differs")
+    source_contract = json.loads((source_run / "training_contract.json").read_text())
+    training_fingerprint = hashlib.sha256(json.dumps(source_contract["contract"], sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    if (source_contract.get("fingerprint") != training_fingerprint
+            or manifest.get("training_fingerprint") != training_fingerprint
+            or source_schema.get("training_fingerprint") != training_fingerprint):
+        raise ValueError("Warm-start source training fingerprint is inconsistent")
+    if source_contract["contract"].get("normalization") != source_normalization:
+        raise ValueError("Warm-start source contract normalization is inconsistent")
+    processor = source_run / "processor"
+    if not processor.is_dir() or not any(processor.iterdir()):
+        raise ValueError("Warm-start source saved processor is missing")
+    return dict(checkpoint_path=str(path), checkpoint_sha256=sha, checkpoint_bytes=path.stat().st_size,
+                processor_path=str(processor), source_run=str(source_run), source_step=step, source_schema=schema,
+                manifest_sha256=shared.sha256(manifest_path), source_training_fingerprint=training_fingerprint,
+                source_dataset_sha256=manifest.get("dataset_sha256"), source_split_sha256=manifest.get("split_sha256"),
+                source_dataset_fingerprint_sha256=manifest.get("dataset_fingerprint_sha256"),
+                optimizer_state_loaded=False, scheduler_state_loaded=False, interfaces_reinitialized=False)
+
+
+def load_model_only_warm_start(model, source):
+    """Restore every trained tensor and token mapping; never reset joint interfaces."""
+    from transformers import AutoProcessor
+    from starVLA.inference.piper_policy import install_saved_processor, load_trained_state
+    processor = AutoProcessor.from_pretrained(source["processor_path"], local_files_only=True)
+    install_saved_processor(model, processor)
+    count = load_trained_state(model, source["checkpoint_path"])
+    return dict(initialization="model_only_warm_start", **source, loaded_keys=count,
+                step_zero_interfaces=interface_evidence(model))
+
+
 def schema_for(action_dim):
     if action_dim not in (6, 7):
         raise ValueError("Only joint6 or joint7 action interfaces are supported")
@@ -398,9 +494,9 @@ def validate_anchor_count(dataset, anchors):
     return expected
 
 
-def action_schema(dataset, provenance):
+def action_schema(dataset, provenance, *, schema_name=None):
     dimension = dataset.action_dim
-    result = dict(provenance, schema=schema_for(dimension), state_dim=7, action_dim=dimension,
+    result = dict(provenance, schema=schema_name or schema_for(dimension), state_dim=7, action_dim=dimension,
         action_horizon=7, video_horizon=8, fps=30,
         representation="absolute joint targets; joint1..6 + full_gripper_width" if dimension == 7 else "absolute arm joint targets; joint1..6 only",
         dataset_units=["deg"] * 6 + ["cm"], normalization=dataset.normalization,
@@ -428,7 +524,7 @@ def setup_distributed():
 
 
 def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contract,
-         anchor_validator=validate_anchor_count):
+         anchor_validator=validate_anchor_count, schema_name=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True)
     parser.add_argument("--run-id")
@@ -446,8 +542,12 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
     if args.run_id:
         cfg.run_id = args.run_id
     checkpoint_policy = configured_checkpoint_policy(cfg, args.resume)
+    warm_settings = warm_start_configuration(cfg, args.resume)
     action_dim = int(cfg.framework.action_model.action_dim)
-    schema = schema_for(action_dim)
+    schema = schema_name or schema_for(action_dim)
+    if warm_settings is not None and schema != "vlajepa.joint7.v1":
+        raise ValueError("Model-only warm start requires the joint7_generic training profile")
+    schema_for(action_dim)  # Validate action dimensions for injected data profiles too.
     if cfg.framework.action_model.state_dim != 7:
         raise ValueError("This trainer retains seven measured state coordinates")
     if int(cfg.seed) != 42:
@@ -491,12 +591,22 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
     provenance = dict(dataset_sha256=train_data.export_manifest_sha256, split_sha256=train_data.split_manifest_sha256,
                       dataset_fingerprint_sha256=train_data.fingerprint_sha256, training_fingerprint=fingerprint,
                       dataset_group=train_data.group)
+    if schema_name is not None:
+        provenance.update(schema=schema, state_dim=7, action_dim=action_dim,
+                          task_id=train_data.task_id, instructions=[train_data.instruction])
     if checkpoint_policy == MODEL_ONLY_CHECKPOINT_POLICY:
         provenance.update(checkpoint_policy=checkpoint_policy, optimizer_retained=False,
                           exact_resume_supported=False)
     if action_dim == 6:
         provenance.update(schema=schema, state_dim=7, action_dim=6,
             fixed_gripper_full_width_m=train_data.normalization["fixed_gripper_full_width_m"])
+    warm_start = inspect_warm_start(cfg, schema=schema, provenance=provenance,
+                                   normalization=train_data.normalization, output=output) if warm_settings else None
+    if warm_start is not None:
+        provenance.update(warm_start_source_step=warm_start["source_step"],
+                          warm_start_checkpoint_sha256=warm_start["checkpoint_sha256"],
+                          warm_start_source_training_fingerprint=warm_start["source_training_fingerprint"],
+                          optimizer_reinitialized=True, scheduler_reinitialized=True)
     progress = dict(step=0, epoch=0, batch_in_epoch=0, best_score=None)
     training, checkpoint_dir = None, None
     if args.resume:
@@ -543,6 +653,8 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
         from starVLA.inference.piper_policy import install_saved_processor
         install_saved_processor(model, AutoProcessor.from_pretrained(output / "processor", local_files_only=True))
         loading = dict(initialization=f"resume_this_joint{action_dim}_run", checkpoint=str(checkpoint_dir), source_step=progress["step"])
+    elif warm_start is not None:
+        loading = load_model_only_warm_start(model, warm_start)
     else:
         checkpoint_sha = cfg.trainer.get("pretrained_sha256")
         if action_dim == 6:
@@ -588,9 +700,13 @@ def main(*, dataset_class=None, evaluator=evaluate, contract_builder=build_contr
         del training
     probes = shared.parameter_probes(model)
     if rank == 0:
-        shared.write_json(output / ("resume_loading.json" if args.resume else "pretrained_loading.json"), loading)
+        loading_name = "resume_loading.json" if args.resume else "warm_start_loading.json" if warm_start is not None else "pretrained_loading.json"
+        shared.write_json(output / loading_name, loading)
+        if warm_start is not None:
+            shared.write_json(output / "warm_start.json", dict(**warm_start, target_epochs=int(cfg.trainer.target_epochs),
+                additional_target_steps=geometry["target_steps"], cumulative_target_steps=warm_start["source_step"]+geometry["target_steps"]))
         shared.write_json(output / "parameters.json", parameter_report)
-        shared.write_json(output / "action_schema.json", action_schema(train_data, provenance))
+        shared.write_json(output / "action_schema.json", action_schema(train_data, provenance, schema_name=schema_name))
         if not args.resume:
             saved_cfg = OmegaConf.create(OmegaConf.to_container(cfg, resolve=True))
             saved_cfg.framework.qwenvl.device_map = "cuda"

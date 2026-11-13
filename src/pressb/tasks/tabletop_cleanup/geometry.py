@@ -235,7 +235,7 @@ def _gamepad():
     # The bridge's vertical contact band is inferred from this shell geometry,
     # not a directly measured hidden sidewall/contact patch.
     return corrected,.180,[dict(center=(0,.009,float(_gamepad_height(.020))),axis=(0,1,0),
-        width=GAMEPAD_BRIDGE_WIDTH_M,opening=.070,closed=.041)]
+        width=GAMEPAD_BRIDGE_WIDTH_M,opening=.090,closed=.041)]
 
 
 KINDS=("gamepad","speaker","lidar")

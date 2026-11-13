@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-12",
+  "purpose": "Compact demonstration planner verification; not a trained-policy benchmark",
+  "profile": "compact",
+  "full_gripper_opening_m": 0.1,
+  "same_speed_limits": {
+    "joint_deg_s": 20,
+    "cartesian_m_s": 0.04,
+    "full_gripper_width_m_s": 0.03
+  },
+  "validation_hold_seconds": 0.6,
+  "validation_recorded_in_dataset": false,
+  "tasks": {
+    "cube_stack": {
+      "physical_accepted": 8,
+      "physical_executed": 8,
+      "planning_rejections": 0,
+      "paired_legacy_planned_seconds": 29.979166666666668,
+      "compact_seconds": 16.570833333333333,
+      "mean_paired_duration_reduction": 0.44756372728164967,
+      "mean_exact_duplicate_commands": 0.0,
+      "mean_measured_near_static_fraction": 0.006049308233837756,
+      "raw_path": "/mnt/data/pengguanqi/Data/PressB/outputs/compact_manipulation_20261112/stack_compact_noisy",
+      "lerobot_audit": {
+        "success": true,
+        "episodes": 8,
+        "frames": 3985,
+        "numeric_rows_compared": 3985,
+        "full_video_decode": true,
+        "decoded_frames": {
+          "observation.images.up": 3985,
+          "observation.images.wrist": 3985
+        },
+        "official_reader_samples": 24,
+        "max_source_to_output_rgb_mae": 1.4987282752990723,
+        "checked_utc": "2026-11-12T12:39:34.563027+00:00"
+      }
+    },
+    "tabletop_cleanup": {
+      "physical_accepted": 3,
+      "physical_executed": 3,
+      "planning_rejections": 1,
+      "paired_legacy_planned_seconds": 62.111111111111114,
+      "compact_seconds": 46.888888888888886,
+      "mean_paired_duration_reduction": 0.2456852507427311,
+      "mean_exact_duplicate_commands": 0.0,
+      "mean_measured_near_static_fraction": 0.020088231310102064,
+      "raw_path": "/mnt/data/pengguanqi/Data/PressB/outputs/compact_manipulation_20261112/cleanup_compact",
+      "lerobot_audit": {
+        "success": true,
+        "episodes": 3,
+        "frames": 4223,
+        "numeric_rows_compared": 4223,
+        "full_video_decode": true,
+        "decoded_frames": {
+          "observation.images.up": 4223,
+          "observation.images.wrist": 4223
+        },
+        "official_reader_samples": 9,
+        "max_source_to_output_rgb_mae": 1.4105522632598877,
+        "checked_utc": "2026-11-12T12:41:53.244974+00:00"
+      }
+    }
+  },
+  "report_path": "outputs/compact_manipulation_20261112/report/report.json",
+  "old_dataset_audit_path": "outputs/compact_manipulation_20261112/old_dataset_audit.json",
+  "tests": {
+    "passed": 274,
+    "skipped": 3
+  },
+  "changes": [
+    "Open fingers while approaching",
+    "Stack continuous arch for lift/turn/transport/lower",
+    "Cleanup lift/reorientation overlap after table clearance",
+    "Remove fixed waypoint holds and final home detour",
+    "Preserve contiguous 30 Hz boundary alignment and terminal action"
+  ]
+}

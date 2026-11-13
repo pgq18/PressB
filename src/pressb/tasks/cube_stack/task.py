@@ -12,7 +12,7 @@ from scipy.spatial.transform import Rotation
 INSTRUCTION = "Pick up the red cube and place it on top of the blue cube."
 COLORS = ("red", "blue")
 DEFAULT_OUTCOME = dict(stable_seconds=.5, min_lift_height_m=.012,
-    min_xy_overlap_fraction=.75, max_tilt_deg=10., support_height_tolerance_m=.003,
+    max_tilt_deg=10., support_height_tolerance_m=.003,
     table_height_tolerance_m=.003, max_linear_speed_m_s=.025, max_angular_speed_rad_s=.25,
     gripper_release_margin_m=.008, min_grasp_force_n=.02, min_support_force_n=.02,
     drop_below_table_m=.04, max_support_normal_tilt_deg=20., contact_separation_tolerance_m=.003)
@@ -30,11 +30,10 @@ def _number(value, name, *, zero=False):
 def outcome_config(config=None):
     if config is None:
         config = {}
-    if not isinstance(config, dict) or set(config)-set(DEFAULT_OUTCOME):
+    if not isinstance(config, dict) or set(config)-set(DEFAULT_OUTCOME)-{"min_xy_overlap_fraction"}:
         raise ValueError(f"outcome supports only {sorted(DEFAULT_OUTCOME)}")
-    result = {key: _number(value, key) for key, value in {**DEFAULT_OUTCOME, **config}.items()}
-    if not 0 < result["min_xy_overlap_fraction"] <= 1:
-        raise ValueError("min_xy_overlap_fraction must be in (0,1]")
+    # Older snapshots can contain the retired overlap threshold.
+    result = {key: _number(config.get(key, default), key) for key, default in DEFAULT_OUTCOME.items()}
     for key in ("max_tilt_deg", "max_support_normal_tilt_deg"):
         if result[key] >= 90:
             raise ValueError(f"{key} must be below 90 degrees")
@@ -149,7 +148,6 @@ class CubeStackOutcome:
         released = bool(width >= self.edges[0]+cfg["gripper_release_margin_m"] and
                         all(np.all(forces[color+"_finger_forces_n"] < cfg["min_grasp_force_n"]) for color in COLORS))
         conditions = dict(grasped_and_lifted=bool(self.grasped_and_lifted), upright=upright,
-            sufficient_xy_overlap=bool(overlap >= cfg["min_xy_overlap_fraction"]),
             red_above_blue=bool(positions[0, 2] > positions[1, 2] and abs(gap) <= cfg["support_height_tolerance_m"]),
             red_blue_contact=bool(forces["red_blue_support_force_n"] >= cfg["min_support_force_n"]),
             blue_on_table=bool(abs(float(bottoms[1]-self.tabletop_z)) <= cfg["table_height_tolerance_m"] and

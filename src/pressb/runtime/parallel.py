@@ -24,13 +24,13 @@ def execution_config(values):
     defaults = dict(num_envs=1, gpu=0, horizon=32, physics_dt=1/120,
         control_hz=30., max_episode_seconds=20., settling_ticks=90, spacing_m=6.,
         render_resolution=[640, 480], render_subframes=1, observation_render_frames=2,
-        reset_render_frames=2, cpu_threads=8, png_workers=8, gamma=.995,
+        reset_render_frames=2, cpu_threads=8, png_workers=8, color_response_workers=0, gamma=.995,
         renderer_profile="calibrated", terminal_boundary="physics_tick", timeout_reason="timeout",
         headless=True, image_preprocessing=None, image_output_resolution=None)
     cfg = {**defaults, **cfg}
     for key in ("num_envs", "gpu", "horizon", "settling_ticks", "render_subframes",
-                "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers"):
-        minimum = 0 if key in ("gpu", "settling_ticks") else 1
+                "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "color_response_workers"):
+        minimum = 0 if key in ("gpu", "settling_ticks", "color_response_workers") else 1
         if type(cfg[key]) is not int or cfg[key] < minimum:
             raise ValueError(f"{key} must be an integer >= {minimum}")
     for key in ("physics_dt", "control_hz", "max_episode_seconds", "spacing_m", "gamma"):
@@ -76,7 +76,10 @@ class SharedWorldBackend:
         self._observers = []
         self.timings = dict(physics_seconds=0., render_seconds=0., encode_seconds=0.,
             step_seconds=0., reset_seconds=0., world_ticks=0, captures=0,
-            fused_step_reset_seconds=0., fused_steps=0)
+            fused_step_reset_seconds=0., fused_steps=0, after_tick_seconds=0.,
+            contact_callback_seconds=0., contact_callback_calls=0,
+            contact_callback_headers=0, contact_callback_points=0,
+            color_response_seconds=0., color_response_images=0)
         try:
             if engine_factory is None:
                 from .isaac_parallel import IsaacParallelWorld
@@ -85,6 +88,10 @@ class SharedWorldBackend:
             self.engine.initialize()
             self._metadata = self._build_metadata()
         except BaseException:
+            # Kit fast shutdown can terminate the interpreter during close();
+            # preserve the construction error before releasing its resources.
+            import traceback
+            traceback.print_exc()
             self.close()
             raise
 
@@ -135,6 +142,13 @@ class SharedWorldBackend:
 
     def describe(self):
         return deepcopy(self._metadata)
+
+    def status(self):
+        """Expose counters for RPC profiling without stepping or rendering."""
+        return {"closed": self._closed, "fault": self._fault,
+                "num_envs": self.num_envs,
+                "ready_env_ids": np.flatnonzero(self.ready).tolist(),
+                "timings": deepcopy(self.timings)}
 
     def add_observer(self, observer):
         """Attach read-only recording without adding another execution loop."""
@@ -282,7 +296,44 @@ class SharedWorldBackend:
     def step(self, items, *, terminal_observation_mode="full"):
         return self._step(items, terminal_observation_mode=terminal_observation_mode)
 
-    def _step(self, items, *, terminal_observation_mode="full", defer_live_images=False):
+    def capture_for_recording(self, env_ids, *, render_frames=None, reset_history=True):
+        """Local RGB capture at the current physical boundary; no wire images."""
+        self._check()
+        self._ids(env_ids)
+        frames = self.execution["observation_render_frames"] if render_frames is None else render_frames
+        if type(frames) is not int or frames < 1:
+            raise ValueError("Recording capture needs a positive integer render_frames")
+        before = self.engine.world.current_time
+        try:
+            images = self.engine.capture_rgb(env_ids, frames, reset_history=reset_history)
+            if self.engine.world.current_time != before:
+                raise RuntimeError("Recording camera capture advanced physical time")
+            return images
+        except BaseException as exc:
+            self._fault = f"recording capture: {type(exc).__name__}: {exc}"
+            raise
+
+    def step_for_recording(self, items):
+        """Apply one action per active env and return state plus owned raw RGB.
+
+        This in-process API reuses the normal scheduler. Terminal images and
+        diagnostic snapshots are captured at their own terminal tick, before
+        another environment can advance the shared world. Returned RGB belongs
+        to the post-action observation; record the preceding RGB/state with the
+        action being sent.
+        HTTP/WS ``step`` and its encoded observation contract are unchanged.
+        """
+        self._check()
+        _, commands = self._commands(items)
+        if any(len(value) != 1 for value in commands.values()):
+            raise ValueError("Recording steps require exactly one action per environment")
+        rgb, snapshots = {}, {}
+        rows = self._step(items, terminal_observation_mode="state_only_if_no_bootstrap",
+                          defer_live_images=True, recording_rgb=rgb, recording_snapshots=snapshots)
+        return {"items": rows, "rgb": rgb, "snapshots": snapshots}
+
+    def _step(self, items, *, terminal_observation_mode="full", defer_live_images=False,
+              recording_rgb=None, recording_snapshots=None):
         self._check()
         if terminal_observation_mode not in ("full", "state_only_if_no_bootstrap"):
             raise ValueError("Unsupported terminal observation mode")
@@ -311,7 +362,13 @@ class SharedWorldBackend:
                     self.engine.tick(live)
                     self.timings["physics_seconds"] += time.perf_counter()-tick_started
                     self.timings["world_ticks"] += 1
-                    outcomes = self.task.after_tick(live)
+                    outcome_started = time.perf_counter()
+                    try:
+                        outcomes = self.task.after_tick(live)
+                    finally:
+                        # Outcome checks are outside physics_seconds, but are
+                        # included in the enclosing step_seconds measurement.
+                        self.timings["after_tick_seconds"] += time.perf_counter()-outcome_started
                     boundary = cfg["terminal_boundary"] == "physics_tick" or substep == cfg["physics_ticks_per_action"]-1
                     if not boundary:
                         self._notify("after_tick", live, outcomes)
@@ -343,9 +400,15 @@ class SharedWorldBackend:
                     if ended:
                         observations.update(self._state_observations(ended) if terminal_observation_mode == "state_only_if_no_bootstrap"
                                             else self._observations(ended))
+                        if recording_rgb is not None:
+                            recording_rgb.update(self.capture_for_recording(ended))
+                            recording_snapshots.update({int(i): value for i, value in self.snapshot(ended).items()})
             live = [i for i in ids if self.ready[i]]
             if live:
                 observations.update(self._state_observations(live) if defer_live_images else self._observations(live))
+                if recording_rgb is not None:
+                    recording_rgb.update(self.capture_for_recording(live))
+                    recording_snapshots.update({int(i): value for i, value in self.snapshot(live).items()})
             rows = []
             for i in ids:
                 value = results[i]
@@ -359,6 +422,9 @@ class SharedWorldBackend:
                     terminated=value["terminated"], truncated=value["truncated"], info=info)
                 if (value["terminated"] or value["truncated"]) and terminal_observation_mode == "state_only_if_no_bootstrap":
                     row["terminal_observation_omitted"] = True
+                if recording_rgb is not None:
+                    row.pop("terminal_observation_omitted", None)
+                    row["recording_images_separate"] = True
                 rows.append(row)
             self.timings["step_seconds"] += time.perf_counter()-started
             self._notify("after_step", rows)

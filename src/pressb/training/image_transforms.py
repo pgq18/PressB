@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 from numbers import Real
+import platform
 
 
 DEFAULT_IMAGE_TRANSFORMS = {
@@ -143,6 +144,13 @@ class _SharpnessJitter:
         from torchvision.transforms.v2 import functional as F
 
         factor = float(torch.empty(()).uniform_(*self.bounds))
+        if image.device.type == "cpu" and platform.machine().lower() in {"aarch64", "arm64"}:
+            # ARM oneDNN can fail its grouped-convolution JIT with
+            # "label is too far (Xbyak::Error)". Keep torchvision's sharpness
+            # operation and sampled factor, using the native CPU kernel only
+            # for this call; restore the caller's backend flags on exit.
+            with torch.backends.mkldnn.flags(enabled=False):
+                return F.adjust_sharpness(image, factor)
         return F.adjust_sharpness(image, factor)
 
 

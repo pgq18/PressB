@@ -6,7 +6,7 @@ and declares its robot/cameras; the runtime owns every clone and physics tick.
 from __future__ import annotations
 
 import base64
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from copy import deepcopy
 from functools import partial
 import io
@@ -74,7 +74,7 @@ class IsaacParallelWorld:
         self.task, self.backend, self.config = task, backend, backend.execution
         self.num_envs = backend.num_envs
         self.app = self.world = self.stage = self.robot = self.template = None
-        self.subscription = self._guard = self._pool = None
+        self.subscription = self._guard = self._pool = self._color_pool = None
         self._blas_limit = None
         self.blas_threadpools = []
         self.product = self.annotator = None
@@ -113,6 +113,9 @@ class IsaacParallelWorld:
         self.template = self.task.build_template()
         self.world, self.stage = self.template.world, self.template.stage
         self.camera_names = list(self.template.camera_paths)
+        from pressb.sensors.color_response import read_camera_response
+        self.camera_color_responses = [read_camera_response(self.stage.GetPrimAtPath(path))
+                                       for path in self.template.camera_paths.values()]
         if not self.camera_names or len(set(self.camera_names)) != len(self.camera_names):
             raise ValueError("Template must declare uniquely named cameras")
         expected_cameras = self.task.metadata()["observation"]["cameras"]
@@ -186,6 +189,7 @@ class IsaacParallelWorld:
         self.robot.cache_initial_state()
         self.task.after_settle()
         self._pool = ThreadPoolExecutor(max_workers=cfg["png_workers"], thread_name_prefix="parallel_png")
+        self._configure_color_pool()
         import carb.settings
         settings = carb.settings.get_settings()
         self.requested_renderer_settings = {"/rtx/post/aa/op": aa, **profile["history_controls"],
@@ -198,6 +202,48 @@ class IsaacParallelWorld:
         for _ in range(cfg.get("warmup_frames", 8)):
             self._capture(return_tiles=False)
         self.check()
+
+    def _configure_color_pool(self):
+        """Own a persistent pool for pure NumPy RGB transforms only."""
+        if self._color_pool is not None:
+            raise RuntimeError("Color response pool is already configured")
+        workers = self.config.get("color_response_workers", 0)
+        if type(workers) is not int or workers < 0:
+            raise ValueError("color_response_workers must be an integer >= 0")
+        if workers:
+            self._color_pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="parallel_color")
+
+    def _apply_color_responses(self, images):
+        """Preserve image order; finish every borrowed-buffer read before return.
+
+        Rendering/readback stay on the owner thread. Workers receive only a
+        stateless ColorResponse and its image, never an Isaac object. On error,
+        queued work is cancelled and running work drains before propagation.
+        """
+        started = time.perf_counter()
+        processed, futures = [], []
+        try:
+            if self._color_pool is None:
+                for i, rgb in enumerate(images):
+                    processed.append(self.camera_color_responses[i % len(self.camera_names)].apply(rgb))
+            else:
+                for i, rgb in enumerate(images):
+                    response = self.camera_color_responses[i % len(self.camera_names)]
+                    futures.append(self._color_pool.submit(response.apply, rgb))
+                processed = [future.result() for future in futures]
+            return processed
+        finally:
+            if futures:
+                for future in futures:
+                    if not future.done():
+                        future.cancel()
+                wait(futures)
+                completed = sum(not future.cancelled() and future.exception() is None for future in futures)
+            else:
+                completed = len(processed)
+            timings = self.backend.timings
+            timings["color_response_seconds"] = timings.get("color_response_seconds", 0.)+time.perf_counter()-started
+            timings["color_response_images"] = timings.get("color_response_images", 0)+completed
 
     def _configure_blas(self):
         """Limit already-loaded BLAS pools used by small batched control solves.
@@ -239,7 +285,14 @@ class IsaacParallelWorld:
         return self._contact_paths[value]
 
     def _on_contact(self, headers, data):
+        started = time.perf_counter()
+        timings = self.backend.timings
         try:
+            # Count the native callback payload before ready/task filtering.
+            # The callback's wall time is also part of physics_seconds.
+            timings["contact_callback_calls"] = timings.get("contact_callback_calls", 0)+1
+            timings["contact_callback_headers"] = timings.get("contact_callback_headers", 0)+len(headers)
+            timings["contact_callback_points"] = timings.get("contact_callback_points", 0)+len(data)
             for header in headers:
                 if not header.num_contact_data:
                     continue
@@ -263,6 +316,8 @@ class IsaacParallelWorld:
         except BaseException as exc:
             # Native callback exceptions may otherwise be swallowed by PhysX.
             self._contact_error = exc
+        finally:
+            timings["contact_callback_seconds"] = timings.get("contact_callback_seconds", 0.)+time.perf_counter()-started
 
     def check(self):
         if self._contact_error is not None:
@@ -307,11 +362,17 @@ class IsaacParallelWorld:
             shape = (self.config["render_resolution"][1], self.config["render_resolution"][0], 3)
             if len(images) != self.num_envs*len(self.camera_names) or any(v.shape != shape or v.dtype != np.uint8 for v in images):
                 raise RuntimeError("Missing or malformed live camera tiles")
+            images = self._apply_color_responses(images)
         self.backend.timings["captures"] += 1
         self.backend.timings["render_seconds"] += time.perf_counter()-started
         return images
 
-    def capture(self, ids, render_frames, *, reset_history=True):
+    def capture_rgb(self, ids, render_frames, *, reset_history=True):
+        """Render owned RGB arrays for local recording, without PNG transport.
+
+        Camera sampling and output resizing match ``capture``. Model-specific
+        transport preprocessing remains in the encoded wire path only.
+        """
         import carb.settings
         if reset_history and self.config["renderer_profile"] == "rl_fast":
             carb.settings.get_settings().set_bool("/rtx-transient/post/dlss/forceParamReset", True)
@@ -327,6 +388,17 @@ class IsaacParallelWorld:
         if output is not None:
             from PIL import Image
             selected = [np.asarray(Image.fromarray(rgb).resize(tuple(output), Image.Resampling.BILINEAR)) for rgb in selected]
+        # Annotator tiles may refer to storage reused by the next render. A
+        # recorder can retain or enqueue these arrays without that aliasing.
+        selected = [np.array(rgb, dtype=np.uint8, order="C", copy=True) for rgb in selected]
+        self.backend.timings["encode_seconds"] += time.perf_counter()-started
+        return {eid: {name: selected[row*count+j] for j, name in enumerate(self.camera_names)} for row, eid in enumerate(ids)}
+
+    def capture(self, ids, render_frames, *, reset_history=True):
+        rgb = self.capture_rgb(ids, render_frames, reset_history=reset_history)
+        count = len(self.camera_names)
+        selected = [rgb[eid][name] for eid in ids for name in self.camera_names]
+        started = time.perf_counter()
         encoded = list(self._pool.map(partial(encode_png, image_preprocessing=self.image_preprocessing), selected))
         self.backend.timings["encode_seconds"] += time.perf_counter()-started
         return {eid: {name: encoded[row*count+j] for j, name in enumerate(self.camera_names)} for row, eid in enumerate(ids)}
@@ -335,6 +407,9 @@ class IsaacParallelWorld:
         cfg = self.config
         output = cfg.get("image_output_resolution") or cfg["render_resolution"]
         return dict(shared_renderer=True, physics_backend="CPU PhysX tensor views",
+            camera_color_response={name: response.config for name, response in
+                                   zip(self.camera_names, self.camera_color_responses) if not response.identity},
+            color_response_workers=cfg.get("color_response_workers", 0),
             blas_thread_limit=1, blas_threadpools=deepcopy(self.blas_threadpools),
             camera_count=self.num_envs*len(self.camera_names), render_resolution=cfg["render_resolution"],
             transmitted_image_resolution=list(resized_size(tuple(output), self.image_preprocessing)) if self.image_preprocessing else list(output),
@@ -349,13 +424,18 @@ class IsaacParallelWorld:
         self._closed = True
         try:
             self.subscription = None
-            if self._pool is not None:
-                self._pool.shutdown(wait=True)
+            try:
+                if self._color_pool is not None:
+                    pool, self._color_pool = self._color_pool, None
+                    pool.shutdown(wait=True, cancel_futures=True)
+            finally:
+                if self._pool is not None:
+                    self._pool.shutdown(wait=True)
             self.task.close()
             if self.robot is not None:
                 self.robot.close()
             if self.annotator is not None and self.product is not None:
-                self.annotator.detach([self.product])
+                self.annotator.detach([self.product.path])
             if self.product is not None:
                 self.product.destroy()
         finally:

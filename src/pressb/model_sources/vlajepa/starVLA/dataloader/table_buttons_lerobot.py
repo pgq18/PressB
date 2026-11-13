@@ -235,6 +235,10 @@ class TableButtonsLeRobotDataset(PiperLeRobotDataset):
         self._pid = os.getpid()
         self._frames, self._decoders = OrderedDict(), OrderedDict()
 
+    def _timestamps_match(self, values, frames):
+        """Historical short-episode contract; generic readers may refine precision."""
+        return np.allclose(values, frames / self.fps, atol=2e-6, rtol=0)
+
     def _load_numeric(self, total):
         self._states = np.empty((total, 7), dtype=np.float32)
         self._actions = np.empty((total, 7), dtype=np.float32)
@@ -257,8 +261,8 @@ class TableButtonsLeRobotDataset(PiperLeRobotDataset):
                 _require(np.array_equal(np.asarray(table[key].to_pylist()).reshape(-1), expected[indices]),
                          f"Numeric {key} differs from episode metadata")
             _require(np.all(np.asarray(table["task_index"].to_pylist()) == 0), "Unexpected numeric task index")
-            _require(np.allclose(np.asarray(table["timestamp"].to_pylist()).reshape(-1),
-                                 expected_frame[indices] / self.fps, atol=2e-6, rtol=0),
+            _require(self._timestamps_match(np.asarray(table["timestamp"].to_pylist()).reshape(-1),
+                                            expected_frame[indices]),
                      "Numeric timestamps do not match 30 Hz")
             for key, target in (("observation.state", self._states), ("action", self._actions)):
                 values = np.asarray(table[key].to_pylist(), dtype=np.float32)

@@ -489,6 +489,23 @@ def test_end_episode_only_retires_selected_slot_without_tick_render_or_reset():
     assert row['env_id'] == 1 and backend.ticks.tolist() == [0, 4]
 
 
+def test_profiling_status_is_detached_and_does_not_tick_or_render():
+    backend = make()
+    backend.reset([0, 1], 42)
+    before = (backend.engine.world.count, len(backend.engine.captures))
+    backend.timings['contact_callback_seconds'] = 1.25
+    report = backend.status()
+    assert report['ready_env_ids'] == [0, 1]
+    assert report['timings']['contact_callback_seconds'] == 1.25
+    report['timings']['contact_callback_seconds'] = -1
+    report['ready_env_ids'].clear()
+    assert backend.status()['timings']['contact_callback_seconds'] == 1.25
+    assert backend.status()['ready_env_ids'] == [0, 1]
+    assert (backend.engine.world.count, len(backend.engine.captures)) == before
+    backend.close()
+    assert backend.status()['closed'] is True
+
+
 def test_close_is_idempotent_and_does_not_advance_physics():
     backend = make()
     reset_all(backend)

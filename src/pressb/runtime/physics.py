@@ -6,6 +6,7 @@ CPU tests can import this module without starting a simulation application.
 from __future__ import annotations
 
 from pathlib import Path
+import math
 import re
 
 import numpy as np
@@ -147,3 +148,92 @@ def path_rows(paths, requested):
         raise RuntimeError("PhysX view contains missing, duplicated, or unexpected bodies")
     return np.array([mapping[path] for path in requested], dtype=np.int64)
 
+
+
+class ContactPathClassifier:
+    """Cache immutable scene-topology matches, never slot activity or outcomes.
+
+    Native routing supplies template-local actor/collider paths. All cloned
+    environments therefore share this small mapping; recreate it on bind when
+    the scene topology changes.
+    """
+    def __init__(self, roots):
+        self.roots = tuple(roots)
+        self._cache = {}
+
+    def __call__(self, actor_paths):
+        paths = tuple(actor_paths)
+        result = self._cache.get(paths)
+        if result is None:
+            result = tuple(any(path == root or path.startswith(root+"/") for path in paths)
+                           for root in self.roots)
+            self._cache[paths] = result
+        return result
+
+
+def _contact_xyz(value, error):
+    """Read native carb.Float3 without allocating a NumPy normal vector.
+
+    Non-native inputs retain the original (3,) shape check. In particular, a
+    tuple of one-element arrays must not become an accidentally valid vector.
+    """
+    try:
+        if len(value) != 3:
+            raise RuntimeError(error)
+        x, y, z = value[0], value[1], value[2]
+        if type(x) is float and type(y) is float and type(z) is float:
+            return x, y, z
+        array = np.asarray(value, dtype=float)
+        if array.shape != (3,):
+            raise RuntimeError(error)
+        return float(array[0]), float(array[1]), float(array[2])
+    except (TypeError, ValueError, IndexError) as exception:
+        raise RuntimeError(error) from exception
+
+
+class ContactForceReducer:
+    """Reduce native points without changing impulse norms or summation order.
+
+    Keep NumPy's impulse norm bit-for-bit, because accumulated finger forces
+    control grasp/release predicates. Only the normal's three-scalar norm has
+    a fast path; near either support decision boundary it uses the original
+    NumPy expression. Shape, finite, normal, and separation checks remain.
+    """
+    def __init__(self, physics_dt, max_support_normal_tilt_deg, separation_tolerance_m,
+                 error="Malformed measured contact data"):
+        self.dt = physics_dt
+        self.cosine = math.cos(math.radians(max_support_normal_tilt_deg))
+        self.tolerance = separation_tolerance_m
+        self.error = error
+
+    def __call__(self, contacts):
+        force, vertical = 0., 0.
+        dt, cosine, tolerance, error = self.dt, self.cosine, self.tolerance, self.error
+        for contact in contacts:
+            impulse = np.asarray(contact.impulse, dtype=float)
+            if impulse.shape != (3,):
+                raise RuntimeError(error)
+            ix, iy, iz = float(impulse[0]), float(impulse[1]), float(impulse[2])
+            raw_normal = contact.normal
+            nx, ny, nz = _contact_xyz(raw_normal, error)
+            separation = float(contact.separation)
+            if not (math.isfinite(ix) and math.isfinite(iy) and math.isfinite(iz)
+                    and math.isfinite(nx) and math.isfinite(ny) and math.isfinite(nz)
+                    and math.isfinite(separation)):
+                raise RuntimeError(error)
+            # Exact NumPy 1.26 norm fast path for a validated real float64
+            # vector: keep the K-order flatten, ndarray.dot, and np.sqrt.
+            # This removes only generic norm argument/dtype/shape dispatch.
+            flat = impulse.ravel(order="K")
+            force += float(np.sqrt(flat.dot(flat)))/dt
+            normal_norm = math.sqrt(nx*nx+ny*ny+nz*nz)
+            # Three positive products have no cancellation. These guards are
+            # deliberately much wider than scalar-vs-dot rounding error so a
+            # normal at, or nextafter either threshold takes the exact old path.
+            if (abs(normal_norm-1e-8) <= 1e-20 or
+                    (normal_norm > 1e-8 and abs(abs(nz)/normal_norm-cosine) <= 1e-12)):
+                normal_norm = float(np.linalg.norm(np.asarray(raw_normal, dtype=float)))
+            if (normal_norm > 1e-8 and abs(nz)/normal_norm >= cosine
+                    and abs(separation) <= tolerance):
+                vertical += abs(iz)/dt
+        return force, vertical

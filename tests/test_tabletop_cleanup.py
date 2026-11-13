@@ -787,3 +787,24 @@ def test_cleanup_real_shared_scheduler_preserves_peer_and_handles_timeout_withou
     finally:
         backend.close()
     assert backend.engine.closed
+
+
+def test_cached_cleanup_topology_still_checks_mutating_active_ready_and_checker():
+    task = bound_cleanup()
+    speaker = task.object_paths['speaker']
+    cleanup_contact(task, 0, speaker, '/World/Piper/link7', force=.1)
+    task.before_tick([0])
+    task.engine.backend.ready[0] = False
+    cleanup_contact(task, 0, speaker, '/World/Piper/link7', force=.1)
+    assert all(not value.any() for value in task.contacts[0].values())
+    task.engine.backend.ready[0] = True
+    task.active_masks[0, 1] = False
+    with pytest.raises(RuntimeError, match='Inactive'):
+        cleanup_contact(task, 0, speaker, '/World/Piper/link7', force=.1)
+    task.active_masks[0, 1] = True
+    checker, task.checkers[0] = task.checkers[0], None
+    cleanup_contact(task, 0, speaker, '/World/Piper/link7', force=.1)
+    assert all(not value.any() for value in task.contacts[0].values())
+    task.checkers[0] = checker
+    cleanup_contact(task, 0, speaker, '/World/Piper/link7', force=.1)
+    np.testing.assert_allclose(task.contacts[0]['finger_forces_n'][1], [.1, 0.])

@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 from copy import deepcopy
-import math
 import numpy as np
 
 from pressb.robots.piper.kinematics import PiperKinematics
+from pressb.runtime.physics import ContactForceReducer, ContactPathClassifier
 from pressb.tasks.playground.parallel import PlaygroundTask, EXECUTION_KEYS
 from pressb.tasks.playground.backend import STATE_NAMES, STATE_UNITS, sample_reset_spec
 from .configuration import load_config, sample_objects, task_identity
@@ -41,7 +41,7 @@ class CubeStackTask(PlaygroundTask):
             reward_schema={"kind": "sparse_physical_event", "values": deepcopy(cfg["reward"]),
                 "success_reward": "Once, after continuous supported released stack dwell",
                 "within_chunk_discount": "gamma ** ((event_tick - 1) / physics_ticks_per_action)", "timeout_reward": 0.},
-            success_rule="Simultaneous bilateral red grasp while lifted and unsupported; red upright above blue with sufficient overlap, vertical force support, blue supported by table, fingers released and continuous low-speed dwell.",
+            success_rule="After a simultaneous bilateral red grasp and lift, the upright red cube rests on the upright blue cube with vertical contact support, the blue cube rests on the table, and both cubes remain released and low-speed for the required dwell.",
             outcome_thresholds=deepcopy(cfg["outcome"]),
             object_reset={"objects": list(COLORS), "options": ["center_xy", "yaw_deg"],
                 "frame": "robot_base XY metres; Z supported on tabletop",
@@ -83,6 +83,13 @@ class CubeStackTask(PlaygroundTask):
             raise RuntimeError("Cube-stack tensor row ordering must be red, blue")
         self.object_paths = {color: self.scene["objects"][color]["path"] for color in COLORS}
         self.table_path = self.scene["root_path"]+"/Table/Top"
+        self.contact_paths = ContactPathClassifier([
+            *(self.object_paths[color] for color in COLORS),
+            *(engine.template.robot_path+f"/link{7+i}" for i in range(2)), self.table_path])
+        self.contact_forces = ContactForceReducer(self.execution["physics_dt"],
+            self.config["outcome"]["max_support_normal_tilt_deg"],
+            self.config["outcome"]["contact_separation_tolerance_m"],
+            "Nonfinite or malformed measured cube contact")
         self.contacts = [self._empty_contacts() for _ in range(engine.num_envs)]
         self.checkers = [None]*engine.num_envs
         self.contact_counts = np.zeros((engine.num_envs, 2, 2), dtype=np.int64)
@@ -116,39 +123,26 @@ class CubeStackTask(PlaygroundTask):
             return
         if len(actor_paths) != 4:
             raise ValueError("Cube contacts require actor0/actor1/collider0/collider1 paths")
-        def matches(root):
-            return any(path == root or path.startswith(root+"/") for path in actor_paths)
-        touched = {color: matches(path) for color, path in self.object_paths.items()}
-        if not any(touched.values()):
+        red, blue, finger0, finger1, table = self.contact_paths(actor_paths)
+        touched, fingers = (red, blue), (finger0, finger1)
+        if not (red or blue):
             return
-        cfg, dt = self.config["outcome"], self.execution["physics_dt"]
-        force, vertical = 0., 0.
-        for contact in contacts:
-            impulse = np.asarray(contact.impulse, dtype=float)
-            normal = np.asarray(contact.normal, dtype=float)
-            separation = float(contact.separation)
-            if (impulse.shape != (3,) or normal.shape != (3,) or not np.isfinite(impulse).all()
-                    or not np.isfinite(normal).all() or not math.isfinite(separation)):
-                raise RuntimeError("Nonfinite or malformed measured cube contact")
-            force += float(np.linalg.norm(impulse))/dt
-            norm = float(np.linalg.norm(normal))
-            if (norm > 1e-8 and abs(float(normal[2]))/norm >= math.cos(math.radians(cfg["max_support_normal_tilt_deg"]))
-                    and abs(separation) <= cfg["contact_separation_tolerance_m"]):
-                vertical += abs(float(impulse[2]))/dt
+        cfg = self.config["outcome"]
+        force, vertical = self.contact_forces(contacts)
         current = self.contacts[env_id]
         for object_index, color in enumerate(COLORS):
-            if touched[color]:
+            if touched[object_index]:
                 for finger in range(2):
-                    if matches(self.engine.template.robot_path+f"/link{7+finger}"):
+                    if fingers[finger]:
                         current[color+"_finger_forces_n"][finger] += force
                         if force >= cfg["min_grasp_force_n"]:
                             self.contact_counts[env_id, object_index, finger] += 1
-        if all(touched.values()):
+        if red and blue:
             current["red_blue_support_force_n"] += vertical
-        if matches(self.table_path):
-            if touched["red"]:
+        if table:
+            if red:
                 current["red_table_force_n"] += vertical
-            if touched["blue"]:
+            if blue:
                 current["blue_table_support_force_n"] += vertical
 
     def after_tick(self, env_ids):

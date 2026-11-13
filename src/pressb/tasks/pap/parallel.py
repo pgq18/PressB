@@ -56,6 +56,7 @@ def load_config(config):
         raise ValueError("render_resolution requires two positive integer dimensions")
     result["render_resolution"] = list(resolution)
     result["image_preprocessing"] = validate_image_preprocessing(result.get("image_preprocessing"))
+    result["color_response_workers"] = _integer(result.get("color_response_workers", 0), "color_response_workers", 0)
     for camera in ("up_camera", "wrist_camera"):
         width, height = result["scene"][camera]["resolution"]
         if resolution[0] * height != resolution[1] * width:
@@ -88,7 +89,7 @@ class PAPTask(ParallelTask):
         keys = ("num_envs", "gpu", "physics_dt", "control_hz", "horizon", "max_episode_seconds",
                 "settling_ticks", "spacing_m", "render_resolution", "render_subframes",
                 "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "gamma",
-                "image_preprocessing")
+                "image_preprocessing", "color_response_workers")
         self.execution = {key: copy.deepcopy(cfg[key]) for key in keys}
         self.execution.update(renderer_profile="rl_fast" if cfg["renderer_profile"] == "rl_fast" else "calibrated",
                               log_dir=str(_path(cfg.get("log_dir", "outputs/pap_vector_workers"))),

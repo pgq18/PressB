@@ -70,7 +70,7 @@ def load_config(config):
                "horizon", "control_hz", "physics_dt", "max_episode_seconds", "gamma", "gpu",
                "headless", "settling_ticks", "collision_policy", "randomization", "smoothing",
                "model_inputs", "spacing_m", "render_resolution", "renderer_profile", "render_subframes",
-               "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "log_dir",
+               "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "color_response_workers", "log_dir",
                "image_preprocessing", "image_output_resolution"}
     if not isinstance(config, dict) or set(config) - allowed:
         raise ValueError(f"Table buttons configuration supports only {sorted(allowed)}")
@@ -151,7 +151,7 @@ def load_config(config):
     execution_keys = ("num_envs", "gpu", "horizon", "physics_dt", "control_hz", "max_episode_seconds",
         "settling_ticks", "gamma", "headless", "spacing_m", "render_resolution", "renderer_profile",
         "render_subframes", "observation_render_frames", "reset_render_frames", "cpu_threads",
-        "png_workers", "log_dir", "image_preprocessing", "image_output_resolution")
+        "png_workers", "color_response_workers", "log_dir", "image_preprocessing", "image_output_resolution")
     execution = execution_config({**{key: result[key] for key in execution_keys if key in result},
         "render_resolution": result.get("render_resolution", scene["up_camera"]["resolution"]),
         "reset_render_frames": result.get("reset_render_frames", scene.get("rendering", {}).get("warmup_frames", 8)),

@@ -46,6 +46,10 @@ image augmentation pipeline. The visual encoder and diffusion denoiser are
 trained by SFT; online DPPO subsequently freezes the encoder and updates only
 the denoiser. See [DPPO setup and contracts](dppo.md).
 
+π₀.₅ uses a [pinned LeRobot revision](https://github.com/huggingface/lerobot/commit/d324ffe810d17264a0b1e628698aa1fa09aa639c)
+for the policy, flow-matching loss, and processors. PressB provides its
+LeRobot SFT entry point and inference adapter. See [π₀.₅ setup](pi05.md).
+
 ## Inference
 
 Use `scripts/run_experiment.py inference --config ...` with a template from
@@ -111,12 +115,24 @@ torchrun --standalone --nproc_per_node=1 scripts/train_model.py \
   -- --run-id my_table_buttons_run
 ```
 
-Profiles are `pose9`, `joint6`, `joint7`, `joint6_multitask`, and
-`joint7_multitask`; use the matching YAML. Increase `--nproc_per_node` only for a
+Profiles are `pose9`, `joint6`, `joint7`, `joint6_multitask`,
+`joint7_multitask`, and `joint7_generic`; use the matching YAML. Increase `--nproc_per_node` only for a
 planned multi-GPU run. The existing schema checks still apply: the current
 joint6 multi-task trainer expects the established 3,000-episode, three-color
 dataset structure, and six-action checkpoints retain a seven-dimensional
 measured state. This import does not generalize those datasets implicitly.
+
+For a new task's seven-dimensional joint demonstrations, select
+`--profile joint7_generic` and `configs/model_training/vlajepa_joint7_generic.yaml`.
+This reader accepts any single-task PressB LeRobot v3 export with at least two
+episodes, an explicit `meta/export_manifest.json` action/unit contract, and the
+`up`/`wrist` cameras at 30 Hz. Episodes are split 90/10 before frame sampling;
+500 episodes give 450 training and 50 validation episodes. Degrees and full
+gripper width in centimetres use the existing fixed `[180,...,180,8]` scale.
+Both the six arm joints and gripper are learned. The pretrained model's four
+state/action interface tensors are reinitialized for joint semantics; no prior
+task checkpoint is resumed. The generic checkpoint records its actual task
+instruction and loads through the common joint inference adapter.
 
 `python -m pressb.training` and the installed `pressb-model-train` command are
 equivalent to `scripts/train_model.py`. DSRL and action-residual RL continue to

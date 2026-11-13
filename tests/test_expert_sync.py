@@ -155,6 +155,7 @@ def running_node(service, transport):
                 assert not thread.is_alive()
         return
 
+    pytest.importorskip("websockets.asyncio.server", reason="WebSocket serving requires websockets >=14")
     # Execute the production asynchronous server, with its own owner thread.
     with socket.socket() as reserve:
         reserve.bind(("127.0.0.1", 0))

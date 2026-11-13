@@ -33,6 +33,73 @@ def plan(scene):
     return plan_stack(scene)
 
 
+@pytest.fixture(scope="module")
+def compact_plan(scene):
+    return plan_stack(scene,trajectory_profile="compact")
+
+
+def test_compact_plan_removes_idle_commands_without_increasing_speed(scene,plan,compact_plan):
+    actions = np.asarray(compact_plan["actions"])
+    changes = np.diff(np.vstack([compact_plan["expected_initial_state"],actions]),axis=0)
+    assert list(dict.fromkeys(compact_plan["phases"])) == [
+        "approach_open","descend","close","carry_place","release","retreat"]
+    assert np.all(np.max(np.abs(changes),axis=1)>1e-10)
+    assert all(point["hold_seconds"] == 0 for point in compact_plan["waypoints"])
+    assert compact_plan["duration_s"] < .7*plan["duration_s"]
+    assert compact_plan["validation_hold_seconds"] == .6
+    assert compact_plan["training_end_frame"] == len(actions)-1
+    assert compact_plan["return_home_policy"] == "none"
+    assert compact_plan["max_joint_speed_deg_s"] == plan["max_joint_speed_deg_s"] == 20.
+    assert np.max(compact_plan["measured_max_speed_rad_m_s"][:6]) <= np.deg2rad(20)+1e-8
+    assert compact_plan["measured_max_speed_rad_m_s"][6] <= .03+1e-8
+    first = compact_plan["waypoints"][0]
+    assert first["action"][6] == pytest.approx(scene["gripper_max_width_m"])
+    assert np.max(actions[:,6]) == pytest.approx(.1)
+    assert compact_plan["min_tcp_base_z_m"] >= compact_plan["grasp_height_base_m"]-1e-5
+
+
+def test_compact_carry_is_one_forward_arch_with_clearance_and_aligned_placement(scene,compact_plan):
+    points = [row for row in compact_plan["waypoints"] if row["phase"]=="carry_place"]
+    tcp = np.asarray([row["tcp_base_m"] for row in points])
+    origin,target = np.asarray(scene["objects"][0]["center_xy"]),np.asarray(scene["objects"][1]["center_xy"])
+    delta = target-origin
+    progress = (tcp[:,:2]-origin)@delta/np.dot(delta,delta)
+    assert np.all(np.diff(progress)>0) and progress[-1] == pytest.approx(1.)
+    np.testing.assert_allclose(tcp[:,:2],origin+progress[:,None]*delta,atol=1e-5)
+    # Control-point height alone would understate this arch's actual lift.
+    assert np.max(tcp[:,2])+compact_plan["robot_base_height_above_table_m"] >= .09-1e-5
+    # Conservative circles cover both square footprints; whenever they could
+    # overlap, the carried cube's bottom must remain above the target's top.
+    radius = sum(np.linalg.norm(obj["size"][:2])/2 for obj in scene["objects"])
+    overlapping = np.linalg.norm(tcp[:,:2]-target,axis=1)<=radius
+    carried_bottom = tcp[overlapping,2]+compact_plan["robot_base_height_above_table_m"]-compact_plan["grasp_height_above_table_m"]
+    assert carried_bottom.min() >= scene["objects"][1]["size"][2]+compact_plan["release_gap_m"]-1e-5
+    kin = PiperKinematics(ROOT/scene["robot_urdf"],tip_offset=.1358)
+    transform = kin.fk(np.asarray(points[-1]["action"][:6]))
+    np.testing.assert_allclose(transform[:3,3],[*target,compact_plan["placement_tcp_height_base_m"]],atol=1e-5)
+    expected = Rotation.from_euler("z",30.36+180,degrees=True).as_matrix()@np.diag([1,-1,-1])
+    np.testing.assert_allclose(transform[:3,:3],expected,atol=1e-5)
+
+
+def test_compact_releases_with_clearance_then_opens_while_retreating(scene,compact_plan):
+    release = next(row for row in compact_plan["waypoints"] if row["phase"]=="release")
+    retreat = [row for row in compact_plan["waypoints"] if row["phase"]=="retreat"]
+    assert release["action"][6] >= min(scene["objects"][0]["size"][:2])+.01-1e-10
+    assert release["action"][6] < compact_plan["open_width_m"]
+    widths = np.asarray([release["action"][6]]+[row["action"][6] for row in retreat])
+    heights = np.asarray([release["tcp_base_m"][2]]+[row["tcp_base_m"][2] for row in retreat])
+    assert np.all(np.diff(widths)>0) and np.all(np.diff(heights)>0)
+    assert widths[-1] == pytest.approx(.1)
+
+
+def test_compact_accepts_explicit_opening_override_and_rejects_unknown_profile(scene):
+    overridden = plan_stack(scene,trajectory_profile="compact",open_width=.08)
+    assert overridden["open_width_m"] == .08
+    assert np.asarray(overridden["actions"])[:,6].max() == pytest.approx(.08)
+    with pytest.raises(ValueError,match="profile"):
+        plan_stack(scene,trajectory_profile="unknown")
+
+
 def test_physical_plan_lifts_and_rotates_before_placing_then_returns_home(scene,plan):
     phases = list(dict.fromkeys(plan["phases"]))
     assert phases == ["open","pregrasp","descend","close","lift","transfer","place","release","retreat","return_home","settled"]
@@ -108,7 +175,7 @@ def test_actual_plan_only_uses_pinned_scene_and_disables_random_layouts(tmp_path
     config = json.loads((args.output/"config.json").read_text())
     generated = json.loads((args.output/"plan.json").read_text())
     report = json.loads((args.output/"report.json").read_text())
-    assert config["scene_config"] == "configs/calibration/playground_20261109_global_refined.json"
+    assert config["scene_config"] == "configs/calibration/playground_20261113_appearance.json"
     assert config["randomization"]["enabled"] is False
     assert config["terminate_on_success"] is False
     assert generated["source"]["center_xy"] == [.331263,.102522]

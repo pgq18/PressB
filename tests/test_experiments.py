@@ -149,12 +149,15 @@ def test_cli_collection_uses_shared_rollout_and_separate_dataset(tmp_path, monke
     data = minimal()
     data["run"] = config(tmp_path / "run", method="base", steps=20)
     data["run"]["mode"] = "eval"
+    data["run"]["rollout"].update(terminal_observation_mode="state_only_if_no_bootstrap",
+                                 fused_step_reset=True)
     path = save(tmp_path / "config.json", data)
     assert main(["collect", "--config", str(path), "--episodes", "2", "--resolved-dir", str(tmp_path / "resolved")]) == 0
     manifest = json.loads((tmp_path / "run_trajectories/manifest.json").read_text())
     assert sum(ep["complete"] for ep in manifest["episodes"].values()) == 2
     assert json.loads(capsys.readouterr().out)["state"] == "completed"
     assert json.loads((tmp_path/"run/config.json").read_text())["rollout"]["terminal_observation_mode"] == "full"
+    assert json.loads((tmp_path/"run/config.json").read_text())["rollout"]["fused_step_reset"] is False
 
 
 def test_explicit_dataset_path_is_never_silently_relocated(tmp_path):
@@ -166,3 +169,69 @@ def test_explicit_dataset_path_is_never_silently_relocated(tmp_path):
         main(["collect", "--config", str(path), "--resolved-dir", str(tmp_path / "resolved")])
     assert not (tmp_path / "run").exists()
     assert not (tmp_path / "run_trajectories").exists()
+
+
+def _fake_eval_nodes(monkeypatch):
+    import pressb.runtime.trainer as trainer
+    from test_rl_nodes_trainer import metadata, Inference, StateOnlySimulation
+    inf_meta, sim_meta = metadata()
+    inference, simulation = Inference(inf_meta), StateOnlySimulation(sim_meta)
+    clients = {"ws://127.0.0.1:8100": inference, "http://127.0.0.1:8101": simulation}
+    monkeypatch.setattr(trainer, "NodeClient", lambda endpoint, **kw: clients[endpoint])
+    return inference, simulation
+
+
+@pytest.mark.parametrize("fused", [False, True])
+@pytest.mark.parametrize("limit,allow,exit_code,state", [
+    (30, False, 0, "completed"), (2, False, 1, "transition_limit"), (2, True, 0, "transition_limit"),
+])
+def test_cli_fast_eval_and_explicit_diagnostic_exit(tmp_path, monkeypatch, capsys, fused, limit, allow, exit_code, state):
+    inference, simulation = _fake_eval_nodes(monkeypatch)
+    data = minimal()
+    data["run"].update(output_dir=str(tmp_path / "run"), rollout={
+        "eval_episodes": 5, "execution_horizon": 2,
+        "terminal_observation_mode": "state_only_if_no_bootstrap", "fused_step_reset": fused})
+    path = save(tmp_path / "config.json", data)
+    arguments = ["eval", "--config", str(path), "--max-transitions", str(limit),
+                 "--resolved-dir", str(tmp_path / "resolved")]
+    if allow:
+        arguments.append("--allow-transition-limit")
+    assert main(arguments) == exit_code
+    result = json.loads(capsys.readouterr().out)
+    assert result["state"] == state
+    assert result["terminal_observation_mode"] == "state_only_if_no_bootstrap"
+    assert result["fused_step_reset"] is fused
+    if state == "completed":
+        assert result["episodes"] == result["reset_envs"] == 5
+    else:
+        assert result["transitions"] == limit
+    assert not inference.contexts
+    assert bool(simulation.fused_calls) is fused
+
+
+@pytest.mark.parametrize("command", ["list", "train", "collect", "validate", "prepare"])
+def test_cli_diagnostic_exit_flag_requires_eval(command, capsys):
+    with pytest.raises(SystemExit) as error:
+        main([command, "--allow-transition-limit"])
+    assert error.value.code == 2
+    assert "supported only by eval" in capsys.readouterr().err
+
+
+def test_cli_diagnostic_flag_does_not_hide_cleanup_exception(tmp_path, monkeypatch):
+    inference, _ = _fake_eval_nodes(monkeypatch)
+
+    def fail_close():
+        raise RuntimeError("cleanup failed after transition_limit")
+
+    inference.close = fail_close
+    data = minimal()
+    data["run"].update(output_dir=str(tmp_path / "run"), rollout={
+        "eval_episodes": 5, "execution_horizon": 2,
+        "terminal_observation_mode": "state_only_if_no_bootstrap"})
+    path = save(tmp_path / "config.json", data)
+    with pytest.raises(RuntimeError, match="cleanup failed"):
+        main(["eval", "--config", str(path), "--max-transitions", "2",
+              "--allow-transition-limit", "--resolved-dir", str(tmp_path / "resolved")])
+    # A persisted transition_limit alone must never authorize a successful exit.
+    assert json.loads((tmp_path / "run/status.json").read_text())["state"] == "transition_limit"
+    assert not inference.contexts

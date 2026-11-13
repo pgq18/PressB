@@ -123,11 +123,11 @@
       "source_sha256": "ac99bf762981c560a2e62ac26740c992509df5bebc9556509daaa10e9e5dbb1e"
     },
     "starVLA/dataloader/table_buttons_lerobot.py": {
-      "bytes": 19924,
+      "bytes": 20126,
       "origin": "h200_worktree_addition",
-      "sha256": "e43f2c0e832f57456c258eafd6f5804eb4cba4572e639fa649fab03da3fee288",
+      "sha256": "e66a181a1c037bb64429b1080d3d4600e4dc34355225a890f8bdc74696453e89",
       "source_sha256": "abf275cd46769dfe20870d3a3641003c47900c605fdc20cddb65473a8e733821",
-      "adaptation": "Pass the shared train-only image transform callable to the common temporal image reader, including sample-keyed augmentation and epoch propagation."
+      "adaptation": "Pass the shared train-only image transform callable to the common temporal image reader, including sample-keyed augmentation and epoch propagation. Numeric loader exposes a timestamp-validation hook; legacy tolerance is unchanged, generic joint7 accounts for float32 storage ULP."
     },
     "starVLA/dataloader/table_buttons_multitask_joint6_lerobot.py": {
       "bytes": 5186,
@@ -306,11 +306,11 @@
       "adaptation": "Resolve, save and fingerprint the common SFT augmentation preset and transform order; construct seeded split-specific readers and propagate epoch before resumed reads, keeping validation unaugmented."
     },
     "starVLA/training/train_table_buttons.py": {
-      "bytes": 44541,
+      "bytes": 52826,
       "origin": "h200_worktree_addition",
-      "sha256": "49739b3983572aa4e0dcb5bd83d82753d7dd2da34a1c1bd394bd340254f002e8",
+      "sha256": "cf11525e95477e497391dd7c76e72a561e20ca4d3a57b9b50ee9ca9841957800",
       "source_sha256": "e0d78a0b0187f1b1ad65002bfe29920db743b7c0b0e65411f2ca029811eff579",
-      "adaptation": "Resolve and save the shared SFT augmentation preset for joint6/joint7 and delegated multi-task joint6 training; use seeded train transforms and epoch propagation while disabling validation transforms."
+      "adaptation": "Resolve and save the shared SFT augmentation preset for joint6/joint7 and delegated multi-task joint6 training; use seeded train transforms and epoch propagation while disabling validation transforms. Accept an explicit schema name from generic joint7 SFT while preserving legacy profile defaults. Support model-only joint7 warm starts with source provenance and strict trained-state loading."
     },
     "starVLA/training/train_table_buttons_multitask.py": {
       "bytes": 24117,
@@ -457,6 +457,13 @@
       "origin": "h200_worktree_addition",
       "sha256": "9de5b85cc9a26bd5648f42035037b32f132f595ecd5dc44ac0abafd6c46ced0e",
       "source_sha256": "9de5b85cc9a26bd5648f42035037b32f132f595ecd5dc44ac0abafd6c46ced0e"
+    },
+    "starVLA/training/train_joint7.py": {
+      "bytes": 169,
+      "sha256": "d18453400e7aa6d97f7af74f69298c63555783f01533102e4331bf84b834d111",
+      "source_sha256": null,
+      "origin": "pressb_integration",
+      "adaptation": "Delegate task-independent joint7 LeRobot SFT to the PressB integration module."
     }
   },
   "notes": [
@@ -470,7 +477,8 @@
     "joint6",
     "joint7",
     "joint6_multitask",
-    "joint7_multitask"
+    "joint7_multitask",
+    "joint7_generic"
   ],
   "repository": "https://github.com/pgq18/VLA-JEPA.git",
   "schema_version": 1,

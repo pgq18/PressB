@@ -7,8 +7,10 @@ import numpy as np
 
 def build_scene(stage, config):
     from pressb.tasks.playground.scene import build_scene as build_workspace
-    from .assets import create_bin, create_object
+    from .assets import create_bin, create_object, material_settings
     cfg = deepcopy(config)
+    material_overrides = cfg.get("cleanup_materials")
+    material_settings(material_overrides)
     cfg["objects"] = []
     scene = build_workspace(stage, cfg)
     base = np.asarray(scene["robot_base_position_world"], dtype=float)
@@ -18,7 +20,8 @@ def build_scene(stage, config):
     position = [*(base[:2]+box["center_xy"]), table+box["size_xyz_m"][2]/2]
     scene["bin"] = create_bin(stage, root+"/Bin", position=position,
         orientation_wxyz=[math.cos(half), 0., 0., math.sin(half)],
-        size_xyz=box["size_xyz_m"], wall_thickness=box["wall_thickness_m"])
+        size_xyz=box["size_xyz_m"], wall_thickness=box["wall_thickness_m"],
+        material_overrides=material_overrides)
     scene["bin"]["yaw_deg"] = box["yaw_deg"]
     scene["collision_paths"].extend(scene["bin"]["collision_paths"])
     from .geometry import KINDS, asset_spec
@@ -30,7 +33,7 @@ def build_scene(stage, config):
         half = math.radians(obj["yaw_deg"])/2
         scene["objects"][kind] = create_object(stage, root+"/Objects/"+kind, kind,
             position=position, orientation_wxyz=[math.cos(half), 0., 0., math.sin(half)],
-            mass_kg=obj["mass_kg"], scale=obj["scale"])
+            mass_kg=obj["mass_kg"], scale=obj["scale"], material_overrides=material_overrides)
         scene["collision_paths"].extend(scene["objects"][kind]["collision_paths"])
     scene["task_id"] = "tabletop_cleanup"
     scene["outcome_semantics"] = "Exactly two active objects: full geometry inside bin with grasp history and physical support"

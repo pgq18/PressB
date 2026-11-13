@@ -53,7 +53,12 @@ def validate_joint_schema(schema, normalization):
     dimension = schema.get("action_dim")
     if type(dimension) is not int or dimension not in (6, 7):
         raise ValueError("Joint VLA-JEPA requires a native joint6 or joint7 action head")
-    expected = dict(schema=f"vlajepa.table_buttons.joint{dimension}.v1", state_dim=7,
+    schemas = {f"vlajepa.table_buttons.joint{dimension}.v1"}
+    if dimension == 7:
+        schemas.add("vlajepa.joint7.v1")
+    if schema.get("schema") not in schemas:
+        raise ValueError("Unsupported joint checkpoint contract: schema")
+    expected = dict(state_dim=7,
                     action_horizon=7, video_horizon=8, fps=30, cameras=["up", "wrist"],
                     dataset_units=["deg"] * 6 + ["cm"])
     for key, value in expected.items():
@@ -140,12 +145,22 @@ def read_checkpoint_metadata(run, checkpoint=None, *, model_id=None):
     resolution = config["datasets"]["vla_data"]["resolution_size"]
     if type(resolution) is not int or resolution < 1 or not (run / "processor").is_dir():
         raise ValueError("Checkpoint requires a saved processor and positive resolution")
-    colors = schema.get("target_colors", expected.get("target_colors"))
-    if colors is None:
-        group = schema.get("dataset_group", config["run_id"])
-        colors = [group.split("_")[1]] if "_" in group else []
-    if not isinstance(colors, list) or not colors or any(color not in ("red", "yellow", "blue") for color in colors):
-        raise ValueError("Checkpoint must declare its trained target colors")
+    if schema["schema"] == "vlajepa.joint7.v1":
+        instructions = schema.get("instructions")
+        if (not isinstance(instructions, list) or len(instructions) != 1
+                or not isinstance(instructions[0], str) or not instructions[0].strip()
+                or instructions[0] != expected.get("instruction")
+                or schema.get("task_id") != expected.get("task_id")
+                or schema.get("task_id") != split.get("task_id")):
+            raise ValueError("Checkpoint must declare its trained task and instruction")
+    else:
+        colors = schema.get("target_colors", expected.get("target_colors"))
+        if colors is None:
+            group = schema.get("dataset_group", config["run_id"])
+            colors = [group.split("_")[1]] if "_" in group else []
+        if not isinstance(colors, list) or not colors or any(color not in ("red", "yellow", "blue") for color in colors):
+            raise ValueError("Checkpoint must declare its trained target colors")
+        instructions = [f"Press the {color} button." for color in colors]
     # Published hashes can live in the checkpoint or in portable archive
     # receipts. Archive host paths are not authoritative after relocation.
     digests = [manifest["model_sha256"]] if manifest.get("model_sha256") else []
@@ -168,7 +183,7 @@ def read_checkpoint_metadata(run, checkpoint=None, *, model_id=None):
     return dict(run=run, checkpoint=checkpoint, model_path=model_path, config=config, schema=schema,
                 normalization=normalization, manifest=manifest, action_dim=dimension,
                 expected_sha256=digests[0] if digests else None,
-                allowed_instructions=[f"Press the {color} button." for color in colors])
+                allowed_instructions=instructions)
 
 
 @dataclass(frozen=True)

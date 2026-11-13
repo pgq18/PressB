@@ -203,7 +203,7 @@
       "collision": true
     }
   ],
-  "gripper_max_width_m": 0.07,
+  "gripper_max_width_m": 0.1,
   "initial_state_joint_rad_m": [
     -0.18537141985431774,
     0.47251298839242484,

@@ -22,12 +22,16 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, help="Runner seed; use matching held-out seeds for before/after evaluation")
     parser.add_argument("--episodes", type=int)
     parser.add_argument("--max-transitions", type=int)
+    parser.add_argument("--allow-transition-limit", action="store_true",
+                        help="For eval diagnostics, accept a normally completed transition-limited run")
     parser.add_argument("--resume", help="Full RL checkpoint path, or DPPO checkpoint-sink HTTP(S) URL")
     parser.add_argument("--inference", help="Override runner inference endpoint")
     parser.add_argument("--simulation", "--environment", dest="simulation",
                         help="Override runner environment endpoint (simulation or real robot)")
     parser.add_argument("--token-env", default="PRESSB_RL_TOKEN")
     args = parser.parse_args(argv)
+    if args.allow_transition_limit and args.command != "eval":
+        parser.error("--allow-transition-limit is supported only by eval")
     if args.command == "list":
         print(json.dumps(available(), indent=2))
         return 0
@@ -56,7 +60,12 @@ def main(argv=None):
         run.setdefault("checkpoint", {})["resume"] = args.resume if remote else str(Path(args.resume).expanduser().resolve())
     if args.command in ("eval", "collect"):
         run["mode"] = "eval"
-        run.setdefault("rollout", {}).update(terminal_observation_mode="full", fused_step_reset=False)
+        rollout = run.setdefault("rollout", {})
+        if args.command == "collect":
+            rollout.update(terminal_observation_mode="full", fused_step_reset=False)
+        else:
+            rollout.setdefault("terminal_observation_mode", "full")
+            rollout.setdefault("fused_step_reset", False)
     elif args.command == "train":
         run["mode"] = "train"
     # Validate before writing resolved configs or launching GPU processes. The
@@ -108,4 +117,7 @@ def main(argv=None):
             observer.close({"state": "failed", "phase": "runner_setup_or_execution"})
         raise
     print(json.dumps(result, indent=2))
-    return 0 if result["state"] in ("completed", "stopped") else 1
+    accepted = result["state"] in ("completed", "stopped")
+    if args.allow_transition_limit and result["state"] == "transition_limit":
+        accepted = True
+    return 0 if accepted else 1

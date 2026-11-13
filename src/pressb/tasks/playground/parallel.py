@@ -13,7 +13,7 @@ from .backend import ROOT, STATE_NAMES, STATE_UNITS, load_config, sample_reset_s
 EXECUTION_KEYS = ("num_envs", "gpu", "horizon", "physics_dt", "control_hz", "max_episode_seconds",
     "settling_ticks", "gamma", "headless", "spacing_m", "render_resolution", "renderer_profile",
     "render_subframes", "observation_render_frames", "reset_render_frames", "cpu_threads",
-    "png_workers", "log_dir", "image_preprocessing", "image_output_resolution")
+    "png_workers", "color_response_workers", "log_dir", "image_preprocessing", "image_output_resolution")
 
 
 class PlaygroundTask(ParallelTask):

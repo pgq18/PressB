@@ -20,10 +20,22 @@ ROOT = Path(__file__).resolve().parents[4]
 
 def plan_stack(scene, *, source_name="red", target_name="blue",
                grasp_height_above_table=.012, lift_height_above_table=.090,
-               release_gap=.001, open_width=.060, close_width=.026,
+               release_gap=.001, open_width=None, close_width=.026,
                max_joint_speed_deg_s=20., gripper_speed_m_s=.030,
-               cartesian_speed_m_s=.040, align_target_yaw=True):
-    """Make an inspectable, bounded approach/grasp/lift/place/release/return plan."""
+               cartesian_speed_m_s=.040, align_target_yaw=True,
+               trajectory_profile="legacy"):
+    """Make a bounded manipulation plan, optionally without idle demonstration frames.
+
+    ``compact`` opens while approaching, carries along one continuous arch,
+    and finishes above the released stack. Its final physical validation dwell
+    is metadata for the collector, not repeated commands in the action labels.
+    ``legacy`` preserves the original return-home demonstration and its waits.
+    """
+    if trajectory_profile not in ("legacy", "compact"):
+        raise ValueError("Stack planning profile must be legacy or compact")
+    compact = trajectory_profile == "compact"
+    if open_width is None:
+        open_width = float(scene["gripper_max_width_m"]) if compact else .060
     objects = {obj["name"]: obj for obj in scene["objects"]}
     source, target = objects[source_name], objects[target_name]
     initial = np.asarray(scene["initial_state_joint_rad_m"], dtype=float)
@@ -72,7 +84,7 @@ def plan_stack(scene, *, source_name="red", target_name="blue",
         waypoints.append(dict(phase=phase,action=np.asarray(state).tolist(),hold_seconds=hold,
             minimum_duration_s=minimum_duration,tcp_base_m=current_tcp.tolist()))
 
-    def cartesian(phase, position, width, hold=0., end_yaw=None):
+    def cartesian(phase, position, width, hold=0., end_yaw=None, start_width=None):
         nonlocal yaw
         start = current_tcp.copy()
         position = np.asarray(position,dtype=float)
@@ -82,30 +94,59 @@ def plan_stack(scene, *, source_name="red", target_name="blue",
             distance = float(np.linalg.norm(point-current_tcp))
             yaw = start_yaw+(end_yaw-start_yaw)*fraction
             solved = kin.solve(point,q,orientation(yaw))
-            add(phase,np.r_[solved,width],minimum_duration=distance/cartesian_speed_m_s)
+            opening = width if start_width is None else start_width+(width-start_width)*fraction
+            add(phase,np.r_[solved,opening],minimum_duration=distance/cartesian_speed_m_s)
         waypoints[-1]["hold_seconds"] = hold
 
-    add("open",np.r_[q,open_width],.5)
-    q = kin.solve(np.r_[xy,high_z],q,orientation(grasp_yaw))
-    add("pregrasp",np.r_[q,open_width],.5)
-    cartesian("descend",np.r_[xy,grasp_z],open_width,.5)
-    add("close",np.r_[q,close_width],1.)
-    cartesian("lift",np.r_[xy,high_z],close_width,.6)
-    cartesian("transfer",np.r_[destination,high_z],close_width,.4,end_yaw=placement_yaw)
-    cartesian("place",np.r_[destination,placement_z],close_width,.6)
-    add("release",np.r_[q,open_width],1.)
-    cartesian("retreat",np.r_[destination,high_z],open_width,.5)
-    add("return_home",np.r_[initial[:6],open_width],1.)
-    add("settled",np.r_[initial[:6],open_width],2.)
+    if compact:
+        q_pregrasp = kin.solve(np.r_[xy,high_z],q,orientation(grasp_yaw))
+        add("approach_open",np.r_[q_pregrasp,open_width])
+        cartesian("descend",np.r_[xy,grasp_z],open_width)
+        add("close",np.r_[q,close_width])
+        # A cubic arch has vertical entry/exit tangents and no zero-velocity
+        # interior waypoint. Lifting, yaw alignment and transfer happen together.
+        # Bézier control points are not positions visited by the TCP. Set their
+        # Z so the curve itself reaches the configured lift height at its middle.
+        arch_control_z = (4.*high_z-(grasp_z+placement_z)/2.)/3.
+        points = np.array([np.r_[xy,grasp_z],np.r_[xy,arch_control_z],
+                           np.r_[destination,arch_control_z],np.r_[destination,placement_z]])
+        count = max(2,math.ceil(np.linalg.norm(np.diff(points,axis=0),axis=1).sum()/.004),
+                    math.ceil(abs(placement_yaw-grasp_yaw)/4.))
+        for fraction in np.arange(1,count+1)/count:
+            f = fraction
+            point = ((1-f)**3*points[0]+3*(1-f)**2*f*points[1]
+                     +3*(1-f)*f*f*points[2]+f**3*points[3])
+            distance = float(np.linalg.norm(point-current_tcp))
+            yaw = grasp_yaw+(placement_yaw-grasp_yaw)*(f*f*(3-2*f))
+            solved = kin.solve(point,q,orientation(yaw))
+            add("carry_place",np.r_[solved,close_width],minimum_duration=distance/cartesian_speed_m_s)
+        # Open far enough to clear both cube faces before withdrawing; finish
+        # opening concurrently with the retreat instead of adding an open hold.
+        release_width = min(open_width,max(float(min(size[:2]))+.010,close_width+.010))
+        add("release",np.r_[q,release_width])
+        cartesian("retreat",np.r_[destination,high_z],open_width,start_width=release_width)
+    else:
+        add("open",np.r_[q,open_width],.5)
+        q = kin.solve(np.r_[xy,high_z],q,orientation(grasp_yaw))
+        add("pregrasp",np.r_[q,open_width],.5)
+        cartesian("descend",np.r_[xy,grasp_z],open_width,.5)
+        add("close",np.r_[q,close_width],1.)
+        cartesian("lift",np.r_[xy,high_z],close_width,.6)
+        cartesian("transfer",np.r_[destination,high_z],close_width,.4,end_yaw=placement_yaw)
+        cartesian("place",np.r_[destination,placement_z],close_width,.6)
+        add("release",np.r_[q,open_width],1.)
+        cartesian("retreat",np.r_[destination,high_z],open_width,.5)
+        add("return_home",np.r_[initial[:6],open_width],1.)
+        add("settled",np.r_[initial[:6],open_width],2.)
 
     actions,phases = [],[]
     previous = initial.copy()
     for waypoint in waypoints:
         command = np.asarray(waypoint["action"])
         seconds = max(float(np.max(np.abs(command-previous)/speed)),waypoint["minimum_duration_s"])
-        frames = max(1,int(math.ceil(seconds*fps)))
+        frames = max(0 if compact else 1,int(math.ceil(seconds*fps)))
         waypoint["start_frame"] = len(actions)
-        for fraction in np.arange(1,frames+1)/frames:
+        for fraction in (np.arange(1,frames+1)/frames if frames else []):
             actions.append(previous+(command-previous)*fraction)
             phases.append(waypoint["phase"])
         waypoint["arrival_frame"] = len(actions)-1
@@ -124,6 +165,8 @@ def plan_stack(scene, *, source_name="red", target_name="blue",
     if np.min(tcp[:,2])<grasp_z-.0001:
         raise ValueError("Interpolated TCP dips below the reviewed grasp height")
     return dict(schema_version=1,simulation_only=True,hardware_access=False,
+        trajectory_profile=trajectory_profile,validation_hold_seconds=.6 if compact else 0.,
+        training_end_frame=len(actions)-1,return_home_policy="none" if compact else "after_stack",
         source_name=source_name,target_name=target_name,source=deepcopy(source),target=deepcopy(target),
         expected_initial_state=initial.tolist(),fps=fps,actions=actions.tolist(),phases=phases,waypoints=waypoints,
         duration_s=len(actions)/fps,units=["rad"]*6+["m"],tip_offset_m=.1358,

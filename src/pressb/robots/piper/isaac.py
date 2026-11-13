@@ -24,7 +24,12 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
     from isaacsim.core.api import World
     from isaacsim.core.utils.stage import add_reference_to_stage
     from .wrist_camera import apply_black_materials, attach_wrist_camera
+    from pressb.sensors.color_response import (
+        normalize_camera_responses, author_camera_response, bind_sim_camera_response,
+    )
     import carb
+
+    color_responses = normalize_camera_responses(cfg.get("camera_color_response"), ("up", "wrist"))
 
     # Extra render samples never advance the physical trajectory or video time.
     rendering = cfg.get("rendering", {})
@@ -63,7 +68,7 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
     transform = UsdGeom.Xformable(robot_prim)
     transform.ClearXformOpOrder()
     transform.AddTranslateOp().Set(Gf.Vec3d(*base))
-    apply_black_materials(stage)
+    apply_black_materials(stage, material_overrides=cfg.get("robot_material"))
     width_max = cfg["gripper_max_width_m"]
     for prim in Usd.PrimRange(robot_prim):
         if prim.HasAPI(UsdPhysics.ArticulationRootAPI):
@@ -131,6 +136,8 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
         "wrist": (wrist_info["camera_path"], cfg.get("wrist_camera", {}).get("resolution", cfg["wrist_camera_resolution"])),
     }
     camera_paths = {name: path for name, (path, _) in camera_specs.items()}
+    for name, response in color_responses.items():
+        author_camera_response(stage.GetPrimAtPath(camera_paths[name]), response)
     if not initialize:
         return SimpleNamespace(world=world, stage=stage, scene=scene, base=base,
             robot_path="/World/Piper", robot=None, controller=None, indices=None,
@@ -151,6 +158,8 @@ def build_piper_runtime(cfg, scene_builder, *, asset_root, camera_hardware_build
     set_intrinsics(stage.GetPrimAtPath(up_path), cfg["up_camera"])
     if "wrist_camera" in cfg:
         set_intrinsics(wrist_prim, cfg["wrist_camera"])
+    for name, response in color_responses.items():
+        bind_sim_camera_response(cameras[name], response)
     indices = np.array([robot.get_dof_index(f"joint{i}") for i in range(1, 9)])
 
     def full_command(value):

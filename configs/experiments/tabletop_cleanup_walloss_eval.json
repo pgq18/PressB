@@ -5,7 +5,7 @@
   "task": {
     "plugin": "tabletop_cleanup",
     "config": {
-      "scene_config": "${project_root}/configs/calibration/playground_20261109_global_refined.json",
+      "scene_config": "${project_root}/configs/calibration/playground_20261113_appearance.json",
       "randomization": {
         "enabled": true,
         "pool": [

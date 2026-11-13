@@ -81,7 +81,7 @@ def test_gamepad_matches_rgbd_height_without_stretching_thumbsticks_or_xy():
     bridge=next(part for part in parts if part.name=="center_bridge")
     assert np.ptp(np.asarray(bridge.vertices)[:,1])==pytest.approx(.055)
     assert spec["grasp_candidates"][0]["surface_width_m"]==pytest.approx(.055)
-    assert spec["grasp_candidates"][0]["opening_m"]==pytest.approx(.070)
+    assert spec["grasp_candidates"][0]["opening_m"]==pytest.approx(.090)
     assert spec["grasp_candidates"][0]["closed_width_m"]==pytest.approx(.041)
     bounds=np.asarray(bridge.vertices)[:,2]
     contact=spec["grasp_candidates"][0]["center_local_m"][2]

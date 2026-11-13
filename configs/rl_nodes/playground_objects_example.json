@@ -4,7 +4,7 @@
   "backend": {
     "plugin": "playground",
     "config": {
-      "scene_config": "configs/calibration/playground_20261109_global_refined.json",
+      "scene_config": "configs/calibration/playground_20261113_appearance.json",
       "scene_overrides": {
         "task_instruction": "Observe the object on the tabletop.",
         "objects": [

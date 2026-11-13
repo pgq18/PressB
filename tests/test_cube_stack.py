@@ -80,6 +80,22 @@ def test_physical_lift_then_released_stable_stack_succeeds_after_dwell_only_once
     json.dumps(result, allow_nan=False)
 
 
+@pytest.mark.parametrize("config", [{}, {"min_xy_overlap_fraction": .95}])
+def test_released_stable_offset_stack_succeeds(config):
+    outcome = tracker(**config)
+    prime_lift(outcome)
+
+    def offset(frame):
+        frame["positions"][0, 0] += .013
+
+    rows = hold(outcome, offset)
+    assert not rows[0]["success"]
+    assert rows[-1]["success"]
+    assert rows[-1]["xy_overlap_fraction"] == pytest.approx(17 / 30)
+    assert rows[-1]["conditions"]["red_blue_contact"]
+    assert "min_xy_overlap_fraction" not in outcome.config
+
+
 @pytest.mark.parametrize('history', ['none', 'single_finger', 'separate_fingers', 'lift_without_grasp', 'grasp_without_lift'])
 def test_stack_requires_simultaneous_bilateral_grasp_during_measured_lift(history):
     outcome = tracker()
@@ -136,8 +152,6 @@ def invalid_stack(frame, condition):
         frame['quaternions_wxyz'][i] = [math.cos(angle/2), math.sin(angle/2), 0., 0.]
     elif condition in ('red_inverted', 'blue_inverted'):
         frame['quaternions_wxyz'][0 if condition == 'red_inverted' else 1] = [0., 1., 0., 0.]
-    elif condition == 'insufficient_overlap':
-        frame['positions'][0, 0] += EDGE*.6
     elif condition == 'still_closed':
         frame['gripper_width_m'] = .025
     elif condition == 'red_still_held':
@@ -166,7 +180,7 @@ def invalid_stack(frame, condition):
 
 @pytest.mark.parametrize('condition', ['side_contact', 'tabletop', 'floating_red', 'interpenetrating',
     'floating_blue', 'blue_below_table', 'red_tilted', 'blue_tilted', 'red_inverted', 'blue_inverted',
-    'insufficient_overlap', 'still_closed', 'red_still_held', 'blue_still_held',
+    'still_closed', 'red_still_held', 'blue_still_held',
     'missing_block_support', 'missing_table_support', 'weak_block_support', 'red_also_on_table',
     'moving_red', 'moving_blue', 'spinning_red', 'spinning_blue'])
 def test_invalid_measured_stack_never_accumulates_success(condition):
@@ -220,7 +234,7 @@ def test_invalid_physical_samples_are_rejected(field, change):
 
 
 @pytest.mark.parametrize('option,value', [('stable_seconds', -1.), ('min_lift_height_m', -1.),
-    ('min_xy_overlap_fraction', 1.1), ('max_tilt_deg', 100.),
+    ('max_tilt_deg', 100.),
     ('support_height_tolerance_m', -1.), ('max_linear_speed_m_s', 0.),
     ('min_grasp_force_n', float('nan')), ('unknown_option', 1.)])
 def test_invalid_outcome_configuration_is_rejected(option, value):
@@ -235,10 +249,10 @@ def cube_config(**changes):
 
 def test_task_geometry_is_added_without_changing_playground_calibration():
     from pressb.tasks.playground.backend import load_config as workspace_config
-    original = workspace_config({'scene_config': 'configs/calibration/playground_20261109_global_refined.json'})
+    original = workspace_config({'scene_config': 'configs/calibration/playground_20261113_appearance.json'})
     cfg = cube_config()
     for key in ('table_height', 'table_width', 'table_depth', 'table_x_min',
-                'robot_base_xy', 'robot_base_height_above_table_m', 'initial_state_joint_rad_m',
+                'robot_base_xy', 'robot_base_height_above_table_m',
                 'wrist_camera', 'wrist_camera_resolution', 'up_camera', 'lighting', 'materials'):
         assert cfg['scene'][key] == original['scene'][key], key
     assert len(cfg['scene']['objects']) == 2
@@ -540,3 +554,20 @@ def test_cube_task_metadata_and_reset_instruction_describe_stack_not_empty_works
         task.sample_reset(0, 4, {'task': 'Put the blue cube on the red cube.'})
     builtins_only(metadata)
     json.dumps(metadata, allow_nan=False)
+
+
+def test_cached_cube_contact_topology_still_checks_live_ready_and_checker_each_time():
+    task = bound_task()
+    red = task.object_paths['red']
+    emit_contact(task, 0, red, '/World/Piper/link7', force=.1)
+    task.before_tick([0])
+    task.engine.backend.ready[0] = False
+    emit_contact(task, 0, red, '/World/Piper/link7', force=.1)
+    assert task.contacts[0] == task._empty_contacts()
+    task.engine.backend.ready[0] = True
+    checker, task.checkers[0] = task.checkers[0], None
+    emit_contact(task, 0, red, '/World/Piper/link7', force=.1)
+    assert task.contacts[0] == task._empty_contacts()
+    task.checkers[0] = checker
+    emit_contact(task, 0, red, '/World/Piper/link7', force=.1)
+    assert task.contacts[0]['red_finger_forces_n'] == pytest.approx([.1, 0.])

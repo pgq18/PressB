@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "task": "tabletop_cleanup",
+  "change": "Proceed from first release/retreat directly to next pregrasp; return home only after last object",
+  "comparison": {
+    "baseline_duration_s": 63.9,
+    "new_duration_s": 57.1,
+    "baseline_actions": 1917,
+    "new_actions": 1713,
+    "saved_seconds": 6.799999999999997,
+    "saved_fraction": 0.10641627543035992,
+    "return_home_phases": [
+      "speaker:return_home"
+    ],
+    "direct_transition": {
+      "phase_names": [
+        "speaker:open",
+        "speaker:pregrasp"
+      ],
+      "start_frame": 724,
+      "end_frame": 816,
+      "samples_including_midpoints": 186,
+      "tcp_height_above_table_min_m": 0.07499999999874157,
+      "tcp_height_above_table_max_m": 0.1199999999999937,
+      "box_rim_height_m": 0.049
+    },
+    "scope": "CPU nominal trajectory comparison under identical final fixed-box config. Full rigid-body and contact verification follows separately."
+  },
+  "cpu_planning_tests": {
+    "passed": 19,
+    "covers": "Six ordered object pairs; bounded continuous target transitions; no intermediate home"
+  },
+  "isaac_verification": {
+    "status": "passed",
+    "num_envs": 1,
+    "episode": {
+      "full_plan_executed": true,
+      "task_success": true,
+      "physical_success": true,
+      "objects": {
+        "gamepad": {
+          "max_lift_m": 0.09405845403671265,
+          "stable_position_excursion_m": 0.0,
+          "stable_rotation_excursion_rad": 4.8125829507698895e-08,
+          "physical_outcome": {
+            "active": true,
+            "grasped_and_lifted": true,
+            "contained": true,
+            "supported": true,
+            "direct_floor_support": true,
+            "released": true,
+            "low_velocity": true,
+            "no_table_support": true,
+            "bottom_world_m": 0.7640000962445522,
+            "top_world_m": 0.8246824408383033,
+            "max_lift_m": 0.08750268737519173
+          },
+          "passed": true
+        },
+        "speaker": {
+          "max_lift_m": 0.11403155326843262,
+          "stable_position_excursion_m": 4.2146848510894035e-08,
+          "stable_rotation_excursion_rad": 1.2500723805245574e-07,
+          "physical_outcome": {
+            "active": true,
+            "grasped_and_lifted": true,
+            "contained": true,
+            "supported": true,
+            "direct_floor_support": true,
+            "released": true,
+            "low_velocity": true,
+            "no_table_support": true,
+            "bottom_world_m": 0.7640000368718558,
+            "top_world_m": 0.7873200388171723,
+            "max_lift_m": 0.11061337918629077
+          },
+          "passed": true
+        }
+      },
+      "final_gripper_width_m": 0.06999623030424118,
+      "max_home_joint_error_rad": 0.0006457858729493893,
+      "passed": true
+    },
+    "control_hz": 30.0,
+    "action_count": 1713,
+    "video_frames": 1714,
+    "video_fps": 30.0
+  },
+  "physical_robot_executed": false,
+  "scope": "One fixed-layout complete physical simulation; not a randomized learned-policy evaluation. Existing real recordings retain their original intermediate return home.",
+  "sources": {
+    "src/pressb/tasks/tabletop_cleanup/planning.py": "d311b52d98846b41314665c9772ea781a0a1a59a73bf0d05a6204215a4417330",
+    "configs/rl_nodes/tabletop_cleanup_real_layout.json": "28576dfc0a99731e680050712b42e3a5a4273c5d667cf2560d119e97fd67d514",
+    "outputs/tabletop_cleanup_direct_transfer_20261110/planning_before.py": "8e747b8ab3cc18e61fad8bbb72369b674c4ec0cdcf12c133a769f8de3035bd4f",
+    "outputs/tabletop_cleanup_direct_transfer_20261110/simulation/plan.json": "ccf9d537cdb441052d13624e6548093a8861e8f6136d06ac70d7893183f2484c",
+    "outputs/tabletop_cleanup_direct_transfer_20261110/simulation/report.json": "f2891b15a479d0e0caca1d47132363fc877244193d60b7427e6f9538f5c5247b"
+  },
+  "artifacts": {
+    "simulation_video": "outputs/tabletop_cleanup_direct_transfer_20261110/simulation/env0_up_wrist.mp4",
+    "trajectory": "outputs/tabletop_cleanup_direct_transfer_20261110/simulation/plan.json",
+    "physics_trace": "outputs/tabletop_cleanup_direct_transfer_20261110/simulation/physics.jsonl",
+    "comparison": "outputs/tabletop_cleanup_direct_transfer_20261110/comparison.json"
+  }
+}

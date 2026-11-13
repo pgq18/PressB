@@ -106,7 +106,7 @@ def fake_backend():
     backend.outcomes = [SimpleNamespace(update=lambda *a, **kw: {"success": True}),
                         SimpleNamespace(update=lambda *a, **kw: {"success": False})]
     backend.max_ticks = 3
-    backend.timings = dict(physics_seconds=0., world_ticks=0, step_seconds=0.)
+    backend.timings = dict(physics_seconds=0., world_ticks=0, step_seconds=0., after_tick_seconds=0.)
     def begin_action(ids, values):
         for i, value in zip(ids, values):
             backend.last_sent[i] = backend.postprocessors[i].apply(value)

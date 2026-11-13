@@ -862,9 +862,10 @@ def test_state_only_all_done_batch_never_encodes_terminal_rows(tmp_path):
 
 @pytest.mark.parametrize("options", [{"learner": {"bootstrap_truncated": True}},
                                       {"learner": {"bootstrap_truncated": 0}},
-                                      {"mode": "eval", "method": "base"}])
-def test_state_only_requires_explicit_zero_bootstrap_training(options):
-    with pytest.raises(ValueError, match="require training with bootstrap_truncated=false"):
+                                      {"mode": "eval", "method": "base",
+                                       "learner": {"bootstrap_truncated": True}}])
+def test_state_only_requires_explicit_zero_bootstrap(options):
+    with pytest.raises(ValueError, match="require bootstrap_truncated=false"):
         TrainerConfig(rollout={"terminal_observation_mode": "state_only_if_no_bootstrap"}, **options)
 
 
@@ -1118,3 +1119,326 @@ def test_fused_negotiation_and_resume_guards(tmp_path):
     with pytest.raises(ValueError, match="fused_step_reset differs"):
         changed.run()
     assert not changed_sim.resets
+
+
+@pytest.mark.parametrize("method", ["base", "dsrl", "action_residual"])
+@pytest.mark.parametrize("fused", [False, True])
+@pytest.mark.parametrize("episodes", [1, 4, 5])
+def test_fast_evaluation_exact_episode_budget_and_final_state(tmp_path, method, fused, episodes):
+    checkpoint = None
+    if method != "base":
+        trained, _, _ = make_runner(tmp_path / "train", method, steps=4)
+        checkpoint = trained.run()["last_checkpoint"]
+    # Construct the eval configuration directly: both base and checkpoint
+    # evaluation must pass validation, not just a post-construction mode change.
+    cfg = config(tmp_path / "eval", method, steps=100)
+    cfg.update(mode="eval")
+    cfg["checkpoint"]["resume"] = checkpoint
+    if method == "action_residual":
+        cfg["learner"].update(residual_indices=[0, 2], residual_scale=[.02, .03])
+    cfg["rollout"].update(eval_episodes=episodes, fused_step_reset=fused,
+                          terminal_observation_mode="state_only_if_no_bootstrap")
+    inf_meta, sim_meta = metadata()
+    inference, simulation = Inference(inf_meta), StateOnlySimulation(sim_meta)
+    observed = []
+    observer = SimpleNamespace(on_reset=lambda rows: None,
+                               on_transition=lambda before, actions, rows: observed.extend(rows),
+                               close=lambda status: None)
+    runner = GenericTrainer(cfg, inference_client=inference, simulation_client=simulation, observer=observer)
+    result = runner.run()
+    assert result["state"] == "completed"
+    assert result["episodes"] == episodes and result["episode_budget_overshoot"] == 0
+    assert result["reset_envs"] == episodes  # No unused episode started at the tail.
+    assert not inference.contexts and not runner.live_contexts
+    assert runner.replay is None or len(runner.replay) == 0
+    assert not (tmp_path / "eval" / "checkpoints").exists()
+    terminal = [row for row in observed if row["terminated"] or row["truncated"]]
+    assert len(terminal) == episodes
+    assert result["successes"] == sum(row["info"]["success"] for row in terminal)
+    if episodes >= 4:
+        assert any(row["terminated"] for row in terminal)
+        assert any(row["truncated"] for row in terminal)
+    for row, expected in zip(terminal, simulation.terminal_rows, strict=True):
+        assert row["terminal_observation_omitted"]
+        for field in ("env_id", "episode_id", "step_id", "reward", "discount", "info"):
+            assert row[field] == expected[field]
+        for field in ("state", "control_state", "task_features", "task"):
+            assert row["observation"][field] == expected["observation"][field]
+    terminal_markers = {row["observation"]["state"][0] for row in terminal}
+    encoded_markers = {obs["state"][0] for call in inference.encode_calls for obs in call["observations"]}
+    assert not terminal_markers.intersection(encoded_markers)
+    assert inference.created == episodes + simulation.continuing_rows
+    if episodes == 5:
+        assert len(simulation.steps[-1]["items"]) == 1  # Partial final cohort.
+    if fused:
+        assert simulation.fused_calls[-1]["max_active_envs"] == 0
+    logs = [json.loads(line) for line in (tmp_path / "eval" / "episodes.jsonl").read_text().splitlines()]
+    assert len(logs) == episodes and logs[-1]["episode_id"] == terminal[-1]["episode_id"]
+
+
+@pytest.mark.parametrize("method", ["base", "dsrl", "action_residual"])
+def test_unfused_fast_evaluation_matches_full_reset_encode_rng_and_actions(tmp_path, method):
+    checkpoint = None
+    if method != "base":
+        trained, _, _ = make_runner(tmp_path / "train", method, steps=4)
+        checkpoint = trained.run()["last_checkpoint"]
+    runs = []
+    for mode in ("full", "state_only_if_no_bootstrap"):
+        runner, inference, simulation = state_only_runner(tmp_path / mode, method, steps=100)
+        runner.config.mode = "eval"
+        runner.config.checkpoint.resume = checkpoint
+        runner.config.rollout.terminal_observation_mode = mode
+        runner.config.rollout.eval_episodes = 5
+        result = runner.run()
+        runs.append((runner, inference, simulation, result))
+    full, fast = runs
+    assert full[3]["episodes"] == fast[3]["episodes"] == 5
+    assert full[3]["successes"] == fast[3]["successes"]
+    assert full[0].rng.bit_generator.state == fast[0].rng.bit_generator.state
+    assert [(call["env_ids"], call["seed"]) for call in full[2].resets] == [
+        (call["env_ids"], call["seed"]) for call in fast[2].resets]
+    assert [call["items"] for call in full[2].steps] == [call["items"] for call in fast[2].steps]
+    seed_maps = [{obs["state"][0]: seed for call in inference.encode_calls
+                  for obs, seed in zip(call["observations"], call["seeds"], strict=True)}
+                 for _, inference, _, _ in runs]
+    assert all(seed_maps[0][marker] == seed for marker, seed in seed_maps[1].items())
+    assert fast[1].created == full[1].created - 5
+
+
+@pytest.mark.parametrize("fused", [False, True])
+@pytest.mark.parametrize("steps", [1, 2, 3, 5])
+def test_fast_evaluation_transition_limit_skips_unused_encoding_and_resets(tmp_path, fused, steps):
+    runner, inference, simulation = state_only_runner(tmp_path, "base", steps=steps)
+    runner.config.rollout.fused_step_reset = fused
+    runner.config.rollout.eval_episodes = 20
+    result = runner.run()
+    assert result["state"] == "transition_limit" and result["transitions"] == steps
+    assert result["transition_budget_overshoot"] == result["episode_budget_overshoot"] == 0
+    # Every encoded observation feeds an executed policy action. No terminal or
+    # unfinished final observation is encoded after the transition budget ends.
+    assert inference.created == steps
+    assert not inference.contexts
+    if fused:
+        assert simulation.fused_calls[-1]["max_active_envs"] == 0
+    events = [json.loads(line) for line in (tmp_path / "rpc_timing.jsonl").read_text().splitlines()]
+    final_step = max(i for i, event in enumerate(events) if event["path"] in ("/step", "/step_and_reset"))
+    assert not any(event["path"] in ("/reset", "/encode") for event in events[final_step + 1:])
+
+
+@pytest.mark.parametrize("fused", [False, True])
+def test_fast_eval_all_active_exact_tail_and_initial_all_budget_guard(tmp_path, fused):
+    runner, _, simulation = state_only_runner(tmp_path / "small", "base", steps=100)
+    runner.config.rollout.fused_step_reset = fused
+    runner.config.rollout.eval_episodes = 1
+    simulation.meta.update(initial_reset="all_envs", scheduling="all_active")
+    with pytest.raises(ValueError, match="eval_episodes >= num_envs"):
+        runner.run()
+    assert not simulation.resets
+    runner, _, simulation = state_only_runner(tmp_path / "tail", "base", steps=100)
+    runner.config.rollout.fused_step_reset = fused
+    runner.config.rollout.eval_episodes = 5
+    simulation.meta.update(initial_reset="all_envs", scheduling="all_active")
+    original = simulation.call
+
+    def all_active(path, payload=None):
+        if path == "/step":
+            assert {item["env_id"] for item in payload["items"]} == {
+                eid for eid, slot in simulation.slots.items() if not slot["ended"]}
+        return original(path, payload)
+
+    simulation.call = all_active
+    result = runner.run()
+    assert result["episodes"] == result["reset_envs"] == 5
+    assert result["episode_budget_overshoot"] == 0
+
+
+@pytest.mark.parametrize("fused", [False, True])
+@pytest.mark.parametrize("done_flag", ["terminated", "truncated"])
+def test_fast_eval_terminal_discount_remains_duration_based(tmp_path, fused, done_flag):
+    runner, inference, simulation = state_only_runner(tmp_path, "base", steps=100)
+    runner.config.rollout.fused_step_reset = fused
+    original = simulation.call
+
+    def zero_terminal_discount(path, payload=None):
+        result = original(path, payload)
+        if path == "/step":
+            for row in result["items"]:
+                if row[done_flag]:
+                    row["discount"] = 0.
+        return result
+
+    simulation.call = zero_terminal_discount
+    with pytest.raises(ValueError, match="discount disagrees"):
+        runner.run()
+    assert not inference.contexts
+
+
+@pytest.mark.parametrize("fused", [False, True])
+def test_fast_eval_capabilities_and_human_feedback_restrictions(tmp_path, fused):
+    with pytest.raises(ValueError, match="Human feedback requires full"):
+        TrainerConfig(method="base", mode="eval", human_feedback={"mode": "human"},
+                      rollout={"terminal_observation_mode": "state_only_if_no_bootstrap",
+                               "fused_step_reset": fused})
+    runner, inference, simulation = state_only_runner(tmp_path, "base")
+    runner.config.rollout.fused_step_reset = fused
+    capability = "step_and_reset" if fused else "terminal_state_only"
+    simulation.meta["capabilities"].remove(capability)
+    with pytest.raises(ValueError, match=capability):
+        runner.run()
+    assert not simulation.resets and not inference.contexts
+
+
+def cached_inference(meta, *, advertise=True, cache_size=8):
+    """Real inference/cache boundary with the trainer's deterministic fake model."""
+    from pressb.runtime.inference import InferenceService
+
+    class Backend:
+        def describe(self):
+            return deepcopy(meta)
+
+        def encode_batch(self, observations, seeds):
+            return [(obs, [obs["state"][0], 2., 3.]) for obs in observations]
+
+        def decode_batch(self, contexts, initial_noises):
+            shape = (meta["action"]["horizon"], len(meta["action"]["names"]))
+            return [np.full(shape, .2, dtype=np.float32) if noise is None
+                    else np.asarray(noise)[:, :shape[1]] * .01 for noise in initial_noises]
+
+    service = InferenceService(Backend(), cache_size=cache_size, batch_size=2)
+    calls = []
+
+    def call(path, payload=None):
+        calls.append((path, deepcopy(payload)))
+        if not advertise and path == "/encode":
+            assert "release_context_ids" not in payload
+        result = service.handlers[path](payload)
+        if not advertise and path == "/health":
+            result["capabilities"].remove("encode_release_contexts")
+        return result
+
+    return SimpleNamespace(call=call, service=service, calls=calls)
+
+
+@pytest.mark.parametrize("method", ["base", "dsrl", "action_residual"])
+@pytest.mark.parametrize("fused", [False, True])
+def test_fast_eval_encode_retires_own_contexts_without_action_or_rng_changes(tmp_path, method, fused):
+    checkpoint = None
+    if method != "base":
+        trained, _, _ = make_runner(tmp_path / "trained", method, steps=4)
+        checkpoint = trained.run()["last_checkpoint"]
+    runs = []
+    for advertise in (False, True):
+        runner, legacy, simulation = state_only_runner(tmp_path / str(advertise), method, steps=100)
+        runner.config.mode = "eval"
+        runner.config.checkpoint.resume = checkpoint
+        runner.config.rollout.eval_episodes = 5
+        runner.config.rollout.fused_step_reset = fused
+        inference = cached_inference(legacy.meta, advertise=advertise)
+        runner.inference = inference
+        snapshots = []
+        runner.observer = SimpleNamespace(on_reset=lambda rows: None, close=lambda status: None,
+            on_transition=lambda before, actions, rows: snapshots.append((before, actions, rows)))
+        result = runner.run()
+        assert result["episodes"] == 5 and not inference.service.contexts and not runner.live_contexts
+        releases = [payload for path, payload in inference.calls if path == "/release"]
+        encodes = [payload for path, payload in inference.calls if path == "/encode"]
+        if advertise:
+            assert len(releases) == 1  # Final batch has no next encode to piggyback on.
+            assert "release_context_ids" not in encodes[0]
+            assert [payload["release_context_ids"] for payload in encodes[1:]] == [
+                sorted(slot["encoded"]["context_id"] for slot in before) for before, _, _ in snapshots[:-1]]
+        else:
+            assert len(releases) == len(simulation.steps)
+        runs.append((runner, inference, simulation, snapshots))
+    old, new = runs
+    assert old[0].rng.bit_generator.state == new[0].rng.bit_generator.state
+    assert [call["items"] for call in old[2].steps] == [call["items"] for call in new[2].steps]
+    assert [row for _, _, rows in old[3] for row in rows] == [row for _, _, rows in new[3] for row in rows]
+    for (before_old, actions_old, _), (before_new, actions_new, _) in zip(old[3], new[3], strict=True):
+        np.testing.assert_array_equal(actions_old, actions_new)
+        for left, right in zip(before_old, before_new, strict=True):
+            np.testing.assert_array_equal(left["vector"], right["vector"])
+            if "base" in left:
+                np.testing.assert_array_equal(left["base"], right["base"])
+
+
+@pytest.mark.parametrize("fast", [False, True])
+def test_training_and_full_eval_do_not_piggyback_releases(tmp_path, fast):
+    method = "dsrl" if fast else "base"
+    runner, legacy, simulation = state_only_runner(tmp_path, method, steps=8)
+    if not fast:
+        runner.config.rollout.terminal_observation_mode = "full"
+    inference = cached_inference(legacy.meta)
+    runner.inference = inference
+    runner.run()
+    assert not any("release_context_ids" in payload for path, payload in inference.calls if path == "/encode")
+    assert any(path == "/release" for path, _ in inference.calls)
+    assert not inference.service.contexts
+
+
+@pytest.mark.parametrize("deterministic", [False, True])
+def test_encode_retirement_preserves_frozen_dsrl_policy_actions(tmp_path, deterministic):
+    _, trained, legacy, simulation = frozen_residual_runner(tmp_path / "trained", steps=4)
+    trained.config.frozen_dsrl.deterministic = deterministic
+    checkpoint = trained.run()["last_checkpoint"]
+    steps = []
+    for advertise in (False, True):
+        cfg = deepcopy(trained.config)
+        cfg.mode = "eval"
+        cfg.output_dir = str(tmp_path / str(advertise))
+        cfg.checkpoint.resume = checkpoint
+        cfg.rollout.max_transitions = 100
+        cfg.rollout.terminal_observation_mode = "state_only_if_no_bootstrap"
+        inference = cached_inference(legacy.meta, advertise=advertise)
+        simulation = StateOnlySimulation(simulation.meta)
+        runner = GenericTrainer(cfg, inference_client=inference, simulation_client=simulation)
+        torch.manual_seed(119)
+        assert runner.run()["episodes"] == 4
+        assert not inference.service.contexts and not runner.live_contexts
+        assert all(not payload["include_base_actions"] for path, payload in inference.calls if path == "/encode")
+        steps.append([payload["items"] for payload in simulation.steps])
+    assert steps[0] == steps[1]
+
+
+@pytest.mark.parametrize("change", [None, "missing_ack", "wrong_ack", "extra_item", "bad_features"])
+def test_fast_eval_cache_ownership_and_cleanup_after_invalid_replacement(tmp_path, change):
+    runner, legacy, simulation = state_only_runner(tmp_path, "base", steps=100)
+    inference = cached_inference(legacy.meta, cache_size=3)
+    runner.inference = inference
+    # This context belongs to another worker. It is oldest, so retiring our
+    # contexts before capacity eviction is essential to keeping it alive.
+    other = inference.service.encode({"observations": [{"state": [0.] * 7, "images": {}, "task": "other"}],
+                                      "seeds": [1]})["items"][0]["context_id"]
+    original = inference.call
+    cleanup = []
+
+    def altered(path, payload=None):
+        if path == "/release":
+            cleanup.extend(payload["context_ids"])
+        result = original(path, payload)
+        if path == "/encode" and payload.get("release_context_ids"):
+            assert other not in payload["release_context_ids"]
+            assert other in inference.service.contexts
+            if change == "missing_ack":
+                result.pop("released_context_ids")
+            elif change == "wrong_ack":
+                result["released_context_ids"] = [other]
+            elif change == "extra_item":
+                result["items"].append(deepcopy(result["items"][0]))
+            elif change == "bad_features":
+                result["items"][0]["features"] = [1.]
+        return result
+
+    inference.call = altered
+    if change is None:
+        assert runner.run()["state"] == "completed"
+    else:
+        with pytest.raises(ValueError):
+            runner.run()
+        assert len(simulation.steps) == 1
+        # Both generations are known until the complete replacement response
+        # validates, even when the server has already retired the old entries.
+        assert len(set(cleanup)) == 4
+    assert other not in cleanup
+    assert list(inference.service.contexts) == [other]
+    assert not runner.live_contexts

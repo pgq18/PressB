@@ -1,0 +1,43 @@
+# PiPER cube_stack LeRobot v3 export. Paths are relative to the launch directory.
+dataset:
+  root: /home/pengguanqi/Datasets/pressb_cube_stack_500_20261110
+  video_backend: pyav
+  validation_fraction: 0.1
+policy:
+  pretrained_path: .cache/pi05/pi05_base-22c30e5
+  device: cuda:0
+  dtype: bfloat16
+  chunk_size: 7
+  n_action_steps: 7
+  gradient_checkpointing: true
+  train_expert_only: true
+  freeze_vision_encoder: true
+tokenizer_path: .cache/pi05/paligemma-tokenizer
+output_dir: outputs/pi05_cube_stack/sft
+steps: 30000
+batch_size: 4
+num_workers: 4
+seed: 42
+eval_every: 1000
+validation_samples: 128
+save_every: 1000
+image_transforms:
+  enable: true
+pressb:
+  observation:
+    state:
+      names: [joint1, joint2, joint3, joint4, joint5, joint6, gripper_width]
+      units: [rad, rad, rad, rad, rad, rad, m]
+    cameras: [up, wrist]
+  camera_keys:
+    up: observation.images.up
+    wrist: observation.images.wrist
+  action:
+    representation: joint_position
+    frame: robot_base
+    names: [joint1, joint2, joint3, joint4, joint5, joint6, gripper_width]
+    units: [rad, rad, rad, rad, rad, rad, m]
+    control_hz: 30
+  # Dataset joints use degrees and the full gripper width uses centimetres.
+  state_scale: [57.29577951308232, 57.29577951308232, 57.29577951308232, 57.29577951308232, 57.29577951308232, 57.29577951308232, 100]
+  action_scale: [0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.017453292519943295, 0.01]

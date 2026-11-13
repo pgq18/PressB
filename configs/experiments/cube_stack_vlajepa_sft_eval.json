@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "name": "cube_stack_vlajepa_sft_eval",
+  "description": "Held-out random cube layouts with the supervised joint7 policy; the launcher resolves and verifies the archived best checkpoint before starting nodes.",
+  "task": {
+    "plugin": "cube_stack",
+    "config": {
+      "scene_config": "${project_root}/configs/calibration/playground_20261113_appearance.json",
+      "num_envs": 8,
+      "gpu": 0,
+      "horizon": 7,
+      "control_hz": 30,
+      "headless": true,
+      "max_episode_seconds": 45,
+      "terminate_on_success": true,
+      "settling_ticks": 120,
+      "spacing_m": 6.0,
+      "render_resolution": [640, 480],
+      "image_output_resolution": [640, 480],
+      "observation_render_frames": 1,
+      "reset_render_frames": 2,
+      "cpu_threads": 8,
+      "png_workers": 8,
+      "smoothing": {"mode": "none"},
+      "randomization": {
+        "enabled": true,
+        "x_range_m": [0.28, 0.4],
+        "y_range_m": [-0.14, 0.14],
+        "yaw_range_deg": [-45, 45],
+        "min_center_distance_m": 0.08,
+        "max_attempts": 2048
+      },
+      "reward": {"success": 1.0, "failure": 0.0},
+      "scene_overrides": {"rendering": {"warmup_frames": 8}},
+      "log_dir": "${project_root}/outputs/cube_stack_vlajepa_sft_eval/simulation"
+    }
+  },
+  "model": {
+    "plugin": "vlajepa_joint",
+    "config": {
+      "run": "/home/pengguanqi/Models/VLA-JEPA/manipulation_joint7_500_ddp2_20261110/vlajepa_cube_stack_500_20261110_ddp2",
+      "device": "cuda:1",
+      "base_vlm": "${project_root}/.cache/vlajepa/Qwen3-VL-2B-Instruct",
+      "base_encoder": "${project_root}/.cache/vlajepa/vjepa2-vitl-fpc64-256"
+    }
+  },
+  "nodes": {
+    "inference": {
+      "server": {"host": "127.0.0.1", "port": 18653, "transport": "ws"},
+      "service": {"cache_size": 64, "batch_size": 8}
+    },
+    "simulation": {
+      "server": {"host": "127.0.0.1", "port": 18623, "transport": "http"},
+      "service": {"request_cache_size": 2}
+    }
+  },
+  "run": {
+    "method": "base",
+    "mode": "eval",
+    "device": "cpu",
+    "seed": 2026111101,
+    "endpoints": {"timeout": 300, "preprocess_images": false},
+    "rollout": {
+      "max_transitions": 100000,
+      "eval_episodes": 100,
+      "num_envs": 8,
+      "execution_horizon": 7,
+      "action_bounds": "clip",
+      "terminal_observation_mode": "full",
+      "fused_step_reset": false
+    },
+    "output_dir": "${project_root}/outputs/cube_stack_vlajepa_sft_eval/run"
+  }
+}

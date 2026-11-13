@@ -1,6 +1,7 @@
 """Shared SFT image behavior, temporal alignment and validation isolation."""
 from copy import deepcopy
 import json
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -158,3 +159,80 @@ def test_worker_restart_offset_and_persistent_epoch_produce_same_images():
     finally:
         if loader._iterator is not None:
             loader._iterator._shutdown_workers()
+
+
+@pytest.mark.parametrize("dtype", [torch.uint8, torch.float32, torch.float64])
+@pytest.mark.parametrize("is_clip", [False, True])
+@pytest.mark.parametrize("factor", [.6, 1.4])
+def test_arm_sharpness_keeps_torchvision_semantics(dtype, is_clip, factor, clip, monkeypatch):
+    import pressb.training.image_transforms as transforms
+    from torchvision.transforms.v2 import functional as F
+
+    image = clip if is_clip else clip[0]
+    if dtype != torch.uint8:
+        image = image.to(dtype) / 255
+    source = image.clone()
+    expected = F.adjust_sharpness(image, factor)
+    monkeypatch.setattr(transforms.platform, "machine", lambda: "aarch64")
+    actual = transforms._SharpnessJitter([factor, factor])(image)
+    assert actual.dtype == dtype and actual.shape == image.shape
+    # Native and oneDNN convolution accumulation can differ at a uint8 rounding
+    # boundary, but the same torchvision operation and factor remain in use.
+    torch.testing.assert_close(actual, expected, atol=1 if dtype == torch.uint8 else 2e-6, rtol=0)
+    assert not torch.equal(actual, image)
+    assert torch.equal(image, source)
+    if is_clip:
+        assert all(torch.equal(actual[0], frame) for frame in actual[1:])
+
+
+@pytest.mark.parametrize("architecture,device,expected_enabled", [
+    ("aarch64", "cpu", False), ("arm64", "cpu", False),
+    ("x86_64", "cpu", True), ("aarch64", "cuda", True),
+    ("arm64", "npu", True),
+])
+def test_sharpness_backend_workaround_is_only_arm_cpu(architecture, device, expected_enabled, monkeypatch):
+    import pressb.training.image_transforms as transforms
+    from torchvision.transforms.v2 import functional as F
+
+    monkeypatch.setattr(transforms.platform, "machine", lambda: architecture)
+    image = SimpleNamespace(device=SimpleNamespace(type=device))
+    observed = []
+
+    def adjust_sharpness(value, factor):
+        observed.append(torch.backends.mkldnn.enabled)
+        return value
+
+    monkeypatch.setattr(F, "adjust_sharpness", adjust_sharpness)
+    with torch.backends.mkldnn.flags(enabled=True):
+        assert transforms._SharpnessJitter([.8, .8])(image) is image
+        assert torch.backends.mkldnn.enabled is True
+    assert observed == [expected_enabled]
+
+
+def test_arm_sharpness_avoids_jit_failure_and_restores_backend_on_error(monkeypatch):
+    import pressb.training.image_transforms as transforms
+    from torchvision.transforms.v2 import functional as F
+
+    monkeypatch.setattr(transforms.platform, "machine", lambda: "aarch64")
+    original = F.adjust_sharpness
+
+    def affected_grouped_convolution(image, factor):
+        if torch.backends.mkldnn.enabled:
+            raise RuntimeError("label is too far (Xbyak::Error)")
+        return original(image, factor)
+
+    monkeypatch.setattr(F, "adjust_sharpness", affected_grouped_convolution)
+    image = torch.arange(3 * 12 * 16).reshape(3, 12, 16).remainder(251).to(torch.uint8)
+    transform = transforms._SharpnessJitter([1.4, 1.4])
+    with torch.backends.mkldnn.flags(enabled=True, deterministic=True):
+        assert transform(image).shape == image.shape
+        assert torch.backends.mkldnn.enabled and torch.backends.mkldnn.deterministic
+
+        def another_error(*args):
+            assert not torch.backends.mkldnn.enabled
+            raise ValueError("invalid image")
+
+        monkeypatch.setattr(F, "adjust_sharpness", another_error)
+        with pytest.raises(ValueError, match="invalid image"):
+            transform(image)
+        assert torch.backends.mkldnn.enabled and torch.backends.mkldnn.deterministic

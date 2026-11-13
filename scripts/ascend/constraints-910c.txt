@@ -1,0 +1,13 @@
+# Validated on aarch64, Python 3.11, CANN 9.0.0 and driver 25.5.5.
+torch==2.10.0
+torchvision==0.25.0
+torch-npu==2.10.0
+numpy==1.26.4
+transformers==5.3.0
+tokenizers==0.22.2
+pyarrow==21.0.0
+pandas==2.2.3
+sentencepiece==0.2.1
+protobuf==5.29.6
+ml-dtypes==0.5.4
+huggingface-hub==1.16.1

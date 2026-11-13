@@ -5,7 +5,7 @@
   "task": {
     "plugin": "cube_stack",
     "config": {
-      "scene_config": "${project_root}/configs/calibration/playground_20261109_global_refined.json",
+      "scene_config": "${project_root}/configs/calibration/playground_20261113_appearance.json",
       "cubes": {
         "red": {"edge_m": 0.029, "center_xy": [0.331263, 0.102522], "yaw_deg": -10.51},
         "blue": {"edge_m": 0.030, "center_xy": [0.326851, -0.083409], "yaw_deg": 30.36}

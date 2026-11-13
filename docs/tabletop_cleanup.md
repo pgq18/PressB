@@ -6,15 +6,20 @@ objects**, selected without replacement from a gamepad, a speaker and a lidar.
 The task is to pick up both objects and place them inside the box.
 Every episode uses the instruction `Put all objects on the table into the black box.`
 
-The task preserves the template's table, PiPER, home pose, lighting and both
+The task preserves the template's table, PiPER, lighting and both
 camera calibrations. It is a separate plugin; the empty Playground, cube-stacking
 task and PAP environment retain their existing configurations.
 Current defaults pin
-[`playground_20261109_global_refined.json`](../configs/calibration/playground_20261109_global_refined.json).
-This upgrades only the global camera pose; wrist, intrinsics and physical task
-parameters are unchanged.
-See the [global-camera refinement](results/playground_global_refinement_20261109.json)
-for the later camera-specific evidence.
+[`playground_20261113_appearance.json`](../configs/calibration/playground_20261113_appearance.json).
+The [appearance update](playground.md#appearance-calibration-2026-11-13) adjusts
+table color, soft lighting, plastic materials and fixed per-camera color response
+against the real recordings. Camera optics and physical task parameters are
+unchanged; the November 9 global registration is retained.
+
+The current task start is above the centre of its configured object sampling
+region (excluding the fixed bin), 16 cm above the table, with 15-degree outward
+tool tilt and full gripper opening. Camera calibration is unchanged. See the
+[centred-start settings](manipulation_collection.md#centred-start-poses).
 
 ![All three two-object combinations in Isaac: global views above, wrist views below](media/tabletop-cleanup-random-layouts.jpg)
 
@@ -248,8 +253,28 @@ select an available GPU and a fresh output directory:
 ```
 
 This smoke command performs reset and hold actions; it does not demonstrate a
-complete cleanup or measure policy success. Reproduce a complete scripted
-simulation with another fresh output directory:
+complete cleanup or measure policy success.
+
+The scripted planner releases the first object, retreats above the box, and
+continues directly to the second object's pregrasp. It returns to the initial
+pose only after both objects have been placed. Earlier recordings retain their
+original intermediate return-home motion.
+
+The simulation demonstrator now holds the robot at home for one second after
+reset, measures each environment's settled object poses, and then plans from
+those poses. The gamepad grasp follows its measured tilt and centers the two
+finger descent sweeps using the actual finger meshes and all object collision
+parts, including the thumbstick sockets. The gamepad opens to 90 mm by default
+within the shared simulation limit of 100 mm. The recorded November 10 run used
+70 mm and had approximately 5.1 mm of geometric clearance on each side before
+contact offsets. The placement target orients the object upright before release.
+The settling trace is saved separately, and the video plays at the original rate
+starting after settling.
+Use `--no-settled-grasps` for a nominal-pose comparison, or `--settle-seconds`
+to adjust the initial hold. `--plan-only` has no physical measurements and
+therefore still produces a nominal plan.
+
+Reproduce a complete scripted simulation with another fresh output directory:
 
 ```bash
 .conda/envs/pressb/bin/python scripts/smoke_tabletop_cleanup.py \

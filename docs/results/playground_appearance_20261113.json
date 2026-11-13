@@ -1,0 +1,307 @@
+{
+  "id": "playground_appearance_20261113",
+  "date_local": "2026-11-13",
+  "timezone": "Asia/Shanghai",
+  "status": "validated",
+  "hardware_access": false,
+  "previous_template": {
+    "path": "configs/calibration/playground_20261109_global_refined.json",
+    "sha256": "72459732f9ad32b04287bb08ad6a25e398047a636f9d739af1ba10e5ba5581c3"
+  },
+  "new_template": {
+    "path": "configs/calibration/playground_20261113_appearance.json",
+    "sha256": "1931ae1e2f34d9b3c33d399d683f5c08768318d035f90d5f3cde597cca8c62df"
+  },
+  "changes": {
+    "materials": {
+      "Mat": {
+        "color": [
+          0.001,
+          0.13,
+          0.09
+        ],
+        "roughness": 0.82,
+        "specular": 0.08
+      }
+    },
+    "lighting": {
+      "ambient": {
+        "intensity": 260,
+        "color": [
+          1,
+          1,
+          1
+        ]
+      },
+      "area_lights": [
+        {
+          "name": "BroadKey",
+          "position_base_m": [
+            0.69,
+            0.3,
+            1.094
+          ],
+          "target_base_m": [
+            0.33,
+            0.02,
+            -0.006
+          ],
+          "width": 0.9,
+          "height": 0.7,
+          "intensity": 12500,
+          "color": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "SoftFill",
+          "position_base_m": [
+            -0.2,
+            0.0,
+            1.094
+          ],
+          "target_base_m": [
+            0.35,
+            0.0,
+            -0.006
+          ],
+          "width": 1.0,
+          "height": 0.8,
+          "intensity": 900,
+          "color": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "SideFill",
+          "position_base_m": [
+            0.3,
+            -0.65,
+            0.494
+          ],
+          "target_base_m": [
+            0.32,
+            0.2,
+            0.034
+          ],
+          "width": 0.7,
+          "height": 0.6,
+          "intensity": 800,
+          "color": [
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    "cleanup_materials": {
+      "cover": {
+        "color": [
+          0.035,
+          0.035,
+          0.045
+        ],
+        "roughness": 0.5,
+        "metallic": 0.02,
+        "specular": 0.3
+      },
+      "plastic": {
+        "color": [
+          0.015,
+          0.011,
+          0.015
+        ],
+        "roughness": 0.43,
+        "specular": 0.25
+      },
+      "bin": {
+        "color": [
+          0.012,
+          0.016,
+          0.02
+        ],
+        "roughness": 0.86
+      },
+      "housing": {
+        "specular": 0.3,
+        "roughness": 0.46
+      }
+    },
+    "camera_color_response": {
+      "up": {
+        "exposure_ev": 0.0,
+        "linear_rgb_gain": [
+          0.85,
+          0.96,
+          2.3
+        ],
+        "saturation": 1.0
+      },
+      "wrist": {
+        "exposure_ev": 0.0,
+        "linear_rgb_gain": [
+          1.6,
+          1.05,
+          1.2
+        ],
+        "saturation": 0.82
+      }
+    }
+  },
+  "active_entrypoints": [
+    "configs/rl_nodes/cube_stack_simulation.json",
+    "configs/rl_nodes/cube_stack_real_layout.json",
+    "configs/rl_nodes/playground_objects_example.json",
+    "configs/rl_nodes/tabletop_cleanup_simulation.json",
+    "configs/rl_nodes/tabletop_cleanup_real_layout.json",
+    "configs/experiments/cube_stack_walloss_eval.json",
+    "configs/experiments/cube_stack_pi05_eval.json",
+    "configs/experiments/tabletop_cleanup_walloss_eval.json",
+    "configs/experiments/cube_stack_vlajepa_sft_eval.json",
+    "src/pressb/tasks/cube_stack/configuration.py",
+    "src/pressb/tasks/tabletop_cleanup/configuration.py",
+    "src/pressb/tasks/cube_stack/collection.py",
+    "scripts/smoke_cube_stack.py"
+  ],
+  "invariants": [
+    "Camera intrinsics and extrinsics",
+    "Robot/table/object geometry, mass, friction and drives",
+    "Task initial poses and reset distributions",
+    "Existing datasets and recorded action arrays"
+  ],
+  "method": "Per-camera measured real joint feedback, fixed original object layout. Baseline renders from cleanup_raw/stack_raw; final renders use production config through normal observation pipeline.",
+  "reference_manifest": "outputs/appearance_calibration_20261113/reference_audit/measured_poses/poses.json",
+  "appearance_comparison": "outputs/appearance_calibration_20261113/final_review/report.json",
+  "metric_definition": "Euclidean CIELAB DeltaE76 between median RGB patches; lower is closer. These same recordings were used for development and validation, not an independent benchmark.",
+  "overall": {
+    "table_patches": 18,
+    "table_patches_improved": 18,
+    "mean_table_baseline_delta_e76": 16.074067925684474,
+    "mean_table_production_delta_e76": 4.721854567703123,
+    "object_face_patches": 10,
+    "object_face_patches_improved": 9
+  },
+  "table_summary": {
+    "tabletop_cleanup": {
+      "up": {
+        "n_patches": 6,
+        "mean_baseline_delta_e76": 13.184456289550456,
+        "mean_production_delta_e76": 2.6296230901895483,
+        "worst_patch_change": -9.925767820814496,
+        "improved_patches": 6
+      },
+      "wrist": {
+        "n_patches": 3,
+        "mean_baseline_delta_e76": 31.720313505848182,
+        "mean_production_delta_e76": 8.660170888926164,
+        "worst_patch_change": -20.849418581003423,
+        "improved_patches": 3
+      }
+    },
+    "cube_stack": {
+      "up": {
+        "n_patches": 6,
+        "mean_baseline_delta_e76": 7.1262017027948765,
+        "mean_production_delta_e76": 3.7384447159835275,
+        "worst_patch_change": -1.431633947803924,
+        "improved_patches": 6
+      },
+      "wrist": {
+        "n_patches": 3,
+        "mean_baseline_delta_e76": 24.102778063568035,
+        "mean_production_delta_e76": 6.934820904946428,
+        "worst_patch_change": -11.167132045126191,
+        "improved_patches": 3
+      }
+    }
+  },
+  "limitations": [
+    "Nearest observed CAN feedback to each camera global timestamp; no hardware synchronization.",
+    "Table ROIs sample homogeneous surface; object face ROIs chosen separately in real/sim because shape/yaw/registration differ.",
+    "One fixed camera response cannot match auto-exposure shifts at all wrist distances.",
+    "DeltaE76 of patch median colours is an appearance diagnostic, not photometric ground truth or task success.",
+    "Real texture/wear, camera noise, automatic white-balance shifts and some surface highlights remain approximate.",
+    "One of ten selected object face patches became darker and has increased color error."
+  ],
+  "physics_smoke": {
+    "stack": {
+      "progress": {
+        "task_id": "cube_stack",
+        "status": "complete",
+        "accepted": 2,
+        "target": 2,
+        "attempts": 2,
+        "session_batches": 1,
+        "updated_unix": 1794502039.0850668,
+        "session_elapsed_s": 35.229578495025635
+      },
+      "episodes": [
+        {
+          "episode_index": 0,
+          "success": true,
+          "frame_count": 401,
+          "fps": 30.0,
+          "seed": 20262121
+        },
+        {
+          "episode_index": 1,
+          "success": true,
+          "frame_count": 440,
+          "fps": 30.0,
+          "seed": 20263130
+        }
+      ],
+      "purpose": "Scripted physical smoke only, not learned policy evaluation",
+      "artifact": "outputs/appearance_calibration_20261113/stack_rollout"
+    },
+    "cleanup": {
+      "progress": {
+        "task_id": "tabletop_cleanup",
+        "status": "complete",
+        "accepted": 1,
+        "target": 1,
+        "attempts": 1,
+        "session_batches": 1,
+        "updated_unix": 1794502086.4065197,
+        "session_elapsed_s": 143.3529679775238
+      },
+      "episodes": [
+        {
+          "episode_index": 0,
+          "success": true,
+          "frame_count": 1303,
+          "fps": 30.0,
+          "seed": 20262121
+        }
+      ],
+      "purpose": "Scripted physical smoke only, not learned policy evaluation",
+      "artifact": "outputs/appearance_calibration_20261113/cleanup_rollout"
+    }
+  },
+  "native_camera_test": "outputs/appearance_calibration_20261113/native_camera_smoke/report.json",
+  "cpu_regression": {
+    "passed": 378,
+    "failed": 0,
+    "logs": [
+      "outputs/appearance_calibration_20261113/appearance_tests.log",
+      "outputs/appearance_calibration_20261113/appearance_legacy_tests.log"
+    ]
+  },
+  "color_response_unit_tests": {
+    "passed": 51,
+    "failed": 0
+  },
+  "video": {
+    "stack": "outputs/appearance_calibration_20261113/stack_examples/examples_1x.mp4",
+    "cleanup": "outputs/appearance_calibration_20261113/cleanup_examples/episode_000000_up_wrist.mp4"
+  },
+  "comparison_images": [
+    "docs/media/playground-appearance-20261113.jpg",
+    "docs/media/stack-appearance-20261113.jpg"
+  ]
+}

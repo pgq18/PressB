@@ -5,6 +5,7 @@ import math
 import numpy as np
 
 from pressb.runtime.parallel_contract import ParallelTask, SceneTemplate
+from pressb.runtime.physics import ContactForceReducer, ContactPathClassifier
 from pressb.robots.piper.kinematics import PiperKinematics
 from pressb.tasks.playground.parallel import PlaygroundTask, EXECUTION_KEYS
 from pressb.tasks.playground.backend import ROOT, STATE_NAMES, STATE_UNITS, sample_reset_spec
@@ -73,6 +74,14 @@ class TabletopCleanupTask(PlaygroundTask):
         self.bodies, self.rows = engine.rigid_bodies(list(self.object_paths.values()))
         self.table_path = self.scene["root_path"]+"/Table/Top"
         self.bin_floor_path = self.scene["bin"]["floor_path"]
+        self.contact_paths = ContactPathClassifier([
+            *(self.object_paths[kind] for kind in KINDS),
+            *(engine.template.robot_path+f"/link{7+i}" for i in range(2)),
+            self.table_path, self.bin_floor_path])
+        self.contact_forces = ContactForceReducer(self.execution["physics_dt"],
+            self.config["outcome"]["max_support_normal_tilt_deg"],
+            self.config["outcome"]["contact_separation_tolerance_m"],
+            "Malformed cleanup contact data")
         self.active_masks = np.zeros((engine.num_envs, 3), dtype=bool)
         self.contacts = [self._empty_contacts() for _ in range(engine.num_envs)]
         self.checkers = [None]*engine.num_envs
@@ -182,33 +191,24 @@ class TabletopCleanupTask(PlaygroundTask):
             return
         if len(actor_paths) != 4:
             raise ValueError("Compound contact routing requires actors and colliders")
-        def matches(root):
-            return any(path == root or path.startswith(root+"/") for path in actor_paths)
-        touched = [j for j, kind in enumerate(KINDS) if matches(self.object_paths[kind])]
+        route = self.contact_paths(actor_paths)
+        touched = [j for j in range(len(KINDS)) if route[j]]
         if not touched:
             return
+        # Active/ready state is deliberately checked outside the topology cache.
         if any(not self.active_masks[env_id, j] for j in touched):
             raise RuntimeError("Inactive object leaked into a live contact report")
-        cfg, force, vertical = self.config["outcome"], 0., 0.
-        for contact in contacts:
-            impulse, normal = np.asarray(contact.impulse, dtype=float), np.asarray(contact.normal, dtype=float)
-            separation = float(contact.separation)
-            if (impulse.shape != (3,) or normal.shape != (3,) or not np.isfinite(impulse).all()
-                    or not np.isfinite(normal).all() or not math.isfinite(separation)):
-                raise RuntimeError("Malformed cleanup contact data")
-            force += float(np.linalg.norm(impulse))/self.execution["physics_dt"]
-            norm = float(np.linalg.norm(normal))
-            if (norm > 1e-8 and abs(float(normal[2]))/norm >= math.cos(math.radians(cfg["max_support_normal_tilt_deg"]))
-                    and abs(separation) <= cfg["contact_separation_tolerance_m"]):
-                vertical += abs(float(impulse[2]))/self.execution["physics_dt"]
+        force, vertical = self.contact_forces(contacts)
+        finger0, finger1, table, bin_floor = route[len(KINDS):]
+        fingers = (finger0, finger1)
         row = self.contacts[env_id]
         for j in touched:
             for finger in range(2):
-                if matches(self.engine.template.robot_path+f"/link{7+finger}"):
+                if fingers[finger]:
                     row["finger_forces_n"][j, finger] += force
-            if matches(self.table_path):
+            if table:
                 row["table_forces_n"][j] += vertical
-            if matches(self.bin_floor_path):
+            if bin_floor:
                 row["bin_floor_forces_n"][j] += vertical
         if len(touched) == 2:
             a, b = touched

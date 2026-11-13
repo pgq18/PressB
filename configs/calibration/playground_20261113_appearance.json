@@ -1,0 +1,565 @@
+{
+  "robot_usd": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper.usd",
+  "robot_urdf": "vendor/robot_lab/source/robot_lab/data/Robots/Agilex/PIPER/piper_description.urdf",
+  "robot_base_xy": [
+    0.0,
+    0.0
+  ],
+  "table_height": 0.76,
+  "table_depth": 1.05,
+  "table_width": 1.6,
+  "table_x_min": -0.12,
+  "physics_dt": 0.008333333333333333,
+  "fps": 30,
+  "arm_stiffness": 12000.0,
+  "arm_damping": 600.0,
+  "arm_max_effort": 100.0,
+  "gripper_stiffness": 2500.0,
+  "gripper_damping": 40.0,
+  "gripper_max_effort": 10.0,
+  "finger_static_friction": 1.0,
+  "finger_dynamic_friction": 0.8,
+  "wrist_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 605.6944580078125,
+    "fy": 605.6384887695312,
+    "cx": 320.6307678222656,
+    "cy": 250.77304077148438,
+    "link6_from_camera_usd": [
+      [
+        0.06584741924177227,
+        -0.9476492371246081,
+        -0.3124500612199439,
+        -0.06503229279955493
+      ],
+      [
+        -0.997827209411166,
+        -0.06183569777264283,
+        -0.0227421775495506,
+        0.04188022858042896
+      ],
+      [
+        0.002231039650743798,
+        0.31326868636702065,
+        -0.9496619148960107,
+        0.034052191933061325
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "status": "Live D435i intrinsics retained; wrist-only refinement against measured-opening finger contours, with fixed 6 mm effective mount. Residual real finger/contact and scene registration mismatch remains."
+  },
+  "wrist_camera_resolution": [
+    640,
+    480
+  ],
+  "overview_camera": {
+    "eye_base_m": [
+      -0.35,
+      -0.75,
+      0.594
+    ],
+    "target_base_m": [
+      0.32,
+      0.05,
+      0.07400000000000001
+    ],
+    "fx": 710.0,
+    "fy": 710.0,
+    "cx": 640.0,
+    "cy": 360.0,
+    "resolution": [
+      1280,
+      720
+    ]
+  },
+  "materials": {
+    "Mat": {
+      "color": [
+        0.001,
+        0.13,
+        0.09
+      ],
+      "roughness": 0.82,
+      "metallic": 0.0,
+      "specular": 0.08
+    }
+  },
+  "lighting": {
+    "ambient": {
+      "intensity": 260,
+      "color": [
+        1,
+        1,
+        1
+      ]
+    },
+    "area_lights": [
+      {
+        "name": "BroadKey",
+        "position_base_m": [
+          0.69,
+          0.3,
+          1.094
+        ],
+        "target_base_m": [
+          0.33,
+          0.02,
+          -0.006
+        ],
+        "width": 0.9,
+        "height": 0.7,
+        "intensity": 12500,
+        "color": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "SoftFill",
+        "position_base_m": [
+          -0.2,
+          0.0,
+          1.094
+        ],
+        "target_base_m": [
+          0.35,
+          0.0,
+          -0.006
+        ],
+        "width": 1.0,
+        "height": 0.8,
+        "intensity": 900,
+        "color": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "SideFill",
+        "position_base_m": [
+          0.3,
+          -0.65,
+          0.494
+        ],
+        "target_base_m": [
+          0.32,
+          0.2,
+          0.034
+        ],
+        "width": 0.7,
+        "height": 0.6,
+        "intensity": 800,
+        "color": [
+          1,
+          1,
+          1
+        ]
+      }
+    ]
+  },
+  "rendering": {
+    "warmup_frames": 48,
+    "subframes_per_frame": 2,
+    "direct_samples_per_pixel": 4,
+    "reflection_samples_per_pixel": 4
+  },
+  "task": "playground",
+  "root_path": "/World/Playground",
+  "task_instruction": "Explore the empty tabletop workspace.",
+  "background": false,
+  "lights": true,
+  "mount_hardware": true,
+  "camera_tripod": true,
+  "objects": [],
+  "static_props": [
+    {
+      "name": "Floor",
+      "center_base_m": [
+        0.4,
+        0,
+        -0.786
+      ],
+      "size": [
+        6,
+        6,
+        0.04
+      ],
+      "color": [
+        0.12,
+        0.13,
+        0.14
+      ],
+      "roughness": 1.0,
+      "collision": true
+    }
+  ],
+  "gripper_max_width_m": 0.1,
+  "initial_state_joint_rad_m": [
+    -0.18537141985431774,
+    0.47251298839242484,
+    -0.4591612196146682,
+    -0.11377801393751034,
+    0.7479783042346899,
+    0.08194320838113378,
+    0.0
+  ],
+  "up_camera": {
+    "resolution": [
+      640,
+      480
+    ],
+    "fx": 606.1517333984375,
+    "fy": 605.0548095703125,
+    "cx": 327.25390625,
+    "cy": 249.86172485351562,
+    "eye_base_m": [
+      0.7106610300030137,
+      0.04090883811643681,
+      0.4865084764950767
+    ],
+    "target_base_m": [
+      0.4322449912447075,
+      0.03405456646085292,
+      0.07125249722180388
+    ],
+    "base_from_camera_usd": [
+      [
+        -0.008305324486274178,
+        -0.8305835653525243,
+        0.5568320775166125,
+        0.7106610300030137
+      ],
+      [
+        0.9999057069713616,
+        -0.0008080881062288679,
+        0.013708543311167783,
+        0.04090883811643681
+      ],
+      [
+        -0.010936121400171344,
+        0.5568934260340137,
+        0.8305119585465457,
+        0.4865084764950767
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "horizontal_fov_deg": 55.660994584430625,
+    "wrist_camera_intrinsics": {
+      "width": 640,
+      "height": 480,
+      "fx": 605.6944580078125,
+      "fy": 605.6384887695312,
+      "cx": 320.6307678222656,
+      "cy": 250.77304077148438,
+      "model": "distortion.inverse_brown_conrady",
+      "coeffs": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "status": "Global-only registration constrained by official base flange, tabletop depth and training robot finger observations; existing held-out working-area landmarks checked. Live D435i K retained."
+  },
+  "calibration_objects": [
+    {
+      "name": "GreenCube",
+      "center_xy": [
+        0.3140078421313393,
+        0.08634996212296461
+      ],
+      "size": [
+        0.029,
+        0.029,
+        0.029
+      ],
+      "mass": 0.025,
+      "color": [
+        0.006,
+        0.27,
+        0.18
+      ],
+      "roughness": 0.22,
+      "yaw_deg": 22.38732838942143
+    },
+    {
+      "name": "BlueCube",
+      "center_xy": [
+        0.32323228577668783,
+        0.1779876734267889
+      ],
+      "size": [
+        0.03,
+        0.03,
+        0.03
+      ],
+      "mass": 0.025,
+      "color": [
+        0.006,
+        0.35,
+        0.55
+      ],
+      "roughness": 0.22,
+      "yaw_deg": -6.473082551184806
+    }
+  ],
+  "reconstruction": {
+    "captured_on": "2026-11-07",
+    "capture_reference": "outputs/playground_grasp_transfer_20261107/retry_08/playground_retry_10_grasp_camera/frames.jsonl",
+    "calibration_reference": "docs/results/playground_wrist_refinement_20261107.json",
+    "global_intrinsics": "Live D435i serial 261622078356 at 640x480 retained; global optical extrinsics refined using robot-base landmarks, table depth and known robot poses.",
+    "wrist_configuration": "Live D435i K retained. Link6-relative optical pose refined from recorded measured-width finger contours and pre-contact cube images. No physical finger/drive or action change.",
+    "dimensions_status": "Table height/depth/width and mounting visuals are approximate visual priors, not newly measured dimensions.",
+    "clean_workspace": "Blue and green cubes are registration references only; omitted by default. No PAP box, tape, or table buttons.",
+    "scope": "Workspace twin; no task reward, success detector, policy evaluation or learned controller.",
+    "wrist_extrinsics_sha256": "90bcaf07b790140a756e5a5473162b4fed2ee21d1f91b18b4c51ec2bce7c887f",
+    "appearance": "Recorded-image appearance fit: matte green-blue tabletop, broad neutral area light, black polymer materials and fixed per-camera color responses. No texture/background photograph or automatic exposure simulation.",
+    "multiview_revision": {
+      "status": "Historical prior revision, superseded by video_registration_revision below",
+      "report": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/report.json",
+      "portable_result": "docs/results/playground_calibration_20261107.json",
+      "previous_config": "configs/calibration/playground_20261107_before_multiview.json",
+      "frozen_descent_validation": "outputs/playground_grasp_transfer_20261107/calibration_revision_01/selected_partial/frozen_descent_validation.json",
+      "physical_replay": "outputs/playground_grasp_transfer_20261107/calibration_diagnosis/applied_physics_comparison_01.json",
+      "physical_accuracy": "Not measured absolute tool clearance; actual finger geometry, joint zero and base/table relationship unresolved",
+      "reference_objects": "Historical pre-contact positions only; real green cube has since moved. Default workspace stays empty."
+    },
+    "mount_height_revision": {
+      "status": "Historical 14 mm user estimate; superseded in the simulation by mount_depth_revision. The estimate remains unmodified evidence.",
+      "height_m": 0.014,
+      "height_source": "User estimate: tabletop to robot mounting underside about 1.4 cm, excluding robot base housing.",
+      "previous_config": "configs/calibration/playground_20261107_before_retry08_video.json",
+      "portable_result": "docs/results/playground_base_height_20261107.json",
+      "frames": "Robot base 14 mm above tabletop. Fixed background props/light world coordinates retained; live camera intrinsics unchanged; extrinsics updated by video registration.",
+      "scope": "Default remains empty. Historical calibration_objects are not current cube locations. All prior real trial records remain under their original configs.",
+      "limitations": "Mount-height uncertainty and physical tool/contact calibration remain unresolved."
+    },
+    "reference_objects": "Pre-contact locations from retry08 only, not current live positions; omitted from the default empty scene.",
+    "video_registration_revision": {
+      "status": "Historical adopted fit04 camera/object fit; transforms retained except fixed-camera base-coordinate re-expression in mount_depth_revision",
+      "report": "docs/results/playground_video_calibration_20261107.json",
+      "previous_default": "configs/calibration/playground_20261107_before_retry08_video.json",
+      "reproducible_inputs": "configs/calibration/playground_20261107_retry08_video_manifest_v04.json",
+      "physical_accuracy": "Within-capture image validation, not absolute metrology. Real/sim closed-gripper width and near-field projections still differ.",
+      "hardware_actions_this_revision": false
+    },
+    "mount_coordinate_reexpression": {
+      "previous_height_m": 0.014,
+      "height_m": 0.006,
+      "fixed_world_local_z_offset_m": 0.008,
+      "updated_coordinate_fields": [
+        "up_camera.eye_base_m",
+        "up_camera.target_base_m",
+        "up_camera.base_from_camera_usd[2][3]",
+        "overview_camera.eye_base_m",
+        "overview_camera.target_base_m",
+        "static_props[0].center_base_m",
+        "lighting.area_lights[0].position_base_m",
+        "lighting.area_lights[0].target_base_m",
+        "lighting.area_lights[1].position_base_m",
+        "lighting.area_lights[1].target_base_m",
+        "lighting.area_lights[2].position_base_m",
+        "lighting.area_lights[2].target_base_m"
+      ],
+      "status": "Coordinate conversion only; not a measured or accepted mounting height.",
+      "invariants": "Table, dynamic object XY/Z, fixed camera world poses, room props and lights unchanged; wrist link-local transform and intrinsics unchanged.",
+      "replay": "Use the same recorded joint plan. New tabletop-height IK plans compensate for the mount change.",
+      "hardware_actions": false
+    },
+    "mount_depth_revision": {
+      "status": "Adopted empirical contact-depth alignment, provisional effective simulation height; not a measured physical mounting thickness",
+      "height_m": 0.006,
+      "previous_height_m": 0.014,
+      "robot_world_z_change_m": -0.008,
+      "previous_default": "configs/calibration/playground_20261107_before_mount_depth.json",
+      "portable_result": "docs/results/playground_mount_depth_20261107.json",
+      "basis": "User-reported shallow simulated grasp; 14/10/6 mm same-command PhysX comparison and multi-frame image checks.",
+      "selection": "6 mm gives about 18 mm finger/cube vertical overlap versus about 10 mm at 14 mm. 10 mm is a more conservative multi-frame projection compromise and is retained as an alternative.",
+      "fixed": "Original 2146 joint/gripper commands, table/object world positions, fixed camera world poses, live K, wrist link-local transform, meshes, friction and drives.",
+      "limits": "Effective contact-depth correction, not identified true mount thickness. Wrist lateral/object registration and finger-width mismatch remain; some visual/depth metrics become worse.",
+      "hardware_actions": false
+    },
+    "wrist_refinement_revision": {
+      "status": "Adopted conservative wrist-only image alignment, not absolute tool metrology",
+      "previous_default": "configs/calibration/playground_20261107_before_wrist_refine.json",
+      "report": "docs/results/playground_wrist_refinement_20261107.json",
+      "source_candidate": "outputs/playground_wrist_refine_20261107/fit/prior_small/candidate_config.json",
+      "rotation_delta_norm_deg": 0.7068191935230898,
+      "translation_delta_norm_mm": 1.6334084465125367,
+      "fixed": [
+        "live camera intrinsics",
+        "6 mm effective mount",
+        "global camera",
+        "robot geometry and physics",
+        "object positions",
+        "all original arm/gripper commands"
+      ],
+      "limitations": "Uses measured real finger width for fitting. Natural real35.6mm vs sim30mm grasp opening still differs; some static cube views become slightly worse. Development holdouts inspected during candidate selection.",
+      "hardware_access": false
+    },
+    "final_revision": {
+      "id": "playground_final_20261108",
+      "status": "Selected balanced reference for the available recording; not independently identified physical metrology",
+      "frozen_preset": "configs/calibration/playground_20261108_final.json",
+      "previous_default": "configs/calibration/playground_20261108_before_final.json",
+      "portable_result": "docs/results/playground_final_20261108.json",
+      "selection_report": "outputs/playground_final_20261108/review/integrated_selection.json",
+      "geometry_and_optics": "Retain the 6 mm effective mount, registered fixed camera and measured-opening wrist refinement after joint 6/8/10/14 mm comparison.",
+      "appearance": "Retain current materials and lighting; the single brighter-table candidate improved average colour but exceeded the frozen local-view degradation limit.",
+      "unchanged_runtime_parameters": true,
+      "fixed_evidence": [
+        "Both live D435i intrinsics at 640x480",
+        "29 mm measured green cube",
+        "Original PiPER meshes and kinematics",
+        "Original 2146-command replay for candidate comparisons"
+      ],
+      "scope": "Empty playground by default; reference cubes are optional calibration fixtures. Other tasks are independent.",
+      "limitations": [
+        "6 mm is an effective simulated installation height, not a replacement measurement for the approximate 14 mm physical riser.",
+        "Natural real/sim closed-gripper opening differs by about 5.6 mm; lateral contact and surface appearance remain approximate.",
+        "Validation views belong to the same recorded sequence and were inspected during development; no new real-robot trial was executed."
+      ],
+      "hardware_access": false
+    },
+    "global_refinement_revision": {
+      "status": "Adopted global-only correction after base/workspace checks; approximate image registration, not independent absolute metrology",
+      "date": "2026-11-09",
+      "frozen_preset": "configs/calibration/playground_20261109_global_refined.json",
+      "previous_preset": "configs/calibration/playground_20261108_final.json",
+      "previous_preset_sha256": "446f8eb0f264d15c37c7050e91319472b7f097d890c29ef8dc5fb3a963a34b21",
+      "source_candidate": "outputs/playground_global_review_20261109/joint_train.json",
+      "source_candidate_sha256": "65c117dfa9173fc93f2bd910803871097a11ad43bc223446a365873771a510ed",
+      "report": "docs/results/playground_global_refinement_20261109.json",
+      "scope": "Only the fixed global camera pose; wrist, both live K, mounting height, joint states, robot assets, table, object positions, materials, lights, drives and friction preserved.",
+      "metrics": {
+        "flange_projected_uv": [
+          [
+            276.40810761552046,
+            24.526027898897894
+          ],
+          [
+            331.12207246206214,
+            24.29104009024877
+          ]
+        ],
+        "flange_errors_px": [
+          [
+            0.40810761552046415,
+            2.526027898897894
+          ],
+          [
+            -0.8779275379378646,
+            3.291040090248771
+          ]
+        ],
+        "flange_rms_px": 2.1300862898806816,
+        "plane_normal_angle_deg": 0.28659402481322527,
+        "table_height_error_m": -0.0017286839587253855,
+        "translation_delta_m": [
+          -0.001013830645892666,
+          0.030488044189442842,
+          -0.0022918048948190606
+        ],
+        "rotation_delta_world_rotvec_deg": [
+          -0.264904672524628,
+          -0.523922052931946,
+          4.428819385744053
+        ],
+        "rotation_delta_deg": 4.467561969868592,
+        "apparent_flange_line_angle_deg": -0.24607478051228926,
+        "flange_midpoint_error_px": 2.91800491559966
+      },
+      "heldout_finger_coordinate_rmse_px": 3.6933813454671593,
+      "prior_final_revision": "The 2026-11-08 final_revision below remains historical provenance. Current camera preset is global_refinement_revision.frozen_preset.",
+      "limitations": [
+        "Official rounded flange endpoints have approximately 2\u20133 px annotation uncertainty.",
+        "Outer mounting plate is approximate visual geometry and was not used as a known-size target.",
+        "Historical holdout frames were previously inspected; these are within-recording checks, not a blind external calibration test."
+      ]
+    },
+    "appearance_revision": {
+      "id": "playground_20261113_appearance",
+      "previous_preset": "configs/calibration/playground_20261109_global_refined.json",
+      "previous_sha256": "72459732f9ad32b04287bb08ad6a25e398047a636f9d739af1ba10e5ba5581c3",
+      "frozen_preset": "configs/calibration/playground_20261113_appearance.json",
+      "report": "docs/results/playground_appearance_20261113.json",
+      "reference_recordings": [
+        "outputs/tabletop_cleanup_transfer_20261109/remote/cameras",
+        "outputs/cube_stack_transfer_20261109/remote/cameras"
+      ],
+      "scope": "Visual appearance only; exact existing optics, geometry, physics and home pose retained. Child task workspace-centered homes remain task-owned.",
+      "response_note": "Fixed empirical display-RGB approximation. Real cameras used automatic exposure/white balance, which varies with view; fitted gains are not measured hardware settings.",
+      "hardware_access": false
+    }
+  },
+  "robot_base_height_above_table_m": 0.006,
+  "cleanup_materials": {
+    "cover": {
+      "color": [
+        0.035,
+        0.035,
+        0.045
+      ],
+      "roughness": 0.5,
+      "metallic": 0.02,
+      "specular": 0.3
+    },
+    "plastic": {
+      "color": [
+        0.015,
+        0.011,
+        0.015
+      ],
+      "roughness": 0.43,
+      "specular": 0.25
+    },
+    "bin": {
+      "color": [
+        0.012,
+        0.016,
+        0.02
+      ],
+      "roughness": 0.86
+    },
+    "housing": {
+      "specular": 0.3,
+      "roughness": 0.46
+    }
+  },
+  "camera_color_response": {
+    "up": {
+      "exposure_ev": 0.0,
+      "linear_rgb_gain": [
+        0.85,
+        0.96,
+        2.3
+      ],
+      "saturation": 1.0
+    },
+    "wrist": {
+      "exposure_ev": 0.0,
+      "linear_rgb_gain": [
+        1.6,
+        1.05,
+        1.2
+      ],
+      "saturation": 0.82
+    }
+  }
+}

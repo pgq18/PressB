@@ -1,0 +1,560 @@
+{
+  "date": "2026-11-12",
+  "scope": "Task-specific centered starts; no real hardware execution",
+  "camera_and_home_audit": {
+    "configs/piper_playground.json": {
+      "sha256": "72459732f9ad32b04287bb08ad6a25e398047a636f9d739af1ba10e5ba5581c3",
+      "unchanged": true
+    },
+    "configs/calibration/playground_20261109_global_refined.json": {
+      "sha256": "72459732f9ad32b04287bb08ad6a25e398047a636f9d739af1ba10e5ba5581c3",
+      "unchanged": true
+    },
+    "cube_stack": {
+      "normalized_camera_fields_unchanged": true,
+      "resolved_initial_pose": {
+        "mode": "workspace_center",
+        "height_above_table_m": 0.16,
+        "radial_tilt_deg": 15.0,
+        "tool_yaw_deg": 180.0,
+        "gripper_width_m": 0.1,
+        "center_xy_m": [
+          0.34,
+          0.0
+        ],
+        "tcp_target_base_m": [
+          0.34,
+          0.0,
+          0.154
+        ],
+        "tcp_actual_base_m": [
+          0.33999999999304703,
+          -2.2010030751607194e-13,
+          0.15399999999642486
+        ],
+        "tool_rotation_base": [
+          [
+            -0.9659258262890682,
+            1.1829179713786696e-16,
+            0.25881904510252074
+          ],
+          [
+            1.2246467991473532e-16,
+            1.0,
+            0.0
+          ],
+          [
+            -0.25881904510252074,
+            3.169619151431765e-17,
+            -0.9659258262890682
+          ]
+        ],
+        "state_joint_rad_m": [
+          2.4237946947026236e-06,
+          1.546927400955975,
+          -1.240199052921922,
+          9.402026888521704e-06,
+          1.0894722641100942,
+          -7.684950189520486e-06,
+          0.1
+        ],
+        "min_joint_limit_margin_deg": 7.478688375889881
+      }
+    },
+    "tabletop_cleanup": {
+      "normalized_camera_fields_unchanged": true,
+      "resolved_initial_pose": {
+        "mode": "workspace_center",
+        "height_above_table_m": 0.16,
+        "radial_tilt_deg": 15.0,
+        "tool_yaw_deg": 180.0,
+        "gripper_width_m": 0.1,
+        "center_xy_m": [
+          0.35,
+          -0.045
+        ],
+        "tcp_target_base_m": [
+          0.35,
+          -0.045,
+          0.154
+        ],
+        "tcp_actual_base_m": [
+          0.3499999999926198,
+          -0.044999999998344524,
+          0.1539999999962187
+        ],
+        "tool_rotation_base": [
+          [
+            -0.9664799335106272,
+            0.0043097228343480344,
+            0.25670598826358626
+          ],
+          [
+            -0.004309722834347794,
+            0.999445892778441,
+            -0.03300505563388966
+          ],
+          [
+            -0.25670598826358626,
+            -0.03300505563388963,
+            -0.9659258262890682
+          ]
+        ],
+        "state_joint_rad_m": [
+          -0.1278673009719723,
+          1.5917502001416004,
+          -1.2918811783205175,
+          9.312283782099394e-06,
+          1.096331590315941,
+          -0.12787731804811014,
+          0.1
+        ],
+        "min_joint_limit_margin_deg": 7.08567793399138
+      }
+    }
+  },
+  "tests": {
+    "passed": 359
+  },
+  "tasks": {
+    "cube_stack": {
+      "initial_pose": {
+        "mode": "workspace_center",
+        "height_above_table_m": 0.16,
+        "radial_tilt_deg": 15.0,
+        "tool_yaw_deg": 180.0,
+        "gripper_width_m": 0.1,
+        "center_xy_m": [
+          0.34,
+          0.0
+        ],
+        "tcp_target_base_m": [
+          0.34,
+          0.0,
+          0.154
+        ],
+        "tcp_actual_base_m": [
+          0.33999999999304703,
+          -2.2010030751607194e-13,
+          0.15399999999642486
+        ],
+        "tool_rotation_base": [
+          [
+            -0.9659258262890682,
+            1.1829179713786696e-16,
+            0.25881904510252074
+          ],
+          [
+            1.2246467991473532e-16,
+            1.0,
+            0.0
+          ],
+          [
+            -0.25881904510252074,
+            3.169619151431765e-17,
+            -0.9659258262890682
+          ]
+        ],
+        "state_joint_rad_m": [
+          2.4237946947026236e-06,
+          1.546927400955975,
+          -1.240199052921922,
+          9.402026888521704e-06,
+          1.0894722641100942,
+          -7.684950189520486e-06,
+          0.1
+        ],
+        "min_joint_limit_margin_deg": 7.478688375889881
+      },
+      "accepted": 8,
+      "executed": 8,
+      "planning_rejections": 0,
+      "mean_duration_s": 14.304166666666667,
+      "previous_mean_duration_s": 16.570833333333333,
+      "max_initial_tcp_error_m": 0.00037587382234704976,
+      "raw": "/mnt/data/pengguanqi/Data/PressB/outputs/centered_manipulation_20261112/stack",
+      "example_video": "/home/pengguanqi/Workspace/Research/PressB/outputs/centered_manipulation_20261112/stack_examples/examples_1x.mp4",
+      "cases": [
+        {
+          "episode": 0,
+          "seed": 20262127,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.33989884714320706,
+            3.0620791177964797e-06,
+            0.1536380057276801
+          ],
+          "initial_tcp_error_m": 0.00037587382185822724,
+          "initial_measured_gripper_width_m": 0.09999997913837433,
+          "duration_s": 13.466666666666667,
+          "before_centering_duration_s": 16.433333333333334,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 405,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 1,
+          "seed": 20263136,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.33989884714320473,
+            3.0615930967317784e-06,
+            0.1536380057276744
+          ],
+          "initial_tcp_error_m": 0.00037587381790527507,
+          "initial_measured_gripper_width_m": 0.09999972581863403,
+          "duration_s": 13.133333333333333,
+          "before_centering_duration_s": 15.933333333333334,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 395,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 2,
+          "seed": 20264145,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.3398988471432021,
+            3.061081517841236e-06,
+            0.1536380057276684
+          ],
+          "initial_tcp_error_m": 0.0003758738137451518,
+          "initial_measured_gripper_width_m": 0.09999949485063553,
+          "duration_s": 15.2,
+          "before_centering_duration_s": 17.3,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 457,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 3,
+          "seed": 20265154,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.33989884714320695,
+            3.0620751978183677e-06,
+            0.15363800572767997
+          ],
+          "initial_tcp_error_m": 0.00037587382182645654,
+          "initial_measured_gripper_width_m": 0.09999997913837433,
+          "duration_s": 14.4,
+          "before_centering_duration_s": 15.433333333333334,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 433,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 4,
+          "seed": 20266163,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.3398988471432046,
+            3.061589222618204e-06,
+            0.1536380057276743
+          ],
+          "initial_tcp_error_m": 0.00037587381787382946,
+          "initial_measured_gripper_width_m": 0.09999972581863403,
+          "duration_s": 13.433333333333334,
+          "before_centering_duration_s": 16.0,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 404,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 5,
+          "seed": 20267172,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.33989884714320207,
+            3.061076206750222e-06,
+            0.15363800572766823
+          ],
+          "initial_tcp_error_m": 0.00037587381370207413,
+          "initial_measured_gripper_width_m": 0.09999949485063553,
+          "duration_s": 14.333333333333334,
+          "before_centering_duration_s": 16.366666666666667,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 431,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 6,
+          "seed": 20268181,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.33989884714320695,
+            3.062076938554897e-06,
+            0.15363800572768008
+          ],
+          "initial_tcp_error_m": 0.00037587382184053056,
+          "initial_measured_gripper_width_m": 0.09999997913837433,
+          "duration_s": 16.1,
+          "before_centering_duration_s": 18.233333333333334,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 484,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 7,
+          "seed": 20269190,
+          "objects": [
+            "red",
+            "blue"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.3398988471432075,
+            3.0621392272880238e-06,
+            0.15363800572768088
+          ],
+          "initial_tcp_error_m": 0.00037587382234704976,
+          "initial_measured_gripper_width_m": 0.09999990463256836,
+          "duration_s": 14.366666666666667,
+          "before_centering_duration_s": 16.866666666666667,
+          "initial_state_joint_rad_m": [
+            2.4237946947026236e-06,
+            1.546927400955975,
+            -1.240199052921922,
+            9.402026888521704e-06,
+            1.0894722641100942,
+            -7.684950189520486e-06,
+            0.1
+          ],
+          "video_frames": 432,
+          "validation_frames_excluded": 18
+        }
+      ]
+    },
+    "tabletop_cleanup": {
+      "initial_pose": {
+        "mode": "workspace_center",
+        "height_above_table_m": 0.16,
+        "radial_tilt_deg": 15.0,
+        "tool_yaw_deg": 180.0,
+        "gripper_width_m": 0.1,
+        "center_xy_m": [
+          0.35,
+          -0.045
+        ],
+        "tcp_target_base_m": [
+          0.35,
+          -0.045,
+          0.154
+        ],
+        "tcp_actual_base_m": [
+          0.3499999999926198,
+          -0.044999999998344524,
+          0.1539999999962187
+        ],
+        "tool_rotation_base": [
+          [
+            -0.9664799335106272,
+            0.0043097228343480344,
+            0.25670598826358626
+          ],
+          [
+            -0.004309722834347794,
+            0.999445892778441,
+            -0.03300505563388966
+          ],
+          [
+            -0.25670598826358626,
+            -0.03300505563388963,
+            -0.9659258262890682
+          ]
+        ],
+        "state_joint_rad_m": [
+          -0.1278673009719723,
+          1.5917502001416004,
+          -1.2918811783205175,
+          9.312283782099394e-06,
+          1.096331590315941,
+          -0.12787731804811014,
+          0.1
+        ],
+        "min_joint_limit_margin_deg": 7.08567793399138
+      },
+      "accepted": 3,
+      "executed": 3,
+      "planning_rejections": 1,
+      "mean_duration_s": 44.422222222222224,
+      "previous_mean_duration_s": 46.888888888888886,
+      "max_initial_tcp_error_m": 0.0003971974587138474,
+      "raw": "/mnt/data/pengguanqi/Data/PressB/outputs/centered_manipulation_20261112/cleanup",
+      "example_video": "/home/pengguanqi/Workspace/Research/PressB/outputs/centered_manipulation_20261112/cleanup_examples/examples_1x.mp4",
+      "cases": [
+        {
+          "episode": 0,
+          "seed": 20262121,
+          "objects": [
+            "speaker",
+            "lidar"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.34990201950738514,
+            -0.04498526417811869,
+            0.1536153592591074
+          ],
+          "initial_tcp_error_m": 0.0003971974583679547,
+          "initial_measured_gripper_width_m": 0.09999728202819824,
+          "duration_s": 48.2,
+          "before_centering_duration_s": 50.833333333333336,
+          "initial_state_joint_rad_m": [
+            -0.1278673009719723,
+            1.5917502001416004,
+            -1.2918811783205175,
+            9.312283782099394e-06,
+            1.096331590315941,
+            -0.12787731804811014,
+            0.1
+          ],
+          "video_frames": 1447,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 1,
+          "seed": 20265148,
+          "objects": [
+            "gamepad",
+            "lidar"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.34990201950738514,
+            -0.04498526417811869,
+            0.1536153592591074
+          ],
+          "initial_tcp_error_m": 0.0003971974583679547,
+          "initial_measured_gripper_width_m": 0.09999728202819824,
+          "duration_s": 43.1,
+          "before_centering_duration_s": 45.43333333333333,
+          "initial_state_joint_rad_m": [
+            -0.1278673009719723,
+            1.5917502001416004,
+            -1.2918811783205175,
+            9.312283782099394e-06,
+            1.096331590315941,
+            -0.12787731804811014,
+            0.1
+          ],
+          "video_frames": 1294,
+          "validation_frames_excluded": 18
+        },
+        {
+          "episode": 2,
+          "seed": 20264139,
+          "objects": [
+            "gamepad",
+            "speaker"
+          ],
+          "success": true,
+          "initial_measured_tcp_base_m": [
+            0.3499020195156708,
+            -0.044985264113680576,
+            0.15361535925910827
+          ],
+          "initial_tcp_error_m": 0.0003971974587138474,
+          "initial_measured_gripper_width_m": 0.09999728202819824,
+          "duration_s": 41.96666666666667,
+          "before_centering_duration_s": 44.4,
+          "initial_state_joint_rad_m": [
+            -0.1278673009719723,
+            1.5917502001416004,
+            -1.2918811783205175,
+            9.312283782099394e-06,
+            1.096331590315941,
+            -0.12787731804811014,
+            0.1
+          ],
+          "video_frames": 1260,
+          "validation_frames_excluded": 18
+        }
+      ]
+    }
+  }
+}

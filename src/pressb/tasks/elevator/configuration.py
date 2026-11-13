@@ -12,7 +12,7 @@ _INPUT = ROOT / "outputs/rtx5090_eval_comparison/input"
 _DEFAULTS = dict(gpu=0, num_envs=2, max_seconds=15., smoothing_window=3, single_gamma=.99,
     response_cache_size=2, camera_resolution=224, render_subframes=1,
     light_settle_captures=1, light_settle_subframes=2, ik_iterations=16,
-    log_actions=False, png_workers=4, cpu_threads=8, gpu_dynamics=False)
+    log_actions=False, png_workers=4, cpu_threads=8, color_response_workers=0, gpu_dynamics=False)
 _PATHS = dict(config=_INPUT / "config.json", snapshot=_INPUT / "scene.usda",
               dataset=_INPUT / "dataset_metadata", asset_bundle=_INPUT / "assets")
 _ADAPTER_KEYS = {"floors", "panel_randomization", "run_id", "expected_metadata"}
@@ -31,8 +31,8 @@ def load_config(config):
     values = {**_DEFAULTS, **copy.deepcopy(config)}
     for key in ("gpu", "num_envs", "response_cache_size", "render_subframes",
                 "light_settle_captures", "light_settle_subframes", "ik_iterations",
-                "png_workers", "cpu_threads"):
-        minimum = 0 if key in ("gpu", "light_settle_captures") else 1
+                "png_workers", "cpu_threads", "color_response_workers"):
+        minimum = 0 if key in ("gpu", "light_settle_captures", "color_response_workers") else 1
         if type(values[key]) is not int or values[key] < minimum:
             raise ValueError(f"{key} must be an integer >= {minimum}")
     if type(values["smoothing_window"]) is not int or values["smoothing_window"] not in (1, 3, 5, 7, 9, 11):

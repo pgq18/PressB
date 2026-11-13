@@ -1,6 +1,6 @@
 """Training-unit conversion and accepted-prefix contracts for tabletop export."""
 from copy import deepcopy
-import importlib.util
+from importlib.metadata import version
 from pathlib import Path
 import sys
 
@@ -9,7 +9,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from export_table_buttons import (
-    FPS, RAW_SCHEMA, RAW_UNITS, TERMINAL_ACTION, discover_episodes, feature_spec,
+    FPS, LEROBOT_VERSION, RAW_SCHEMA, RAW_UNITS, TERMINAL_ACTION, discover_episodes, feature_spec,
     load_episode, parse_group, to_pap_units, write_json,
 )
 
@@ -122,9 +122,10 @@ def test_discovery_does_not_silently_truncate_or_skip_numbering(tmp_path):
         discover_episodes(raw, 2)
 
 
-@pytest.mark.skipif(importlib.util.find_spec("lerobot") is None,
-                    reason="Official writer/reader integration runs in the separate LeRobot environment")
 def test_official_writer_reader_preserves_two_episode_boundaries_and_units(tmp_path):
+    pytest.importorskip("lerobot")
+    if version("lerobot") != LEROBOT_VERSION:
+        pytest.skip(f"Official exporter requires LeRobot {LEROBOT_VERSION}")
     import av
     from export_table_buttons import configure_runtime, export_group, read_json
     configure_runtime()

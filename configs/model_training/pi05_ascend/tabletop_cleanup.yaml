@@ -1,0 +1,94 @@
+# Six Ascend NPU workers, global batch 144. Run from your dedicated training root.
+dataset:
+  root: datasets/tabletop_cleanup
+  video_backend: pyav
+  validation_fraction: 0.1
+  repo_id: pgq18/pressb_tabletop_cleanup_100_20261113
+  revision: 27f29c73e9d5911e9f6ebe81f813e534e9aac208
+policy:
+  pretrained_path: models/pi05_base
+  device: npu:0
+  dtype: bfloat16
+  chunk_size: 16
+  n_action_steps: 16
+  gradient_checkpointing: true
+  train_expert_only: true
+  freeze_vision_encoder: true
+  scheduler_decay_steps: 40000
+tokenizer_path: models/paligemma-tokenizer
+output_dir: runs/tabletop_cleanup_pi05_base_expert_chunk16_b144_40k
+steps: 40000
+batch_size: 24
+num_workers: 8
+seed: 42
+eval_every: 1000
+validation_samples: 128
+save_every: 5000
+image_transforms:
+  enable: true
+pressb:
+  observation:
+    state:
+      names:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+      - gripper_width
+      units:
+      - rad
+      - rad
+      - rad
+      - rad
+      - rad
+      - rad
+      - m
+    cameras:
+    - up
+    - wrist
+  camera_keys:
+    up: observation.images.up
+    wrist: observation.images.wrist
+  action:
+    representation: joint_position
+    frame: robot_base
+    names:
+    - joint1
+    - joint2
+    - joint3
+    - joint4
+    - joint5
+    - joint6
+    - gripper_width
+    units:
+    - rad
+    - rad
+    - rad
+    - rad
+    - rad
+    - rad
+    - m
+    control_hz: 30
+    horizon: 16
+  state_scale:
+  - 57.29577951308232
+  - 57.29577951308232
+  - 57.29577951308232
+  - 57.29577951308232
+  - 57.29577951308232
+  - 57.29577951308232
+  - 100
+  action_scale:
+  - 0.017453292519943295
+  - 0.017453292519943295
+  - 0.017453292519943295
+  - 0.017453292519943295
+  - 0.017453292519943295
+  - 0.017453292519943295
+  - 0.01
+gradient_accumulation_steps: 1
+drop_last: true
+log_every: 20
+keep_checkpoints: 2

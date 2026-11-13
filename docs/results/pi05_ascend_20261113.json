@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-13",
+  "scope": "Deployment and runtime validation; not simulation task-success evaluation",
+  "platform": {
+    "architecture": "aarch64",
+    "accelerator": "Ascend 910C",
+    "visible_device_count": 6,
+    "cann": "9.0.0",
+    "driver": "25.5.5",
+    "python": "3.11.18",
+    "torch": "2.10.0+cpu",
+    "torch_npu": "2.10.0",
+    "torchvision": "0.25.0+cpu",
+    "lerobot_revision": "d324ffe810d17264a0b1e628698aa1fa09aa639c"
+  },
+  "inputs": {
+    "cube_stack": {
+      "repo_id": "pgq18/pressb_cube_stack_100_20261113",
+      "revision": "1a41e724c8d99df2d54fc5af57540788f526cf5a",
+      "episodes": 100,
+      "frames": 43798
+    },
+    "tabletop_cleanup": {
+      "repo_id": "pgq18/pressb_tabletop_cleanup_100_20261113",
+      "revision": "27f29c73e9d5911e9f6ebe81f813e534e9aac208",
+      "episodes": 100,
+      "frames": 132793
+    },
+    "base": {
+      "repo_id": "lerobot/pi05_base",
+      "revision": "22c30e5b34f9e7ab738b1b34fc2fc5ecfe2d28f0",
+      "model_safetensors_sha256": "0eb11ca9587678c1d2ef8cf32807c29f8ce53a2bfdfc1aa4a4c96f16fca59b0f"
+    },
+    "tokenizer_spm_sha256": "8986bb4f423f07f8c7f70d0dbe3526fb2316056c17bae71b1ea975e77a168fc6",
+    "download_verification": "All downloaded input files checked against recorded HF Git/LFS hashes"
+  },
+  "checks": {
+    "single_device_pretrained_forward_backward": "passed",
+    "single_device_pretrained_chunk_inference": "passed; finite [1,16,7] actions",
+    "frozen_parameter_digest_before_after": "3b3a1c58c82e9aaf53c8364f11d5fee6b00b5936f00f515b4aab75cc8f769074",
+    "six_device_hccl_bf16_backward": "passed",
+    "arm_cpu_image_augmentation": {
+      "workers": 8,
+      "samples": 480,
+      "status": "passed with scoped native CPU sharpness fallback"
+    },
+    "six_device_real_data_sft": {
+      "steps": 2,
+      "global_batch": 144,
+      "chunk_size": 16,
+      "gradient_checkpointing": true,
+      "training_loss": [0.1613580882549286, 0.13114474713802338],
+      "validation_loss": 0.14242568612098694,
+      "native_checkpoint_export": "passed",
+      "checkpoint_bytes": 9354050752
+    }
+  },
+  "limitations": [
+    "Six-device batch 24 without gradient checkpointing exhausted NPU memory",
+    "Initial ARM CPU sharpness oneDNN JIT failed before the scoped fallback",
+    "Saved checkpoints contain model/processors/tokenizer, not optimizer state",
+    "Full-run convergence and simulation success are separate measurements"
+  ]
+}

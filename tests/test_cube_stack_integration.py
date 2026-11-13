@@ -32,7 +32,7 @@ def test_cube_stack_node_and_experiment_share_task_contract():
     assert local["num_envs"] == experiment["num_envs"] == trainer["rollout"]["num_envs"] == 8
     assert local["horizon"] == experiment["horizon"] == trainer["rollout"]["execution_horizon"] == 32
     assert Path(experiment["scene_config"]) == PROJECT_ROOT / local["scene_config"]
-    assert Path(experiment["scene_config"]).name == "playground_20261109_global_refined.json"
+    assert Path(experiment["scene_config"]).name == "playground_20261113_appearance.json"
     for key in ("cubes", "randomization", "smoothing", "render_resolution", "reward", "terminate_on_success"):
         assert experiment[key] == local[key]
     assert "scene_overrides" not in experiment
@@ -53,7 +53,8 @@ def test_real_layout_uses_same_template_and_cubes_with_sampling_disabled():
     assert base["randomization"]["enabled"] is True
     assert real["cubes"]["red"]["edge_m"] == 0.029
     assert real["cubes"]["blue"]["edge_m"] == 0.030
-    assert "scene_overrides" not in real  # Keep the pinned home, not live feedback.
+    assert "scene_overrides" not in real
+    assert real["initial_pose"] == base["initial_pose"] == {"mode": "workspace_center"}
 
 
 def test_generic_parallel_smoke_offers_cube_stack_without_starting_isaac():
@@ -62,17 +63,16 @@ def test_generic_parallel_smoke_offers_cube_stack_without_starting_isaac():
     assert "cube_stack" in result.stdout
 
 
-def test_task_loaders_preserve_pinned_camera_and_home_in_both_layouts():
+def test_task_loaders_preserve_pinned_camera_and_center_home_in_both_layouts():
     from pressb.tasks.cube_stack.configuration import load_config, sample_objects
-    reference = PROJECT_ROOT / "configs/calibration/playground_20261109_global_refined.json"
+    reference = PROJECT_ROOT / "configs/calibration/playground_20261113_appearance.json"
     original = reference.read_bytes()
     scene = json.loads(original)
-    expected_initial = (scene["initial_state_joint_rad_m"] if "initial_state_joint_rad_m" in scene else
-                        [*scene["initial_joint_positions_rad"], scene["initial_gripper_width_m"]])
     for name in ("cube_stack_simulation.json", "cube_stack_real_layout.json"):
         node = json.loads((PROJECT_ROOT / "configs/rl_nodes" / name).read_text())
         config = load_config(node["backend"]["config"])
-        assert config["scene"]["initial_state_joint_rad_m"] == expected_initial
+        assert config["initial_pose"]["mode"] == "workspace_center"
+        assert config["scene"]["initial_state_joint_rad_m"] == config["initial_pose"]["state_joint_rad_m"]
         assert config["scene"]["up_camera"] == scene["up_camera"]
         assert config["scene"]["wrist_camera"] == scene["wrist_camera"]
         assert config["reset_render_frames"] == scene["rendering"]["warmup_frames"]

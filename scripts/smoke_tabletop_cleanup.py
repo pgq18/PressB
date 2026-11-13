@@ -31,9 +31,52 @@ def parser():
     p.add_argument("--grasp-opening",action="append",nargs=2,metavar=("KIND","METRES"),default=[],
                    help="Override one object's approach/release opening for this run; closing target stays unchanged")
     p.add_argument("--max-joint-speed",type=float,default=20.,help="Degrees per second; simulation only")
+    p.add_argument("--settle-seconds",type=float,default=1.,
+                   help="Hold the initial robot pose through normal steps after reset before planning")
+    p.add_argument("--settled-grasps",action=argparse.BooleanOptionalAction,default=True,
+                   help="Plan from each environment's measured post-settling object poses")
     p.add_argument("--video",action=argparse.BooleanOptionalAction,default=True)
     p.add_argument("--plan-only",action="store_true")
     return p
+
+
+def measured_object_poses(snapshot, base_world, kinds):
+    """Convert diagnostic rigid-body origins into one robot's base frame."""
+    import numpy as np
+    base = np.asarray(base_world,dtype=float)
+    if base.shape!=(3,) or not np.isfinite(base).all():
+        raise ValueError("Robot base must be a finite world position")
+    result={}
+    for kind in kinds:
+        obj=snapshot["objects"][kind]
+        position=np.asarray(obj["position_world"],dtype=float)
+        quaternion=np.asarray(obj["orientation_wxyz"],dtype=float)
+        if (obj.get("active") is not True or position.shape!=(3,) or quaternion.shape!=(4,)
+                or not np.isfinite(position).all() or not np.isfinite(quaternion).all()
+                or np.linalg.norm(quaternion)<1e-12):
+            raise ValueError(f"Cannot plan from an inactive or invalid {kind} observation")
+        result[kind]=dict(position_base_m=(position-base).tolist(),
+                          orientation_wxyz=(quaternion/np.linalg.norm(quaternion)).tolist())
+    return result
+
+
+def equalize_plan_lengths(plans):
+    """Hold completed environments at home while a peer finishes its own plan."""
+    longest=max(len(plan["actions"]) for plan in plans.values())
+    for plan in plans.values():
+        count=len(plan["actions"])
+        padding=longest-count
+        plan["unpadded_action_count"]=count
+        plan["parallel_padding_frames"]=padding
+        if padding:
+            plan["actions"].extend([deepcopy(plan["actions"][-1]) for _ in range(padding)])
+            plan["phases"].extend(["settled"]*padding)
+            waypoint=deepcopy(plan["waypoints"][-1])
+            waypoint.update(phase="settled",start_frame=count,arrival_frame=count,
+                            end_frame=longest-1,hold_seconds=padding/plan["fps"],minimum_duration_s=0.)
+            plan["waypoints"].append(waypoint)
+        plan["duration_s"]=longest/plan["fps"]
+    return plans
 
 
 def assess_execution(history, plan):
@@ -81,7 +124,8 @@ def run(args):
     source = json.loads(args.config.read_text())
     config = deepcopy(source.get("backend",{}).get("config",source))
     config.update(num_envs=args.num_envs,gpu=args.gpu,horizon=1,terminate_on_success=False,
-                  max_episode_seconds=120.,settling_ticks=120,smoothing={"mode":"none"},
+                  max_episode_seconds=max(120.,float(config.get("max_episode_seconds",120.))),
+                  settling_ticks=120,smoothing={"mode":"none"},
                   render_resolution=[640,480],image_output_resolution=[640,480],
                   observation_render_frames=1,reset_render_frames=2,log_dir=str(output/"simulation"))
     selected=args.objects or config.get("randomization",{}).get("fixed_subset") or ["speaker","lidar"]
@@ -97,11 +141,14 @@ def run(args):
         openings={kind:float(width) for kind,width in args.grasp_opening}
         plan = plan_cleanup(normalized,kinds=selected,max_joint_speed_deg_s=args.max_joint_speed,
                             grasp_openings_m=openings)
-        config["max_episode_seconds"] = float(math.ceil(plan["duration_s"]+1.))
+        config["max_episode_seconds"] = max(config["max_episode_seconds"],
+            float(math.ceil(plan["duration_s"]+args.settle_seconds+1.)))
         write(output/"plan.json",plan);write(output/"config.json",config)
         report["plan_duration_s"] = plan["duration_s"]
         if args.plan_only:
-            report.update(status="planned",physical_execution=False)
+            report.update(status="planned",physical_execution=False,
+                          planning_pose_source="nominal_config_no_physics_measurement",
+                          settled_grasps_requested=args.settled_grasps)
             return 0
         backend = create_backend(config)
         from pressb.runtime.parallel import SharedWorldBackend
@@ -112,7 +159,54 @@ def run(args):
         reset_objects = {kind:{key:plan["grasps"][kind]["object"].get(key,0.) for key in ("center_xy","yaw_deg")}
                          for kind in plan["kinds"]}
         rows = backend.reset(ids,20261109,{"objects":reset_objects})
+        reset_snapshot = backend.snapshot()
+        report["reset_snapshot"]=reset_snapshot
+        settle_frames=math.ceil(args.settle_seconds*plan["fps"])
+        home=normalized["scene"]["initial_state_joint_rad_m"]
+        with (output/"settling.jsonl").open("w") as stream:
+            for index in range(settle_frames):
+                if not all(backend.ready[eid] for eid in ids):
+                    raise RuntimeError("An environment ended before object settling completed")
+                rows=backend.step([dict(env_id=eid,actions=[home]) for eid in ids])
+                snapshots=backend.snapshot(ids)
+                for row in rows:
+                    eid=row["env_id"]
+                    record=dict(env_id=eid,settling_action_index=index,phase="initial_settling",
+                        elapsed_s=float(backend.ticks[eid])*backend.execution["physics_dt"],
+                        command=home,state=row["observation"]["state"],
+                        objects=snapshots[str(eid)]["objects"],info=deepcopy(row["info"]),
+                        terminated=row["terminated"],truncated=row["truncated"])
+                    stream.write(json.dumps(record,allow_nan=False)+"\n")
         first = backend.snapshot()
+        if not all(backend.ready[eid] for eid in ids):
+            raise RuntimeError("An environment ended during object settling")
+        report.update(settled_snapshot=first,
+            settling=dict(requested_seconds=args.settle_seconds,control_steps=settle_frames,
+                control_hz=plan["fps"],actual_seconds=settle_frames/plan["fps"],
+                trace="settling.jsonl",included_in_video=False,
+                velocities_by_env={str(eid):{kind:first[str(eid)]["objects"][kind]["velocity"]
+                                            for kind in selected} for eid in ids}),
+            planning_pose_source="measured_post_settling" if args.settled_grasps else "nominal_config")
+        plans={}
+        poses_by_env={}
+        for eid in ids:
+            base_world=(np.asarray(backend.task.scene["robot_base_position_world"])
+                        +np.asarray(backend.engine.offsets[eid]))
+            poses_by_env[str(eid)]=measured_object_poses(first[str(eid)],base_world,selected)
+            kwargs=dict(object_poses_base=poses_by_env[str(eid)]) if args.settled_grasps else {}
+            plans[eid]=plan_cleanup(normalized,kinds=selected,max_joint_speed_deg_s=args.max_joint_speed,
+                                    grasp_openings_m=openings,**kwargs)
+        equalize_plan_lengths(plans)
+        plan=plans[ids[0]]
+        required_seconds=plan["duration_s"]+settle_frames/plan["fps"]
+        if required_seconds>=config["max_episode_seconds"]:
+            raise ValueError(f"Measured plan and settling need {required_seconds:.3f} seconds, "
+                             f"exceeding the configured {config['max_episode_seconds']:.3f} second episode")
+        report.update(plan_duration_s=plan["duration_s"],object_poses_base_by_env=poses_by_env,
+                      unpadded_action_counts={str(eid):plans[eid]["unpadded_action_count"] for eid in ids})
+        write(output/"plan.json",plan)
+        write(output/"plans_by_env.json",{str(eid):plans[eid] for eid in ids})
+        write(output/"settled_snapshot.json",first)
         rgb_cache,history = {},{i:[] for i in ids}
         def frames(rows,label=None):
             for row in rows:
@@ -139,25 +233,27 @@ def run(args):
                     pipes["parallel"].add(np.ascontiguousarray(grid))
         frames(rows,"initial")
         with (output/"physics.jsonl").open("w") as stream:
-            previous_phase=None
-            for index,(command,phase) in enumerate(zip(plan["actions"],plan["phases"])):
+            previous_phases={}
+            for index in range(len(plan["actions"])):
                 live=[eid for eid in ids if backend.ready[eid]]
                 if not live:
                     break
-                rows=backend.step([dict(env_id=eid,actions=[command]) for eid in live])
+                rows=backend.step([dict(env_id=eid,actions=[plans[eid]["actions"][index]]) for eid in live])
                 snapshots=backend.snapshot(live)
                 for row in rows:
                     eid=row["env_id"]
+                    command,phase=plans[eid]["actions"][index],plans[eid]["phases"][index]
                     record=dict(env_id=eid,action_index=index,phase=phase,
                         elapsed_s=float(backend.ticks[eid])*backend.execution["physics_dt"],command=command,
+                        playback_elapsed_s=(index+1)/plan["fps"],
                         state=row["observation"]["state"],objects=snapshots[str(eid)]["objects"],
                         info=deepcopy(row["info"]),terminated=row["terminated"],truncated=row["truncated"])
                     history[eid].append(record);stream.write(json.dumps(record,allow_nan=False)+"\n")
+                    if phase!=previous_phases.get(eid):
+                        print(json.dumps(dict(env_id=eid,frame=index,total=len(plans[eid]["actions"]),phase=phase)),flush=True)
+                        previous_phases[eid]=phase
                 frames(rows,"final" if index==len(plan["actions"])-1 else None)
-                if phase!=previous_phase:
-                    print(json.dumps(dict(frame=index,total=len(plan["actions"]),phase=phase)),flush=True)
-                    previous_phase=phase
-        audits={str(eid):assess_execution(history[eid],plan) for eid in ids}
+        audits={str(eid):assess_execution(history[eid],plans[eid]) for eid in ids}
         report.update(status="passed" if all(item["passed"] for item in audits.values()) else "failed",
             physical_execution=True,episodes=audits,initial_snapshot=first,final_snapshot=backend.snapshot(),
             timings=deepcopy(backend.timings),video_paths={str(key):str(pipe.path) for key,pipe in pipes.items()},
@@ -181,6 +277,9 @@ def main(argv=None):
     p=parser();args=p.parse_args(argv)
     if args.num_envs<1 or args.gpu<0 or (args.objects is not None and len(set(args.objects))!=2):
         p.error("Use a positive num-envs, nonnegative GPU and two distinct objects")
+    if (not math.isfinite(args.settle_seconds) or args.settle_seconds<0
+            or (args.settled_grasps and args.settle_seconds<=0)):
+        p.error("--settle-seconds must be finite and positive when using measured settled grasps")
     try:
         openings={kind:float(width) for kind,width in args.grasp_opening}
     except ValueError:

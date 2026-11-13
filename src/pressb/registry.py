@@ -26,6 +26,7 @@ _PLUGINS = {
         "vlajepa": "pressb.models.vlajepa:create_backend",
         "vlajepa_joint": "pressb.models.vlajepa_joint:create_backend",
         "diffusion_policy": "pressb.models.diffusion_policy:create_backend",
+        "pi05": "pressb.models.pi05:create_backend",
     },
 }
 

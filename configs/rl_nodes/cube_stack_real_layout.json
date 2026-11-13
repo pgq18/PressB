@@ -10,7 +10,8 @@
   "backend": {
     "plugin": "cube_stack",
     "config": {
-      "scene_config": "configs/calibration/playground_20261109_global_refined.json",
+      "scene_config": "configs/calibration/playground_20261113_appearance.json",
+      "initial_pose": {"mode": "workspace_center"},
       "num_envs": 1,
       "horizon": 32,
       "gpu": 0,

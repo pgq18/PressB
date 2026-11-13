@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "task": "tabletop_cleanup",
+  "date": "2026-11-10",
+  "simulation_only": true,
+  "real_robot_executed": false,
+  "changes": [
+    "Measure full rigid object poses after a one-second home hold following zero-tick reset",
+    "Align approach and closing axes with measured object tilt",
+    "Balance gamepad finger sweep clearances using unchanged object geometry and 70 mm opening",
+    "Preserve direct transfer to second object; return home only at the end"
+  ],
+  "physics_status": "passed",
+  "episodes": {
+    "0": {
+      "full_plan_executed": true,
+      "task_success": true,
+      "physical_success": true,
+      "objects": {
+        "gamepad": {
+          "max_lift_m": 0.09548592567443848,
+          "stable_position_excursion_m": 0.0,
+          "stable_rotation_excursion_rad": 7.556590783537212e-08,
+          "physical_outcome": {
+            "active": true,
+            "grasped_and_lifted": true,
+            "contained": true,
+            "supported": true,
+            "direct_floor_support": true,
+            "released": true,
+            "low_velocity": true,
+            "no_table_support": true,
+            "bottom_world_m": 0.7639997512567945,
+            "top_world_m": 0.8246821956535206,
+            "max_lift_m": 0.08536819163648601
+          },
+          "passed": true
+        },
+        "speaker": {
+          "max_lift_m": 0.11403113603591919,
+          "stable_position_excursion_m": 1.4901161193847656e-08,
+          "stable_rotation_excursion_rad": 2.1183835451927724e-07,
+          "physical_outcome": {
+            "active": true,
+            "grasped_and_lifted": true,
+            "contained": true,
+            "supported": true,
+            "direct_floor_support": true,
+            "released": true,
+            "low_velocity": true,
+            "no_table_support": true,
+            "bottom_world_m": 0.7640000368322459,
+            "top_world_m": 0.7873200388196768,
+            "max_lift_m": 0.11061291726065359
+          },
+          "passed": true
+        }
+      },
+      "final_gripper_width_m": 0.06999623775482178,
+      "max_home_joint_error_rad": 0.0006457858729493893,
+      "passed": true
+    }
+  },
+  "clearance_comparison": {
+    "old_pose_on_current_settled_object": {
+      "negative": {
+        "clearance_m": 0.010420528622625677,
+        "part": "stick_socket_-1",
+        "finger": "joint7"
+      },
+      "positive": {
+        "clearance_m": 0.0008071398494335112,
+        "part": "center_bridge",
+        "finger": "joint8"
+      }
+    },
+    "aligned_and_centered": {
+      "center_local_m": [
+        -2.9869232842056704e-19,
+        0.01456099204580024,
+        -0.0027827464788732423
+      ],
+      "tcp_local_m": [
+        -2.9869232842056704e-19,
+        0.01456099204580024,
+        -0.006782746478873242
+      ],
+      "rotation_local": [
+        [
+          -1.0,
+          1.2246467991473532e-16,
+          0.0
+        ],
+        [
+          1.2246467991473532e-16,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ]
+      ],
+      "center_shift_m": -0.00243900795419976,
+      "before_clearance_m": {
+        "negative": 0.0026218538671064864,
+        "positive": 0.007499869775506007
+      },
+      "after_clearance_m": {
+        "negative": 0.0050608618211159025,
+        "positive": 0.005060861821105907
+      },
+      "limiting_parts": {
+        "negative": "stick_socket_-1",
+        "positive": "center_bridge"
+      },
+      "opening_m": 0.07,
+      "approach_distance_m": 0.12170187983150987,
+      "method": "Continuous STL convex finger sweeps against individual convex object parts; lateral first-contact LP",
+      "scope": "Geometric finger sweep only; excludes whole-arm, table, other-object and bin collisions and contact offsets"
+    },
+    "pose_euler_deg": [
+      -9.593141123980288,
+      5.359242780486011e-06,
+      5.675700909539694
+    ],
+    "old_tcp": [
+      0.3641718641574203,
+      0.05478365711456794,
+      0.017042253521126764
+    ],
+    "new_tcp": [
+      0.3640551168772213,
+      0.05596445525713888,
+      0.013960103540876373
+    ],
+    "tcp_change_mm": [
+      -0.11674728019900327,
+      1.1807981425709448,
+      -3.0821499802503904
+    ],
+    "new_duration_s": 56.46666666666667
+  },
+  "phase_motion_comparison": {
+    "before": {
+      "gamepad:descend": {
+        "net_object_shift_m": 0.0,
+        "max_object_excursion_m": 3.725290298461914e-08,
+        "max_finger_force_n": 0.0
+      },
+      "gamepad:close": {
+        "net_object_shift_m": 0.004536784710631211,
+        "max_object_excursion_m": 0.00458267370007093,
+        "max_finger_force_n": 13.202214692485622
+      }
+    },
+    "after": {
+      "gamepad:descend": {
+        "net_object_shift_m": 0.0,
+        "max_object_excursion_m": 3.514431838712321e-08,
+        "max_finger_force_n": 0.0
+      },
+      "gamepad:close": {
+        "net_object_shift_m": 7.789551798375588e-05,
+        "max_object_excursion_m": 7.84924207832398e-05,
+        "max_finger_force_n": 9.990683117770958
+      }
+    }
+  },
+  "control_hz": 30.0,
+  "actions": 1694,
+  "duration_s": 56.46666666666667,
+  "video_frames": 1695,
+  "cpu_tests": {
+    "passed": 41,
+    "skipped": 2,
+    "scope": "Planning, mesh clearance, assets and per-environment pose/padding tests; optional USD-only CPU checks skipped; full Isaac physical run passed"
+  },
+  "artifacts": {
+    "full_video": "outputs/tabletop_cleanup_settled_grasp_20261110/simulation/env0_up_wrist.mp4",
+    "comparison_video": "outputs/tabletop_cleanup_settled_grasp_20261110/grasp_before_after_1x.mp4",
+    "plan": "outputs/tabletop_cleanup_settled_grasp_20261110/simulation/plan.json",
+    "physics": "outputs/tabletop_cleanup_settled_grasp_20261110/simulation/physics.jsonl",
+    "settling": "outputs/tabletop_cleanup_settled_grasp_20261110/simulation/settling.jsonl"
+  },
+  "sources_sha256": {
+    "src/pressb/tasks/tabletop_cleanup/planning.py": "cd6e2388a51b448b47fd522109d5291c89a0b2a3bba0d7b400bfea4acbc633ed",
+    "src/pressb/tasks/tabletop_cleanup/grasp_clearance.py": "d7c979cf7bf244008b864cd360354af67805ec32c875fadc9fddc9641981f89e",
+    "scripts/smoke_tabletop_cleanup.py": "99fcf74ee2f27220041973ac4f2a0b2c12714589630f3a39247d479106e5d5af",
+    "configs/rl_nodes/tabletop_cleanup_real_layout.json": "28576dfc0a99731e680050712b42e3a5a4273c5d667cf2560d119e97fd67d514"
+  },
+  "scope": "One fixed-layout scripted simulation, using simulator rigid-body poses, not a learned perception/policy or randomized success-rate evaluation. Finger clearance is a conservative convex sweep estimate, before contact offsets; physical contacts and final task outcome were checked separately."
+}

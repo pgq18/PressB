@@ -48,20 +48,46 @@ def placement_slots(config, kinds, *, gap_m=.006, edge_margin_m=.003):
 def plan_cleanup(config, *, kinds=("speaker", "lidar"), max_joint_speed_deg_s=20.,
                  gripper_speed_m_s=.030, cartesian_speed_m_s=.040,
                  lift_height_above_table_m=.120, contact_to_tip_m=.004,
-                 release_gap_m=.007, grasp_openings_m=None):
-    """Plan two sequential physical grasps and releases, then return home.
+                 release_gap_m=.007, grasp_openings_m=None, object_poses_base=None,
+                 trajectory_profile="legacy"):
+    """Plan two sequential physical grasps and releases.
 
     The contact patch from each mesh is converted to the lowest fingertip TCP.
     The carry can tilt radially outward to keep J5 inside its existing URDF
     limit. Place/release is upright; impossible upright poses fail before Kit.
+    After the first release, retreat above the bin and proceed to the next
+    object's pregrasp. Return to the initial pose only after the final object.
+    Optional measured object poses use the robot base frame and wxyz rotations.
+    They affect grasp planning only, never the scene or the reset placement.
     Every IK solution uses the unchanged common solver tolerances and limits.
+
+    ``compact`` opens to the scene's full travel during the first approach,
+    reorients during the lift where table clearance permits, omits waypoint
+    pauses and the final home detour, and ends above the last placement.
+    Compact actions remain a continuous fixed-rate sequence: no interior
+    frames are deleted. Outcome verification is requested separately through
+    ``validation_hold_seconds`` after the last recorded action. ``legacy``
+    preserves old playback.
     """
+    if trajectory_profile not in ("legacy", "compact"):
+        raise ValueError("trajectory_profile must be 'legacy' or 'compact'")
+    compact = trajectory_profile == "compact"
     kinds = tuple(kinds)
     slots = placement_slots(config, kinds)
     if grasp_openings_m is None:
         grasp_openings_m = {}
     if not isinstance(grasp_openings_m, dict) or set(grasp_openings_m)-set(kinds):
         raise ValueError("Grasp opening overrides must map selected object kinds to widths in metres")
+    object_poses_base = {} if object_poses_base is None else deepcopy(object_poses_base)
+    if not isinstance(object_poses_base, dict) or set(object_poses_base)-set(kinds):
+        raise ValueError("Measured object poses must map selected object kinds to base-frame poses")
+    for kind, pose in object_poses_base.items():
+        if not isinstance(pose, dict) or set(pose)!={"position_base_m", "orientation_wxyz"}:
+            raise ValueError("Measured poses require position_base_m and orientation_wxyz")
+        position, quat = np.asarray(pose["position_base_m"], float), np.asarray(pose["orientation_wxyz"], float)
+        if (position.shape!=(3,) or quat.shape!=(4,) or not np.isfinite(position).all()
+                or not np.isfinite(quat).all() or not np.isclose(np.linalg.norm(quat), 1., atol=1e-5)):
+            raise ValueError("Measured poses require a finite position and unit wxyz quaternion")
     values = [max_joint_speed_deg_s, gripper_speed_m_s, cartesian_speed_m_s,
               lift_height_above_table_m, contact_to_tip_m, release_gap_m]
     if not np.isfinite(values).all() or min(values) <= 0:
@@ -107,29 +133,49 @@ def plan_cleanup(config, *, kinds=("speaker", "lidar"), max_joint_speed_deg_s=20
             add(phase, np.r_[solved,width], minimum_duration=distance/cartesian_speed_m_s)
         waypoints[-1]["hold_seconds"] = hold
 
-    for kind in kinds:
+    for object_index, kind in enumerate(kinds):
         spec = asset_spec(kind, config["objects"][kind].get("scale",1.))
         obj = deepcopy(config["objects"][kind])
         rz = _rotation(obj.get("yaw_deg",0.))
         object_center = np.r_[obj["center_xy"], spec["size"][2]/2-mount]
+        measured_pose = object_poses_base.get(kind)
+        if measured_pose is not None:
+            object_center = np.asarray(measured_pose["position_base_m"], float)
+            quat = np.asarray(measured_pose["orientation_wxyz"], float)
+            rz = Rotation.from_quat(quat[[1,2,3,0]]).as_matrix()
+            if rz[2,2] < .5:
+                raise ValueError(f"{kind} settled pose has no upward grasp approach")
         candidate = spec["grasp_candidates"][0]
-        open_width = float(grasp_openings_m.get(kind,candidate["opening_m"]))
+        default_opening = max_width if compact else candidate["opening_m"]
+        open_width = float(grasp_openings_m.get(kind,default_opening))
         close_width = float(candidate["closed_width_m"])
         if not 0 < close_width < candidate["surface_width_m"] < open_width <= max_width:
             raise ValueError(f"{kind} grasp does not fit the configured gripper")
         axis = np.asarray(candidate["closing_axis_local"])
         # Tool Y is the closing axis. Sign is interchangeable for the two fingers.
         offset_angle = math.degrees(math.atan2(axis[1],axis[0]))+90.
-        grasp_rot = _rotation(obj.get("yaw_deg",0.)+offset_angle)@np.diag([1.,-1.,-1.])
+        local_grasp_rot = _rotation(offset_angle)@np.diag([1.,-1.,-1.])
+        grasp_rot = rz@local_grasp_rot
         place_rot = _rotation(slots[kind]["yaw_deg"]+offset_angle)@np.diag([1.,-1.,-1.])
-        grasp_tcp = object_center+rz@candidate["center_local_m"]-np.array([0.,0.,contact_to_tip_m])
+        grasp_center_local = np.asarray(candidate["center_local_m"], float)
+        clearance = None
+        if kind == "gamepad" and measured_pose is not None:
+            from .grasp_clearance import optimize_grasp_center
+            clearance = optimize_grasp_center(kind, urdf_path=urdf if urdf.is_absolute() else ROOT/urdf,
+                opening_m=open_width, scale=obj.get("scale", 1.), contact_to_tip_m=contact_to_tip_m,
+                approach_distance_m=lift_height_above_table_m/rz[2,2], max_opening_m=max_width)
+            grasp_center_local = np.asarray(clearance["center_local_m"])
+        grasp_tcp = object_center+rz@grasp_center_local+grasp_rot[:,2]*contact_to_tip_m
         if grasp_tcp[2]+mount < .003:
             raise ValueError(f"{kind} fingertip would approach within 3 mm of the table")
         # Desired upright root height preserves a small free-fall gap above the floor.
         place_root = np.r_[slots[kind]["center_xy"], floor+release_gap_m+spec["size"][2]/2-mount]
         root_in_tool = grasp_rot.T@(object_center-grasp_tcp)
         place_tcp = place_root-place_rot@root_in_tool
-        high_pick = np.r_[grasp_tcp[:2],lift_height_above_table_m-mount]
+        # Approach and leave a tilted object along its own surface normal.
+        # This keeps the open fingers centered throughout the descending sweep.
+        approach_up = rz[:,2]
+        high_pick = grasp_tcp+approach_up*((lift_height_above_table_m-mount-grasp_tcp[2])/approach_up[2])
         high_place = np.r_[place_tcp[:2],lift_height_above_table_m-mount]
         # Check low endpoints before the many intermediate solves.
         q_pick = kin.solve(grasp_tcp,q,grasp_rot)
@@ -138,7 +184,7 @@ def plan_cleanup(config, *, kinds=("speaker", "lidar"), max_joint_speed_deg_s=20
         # itself vertically; the subsequent tilted carry rises above the rim.
         minimum_pick_height = max(spec["size"][2]+.010,grasp_tcp[2]+mount+.025)
         for height in np.arange(lift_height_above_table_m, minimum_pick_height, -.015):
-            high_pick[2] = height-mount
+            high_pick = grasp_tcp+approach_up*((height-mount-grasp_tcp[2])/approach_up[2])
             try:
                 q_pregrasp = kin.solve(high_pick,q_pick,grasp_rot)
                 break
@@ -163,22 +209,68 @@ def plan_cleanup(config, *, kinds=("speaker", "lidar"), max_joint_speed_deg_s=20
         if carry_rot is None:
             raise ValueError(f"No bounded carry orientation found for {kind}")
         prefix = kind+":"
-        add(prefix+"open", np.r_[q,open_width], .35)
-        add(prefix+"pregrasp", np.r_[q_pregrasp,open_width], .35)
-        cartesian(prefix+"descend",grasp_tcp,grasp_rot,open_width,.35)
-        add(prefix+"close",np.r_[q,close_width],.8)
-        cartesian(prefix+"lift",high_pick,grasp_rot,close_width,.4)
-        cartesian(prefix+"orient_carry",high_pick,carry_rot,close_width,.2)
-        cartesian(prefix+"transfer",high_place,carry_rot,close_width,.3)
-        cartesian(prefix+"place",place_tcp,place_rot,close_width,.5)
-        add(prefix+"release",np.r_[q,open_width],1.)
-        cartesian(prefix+"retreat",high_place,carry_rot,open_width,.3)
-        add(prefix+"return_home",np.r_[initial[:6],open_width],.5)
+        lift_reorientation = None
+        if compact:
+            # Arm and fingers move together; opening is complete before descent.
+            add(prefix+"pregrasp", np.r_[q_pregrasp,open_width])
+            cartesian(prefix+"descend",grasp_tcp,grasp_rot,open_width)
+            # The physical finger-closing ramp completes before lifting.
+            add(prefix+"close",np.r_[q,close_width])
+
+            # Preserve the normal approach for a tilted, settled gamepad.
+            # Start reorientation only after the object's swept support hull
+            # clears the table; interpolate orientation during the remaining
+            # lift rather than turn in place at its top by default.
+            vertices = np.asarray(spec["support_vertices"])
+            held_vertices = ((vertices@rz.T+object_center)-grasp_tcp)@grasp_rot
+            rotating = Slerp([0.,1.], Rotation.from_matrix([grasp_rot,carry_rot]))(
+                np.linspace(0.,1.,61)).as_matrix()
+            initial_bottom = float(np.min((held_vertices@grasp_rot.T)[:,2]))
+            rotated_bottom = float(np.min(np.einsum("nij,vj->nvi",rotating,held_vertices)[:,:,2]))
+            # Five millimetres beyond the worst lower envelope, with a 20 mm
+            # initial lift to leave the contact surface before changing angle.
+            clearance_rise = max(.020,.005-mount-grasp_tcp[2]-rotated_bottom)
+            available_rise = float(high_pick[2]-grasp_tcp[2])
+            if available_rise+1e-6 < clearance_rise:
+                raise ValueError(f"Insufficient table clearance to reorient the lifted {kind}")
+            clear_fraction = min(1.,clearance_rise/available_rise)
+            clear_pick = grasp_tcp+(high_pick-grasp_tcp)*clear_fraction
+            cartesian(prefix+"lift",clear_pick,grasp_rot,close_width)
+            cartesian(prefix+"lift",high_pick,carry_rot,close_width)
+            lift_reorientation = dict(clearance_rise_m=clearance_rise,
+                vertical_rise_m=available_rise, blended_during_lift=clear_fraction<1.,
+                swept_lower_envelope_change_m=initial_bottom-rotated_bottom)
+            cartesian(prefix+"transfer",high_place,carry_rot,close_width)
+            cartesian(prefix+"place",place_tcp,place_rot,close_width)
+            add(prefix+"release",np.r_[q,open_width])
+            cartesian(prefix+"retreat",high_place,carry_rot,open_width)
+        else:
+            add(prefix+"open", np.r_[q,open_width], .35)
+            add(prefix+"pregrasp", np.r_[q_pregrasp,open_width], .35)
+            cartesian(prefix+"descend",grasp_tcp,grasp_rot,open_width,.35)
+            add(prefix+"close",np.r_[q,close_width],.8)
+            cartesian(prefix+"lift",high_pick,grasp_rot,close_width,.4)
+            cartesian(prefix+"orient_carry",high_pick,carry_rot,close_width,.2)
+            cartesian(prefix+"transfer",high_place,carry_rot,close_width,.3)
+            cartesian(prefix+"place",place_tcp,place_rot,close_width,.5)
+            add(prefix+"release",np.r_[q,open_width],1.)
+            cartesian(prefix+"retreat",high_place,carry_rot,open_width,.3)
+            if object_index == len(kinds)-1:
+                add(prefix+"return_home",np.r_[initial[:6],open_width],.5)
         grasps[kind] = dict(object=obj,asset_size_m=spec["size"],candidate=candidate,
                             grasp_tcp_base_m=grasp_tcp.tolist(),placement=slots[kind],
                             placement_tcp_base_m=place_tcp.tolist(),carry_tilt_deg=tilt,
-                            open_width_m=open_width,close_width_m=close_width)
-    add("settled",np.r_[initial[:6],max(g["open_width_m"] for g in grasps.values())],2.)
+                            open_width_m=open_width,close_width_m=close_width,
+                            pose_source="measured_settled" if measured_pose is not None else "nominal_config",
+                            object_pose_base=deepcopy(measured_pose),
+                            grasp_rotation_base=grasp_rot.tolist(),
+                            placement_rotation_base=place_rot.tolist(),
+                            approach_up_base=approach_up.tolist(),
+                            grasp_center_local_m=grasp_center_local.tolist(),
+                            finger_sweep_clearance=clearance,
+                            lift_reorientation=lift_reorientation)
+    if not compact:
+        add("settled",np.r_[initial[:6],max(g["open_width_m"] for g in grasps.values())],2.)
     actions, phases, previous = [], [], initial.copy()
     for waypoint in waypoints:
         command = np.asarray(waypoint["action"])
@@ -207,5 +299,9 @@ def plan_cleanup(config, *, kinds=("speaker", "lidar"), max_joint_speed_deg_s=20
                 units=["rad"]*6+["m"],tip_offset_m=.1358,robot_base_height_above_table_m=mount,
                 max_joint_speed_deg_s=max_joint_speed_deg_s,measured_max_speed_rad_m_s=measured.tolist(),
                 grasp_opening_overrides_m=deepcopy(grasp_openings_m),
+                measured_object_poses_base=deepcopy(object_poses_base),
+                trajectory_profile=trajectory_profile,
+                return_home_policy="none" if compact else "after_last_object",
+                validation_hold_seconds=.6 if compact else 0.,
                 min_tcp_base_z_m=float(tcp_positions[:,2].min()),
                 object_motion="Contact and gravity only after reset; no attachment or teleportation")

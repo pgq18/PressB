@@ -235,7 +235,7 @@ def test_authoring_mode_creates_no_camera_product_or_physics_reset(monkeypatch):
     module('isaacsim.core.api', World=lambda **k:world)
     module('isaacsim.core.utils.stage', add_reference_to_stage=lambda *a:None)
     module('carb', settings=SimpleNamespace(get_settings=lambda:Node()))
-    module('pressb.robots.piper.wrist_camera', apply_black_materials=lambda *a:None,
+    module('pressb.robots.piper.wrist_camera', apply_black_materials=lambda *a, **k:None,
            attach_wrist_camera=lambda *a:{'camera_path':'/World/Piper/link6/WristCamera'})
     # Camera and articulation modules must never be imported in authoring mode.
     monkeypatch.setitem(sys.modules,'isaacsim.sensors.camera',None)

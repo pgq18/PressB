@@ -35,6 +35,7 @@ class ParallelTask:
     max_episode_seconds, settling_ticks, spacing_m, render_resolution,
     render_subframes, observation_render_frames, reset_render_frames,
     cpu_threads, png_workers, log_dir, gamma. Optional settings include
+    color_response_workers (0 for serial NumPy color processing),
     renderer_profile (calibrated/rl_fast), image_preprocessing,
     image_output_resolution, terminal_boundary (physics_tick/control_interval),
     timeout_reason and headless. Configuration is normalized before Kit starts.

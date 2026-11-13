@@ -6,6 +6,7 @@ USD imports are deliberately confined to authoring functions.
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 import numpy as np
 
 from .geometry import KINDS, asset_geometry, asset_spec, box
@@ -83,20 +84,33 @@ def _mesh(stage,path,part,material):
     return mesh
 
 
-def _materials(stage,path,names,static_friction,dynamic_friction):
+def material_settings(overrides=None):
+    """Validate optional visual-only palette overrides without changing contacts."""
+    from pressb.runtime.scene import _material_settings
+    overrides = {} if overrides is None else overrides
+    if not isinstance(overrides, Mapping) or set(overrides) - set(MATERIALS):
+        raise ValueError(f"cleanup_materials must map known material names: {sorted(MATERIALS)}")
+    return {name: _material_settings(dict(color=color, roughness=roughness, metallic=metallic),
+        overrides.get(name, {}), f"cleanup_materials.{name}")
+        for name, (color, roughness, metallic) in MATERIALS.items()}
+
+
+def _materials(stage,path,names,static_friction,dynamic_friction,material_overrides=None):
     from pressb.runtime.scene import _material
+    settings = material_settings(material_overrides)
     static_friction=_positive(static_friction,"static_friction")
     dynamic_friction=_positive(dynamic_friction,"dynamic_friction")
     if dynamic_friction>static_friction:
         raise ValueError("dynamic_friction must not exceed static_friction")
-    return {name:_material(stage,f"{path}/Looks/{name}",MATERIALS[name][0],
-             roughness=MATERIALS[name][1],metallic=MATERIALS[name][2],
+    return {name:_material(stage,f"{path}/Looks/{name}",settings[name]["color"],
+             roughness=settings[name]["roughness"],metallic=settings[name]["metallic"],
+             specular=settings[name]["specular"] if settings[name]["specular_authored"] else None,
              static_friction=static_friction,dynamic_friction=dynamic_friction)
             for name in sorted(set(names))}
 
 
 def create_object(stage,path,kind,*,position=(0.,0.,0.),orientation_wxyz=(1.,0.,0.,0.),
-                  mass_kg=None,static_friction=.8,dynamic_friction=.65,scale=1.):
+                  mass_kg=None,static_friction=.8,dynamic_friction=.65,scale=1.,material_overrides=None):
     """Return geometry metadata; only root Xform is a dynamic rigid body."""
     from pxr import Gf,UsdPhysics
     from pressb.runtime.scene import PhysxSchema
@@ -104,7 +118,7 @@ def create_object(stage,path,kind,*,position=(0.,0.,0.),orientation_wxyz=(1.,0.,
     spec=asset_spec(kind,float(scale))
     mass_kg=_positive(spec["mass_kg"] if mass_kg is None else mass_kg,"mass_kg")
     root=_root(stage,path,position,orientation_wxyz)
-    mats=_materials(stage,path,[p.material for p in parts],static_friction,dynamic_friction)
+    mats=_materials(stage,path,[p.material for p in parts],static_friction,dynamic_friction,material_overrides)
     collision_paths=[]
     for part in parts:
         mesh=_mesh(stage,f"{path}/Geometry/{part.name.replace('-', 'm')}",part,mats[part.material])
@@ -131,7 +145,7 @@ def create_object(stage,path,kind,*,position=(0.,0.,0.),orientation_wxyz=(1.,0.,
 
 def create_bin(stage,path,*,size_xyz=(.222,.148,.049),wall_thickness=.004,
                position=(0.,0.,0.),orientation_wxyz=(1.,0.,0.,0.),
-               static_friction=.8,dynamic_friction=.65):
+               static_friction=.8,dynamic_friction=.65,material_overrides=None):
     """Static open cavity: bottom and four walls, no hidden roof/hull collider."""
     size=_vector(size_xyz,3,"size_xyz")
     if np.any(size<=0):
@@ -140,7 +154,7 @@ def create_bin(stage,path,*,size_xyz=(.222,.148,.049),wall_thickness=.004,
     if np.any(size<=2*thickness):
         raise ValueError("bin wall thickness must leave a nonempty cavity")
     root=_root(stage,path,position,orientation_wxyz)
-    material=_materials(stage,path,["bin"],static_friction,dynamic_friction)["bin"]
+    material=_materials(stage,path,["bin"],static_friction,dynamic_friction,material_overrides)["bin"]
     x,y,z=size
     parts=[box("floor",(x,y,thickness),(0,0,-z/2+thickness/2),"bin")]
     for sign in (-1,1):

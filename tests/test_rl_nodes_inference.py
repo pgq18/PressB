@@ -179,6 +179,116 @@ def test_health_returns_independent_metadata_copies():
     assert service.health()["noise"]["shape"] == [32, 20]
 
 
+def test_encode_release_capability_is_service_owned_and_legacy_encode_is_unchanged():
+    backend = Backend()
+    service = InferenceService(backend)
+    assert "encode_release_contexts" in service.health()["capabilities"]
+    assert "encode_release_contexts" not in backend.describe()["capabilities"]
+    result = service.encode(request())
+    assert set(result) == {"items"}
+    key = result["items"][0]["context_id"]
+    assert service.release({"context_ids": [key]}) == {"released": 1}
+    assert not service.contexts
+
+
+def test_service_capability_advertisement_accepts_optional_backend_capabilities():
+    backend = Backend()
+    metadata = backend.describe()
+    metadata.pop("capabilities")
+    backend.describe = lambda: metadata
+    service = InferenceService(backend)
+    assert service.health()["capabilities"] == ["encode_release_contexts"]
+    assert "capabilities" not in metadata
+
+
+def test_encode_retires_requested_context_before_capacity_eviction():
+    service = InferenceService(Backend(), cache_size=3)
+    keys = [item["context_id"] for item in service.encode(request(3))["items"]]
+    retained = {key: service.contexts[key] for key in keys[:2]}
+    result = service.encode(dict(request(include=True), release_context_ids=[keys[2]]))
+    new_key = result["items"][0]["context_id"]
+    assert result["released_context_ids"] == [keys[2]]
+    # Eviction before retirement would incorrectly lose the oldest unrelated
+    # entry. Only the explicitly retired newest context may disappear here.
+    assert list(service.contexts) == keys[:2] + [new_key]
+    assert all(service.contexts[key] is value for key, value in retained.items())
+    assert service.encoded_count == 4 and service.decoded_count == 1
+    assert np.asarray(result["items"][0]["base_actions"]).shape == (32, 7)
+    with pytest.raises(ValueError, match="missing or expired"):
+        service.decode({"items": [{"context_id": keys[2]}]})
+
+
+@pytest.mark.parametrize("failure", ["encoder", "features", "baseline_actions"])
+def test_encode_release_commits_only_after_all_model_output_validates(monkeypatch, failure):
+    backend = Backend()
+    service = InferenceService(backend, cache_size=3, batch_size=1)
+    keys = [item["context_id"] for item in service.encode(request(3))["items"]]
+    prior = dict(service.contexts)
+    prior_counts = service.encoded_count, service.decoded_count
+    original = backend.encode_batch
+    calls = 0
+
+    def faulty_encode(observations, seeds):
+        nonlocal calls
+        calls += 1
+        result = original(observations, seeds)
+        # Fail the second microbatch, after one new context already exists in
+        # request-local storage. No old context may be removed on this path.
+        if calls == 2 and failure == "encoder":
+            raise RuntimeError("second encode microbatch failed")
+        if calls == 2 and failure == "features":
+            result[0] = (result[0][0], np.zeros(2))
+        return result
+
+    monkeypatch.setattr(backend, "encode_batch", faulty_encode)
+    backend.bad_actions = failure == "baseline_actions"
+    with pytest.raises((RuntimeError, ValueError)):
+        service.encode(dict(request(2, include=True), release_context_ids=keys[:2]))
+    assert list(service.contexts) == keys
+    assert all(service.contexts[key] is value for key, value in prior.items())
+    assert (service.encoded_count, service.decoded_count) == prior_counts
+    backend.bad_actions = False
+    assert len(service.decode({"items": [{"context_id": key} for key in keys]})["items"]) == 3
+
+
+@pytest.mark.parametrize("release_ids", [None, "context", [3], [""], ["x"] * 4])
+def test_encode_release_validates_before_backend_and_preserves_cache(release_ids):
+    backend = Backend()
+    service = InferenceService(backend, cache_size=3)
+    keys = [item["context_id"] for item in service.encode(request(2))["items"]]
+    backend.calls.clear()
+    with pytest.raises(ValueError, match="release_context_ids"):
+        service.encode(dict(request(), release_context_ids=release_ids))
+    assert not backend.calls
+    assert list(service.contexts) == keys and service.encoded_count == 2
+
+
+def test_encode_release_acknowledges_expired_unknown_and_duplicate_contexts():
+    now = [0.]
+    service = InferenceService(Backend(), cache_size=3, cache_ttl=5., clock=lambda: now[0])
+    expired = service.encode(request())["items"][0]["context_id"]
+    now[0] = 6.
+    result = service.encode(dict(request(), release_context_ids=[expired, "unknown", expired]))
+    assert result["released_context_ids"] == [expired, "unknown"]
+    assert list(service.contexts) == [result["items"][0]["context_id"]]
+    empty = service.encode(dict(request(), release_context_ids=[]))
+    assert empty["released_context_ids"] == []
+    assert len(service.contexts) == 2
+
+
+def test_one_shot_infer_rejects_context_retirement_without_computing():
+    backend = Backend()
+    service = InferenceService(backend)
+    key = service.encode(request())["items"][0]["context_id"]
+    backend.calls.clear()
+    payload = request()
+    payload.pop("include_base_actions")
+    payload["release_context_ids"] = [key]
+    with pytest.raises(ValueError, match="request fields"):
+        service.infer(payload)
+    assert not backend.calls and list(service.contexts) == [key]
+
+
 def test_vlajepa_adapter_retains_seeded_sampler_draw_and_raw8_contract():
     torch = pytest.importorskip("torch")
     from pressb.models.vlajepa import VLAJEPABackend

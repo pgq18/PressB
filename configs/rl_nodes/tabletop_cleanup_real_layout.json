@@ -10,7 +10,8 @@
   "backend": {
     "plugin": "tabletop_cleanup",
     "config": {
-      "scene_config": "configs/calibration/playground_20261109_global_refined.json",
+      "scene_config": "configs/calibration/playground_20261113_appearance.json",
+      "initial_pose": {"mode": "workspace_center"},
       "num_envs": 1,
       "horizon": 32,
       "gpu": 0,
@@ -98,17 +99,6 @@
           0.049
         ],
         "wall_thickness_m": 0.004
-      },
-      "scene_overrides": {
-        "initial_state_joint_rad_m": [
-          -0.18580775216731635,
-          0.4724955350999049,
-          -0.45820128852607134,
-          -0.11393509357018983,
-          0.7485193563028081,
-          0.08302531251737025,
-          0.0595
-        ]
       }
     }
   }

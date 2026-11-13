@@ -24,7 +24,7 @@ STATE_NAMES = [f"joint{i}" for i in range(1, 7)] + ["gripper_width"]
 STATE_UNITS = ["rad"] * 6 + ["m"]
 SOURCE_FILES = ("tasks/playground/backend.py", "tasks/playground/parallel.py", "tasks/playground/scene.py", "runtime/workbench.py",
                 "runtime/scene.py", "robots/piper/isaac.py", "robots/piper/wrist_camera.py",
-                "robots/piper/kinematics.py", "sensors/camera.py", "control/joint_actions.py")
+                "robots/piper/kinematics.py", "sensors/camera.py", "sensors/color_response.py", "control/joint_actions.py")
 
 
 def _path(value):
@@ -56,7 +56,7 @@ def load_config(config):
     """Resolve configuration without importing USD, CUDA or Isaac Sim."""
     allowed = {"scene_config", "scene_overrides", "num_envs", "horizon", "control_hz", "physics_dt",
                "max_episode_seconds", "gamma", "gpu", "headless", "settling_ticks", "smoothing", "model_inputs", "spacing_m", "render_resolution", "renderer_profile", "render_subframes",
-               "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "log_dir",
+               "observation_render_frames", "reset_render_frames", "cpu_threads", "png_workers", "color_response_workers", "log_dir",
                "image_preprocessing", "image_output_resolution"}
     if not isinstance(config, dict) or set(config)-allowed:
         raise ValueError(f"Playground configuration supports only {sorted(allowed)}")
@@ -69,6 +69,9 @@ def load_config(config):
     if not isinstance(overrides, dict):
         raise ValueError("scene_overrides must be a mapping")
     _merge(scene, overrides)
+    if "camera_color_response" in scene:
+        from pressb.sensors.color_response import normalize_camera_responses
+        scene["camera_color_response"] = normalize_camera_responses(scene["camera_color_response"], ("up", "wrist"))
     for key in ("robot_usd", "robot_urdf"):
         scene[key] = str(_path(scene[key]))
         if not Path(scene[key]).is_file():
@@ -123,7 +126,7 @@ def load_config(config):
     execution_keys = ("num_envs", "gpu", "horizon", "physics_dt", "control_hz", "max_episode_seconds",
         "settling_ticks", "gamma", "headless", "spacing_m", "render_resolution", "renderer_profile",
         "render_subframes", "observation_render_frames", "reset_render_frames", "cpu_threads",
-        "png_workers", "log_dir", "image_preprocessing", "image_output_resolution")
+        "png_workers", "color_response_workers", "log_dir", "image_preprocessing", "image_output_resolution")
     execution = execution_config({**{key: result[key] for key in execution_keys if key in result},
         "render_resolution": result.get("render_resolution", scene["up_camera"]["resolution"]),
         "reset_render_frames": result.get("reset_render_frames", scene.get("rendering", {}).get("warmup_frames", 8)),

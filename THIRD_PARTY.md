@@ -15,6 +15,8 @@
 | Wall-X / Wall-OSS | 来源和本地修改摘要见 `src/pressb/model_sources/walloss/source_manifest.json` | 模型、推理、训练、数据和 CUDA 源码已内置；原源码版权头保留；不含权重或编译二进制 |
 | NVIDIA CUTLASS | `e51efbfe18fe4f4cbb66ab814c55bf4aa0185491` | 仅构建 Wall-OSS CUDA 扩展时获取到缓存；原许可文本保留于 Wall-OSS 源码包的 `licenses/` |
 | DPPO / Diffusion Policy | `cc7234ad7ff39a8f32de3af903606723a16f0648` | MIT；`src/pressb/model_sources/diffusion_policy` 内置条件 UNet、DDPM/DDIM 公式及依赖模块，保留 LICENSE 和逐文件原始／适配后 SHA-256；PressB 添加视觉编码、LeRobot 训练和节点接口，不包含上游模型权重 |
+| Hugging Face LeRobot / π₀.₅ | `d324ffe810d17264a0b1e628698aa1fa09aa639c`（包版本 0.4.5） | Apache-2.0；由 `scripts/install_pi05.py` 校验源码压缩包 SHA-256 后安装，PressB 提供推理、数据与训练适配器；不在仓库内打包模型权重或上游源码包 |
+| Ascend PyTorch 扩展 / CANN | 已验证 `torch_npu 2.10.0`、PyTorch 2.10.0、CANN 9.0.0 | 运行时依赖单独安装；不在仓库分发驱动、工具包或二进制。环境配套及验证范围见 `docs/ascend_pi05.md` |
 
 `prepare_wrist_asset.py` 在隔离的 OpenUSD 24.11 中提取官方支架与相机子树，以兼容 Isaac Sim 4.5。它保留网格点与拓扑，生成文件及来源记录位于 `assets/generated/official_wrist/`，不提交 Git。
 
